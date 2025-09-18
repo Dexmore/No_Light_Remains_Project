@@ -23,21 +23,29 @@ public class PlayerController_LSH : MonoBehaviour
     [HideInInspector] public PlayerJump_LSH jump;
     [HideInInspector] public PlayerFall_LSH fall;
 
-    // === 입력 (새 Input System) ===
+    // === 입력 (액션 에셋 참조) ===
+    [Header("Input (use bound actions)")]
+    [SerializeField] private InputActionReference moveActionRef;
+    [SerializeField] private InputActionReference jumpActionRef;
     private InputAction moveAction;
     private InputAction jumpAction;
 
-    // === 정교 Grounded 판정(노멀 검사) ===
-    [Header("Ground Sensor (정교 판정)")]
-    [SerializeField] private Collider2D feetCollider;     // 발바닥 전용 콜라이더(Trigger 꺼짐 권장)
-    [Range(0f, 1f)] public float groundNormalMinY = 0.6f; // 바닥으로 인정할 최소 노멀 y (≈53° 이하)
-    [SerializeField] private LayerMask groundLayer;
+    private float _baseScaleX;
 
-    private ContactFilter2D _groundFilter;
-    private readonly Collider2D[] _overlapHits = new Collider2D[8];     // NonAlloc 캐시
+    // === Ground 체크 ===
+    [Header("Ground Sensor (정교 판정)")]
+    [SerializeField] private LayerMask groundLayer;
+    [Range(0f, 1f)] public float groundNormalMinY = 0.6f;
     private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
 
-    // Runtime 노출 값 (States에서 참조)
+    // Animator 해시/존재여부 캐시
+    private static readonly int HashSpeedX = Animator.StringToHash("speedX");
+    private static readonly int HashSpeedY = Animator.StringToHash("speedY");
+    private static readonly int HashGround = Animator.StringToHash("grounded");
+    private bool _hasSpeedX, _hasSpeedY, _hasGround;
+    private float _lastSpeedX, _lastSpeedY; private bool _lastGround;
+
+    // Runtime (FSM에서 참조)
     public bool Grounded { get; private set; }
     public float XInput { get; private set; }
     public bool JumpPressed { get; private set; }
@@ -47,40 +55,29 @@ public class PlayerController_LSH : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
 
-        fsm = new PlayerStateMachine_LSH();
+        fsm  = new PlayerStateMachine_LSH();
         idle = new PlayerIdle_LSH(this, fsm);
         run  = new PlayerRun_LSH(this, fsm);
         jump = new PlayerJump_LSH(this, fsm);
         fall = new PlayerFall_LSH(this, fsm);
 
-        // Ground 레이어 전용 필터 (Trigger 제외)
-        _groundFilter = new ContactFilter2D
-        {
-            useLayerMask = true,
-            layerMask = groundLayer,
-            useTriggers = false
-        };
+        _baseScaleX = Mathf.Abs(transform.localScale.x);
+
+        // Animator 파라미터 존재여부 캐시
+        CacheAnimatorParams();
     }
 
     void OnEnable()
     {
-        // ---- 새 Input System 액션 생성/바인딩 ----
-        // 1D 이동 축 : 키보드(AD/←→) + 패드 왼스틱 X
-        moveAction = new InputAction(
-            name: "Move",
-            type: InputActionType.Value,
-            binding: "<Gamepad>/leftStick/x"
-        );
-        moveAction.AddCompositeBinding("1DAxis")
-            .With("Negative", "<Keyboard>/a")
-            .With("Negative", "<Keyboard>/leftArrow")
-            .With("Positive", "<Keyboard>/d")
-            .With("Positive", "<Keyboard>/rightArrow");
+        if (moveActionRef == null || moveActionRef.action == null || jumpActionRef == null || jumpActionRef.action == null)
+        {
+            Debug.LogError("[PlayerController_LSH] InputActionReference가 비었습니다. 인스펙터에서 Move/Jump를 할당하세요.");
+            enabled = false;
+            return;
+        }
 
-        // 점프 버튼 : Space + 패드 South
-        jumpAction = new InputAction(name: "Jump", type: InputActionType.Button);
-        jumpAction.AddBinding("<Keyboard>/space");
-        jumpAction.AddBinding("<Gamepad>/buttonSouth");
+        moveAction = moveActionRef.action;
+        jumpAction = jumpActionRef.action;
 
         moveAction.Enable();
         jumpAction.Enable();
@@ -99,25 +96,40 @@ public class PlayerController_LSH : MonoBehaviour
 
     void Update()
     {
-        // ---- 입력 수집 (새 Input System) ----
-        XInput = moveAction.ReadValue<float>();          // -1 ~ +1
-        JumpPressed = jumpAction.WasPressedThisFrame();  // 이 프레임에만 true
+        // 입력
+        XInput = ReadMoveX(moveAction);                 // -1 ~ +1
+        JumpPressed = jumpAction.WasPressedThisFrame(); // 1프레임 true
 
-        // ---- 지상 체크 (정교: 노멀 검사) ----
+        // 지면 체크
         Grounded = CheckGroundedPrecise();
 
-        // FSM 틱
+        // FSM
         fsm.PlayerKeyInput();
         fsm.UpdateState();
 
-        // 애니메이터(선택)
+        // Animator 파라미터(존재할 때 & 값 바뀔 때만 세팅)
         if (animator)
         {
-            animator.SetFloat("speedX", Mathf.Abs(rb.linearVelocity.x));
-            animator.SetFloat("speedY", rb.linearVelocity.y);
-            animator.SetBool("grounded", Grounded);
+            float sx = Mathf.Abs(rb.linearVelocity.x);
+            float sy = rb.linearVelocity.y;
+
+            if (_hasSpeedX && !Mathf.Approximately(_lastSpeedX, sx))
+            {
+                animator.SetFloat(HashSpeedX, sx);
+                _lastSpeedX = sx;
+            }
+
+            if (_hasSpeedY && !Mathf.Approximately(_lastSpeedY, sy))
+            {
+                animator.SetFloat(HashSpeedY, sy);
+                _lastSpeedY = sy;
+            }
+            if (_hasGround && _lastGround != Grounded)
+            {
+                animator.SetBool (HashGround, Grounded);
+                _lastGround = Grounded;
+            }
         }
-        // WasPressedThisFrame은 자동 원샷이라 수동 초기화 불필요
     }
 
     void FixedUpdate()
@@ -125,25 +137,66 @@ public class PlayerController_LSH : MonoBehaviour
         fsm.UpdatePhysics();
     }
 
-    // === 정교 지상 판정 ===
+    private static float ReadMoveX(InputAction action)
+    {
+        if (action == null) return 0f;
+
+        var ect = action.expectedControlType;
+        if (ect == "Axis") return action.ReadValue<float>();
+
+        Vector2 v = action.ReadValue<Vector2>();
+        if (v != Vector2.zero || ect == "Vector2") return v.x;
+
+        return action.ReadValue<float>(); // 폴백
+    }
+
     private bool CheckGroundedPrecise()
     {
-        if (feetCollider == null) return false;
+        var filter = new ContactFilter2D { useLayerMask = true, layerMask = groundLayer, useTriggers = false };
+        int cp = rb.GetContacts(filter, _contactPts);
+        for (int i = 0; i < cp; i++)
+            if (_contactPts[i].normal.y >= groundNormalMinY) return true;
+        return false;
+    }
 
-        int count = feetCollider.Overlap(_groundFilter, _overlapHits); // 무할당
-        for (int i = 0; i < count; i++)
+    public void UpdateFacing(float x)
+    {
+        if (x > 0.01f)
         {
-            var col = _overlapHits[i];
-            if (col == null) continue;
-
-            int cpCount = col.GetContacts(_contactPts); // 무할당
-            for (int j = 0; j < cpCount; j++)
+            var s = transform.localScale;
+            if (s.x < 0f)
             {
-                Vector2 n = _contactPts[j].normal; // 플레이어 관점의 접촉 노멀
-                if (n.y >= groundNormalMinY)       // 위로 받쳐주는 성분이 충분히 큰가?
-                    return true;
+                s.x = _baseScaleX; transform.localScale = s;
             }
         }
+        else if (x < -0.01f)
+        {
+            var s = transform.localScale;
+            if (s.x > 0f)
+            {
+                s.x = -_baseScaleX; transform.localScale = s;
+            }
+        }
+    }
+
+    public void TriggerAttack()  => animator?.SetTrigger("Attack");
+    public void TriggerAttack2() => animator?.SetTrigger("Attack2");
+    public void TriggerHit()     => animator?.SetTrigger("Hit");
+    public void TriggerDie()     => animator?.SetTrigger("Die");
+
+    // ---- Helpers ----
+    private void CacheAnimatorParams()
+    {
+        if (!animator) return;
+        _hasSpeedX = HasParam(animator, "speedX", AnimatorControllerParameterType.Float);
+        _hasSpeedY = HasParam(animator, "speedY", AnimatorControllerParameterType.Float);
+        _hasGround = HasParam(animator, "grounded", AnimatorControllerParameterType.Bool);
+    }
+
+    private static bool HasParam(Animator anim, string name, AnimatorControllerParameterType type)
+    {
+        foreach (var p in anim.parameters)
+            if (p.name == name && p.type == type) return true;
         return false;
     }
 }
