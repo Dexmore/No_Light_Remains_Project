@@ -2,40 +2,39 @@ using UnityEngine;
 
 public class PlayerIdle_LSH : IPlayerState_LSH
 {
-    public void Enter()
+    private readonly PlayerController_LSH ctx;
+    private readonly PlayerStateMachine_LSH fsm;
+
+    public PlayerIdle_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm)
     {
-        throw new System.NotImplementedException();
+        this.ctx = ctx;
+        this.fsm = fsm;
     }
 
-    public void Exit()
+    public void Enter()
     {
-        throw new System.NotImplementedException();
+        // X 속도만 감속 (부드럽게 하려면 Drag 사용)
+        ctx.rb.linearVelocity = new Vector2(0f, ctx.rb.linearVelocity.y);
+        if (ctx.animator) ctx.animator.Play("Idle", 0, 0f);
     }
+
+    public void Exit() { }
 
     public void PlayerKeyInput()
     {
-        throw new System.NotImplementedException();
-    }
+        if (Mathf.Abs(ctx.XInput) > 0.01f)
+            fsm.ChangeState(ctx.run);
 
-    public void UpdatePhysics()
-    {
-        throw new System.NotImplementedException();
+        if (ctx.JumpPressed && ctx.Grounded)
+            fsm.ChangeState(ctx.jump);
     }
 
     public void UpdateState()
     {
-        throw new System.NotImplementedException();
+        // 떨어지면 Fall
+        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
+            fsm.ChangeState(ctx.fall);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public void UpdatePhysics() { }
 }
