@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using State = CreatureData.State;
-using Condition = CreatureData.Condition;
 public class CreatureControl : MonoBehaviour
 {
     #region UniTask Setting
@@ -32,10 +30,20 @@ public class CreatureControl : MonoBehaviour
         cts = null;
     }
     #endregion
-    public CreatureData data;
+    public MonsterDataSO data;
+    public Pattern[] patterns;
     [HideInInspector] public float width;
     [HideInInspector] public float height;
     Astar2DXYPathFinder astar;
+    public bool isDie;
+    public bool isGround;
+    [ReadOnlyInspector] public string ID;
+    [ReadOnlyInspector] public string Name;
+    [ReadOnlyInspector] public MonsterType Type;
+    [ReadOnlyInspector] public float MoveSpeed;
+    [ReadOnlyInspector] public float Attack;
+    [ReadOnlyInspector] public float maxHP;
+    public float currHP;
     void Awake()
     {
         SettingFSM();
@@ -43,11 +51,18 @@ public class CreatureControl : MonoBehaviour
     }
     void Init()
     {
+        ID = data.ID;
+        Name = data.Name;
+        Type = data.Type;
+        MoveSpeed = data.MoveSpeed;
+        Attack = data.Attack;
+        maxHP = data.HP;
+        currHP = maxHP;
         if (astar)
         {
-            astar.characterHeight = height;
-            astar.characterWidth = width;
-            astar.tileUnit = Mathf.Clamp(width * 0.33f, 0.5f, 3f);
+            astar.height = height;
+            astar.width = width;
+            astar.unit = Mathf.Clamp(width * 0.33f, 0.5f, 3f);
         }
         // 게임 시작시 상태를 Idle 또는 Wander로
         if (Random.value < 0.5f)
@@ -81,7 +96,82 @@ public class CreatureControl : MonoBehaviour
     }
     public void ChangeState(State newState)
     {
+        if (dictionary[newState].coolTime == 0)
+        {
+            float _coolTime = 0;
+            bool isFind = false;
+            for (int i = 0; i < patterns.Length; i++)
+            {
+                for (int j = 0; j < patterns.Length; j++)
+                {
+                    Frequency frequency = patterns[i].frequencies[j];
+                    if (frequency.state == newState)
+                    {
+                        isFind = true;
+                        _coolTime = frequency.coolTime;
+                        break;
+                    }
+                }
+                if (isFind) break;
+            }
+            dictionary[newState].coolTime = _coolTime;
+        }
         ChangeState_ut(newState, cts.Token).Forget();
+    }
+    public void GoNextState()
+    {
+        float totalWeightSum = 0;
+        for (int i = 0; i < patterns.Length; i++)
+        {
+            // condition 해당 없으면 skip 
+            if (!HasCondition(patterns[i].condition)) continue;
+            for (int j = 0; j < patterns[i].frequencies.Length; j++)
+            {
+                State state = patterns[i].frequencies[j].state;
+                // state가 dictionary에 없으면 skip 
+                if (!dictionary.ContainsKey(state)) continue;
+                // state가 쿨타임 중이면 skip 
+                if (IsCoolTime(state)) continue;
+                // state가 그외에도 할 수 없는 상태라면 skip 
+                if (!IsCan(state)) continue;
+                totalWeightSum += patterns[i].frequencies[j].weight;
+            }
+        }
+        float randomWeightSum = Random.Range(0, totalWeightSum);
+        int find1 = -1, find2 = -1;
+        float partialWeightSum = 0;
+        for (int i = 0; i < patterns.Length; i++)
+        {
+            // condition 해당 없으면 skip 
+            if (!HasCondition(patterns[i].condition)) continue;
+            for (int j = 0; j < patterns[i].frequencies.Length; j++)
+            {
+                State state = patterns[i].frequencies[j].state;
+                // state가 dictionary에 없으면 skip 
+                if (!dictionary.ContainsKey(state)) continue;
+                // state가 쿨타임 중이면 skip
+                if (IsCoolTime(state)) continue;
+                // state가 그외에도 할 수 없는 상태라면 skip 
+                if (!IsCan(state)) continue;
+                partialWeightSum += patterns[i].frequencies[j].weight;
+                if (randomWeightSum <= partialWeightSum)
+                {
+                    find1 = i;
+                    find2 = j;
+                    break;
+                }
+            }
+        }
+        //Debug.Log($"{totalWeightSum},{randomWeightSum},{partialWeightSum},{find1},{find2}");
+        if (find1 == -1 && find2 == -1)
+        {
+            ChangeState(State.Idle);
+            return;
+        }
+        Frequency frequency = patterns[find1].frequencies[find2];
+        State nextState = frequency.state;
+        dictionary[nextState].coolTime = frequency.coolTime;
+        ChangeState(nextState);
     }
     async UniTask ChangeState_ut(State newState, CancellationToken token)
     {
@@ -98,6 +188,40 @@ public class CreatureControl : MonoBehaviour
         dictionary[state].cts = new CancellationTokenSource();
         dictionary[state].Init(dictionary[state].cts.Token).Forget();
         //Debug.Log($"{transform.name},{GetInstanceID()}] --> {state} 시작");
+    }
+    [System.Serializable]
+    public enum State
+    {
+        // 아래들은 평화로운 상황에서 주로하는 행동..
+        Idle,
+        Wander,
+        Rest,
+        Jump,
+        // 아래들은 플레이어 발견시 주로하는 행동들..
+        Roar,
+        Pursuit,
+        RunAway,
+        // 아래들은 플레이어랑 가까우면 할수있는 행동들..
+        RePosition,
+        // 아래들은 AI가 직접 고를 수 없다
+        Hit,
+        KnockDown,
+        Die,
+        // 아래들은 전투상태들..
+        HandAttack1,
+        BiteAttack1,
+        JumpAttack1,
+        LoneRangeAttack1,
+        RushAttack1,
+        SequenceAttack1,
+
+    }
+    [System.Serializable]
+    public struct Frequency
+    {
+        public State state;
+        public float weight;
+        public float coolTime;
     }
     #endregion
     #region Condition
@@ -135,63 +259,22 @@ public class CreatureControl : MonoBehaviour
         }
         return count;
     }
-    #endregion
-    #region CanNot
     [System.Serializable]
-    public struct CanNot
+    [System.Flags]
+    public enum Condition
     {
-        public string abilityName;
-        public string reason;
-        public CanNot(string abilityName, string reason)
-        {
-            this.abilityName = abilityName;
-            this.reason = reason;
-        }
+        None,
+        Peaceful = 1 << 0,
+        FindPlayer = 1 << 1,
+        ClosePlayer = 1 << 2,
+        Injury1 = 1 << 4,
+        Injury2 = 1 << 5,
     }
-    [SerializeField] List<CanNot> cannotList = new List<CanNot>();
-    public void AddCanNot(System.Type type, string reason)
+    [System.Serializable]
+    public struct Pattern
     {
-        string tName = type.Name;
-        int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
-        if (find != -1) return;
-        CanNot element = new CanNot(tName, reason);
-        cannotList.Add(element);
-    }
-    public void AddCanNot(State state, string reason)
-    {
-        if (!dictionary.ContainsKey(state)) return;
-        string tName = dictionary[state].GetType().ToString();
-        int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
-        if (find != -1) return;
-        CanNot element = new CanNot(tName, reason);
-        cannotList.Add(element);
-    }
-    public void RemoveCanNot(System.Type type, string reason)
-    {
-        string tName = type.Name;
-        int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
-        if (find == -1) return;
-        cannotList.RemoveAt(find);
-    }
-    public void RemoveCanNot(State state, string reason)
-    {
-        if (!dictionary.ContainsKey(state)) return;
-        RemoveCanNot(dictionary[state].GetType(), reason);
-    }
-    public bool IsCan(System.Type type)
-    {
-        string tName = type.Name;
-        int find = cannotList.ToList().FindIndex(o => o.abilityName == tName);
-        if (find != -1) return false;
-        return true;
-    }
-    public bool IsCan(State state)
-    {
-        if (!dictionary.ContainsKey(state)) return false;
-        string tName = dictionary[state].GetType().ToString();
-        int find = cannotList.ToList().FindIndex(o => o.abilityName == tName);
-        if (find != -1) return false;
-        return true;
+        public Condition condition;
+        public Frequency[] frequencies;
     }
     #endregion
     #region CoolTime
@@ -352,36 +435,65 @@ public class CreatureControl : MonoBehaviour
         coolTimeList.Remove(coolTime);
     }
 
-    // // Condition가 새로 바뀌면 condition에 매핑된 Condition가 해당되는 상태스크립트들은 전부 '랜덤 쿨타임'이 돌아가는거에서 시작 합니다.
-    // // 이걸 하는 이유는 몹이 플레이어를 발견하자마자 고득점을 받기좋은 필살기를 쓴다던다 하는것들 막기 위함임.
-    // // 즉 플레이어를 발견하자마자 몹 내부에서는 100초짜리 쿨타임을 가진 동작이라면 이미 0~100 초 사이의 랜덤한 쿨타임이 돌아가고 있으므로
-    // // 전투 시작시에는 일단 기본적인 평타 위주로 쓸 가능성이 더 높음. 한창 싸우다가 몹이 100초 간격으로 필살기급의 공격을 쓰도록 유도
-    // public void SetRandomCoolTime(Condition condition)
-    // {
-    //     foreach (var element in dictionary)
-    //     {
-    //         if ((element.Value.mapping2 & condition) != 0)
-    //         {
-    //             if (element.Value.coolTime > 1f)
-    //             {
-    //                 if (!IsCoolTime(element.Key))
-    //                 {
-    //                     SetCoolTime(element.Key, Random.Range(0f, element.Value.coolTime));
-    //                 }
-    //                 else
-    //                 {
-    //                     RemoveCoolTime(element.Key);
-    //                 }
-    //             }
-    //         }
-    //         else
-    //         {
-    //             if (element.Value.coolTime > 1f)
-    //                 if (IsCoolTime(element.Key))
-    //                     PauseCoolTime(element.Key);
-    //         }
-    //     }
-    // }
+
+    #endregion
+    #region CanNot
+    [System.Serializable]
+    public struct CanNot
+    {
+        public string abilityName;
+        public string reason;
+        public CanNot(string abilityName, string reason)
+        {
+            this.abilityName = abilityName;
+            this.reason = reason;
+        }
+    }
+    [SerializeField] List<CanNot> cannotList = new List<CanNot>();
+    public void AddCanNot(System.Type type, string reason)
+    {
+        string tName = type.Name;
+        int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
+        if (find != -1) return;
+        CanNot element = new CanNot(tName, reason);
+        cannotList.Add(element);
+    }
+    public void AddCanNot(State state, string reason)
+    {
+        if (!dictionary.ContainsKey(state)) return;
+        string tName = dictionary[state].GetType().ToString();
+        int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
+        if (find != -1) return;
+        CanNot element = new CanNot(tName, reason);
+        cannotList.Add(element);
+    }
+    public void RemoveCanNot(System.Type type, string reason)
+    {
+        string tName = type.Name;
+        int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
+        if (find == -1) return;
+        cannotList.RemoveAt(find);
+    }
+    public void RemoveCanNot(State state, string reason)
+    {
+        if (!dictionary.ContainsKey(state)) return;
+        RemoveCanNot(dictionary[state].GetType(), reason);
+    }
+    public bool IsCan(System.Type type)
+    {
+        string tName = type.Name;
+        int find = cannotList.ToList().FindIndex(o => o.abilityName == tName);
+        if (find != -1) return false;
+        return true;
+    }
+    public bool IsCan(State state)
+    {
+        if (!dictionary.ContainsKey(state)) return false;
+        string tName = dictionary[state].GetType().ToString();
+        int find = cannotList.ToList().FindIndex(o => o.abilityName == tName);
+        if (find != -1) return false;
+        return true;
+    }
     #endregion
     #region Delay
     #endregion

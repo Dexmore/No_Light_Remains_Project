@@ -1,7 +1,7 @@
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using State = CreatureData.State;
+using State = CreatureControl.State;
 public abstract class CreatureAbility : MonoBehaviour
 {
     #region UniTask Setting
@@ -33,29 +33,27 @@ public abstract class CreatureAbility : MonoBehaviour
     }
     #endregion
     protected CreatureControl control;
-    CreatureData data;
+    //CreatureData data;
     protected virtual void Awake()
     {
         TryGetComponent(out control);
         rb = GetComponentInParent<Rigidbody2D>();
         TryGetComponent(out astar);
         TryGetComponent(out sensor);
-        TryGetComponent(out status);
         anim = GetComponentInChildren<Animator>();
     }
     void OnEnableAfter()
     {
-        data = control.data;
+        //data = control.data;
     }
     [HideInInspector] public abstract State mapping { get; }
-    protected float coolTime;
-    protected Vector2 duration;
+    [HideInInspector] public float coolTime = 0f;
     protected Rigidbody2D rb;
     protected Astar2DXYPathFinder astar;
     protected CreatureSensor sensor;
-    protected CreatureStatus status;
     protected Animator anim;
     public abstract UniTask Init(CancellationToken token);
+    public abstract UniTask Activate(CancellationToken token);
     public virtual void UnInit()
     {
         if (coolTime > 1f)
