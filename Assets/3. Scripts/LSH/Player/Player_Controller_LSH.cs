@@ -22,13 +22,17 @@ public class PlayerController_LSH : MonoBehaviour
     [HideInInspector] public PlayerRun_LSH run;
     [HideInInspector] public PlayerJump_LSH jump;
     [HideInInspector] public PlayerFall_LSH fall;
+    [HideInInspector] public PlayerAttack_LSH attack;
+    [HideInInspector] public PlayerAttackCombo_LSH attackCombo;
 
     // === 입력 (액션 에셋 참조) ===
     [Header("Input (use bound actions)")]
     [SerializeField] private InputActionReference moveActionRef;
     [SerializeField] private InputActionReference jumpActionRef;
+    [SerializeField] private InputActionReference attackActionRef;
     private InputAction moveAction;
     private InputAction jumpAction;
+    private InputAction attackAction;
 
     private float _baseScaleX;
 
@@ -49,7 +53,7 @@ public class PlayerController_LSH : MonoBehaviour
     public bool Grounded { get; private set; }
     public float XInput { get; private set; }
     public bool JumpPressed { get; private set; }
-
+    public bool AttackPressed { get; private set; }
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -60,6 +64,9 @@ public class PlayerController_LSH : MonoBehaviour
         run  = new PlayerRun_LSH(this, fsm);
         jump = new PlayerJump_LSH(this, fsm);
         fall = new PlayerFall_LSH(this, fsm);
+        attack = new PlayerAttack_LSH(this, fsm);
+        attackCombo = new PlayerAttackCombo_LSH(this, fsm);
+
 
         _baseScaleX = Mathf.Abs(transform.localScale.x);
 
@@ -75,16 +82,25 @@ public class PlayerController_LSH : MonoBehaviour
             enabled = false;
             return;
         }
+        
+        if (attackActionRef.action == null)
+        {
+            attackAction = null;
+            Debug.LogError("[PlayerController_LSH] Attack 액션이 비어 있습니다. 공격 모션 입력이 동작하지 않습니다.");
+        }
 
         moveAction = moveActionRef.action;
         jumpAction = jumpActionRef.action;
+        attackAction = attackActionRef.action;
 
         moveAction.Enable();
         jumpAction.Enable();
+        attackAction.Enable();
     }
 
     void OnDisable()
     {
+        attackAction?.Disable();
         jumpAction?.Disable();
         moveAction?.Disable();
     }
@@ -99,6 +115,7 @@ public class PlayerController_LSH : MonoBehaviour
         // 입력
         XInput = ReadMoveX(moveAction);                 // -1 ~ +1
         JumpPressed = jumpAction.WasPressedThisFrame(); // 1프레임 true
+        AttackPressed = attackAction != null && attackAction.WasPressedThisFrame();
 
         // 지면 체크
         Grounded = CheckGroundedPrecise();
