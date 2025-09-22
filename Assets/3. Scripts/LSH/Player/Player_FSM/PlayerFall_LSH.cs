@@ -21,6 +21,12 @@ public class PlayerFall_LSH : IPlayerState_LSH
             else
                 fsm.ChangeState(ctx.idle);
         }
+
+        if (ctx.AttackPressed)
+        {
+            fsm.ChangeState(ctx.attack);
+            return;
+        }   
     }
 
     public void UpdatePhysics()
