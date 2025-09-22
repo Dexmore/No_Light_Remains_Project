@@ -22,6 +22,12 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     {
         if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
             fsm.ChangeState(ctx.fall);
+
+        if (ctx.AttackPressed)
+        {
+            fsm.ChangeState(ctx.attack);
+            return;
+        }  
     }
 
     public void UpdatePhysics() { }
