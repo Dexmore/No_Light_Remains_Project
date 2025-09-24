@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 4830109814779618246}
   - component: {fileID: 3381216435244843532}
   m_Layer: 6
-  m_Name: Dump
+  m_Name: ContaminatedFlower
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 3184333215785844659}
   - component: {fileID: 5028216363324574023}
   m_Layer: 6
-  m_Name: Dump
+  m_Name: ContaminatedFlower
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -315,10 +315,10 @@ MonoBehaviour:
   - condition: 1
     frequencies:
     - state: 0
-      weight: 100
+      weight: 50
       coolTime: 1.5
     - state: 1
-      weight: 70
+      weight: 120
       coolTime: 1.5
     - state: 3
       weight: 10

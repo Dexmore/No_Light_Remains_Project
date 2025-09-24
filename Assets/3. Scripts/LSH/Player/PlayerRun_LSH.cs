@@ -10,6 +10,7 @@ public class PlayerRun_LSH : IPlayerState_LSH
         moveInputAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Move").canceled += MoveInputCancel;
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += AttackInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed += DashInput;
         ctx.state = PlayerController_LSH.State.Run;
         isAnimation = false;
     }
@@ -96,6 +97,7 @@ public class PlayerRun_LSH : IPlayerState_LSH
     {
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Move").canceled -= MoveInputCancel;
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= AttackInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed -= DashInput;
     }
     InputAction moveInputAction;
     Vector2 moveDirection = Vector2.zero;
@@ -110,4 +112,12 @@ public class PlayerRun_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.attack);
         }
     }
+    void DashInput(InputAction.CallbackContext callback)
+    {
+        if (ctx.isGround)
+        {
+            fsm.ChangeState(ctx.dash);
+        }
+    }
+
 }

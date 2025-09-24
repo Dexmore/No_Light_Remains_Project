@@ -23,35 +23,20 @@ public class AttackBox : MonoBehaviour
         }
         pcoll2D.points = buffer;
     }
-    public UnityAction<Collider> onTriggetStay = (x) => { };
-    void OnTriggerStay(Collider other)
+    public UnityAction<Collider2D> onTriggetStay2D = (x) => { };
+    void OnTriggerStay2D(Collider2D collider2D)
     {
-        onTriggetStay.Invoke(other);
+        onTriggetStay2D.Invoke(collider2D);
     }
-
     void OnDrawGizmos()
     {
-        // points 배열이 비어있거나 null인 경우 오류 방지
-        if (points == null || points.Length < 2)
-        {
-            return;
-        }
-
-        // 선의 색상을 녹색으로 설정합니다.
+        if (points == null || points.Length < 2) return;
         Gizmos.color = Color.red;
-
-        // 첫 번째 지점부터 마지막 지점까지 순차적으로 선을 그립니다.
         for (int i = 0; i < points.Length; i++)
         {
-            // 현재 지점
             Vector3 currentPoint = points[i].position;
-            // 다음 지점 (마지막 지점에서는 첫 번째 지점으로 돌아가 고리를 만듭니다)
             Vector3 nextPoint = (i == points.Length - 1) ? points[0].position : points[i + 1].position;
-
-            // 두 지점 사이에 선을 그립니다.
             Gizmos.DrawLine(currentPoint, nextPoint);
         }
     }
-
-
 }
