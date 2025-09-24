@@ -82,12 +82,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1585746187, guid: 0b73eab6a9ea27e4aae4a1aabbe92423, type: 3}
+  m_Sprite: {fileID: 2806074514289853808, guid: 0b73eab6a9ea27e4aae4a1aabbe92423, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -244,6 +244,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 9
   isGround: 1
+  isAvoid: 0
+  isParry: 0
   state: 0
   inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   rb: {fileID: 0}
@@ -261,7 +263,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1358327861515655943, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Name
-      value: LightSystem
+      value: Light
       objectReference: {fileID: 0}
     - target: {fileID: 2093223589092218518, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_LocalPosition.x

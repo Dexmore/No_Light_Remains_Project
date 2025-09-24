@@ -14,6 +14,8 @@ public class PlayerController_LSH : MonoBehaviour
     public float jumpForce = 12f;
     public LayerMask groundLayer;
     [ReadOnlyInspector] public bool isGround;
+    [ReadOnlyInspector] public bool isAvoid;
+    [ReadOnlyInspector] public bool isParry;
     [ReadOnlyInspector] public State state;
     public enum State
     {
@@ -29,23 +31,25 @@ public class PlayerController_LSH : MonoBehaviour
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Transform model;
     [HideInInspector] public Animator animator;
-    [HideInInspector] public AttackBox attackBox;
+    [HideInInspector] public AttackRange attackRange;
     // States
     [HideInInspector] public PlayerIdle_LSH idle;
     [HideInInspector] public PlayerRun_LSH run;
     [HideInInspector] public PlayerAttack_LSH attack;
     [HideInInspector] public PlayerAttackCombo_LSH attackCombo;
+    [HideInInspector] public PlayerDash_LSH dash;
     void Awake()
     {
         TryGetComponent(out rb);
         model = transform.GetChild(0);
         animator = GetComponentInChildren<Animator>(true);
-        attackBox = GetComponentInChildren<AttackBox>(true);
+        attackRange = GetComponentInChildren<AttackRange>(true);
         fsm = new PlayerStateMachine_LSH();
         idle = new PlayerIdle_LSH(this, fsm);
         run = new PlayerRun_LSH(this, fsm);
         attack = new PlayerAttack_LSH(this, fsm);
         attackCombo = new PlayerAttackCombo_LSH(this, fsm);
+        dash = new PlayerDash_LSH(this, fsm);
     }
     void Start()
     {

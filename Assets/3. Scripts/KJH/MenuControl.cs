@@ -10,7 +10,6 @@ public class MenuControl : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         GameManager.I.FadeIn(2f);
         yield return YieldInstructionCache.WaitForSeconds(2f);
-        GameManager.I.LoadSceneAsync(1);
     }
     void OnEnable()
     {

@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.Rendering.Universal;
 public class LightSystem : MonoBehaviour
 {
+    public bool isFreeformLight;
     public float radius;
     public LayerMask layerMask;
     public int polyCount = 127;
@@ -15,7 +16,15 @@ public class LightSystem : MonoBehaviour
     {
         cts = new CancellationTokenSource();
         Application.quitting += UniTaskCancel;
-        StartDeform(cts.Token).Forget();
+        if (isFreeformLight)
+        {
+            freeformLight.gameObject.SetActive(true);
+            StartDeform(cts.Token).Forget();
+        }
+        else
+        {
+            freeformLight.gameObject.SetActive(false);
+        }
     }
     void OnDisable() => UniTaskCancel();
     void OnDestroy() => UniTaskCancel();
@@ -41,6 +50,7 @@ public class LightSystem : MonoBehaviour
     }
     async UniTask StartDeform(CancellationToken token)
     {
+        if (!isFreeformLight) return;
         Vector3[] buffer = new Vector3[polyCount];
         RaycastHit2D hit;
         while (true)

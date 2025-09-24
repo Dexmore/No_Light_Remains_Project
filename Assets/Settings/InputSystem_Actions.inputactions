@@ -43,21 +43,21 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Parry",
-                    "type": "Button",
-                    "id": "771a16a9-041a-4bb5-b16c-5399a12c73c7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Lantern",
                     "type": "Button",
                     "id": "06146104-d2ad-4d3c-899d-95d52fb30b62",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "Tap",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Parry",
+                    "type": "Button",
+                    "id": "771a16a9-041a-4bb5-b16c-5399a12c73c7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
@@ -190,7 +190,7 @@
                     "name": "Arrow",
                     "id": "9cdacf24-02a7-40c1-94ac-0011a76cc232",
                     "path": "Dpad",
-                    "interactions": "MultiTap(tapDelay=0.5)",
+                    "interactions": "MultiTap(tapTime=0.15,tapDelay=0.35,pressPoint=0.35)",
                     "processors": "",
                     "groups": "",
                     "action": "Dash",
@@ -212,7 +212,7 @@
                     "name": "Arrow",
                     "id": "516703b5-5a28-4540-9f81-e76c7098400f",
                     "path": "Dpad",
-                    "interactions": "MultiTap(tapDelay=0.5)",
+                    "interactions": "MultiTap(tapTime=0.15,tapDelay=0.35,pressPoint=0.35)",
                     "processors": "",
                     "groups": "",
                     "action": "Dash",

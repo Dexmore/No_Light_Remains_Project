@@ -6,10 +6,12 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerIdle_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     InputAction moveInputAction;
+    Vector2 moveDirection;
     public void Enter()
     {
         moveInputAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += AttackInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed += DashInput;
         ctx.state = PlayerController_LSH.State.Idle;
         if (ctx.isGround)
         {
@@ -47,13 +49,20 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     public void Exit()
     {
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= AttackInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed -= DashInput;
     }
-    Vector2 moveDirection;
     void AttackInput(InputAction.CallbackContext callback)
     {
         if (ctx.isGround)
         {
             fsm.ChangeState(ctx.attack);
+        }
+    }
+    void DashInput(InputAction.CallbackContext callback)
+    {
+        if (ctx.isGround)
+        {
+            fsm.ChangeState(ctx.dash);
         }
     }
 

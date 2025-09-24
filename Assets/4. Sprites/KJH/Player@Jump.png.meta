@@ -1,25 +1,24 @@
 fileFormatVersion: 2
 guid: 666e3b36c77d9e74cb59b0249251c83b
-AssetOrigin:
-  serializedVersion: 1
-  productId: 170422
-  packageName: Martial Hero
-  packageVersion: 1.0
-  assetPath: Assets/Martial Hero/Sprites/Jump.png
-  uploadId: 372436
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7460046300004610927
-    second: Jump_0
+      213: -1888807089764990967
+    second: Player@Jump_0
   - first:
-      213: 7034338576483803127
-    second: Jump_1
+      213: -7123085370895461180
+    second: Player@Jump_1
+  - first:
+      213: -5328614011864147316
+    second: Player@Jump_2
+  - first:
+      213: 4409391036172417260
+    second: Player@Jump_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -76,9 +75,9 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 1
+  applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -95,45 +94,6 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Lumin
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -188,10 +148,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 05bdf560cc212a94aa60dff62ab3c3f8
-      internalID: -1006399380
+      spriteID: 900815d85fb99c5e0800000000000000
+      internalID: -1888807089764990967
       vertices: []
       indices: 
       edges: []
@@ -210,10 +170,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 48940bea1481f254b82813dc0b2b4e92
-      internalID: 1823024514
+      spriteID: 4c49efa4897b52d90800000000000000
+      internalID: -7123085370895461180
       vertices: []
       indices: 
       edges: []
@@ -232,10 +192,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: fcbca64bb9bb5664daf51523566b05d2
-      internalID: -906782732
+      spriteID: c8a1ba5d9c5fc06b0800000000000000
+      internalID: -5328614011864147316
       vertices: []
       indices: 
       edges: []
@@ -254,10 +214,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 4a0d179c7c573f449929d92121459187
-      internalID: -699871612
+      spriteID: ce839d219cd413d30800000000000000
+      internalID: 4409391036172417260
       vertices: []
       indices: 
       edges: []
@@ -266,7 +226,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 3af8c2541d5ae4645ad50b9cfaa04f4e
     internalID: 0
     vertices: []
     indices: 
@@ -278,10 +238,10 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Player@Jump_0: -1006399380
-      Player@Jump_1: 1823024514
-      Player@Jump_2: -906782732
-      Player@Jump_3: -699871612
+      Player@Jump_0: -1888807089764990967
+      Player@Jump_1: -7123085370895461180
+      Player@Jump_2: -5328614011864147316
+      Player@Jump_3: 4409391036172417260
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

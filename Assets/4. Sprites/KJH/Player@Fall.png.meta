@@ -1,25 +1,24 @@
 fileFormatVersion: 2
 guid: 1c02bde293902074d95b5bde880f9729
-AssetOrigin:
-  serializedVersion: 1
-  productId: 170422
-  packageName: Martial Hero
-  packageVersion: 1.0
-  assetPath: Assets/Martial Hero/Sprites/Fall.png
-  uploadId: 372436
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5966621866309598838
-    second: Fall_0
+      213: 6154297850557130147
+    second: Player@Fall_0
   - first:
-      213: -2069157278089061004
-    second: Fall_1
+      213: -1829377024334419365
+    second: Player@Fall_1
+  - first:
+      213: 2142174421046889452
+    second: Player@Fall_2
+  - first:
+      213: 7405348393301968593
+    second: Player@Fall_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -76,13 +75,13 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 1
+  applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 128
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -95,45 +94,6 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Lumin
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -188,10 +148,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 279edf73a0f81cb47bb6673caa902341
-      internalID: -1232277215
+      spriteID: 3a56868c945786550800000000000000
+      internalID: 6154297850557130147
       vertices: []
       indices: 
       edges: []
@@ -210,10 +170,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 10d8710bd2b58434db26c11b378b9da1
-      internalID: -756226550
+      spriteID: b5a2940f94fbc96e0800000000000000
+      internalID: -1829377024334419365
       vertices: []
       indices: 
       edges: []
@@ -232,10 +192,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: c529cef8f0bea0145a9d4785e9139ad1
-      internalID: 336529508
+      spriteID: ceb8d6549488abd10800000000000000
+      internalID: 2142174421046889452
       vertices: []
       indices: 
       edges: []
@@ -254,10 +214,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 75612791009abc84e898ef548e49c2a7
-      internalID: -2131862523
+      spriteID: 1d606c4e02515c660800000000000000
+      internalID: 7405348393301968593
       vertices: []
       indices: 
       edges: []
@@ -266,7 +226,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 22c5024d73c4d4b43a5acadcb311af30
     internalID: 0
     vertices: []
     indices: 
@@ -278,10 +238,10 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Player@Fall_0: -1232277215
-      Player@Fall_1: -756226550
-      Player@Fall_2: 336529508
-      Player@Fall_3: -2131862523
+      Player@Fall_0: 6154297850557130147
+      Player@Fall_1: -1829377024334419365
+      Player@Fall_2: 2142174421046889452
+      Player@Fall_3: 7405348393301968593
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

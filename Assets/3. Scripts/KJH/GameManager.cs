@@ -68,7 +68,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         sqFade.Kill();
         imgFade.gameObject.SetActive(true);
-        imgFade.color = new Color(0f, 0f, 0f, 0f);
+        imgFade.color = new Color(0f, 0f, 0f, 1f);
         Tween tween;
         tween = imgFade.DOColor(new Color(0f, 0f, 0f, 0f), duration).SetEase(Ease.InSine)
         .OnComplete(() => imgFade.gameObject.SetActive(false));
