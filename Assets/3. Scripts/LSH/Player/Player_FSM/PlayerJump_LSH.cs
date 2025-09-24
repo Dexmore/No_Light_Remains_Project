@@ -23,6 +23,12 @@ public class PlayerJump_LSH : IPlayerState_LSH
     {
         if (ctx.rb.linearVelocity.y <= 0f)
             fsm.ChangeState(ctx.fall);
+
+        if (ctx.AttackPressed)
+        {
+            fsm.ChangeState(ctx.attack);
+            return;
+        }
     }
 
     public void UpdatePhysics()
