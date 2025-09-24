@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController_LSH : MonoBehaviour
@@ -42,51 +43,66 @@ public class PlayerController_LSH : MonoBehaviour
     [Range(0f, 1f)] public float groundNormalMinY = 0.6f;
     private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
 
-    // Animator 해시/존재여부 캐시
+    // === 공격 판정(OverlapCircle) ===
+    [Header("Attack Hit (OverlapCircle)")]
+    [SerializeField] private Transform attackPoint;
+    [SerializeField] private float attackRange1 = 0.45f;
+    [SerializeField] private float attackRange2 = 0.55f;
+    [SerializeField] private LayerMask enemyLayers;
+
+    [Header("Attack Damage")]
+    public int attackDamage1 = 10;
+    public int attackDamage2 = 14;
+
+    private readonly HashSet<Collider2D> _swingHitCache = new HashSet<Collider2D>();
+    [SerializeField] private bool debugAttack = false;
+
+    // Animator 파라미터 캐시
     private static readonly int HashSpeedX = Animator.StringToHash("speedX");
     private static readonly int HashSpeedY = Animator.StringToHash("speedY");
     private static readonly int HashGround = Animator.StringToHash("grounded");
     private bool _hasSpeedX, _hasSpeedY, _hasGround;
     private float _lastSpeedX, _lastSpeedY; private bool _lastGround;
 
-    // Runtime (FSM에서 참조)
+    // Runtime
     public bool Grounded { get; private set; }
     public float XInput { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool AttackPressed { get; private set; }
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
 
-        fsm  = new PlayerStateMachine_LSH();
+        fsm = new PlayerStateMachine_LSH();
         idle = new PlayerIdle_LSH(this, fsm);
-        run  = new PlayerRun_LSH(this, fsm);
+        run = new PlayerRun_LSH(this, fsm);
         jump = new PlayerJump_LSH(this, fsm);
         fall = new PlayerFall_LSH(this, fsm);
         attack = new PlayerAttack_LSH(this, fsm);
         attackCombo = new PlayerAttackCombo_LSH(this, fsm);
 
-
         _baseScaleX = Mathf.Abs(transform.localScale.x);
 
-        // Animator 파라미터 존재여부 캐시
         CacheAnimatorParams();
     }
 
     void OnEnable()
     {
-        if (moveActionRef == null || moveActionRef.action == null || jumpActionRef == null || jumpActionRef.action == null)
+        if (moveActionRef == null || moveActionRef.action == null ||
+            jumpActionRef == null || jumpActionRef.action == null)
         {
             Debug.LogError("[PlayerController_LSH] InputActionReference가 비었습니다. 인스펙터에서 Move/Jump를 할당하세요.");
             enabled = false;
             return;
         }
-        
-        if (attackActionRef.action == null)
+
+        if (attackActionRef == null || attackActionRef.action == null)
         {
-            attackAction = null;
-            Debug.LogError("[PlayerController_LSH] Attack 액션이 비어 있습니다. 공격 모션 입력이 동작하지 않습니다.");
+            Debug.LogError("[PlayerController_LSH] Attack 액션이 비어 있습니다.");
+            enabled = false;
+            return;
         }
 
         moveAction = moveActionRef.action;
@@ -113,39 +129,31 @@ public class PlayerController_LSH : MonoBehaviour
     void Update()
     {
         // 입력
-        XInput = ReadMoveX(moveAction);                 // -1 ~ +1
-        JumpPressed = jumpAction.WasPressedThisFrame(); // 1프레임 true
-        AttackPressed = attackAction != null && attackAction.WasPressedThisFrame();
+        XInput = ReadMoveX(moveAction);
+        JumpPressed = jumpAction.WasPressedThisFrame();
+        AttackPressed = attackAction.WasPressedThisFrame();
 
         // 지면 체크
         Grounded = CheckGroundedPrecise();
 
-        // FSM
+        // FSM 흐름
         fsm.PlayerKeyInput();
         fsm.UpdateState();
 
-        // Animator 파라미터(존재할 때 & 값 바뀔 때만 세팅)
+        // Animator 파라미터
         if (animator)
         {
             float sx = Mathf.Abs(rb.linearVelocity.x);
             float sy = rb.linearVelocity.y;
 
             if (_hasSpeedX && !Mathf.Approximately(_lastSpeedX, sx))
-            {
-                animator.SetFloat(HashSpeedX, sx);
-                _lastSpeedX = sx;
-            }
+            { animator.SetFloat(HashSpeedX, sx); _lastSpeedX = sx; }
 
             if (_hasSpeedY && !Mathf.Approximately(_lastSpeedY, sy))
-            {
-                animator.SetFloat(HashSpeedY, sy);
-                _lastSpeedY = sy;
-            }
+            { animator.SetFloat(HashSpeedY, sy); _lastSpeedY = sy; }
+
             if (_hasGround && _lastGround != Grounded)
-            {
-                animator.SetBool (HashGround, Grounded);
-                _lastGround = Grounded;
-            }
+            { animator.SetBool(HashGround, Grounded); _lastGround = Grounded; }
         }
     }
 
@@ -157,13 +165,10 @@ public class PlayerController_LSH : MonoBehaviour
     private static float ReadMoveX(InputAction action)
     {
         if (action == null) return 0f;
-
         var ect = action.expectedControlType;
         if (ect == "Axis") return action.ReadValue<float>();
-
         Vector2 v = action.ReadValue<Vector2>();
         if (v != Vector2.zero || ect == "Vector2") return v.x;
-
         return action.ReadValue<float>(); // 폴백
     }
 
@@ -181,27 +186,20 @@ public class PlayerController_LSH : MonoBehaviour
         if (x > 0.01f)
         {
             var s = transform.localScale;
-            if (s.x < 0f)
-            {
-                s.x = _baseScaleX; transform.localScale = s;
-            }
+            if (s.x < 0f) { s.x = _baseScaleX; transform.localScale = s; }
         }
         else if (x < -0.01f)
         {
             var s = transform.localScale;
-            if (s.x > 0f)
-            {
-                s.x = -_baseScaleX; transform.localScale = s;
-            }
+            if (s.x > 0f) { s.x = -_baseScaleX; transform.localScale = s; }
         }
     }
 
-    public void TriggerAttack()  => animator?.SetTrigger("Attack");
+    public void TriggerAttack() => animator?.SetTrigger("Attack");
     public void TriggerAttack2() => animator?.SetTrigger("Attack2");
-    public void TriggerHit()     => animator?.SetTrigger("Hit");
-    public void TriggerDie()     => animator?.SetTrigger("Die");
+    public void TriggerHit() => animator?.SetTrigger("Hit");
+    public void TriggerDie() => animator?.SetTrigger("Die");
 
-    // ---- Helpers ----
     private void CacheAnimatorParams()
     {
         if (!animator) return;
@@ -209,11 +207,57 @@ public class PlayerController_LSH : MonoBehaviour
         _hasSpeedY = HasParam(animator, "speedY", AnimatorControllerParameterType.Float);
         _hasGround = HasParam(animator, "grounded", AnimatorControllerParameterType.Bool);
     }
-
     private static bool HasParam(Animator anim, string name, AnimatorControllerParameterType type)
     {
         foreach (var p in anim.parameters)
             if (p.name == name && p.type == type) return true;
         return false;
+    }
+
+    // ====== 공격 판정 유틸 (FSM에서 호출) ======
+    public void AttackSwingBegin() => _swingHitCache.Clear();
+
+    public void DoDamage_Public(int which)
+    {
+        if (!attackPoint) { Debug.LogWarning("[PlayerController_LSH] attackPoint 미지정"); return; }
+        if (which == 1) DoDamage(attackPoint.position, attackRange1, attackDamage1);
+        else DoDamage(attackPoint.position, attackRange2, attackDamage2);
+    }
+
+    public void DebugAttack(string msg) { if (debugAttack) Debug.Log(msg); }
+
+    private void DoDamage(Vector2 center, float radius, int damage)
+    {
+        var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayers);
+        if (debugAttack) Debug.Log($"[Attack] hits:{hits.Length}, radius:{radius}");
+
+        foreach (var col in hits)
+        {
+            if (_swingHitCache.Contains(col)) continue;
+            _swingHitCache.Add(col);
+
+            // 인터페이스 우선 (부모/자식 모두 탐색)
+            var d1 = col.GetComponentInParent<IDamageable_LSH>();
+            if (d1 != null) { d1.TakeDamage(damage, transform.position); continue; }
+            var d2 = col.GetComponentInChildren<IDamageable_LSH>();
+            if (d2 != null) { d2.TakeDamage(damage, transform.position); continue; }
+
+            // Enemy_LSH도 지원 (부모/자식)
+            var e1 = col.GetComponentInParent<Enemy_LSH>();
+            if (e1 != null) { e1.TakeDamage(damage); continue; }
+            var e2 = col.GetComponentInChildren<Enemy_LSH>();
+            if (e2 != null) { e2.TakeDamage(damage); continue; }
+
+            if (debugAttack) Debug.Log($"[Attack] 맞췄지만 IDamageable_LSH/Enemy_LSH 없음: {col.name}");
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!attackPoint) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange1);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange2);
     }
 }

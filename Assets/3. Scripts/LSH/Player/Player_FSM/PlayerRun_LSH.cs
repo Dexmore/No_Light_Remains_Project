@@ -9,12 +9,13 @@ public class PlayerRun_LSH : IPlayerState_LSH
     { this.ctx = ctx; this.fsm = fsm; }
 
     public void Enter() { }
-    public void Exit()  { }
+    public void Exit() { }
 
     public void PlayerKeyInput()
     {
-        if (Mathf.Abs(ctx.XInput) <= 0.01f) fsm.ChangeState(ctx.idle);
-        if (ctx.JumpPressed && ctx.Grounded) fsm.ChangeState(ctx.jump);
+        if (ctx.AttackPressed) { fsm.ChangeState(ctx.attack); return; }
+        if (ctx.JumpPressed && ctx.Grounded) { fsm.ChangeState(ctx.jump); return; }
+        if (Mathf.Abs(ctx.XInput) <= 0.01f) { fsm.ChangeState(ctx.idle); return; }
     }
 
     public void UpdateState()
@@ -26,7 +27,7 @@ public class PlayerRun_LSH : IPlayerState_LSH
         {
             fsm.ChangeState(ctx.attack);
             return;
-        }  
+        }
     }
 
     public void UpdatePhysics()
