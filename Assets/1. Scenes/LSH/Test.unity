@@ -647,6 +647,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93b67984968f76c43be291bd0fe586f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController_LSH
+  maxHealth: 1000
+  currentHealth: 0
   moveSpeed: 6
   airMoveMultiplier: 0.85
   jumpForce: 10
@@ -661,13 +663,14 @@ MonoBehaviour:
     m_Bits: 8
   groundNormalMinY: 0.5
   attackPoint: {fileID: 555271360}
-  attackRange1: 0.45
-  attackRange2: 0.55
+  attackRange1: 0.8
+  attackRange2: 0.8
   enemyLayers:
     serializedVersion: 2
     m_Bits: 64
   attackDamage1: 10
   attackDamage2: 14
+  hurtIFrame: 0.35
   debugAttack: 1
 --- !u!50 &1811707171
 Rigidbody2D:
