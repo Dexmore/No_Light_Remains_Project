@@ -14,12 +14,6 @@ public class DefaultPursuit : MonsterState
     bool isAnimation;
     public override async UniTask Activate(CancellationToken token)
     {
-        if (control.HasCondition(MonsterControl.Condition.Peaceful))
-        {
-            await UniTask.Yield(cts.Token);
-            control.ChangeState(MonsterControl.State.Idle);
-            return;
-        }
         if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
         {
             await UniTask.Yield(cts.Token);

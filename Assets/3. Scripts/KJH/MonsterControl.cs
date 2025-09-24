@@ -135,10 +135,15 @@ public class MonsterControl : MonoBehaviour
     public void ChangeNextState()
     {
         float totalWeightSum = 0;
+        bool isPeaceful = HasCondition(Condition.Peaceful);
         for (int i = 0; i < patterns.Length; i++)
         {
             // condition 해당 없으면 skip 
             if (!HasCondition(patterns[i].condition)) continue;
+            if (isPeaceful)
+            {
+                if (patterns[i].condition != Condition.Peaceful) continue;
+            }
             for (int j = 0; j < patterns[i].frequencies.Length; j++)
             {
                 State state = patterns[i].frequencies[j].state;
@@ -158,6 +163,10 @@ public class MonsterControl : MonoBehaviour
         {
             // condition 해당 없으면 skip 
             if (!HasCondition(patterns[i].condition)) continue;
+            if (isPeaceful)
+            {
+                if (patterns[i].condition != Condition.Peaceful) continue;
+            }
             for (int j = 0; j < patterns[i].frequencies.Length; j++)
             {
                 State state = patterns[i].frequencies[j].state;
