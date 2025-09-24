@@ -3,14 +3,15 @@ using UnityEngine;
 public class Enemy_LSH : MonoBehaviour, IDamageable_LSH
 {
     public int maxHp = 30;
-    public int hp;
+    int hp;
 
     void Awake() => hp = maxHp;
 
     public void TakeDamage(int dmg, Vector3 hitFrom)
     {
         hp -= dmg;
-        // 넉백, 히트 플래시, 히트스톱 등 효과 추가 가능
+        Debug.Log($"[Enemy] Took {dmg}, HP:{hp}");
+
         if (hp <= 0) Die();
     }
 
@@ -19,7 +20,15 @@ public class Enemy_LSH : MonoBehaviour, IDamageable_LSH
 
     void Die()
     {
-        // 사망 처리(애니, 파티클, 드랍 등)
+        Debug.Log("[Enemy] Dead");
         Destroy(gameObject);
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.TryGetComponent<PlayerController_LSH>(out var player))
+        {
+            player.TakeDamage(10, transform.position); // 고정 10 데미지
+        }
     }
 }

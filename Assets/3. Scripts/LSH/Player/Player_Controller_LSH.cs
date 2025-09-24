@@ -1,10 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController_LSH : MonoBehaviour
 {
+    [Header("Player HP")]
+    public int maxHealth = 1000;
+    public int currentHealth;
+
     [Header("Move")]
     public float moveSpeed = 6f;
     public float airMoveMultiplier = 0.85f;
@@ -46,13 +51,19 @@ public class PlayerController_LSH : MonoBehaviour
     // === 공격 판정(OverlapCircle) ===
     [Header("Attack Hit (OverlapCircle)")]
     [SerializeField] private Transform attackPoint;
-    [SerializeField] private float attackRange1 = 0.45f;
-    [SerializeField] private float attackRange2 = 0.55f;
+    [SerializeField] private float attackRange1 = 0.8f;
+    [SerializeField] private float attackRange2 = 0.8f;
     [SerializeField] private LayerMask enemyLayers;
 
     [Header("Attack Damage")]
     public int attackDamage1 = 10;
     public int attackDamage2 = 14;
+
+
+    [Header("Hit / I-Frame")]
+    public float hurtIFrame = 0.35f;
+    private float _hurtFreeUntil = -999f;
+
 
     private readonly HashSet<Collider2D> _swingHitCache = new HashSet<Collider2D>();
     [SerializeField] private bool debugAttack = false;
@@ -86,6 +97,8 @@ public class PlayerController_LSH : MonoBehaviour
         _baseScaleX = Mathf.Abs(transform.localScale.x);
 
         CacheAnimatorParams();
+
+        currentHealth = maxHealth;
     }
 
     void OnEnable()
@@ -195,11 +208,43 @@ public class PlayerController_LSH : MonoBehaviour
         }
     }
 
-    public void TriggerAttack() => animator?.SetTrigger("Attack");
-    public void TriggerAttack2() => animator?.SetTrigger("Attack2");
-    public void TriggerHit() => animator?.SetTrigger("Hit");
-    public void TriggerDie() => animator?.SetTrigger("Die");
+    public void TriggerAttack()
+    {
+        if (!animator) return;
+        animator.ResetTrigger("Attack"); // 혹시 이전에 남아있던 거 정리
+        animator.SetTrigger("Attack");
+        StartCoroutine(ResetTriggerNextFrame("Attack"));
+    }
 
+    public void TriggerAttack2()
+    {
+        if (!animator) return;
+        animator.ResetTrigger("Attack2");
+        animator.SetTrigger("Attack2");
+        StartCoroutine(ResetTriggerNextFrame("Attack2"));
+    }
+
+    public void TriggerHit()
+    {
+        if (!animator) return;
+        animator.ResetTrigger("Hit");
+        animator.SetTrigger("Hit");
+        StartCoroutine(ResetTriggerNextFrame("Hit"));
+    }
+
+    public void TriggerDie()
+    {
+        if (!animator) return;
+        animator.ResetTrigger("Die");
+        animator.SetTrigger("Die");
+        StartCoroutine(ResetTriggerNextFrame("Die"));
+    }
+
+    private IEnumerator ResetTriggerNextFrame(string triggerName)
+    {
+        yield return null; // 한 프레임 기다림
+        animator.ResetTrigger(triggerName);
+    }
     private void CacheAnimatorParams()
     {
         if (!animator) return;
@@ -229,7 +274,12 @@ public class PlayerController_LSH : MonoBehaviour
     private void DoDamage(Vector2 center, float radius, int damage)
     {
         var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayers);
-        if (debugAttack) Debug.Log($"[Attack] hits:{hits.Length}, radius:{radius}");
+        Debug.Log($"[Attack] center:{center}, radius:{radius}, hits:{hits.Length}");
+
+        foreach (var h in hits)
+        {
+            Debug.Log($"[Attack] Hit object: {h.name}, layer:{LayerMask.LayerToName(h.gameObject.layer)}");
+        }
 
         foreach (var col in hits)
         {
@@ -251,7 +301,18 @@ public class PlayerController_LSH : MonoBehaviour
             if (debugAttack) Debug.Log($"[Attack] 맞췄지만 IDamageable_LSH/Enemy_LSH 없음: {col.name}");
         }
     }
+    public void TakeDamage(int damage, Vector3 hitFrom)
+    {
+        if (Time.time < _hurtFreeUntil) return; // 무적 중이면 무시
 
+        currentHealth -= damage;
+        _hurtFreeUntil = Time.time + hurtIFrame;
+
+        Debug.Log($"[Player] Damaged! -{damage}, HP:{currentHealth}");
+
+        if (currentHealth > 0) TriggerHit();
+        else { TriggerDie(); enabled = false; }
+    }
     private void OnDrawGizmosSelected()
     {
         if (!attackPoint) return;
