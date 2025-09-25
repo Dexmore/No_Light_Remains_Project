@@ -26,9 +26,10 @@ public class MenuControl : MonoBehaviour
     IEnumerator StartButton_co()
     {
         buttons[0].enabled = false;
-        yield return null;
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        GameManager.I.FadeOut(1.2f);
+        yield return YieldInstructionCache.WaitForSeconds(1.2f);
         GameManager.I.LoadSceneAsync(2);
-
     }
 
 
