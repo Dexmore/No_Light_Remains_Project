@@ -8,67 +8,70 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     public PlayerAttack_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm)
     { this.ctx = ctx; this.fsm = fsm; }
 
-    // 타이밍(애니메이션에 맞춰 조절)
     private float _t;
-    private const float AttackTotal = 0.35f;   // 1타 전체 지속
-    private const float LockTime    = 0.20f;   // 초반 이동 감쇠 구간
+    private const float AttackTotal = 0.35f;   // 1타 총 길이
+    private const float LockTime = 0.20f;   // 초반 이동 감쇠
 
-    // 콤보 윈도우 & 버퍼
-    private const float ComboOpen   = 0.12f;   // 이 시점 이후부터 콤보 허용
-    private const float ComboClose  = 0.28f;   // 이 시점 지나면 콤보 불가
-    private const float PreBuffer   = 0.08f;   // 오픈 전에 누른 입력 허용 범위
+    // ★ 타이머 방식 히트 타이밍(초) — 클립에 맞춰 조정
+    private const float HitTime = 0.16f;
+
+    // 콤보 윈도우
+    private const float ComboOpen = 0.12f;
+    private const float ComboClose = 0.28f;
+    private const float PreBuffer = 0.10f;
     private bool _comboQueued;
 
-    // 이동 감쇠
     private const float GroundDampenEarly = 0.6f;
-    private const float AirDampenEarly    = 0.4f;
+    private const float AirDampenEarly = 0.4f;
+
+    private bool _didHit;
 
     public void Enter()
     {
         _t = 0f;
+        _didHit = false;
         _comboQueued = false;
-        ctx.TriggerAttack(); // 애니메이터 트리거(이벤트로 히트박스 on/off)
+        ctx.TriggerAttack();
     }
 
-    public void Exit() { }
+    public void Exit()
+    {
+        _comboQueued = false;
+        _didHit = false;
+        ctx.animator?.ResetTrigger("Attack");
+        ctx.animator?.ResetTrigger("Attack2");
+    }
 
     public void PlayerKeyInput()
     {
         if (!ctx.AttackPressed) return;
 
-        // 콤보 오픈 전: 약간의 버퍼 허용
-        if (_t < ComboOpen && _t >= ComboOpen - PreBuffer)
-        {
-            _comboQueued = true;
-            return;
-        }
-
-        // 콤보 오픈~클로즈 구간: 즉시 큐
-        if (_t >= ComboOpen && _t <= ComboClose)
-        {
-            _comboQueued = true;
-        }
+        if (_t < ComboOpen && _t >= ComboOpen - PreBuffer) { _comboQueued = true; return; }
+        if (_t >= ComboOpen && _t <= ComboClose) _comboQueued = true;
     }
 
     public void UpdateState()
     {
         _t += Time.deltaTime;
 
+        // ★ 타이머로 히트 1회
+        if (!_didHit && _t >= HitTime)
+        {
+            ctx.AttackSwingBegin();
+            ctx.DoDamage_Public(1);
+            ctx.DebugAttack("[Attack1] timed hit");
+            _didHit = true;
+        }
+
         // 콤보 전이
         if (_comboQueued && _t >= ComboOpen && _t <= ComboClose)
-        {
-            fsm.ChangeState(ctx.attackCombo);
-            return;
-        }
+        { fsm.ChangeState(ctx.attackCombo); return; }
 
         // 종료 복귀
         if (_t >= AttackTotal)
         {
             if (ctx.Grounded)
-            {
-                if (Mathf.Abs(ctx.XInput) > 0.01f) fsm.ChangeState(ctx.run);
-                else                                fsm.ChangeState(ctx.idle);
-            }
+                fsm.ChangeState(Mathf.Abs(ctx.XInput) > 0.01f ? ctx.run : ctx.idle);
             else fsm.ChangeState(ctx.fall);
         }
     }
@@ -76,7 +79,6 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     public void UpdatePhysics()
     {
         bool early = _t < LockTime;
-
         float speed = ctx.Grounded
             ? ctx.moveSpeed * (early ? GroundDampenEarly : 1f)
             : ctx.moveSpeed * (early ? AirDampenEarly : ctx.airMoveMultiplier);
