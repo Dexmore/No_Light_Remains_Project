@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-public class MenuControl : MonoBehaviour
+public class LobbyControl : MonoBehaviour
 {
     public Button[] buttons;
     IEnumerator Start()
