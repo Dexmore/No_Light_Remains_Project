@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 public class DefaultRushAttack : MonsterState
 {
     public override MonsterControl.State mapping => MonsterControl.State.RushAttack;
-    public override async UniTask Init(CancellationToken token)
+    public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
         Activate(token).Forget();

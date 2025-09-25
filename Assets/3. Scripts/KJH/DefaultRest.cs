@@ -6,7 +6,7 @@ public class DefaultRest : MonsterState
     public override MonsterControl.State mapping => MonsterControl.State.Rest;
     public Vector2 durationRange;
     float duration;
-    public override async UniTask Init(CancellationToken token)
+    public override async UniTask Enter(CancellationToken token)
     {
         //Debug.Log($"{transform.name} : {control.state}");
         await UniTask.Yield(cts.Token);
@@ -19,9 +19,9 @@ public class DefaultRest : MonsterState
         await UniTask.Delay((int)(duration * 1000f), cancellationToken: token);
         control.ChangeNextState();
     }
-    public override void UnInit()
+    public override void Exit()
     {
-        base.UnInit();
+        base.Exit();
     }
 
 

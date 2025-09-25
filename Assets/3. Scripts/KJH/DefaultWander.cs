@@ -8,7 +8,7 @@ public class DefaultWander : MonsterState
     float duration;
     bool isAnimation;
     Vector2 moveDirection = Vector2.zero;
-    public override async UniTask Init(CancellationToken token)
+    public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
         duration = Random.Range(durationRange.x, durationRange.y);
@@ -75,12 +75,28 @@ public class DefaultWander : MonsterState
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
                     rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     // 애니매이션처리
-                    if (!isAnimation)
-                        if (control.isGround)
+                    if (control.isGround)
+                    {
+                        if (!isAnimation)
+                            if (control.isGround)
+                            {
+                                isAnimation = true;
+                                anim.Play("Move");
+                            }
+                        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                         {
                             isAnimation = true;
-                            anim.Play("Player_Run");
+                            anim.Play("Move");
                         }
+                    }
+                    else if (isAnimation)
+                    {
+                        isAnimation = false;
+                        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                        {
+                            anim.Play("Idle");
+                        }
+                    }
                 }
             rb.AddForce(moveDirection * 3f * control.data.MoveSpeed);
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cts.Token);
@@ -91,9 +107,9 @@ public class DefaultWander : MonsterState
     {
         await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cts.Token);
     }
-    public override void UnInit()
+    public override void Exit()
     {
-        base.UnInit();
+        base.Exit();
     }
 
 

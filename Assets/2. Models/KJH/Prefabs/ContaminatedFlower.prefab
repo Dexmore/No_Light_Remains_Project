@@ -200,12 +200,11 @@ GameObject:
   - component: {fileID: 4572157595017877094}
   - component: {fileID: 2178776774685330412}
   - component: {fileID: 4773766649361871176}
-  - component: {fileID: 698027374841842503}
   - component: {fileID: 3284576090474217417}
   - component: {fileID: 8665236392383287865}
   - component: {fileID: 7497169102679589641}
-  - component: {fileID: 3184333215785844659}
   - component: {fileID: 5028216363324574023}
+  - component: {fileID: 3184333215785844659}
   m_Layer: 6
   m_Name: ContaminatedFlower
   m_TagString: Monster
@@ -303,7 +302,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 9
   currHP: 0
-  aggressive: 0.4
+  aggressive: 0.7
   data: {fileID: 11400000, guid: 0d74644b32103ec42adc36255e32e17f, type: 2}
   ID: 
   Name: 
@@ -316,26 +315,26 @@ MonoBehaviour:
     frequencies:
     - state: 0
       weight: 50
-      coolTime: 1.5
+      coolTime: 1
     - state: 1
       weight: 120
       coolTime: 1.5
     - state: 3
       weight: 10
       coolTime: 5
-    - state: 2
-      weight: 3
-      coolTime: 40
   - condition: 2
     frequencies:
     - state: 5
       weight: 250
-      coolTime: 0.1
+      coolTime: 1
+    - state: 0
+      weight: 100
+      coolTime: 1
   - condition: 4
     frequencies:
     - state: 12
       weight: 300
-      coolTime: 3
+      coolTime: 1
     - state: 14
       weight: 300
       coolTime: 20
@@ -371,7 +370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterIdle
   coolTime: 0
-  durationRange: {x: 1, y: 3}
+  durationRange: {x: 1.5, y: 3}
 --- !u!114 &2178776774685330412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,20 +398,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultJump
   coolTime: 0
---- !u!114 &698027374841842503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8038197678873106803}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6dbc66cf0232848b423c7a376ffb7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultRest
-  coolTime: 0
-  durationRange: {x: 0, y: 0}
 --- !u!114 &3284576090474217417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,19 +437,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
---- !u!114 &3184333215785844659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8038197678873106803}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9dcbd4a8c6092c4c86b1aa13d8494be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultLongRangeAttack
-  coolTime: 0
 --- !u!114 &5028216363324574023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,6 +450,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultBiteAttack
   coolTime: 0
+  durationRange: {x: 1.5, y: 2.5}
+--- !u!114 &3184333215785844659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8038197678873106803}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9dcbd4a8c6092c4c86b1aa13d8494be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultLongRangeAttack
+  coolTime: 0
+  durationRange: {x: 6, y: 7}
 --- !u!1001 &617368786398622256
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -488,7 +475,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 552386618970972170, guid: 69c61a6d7d78fb9498ea196c60345c71, type: 3}
       propertyPath: m_Name
-      value: AttackBox
+      value: AttackRange
       objectReference: {fileID: 0}
     - target: {fileID: 2383188625122847702, guid: 69c61a6d7d78fb9498ea196c60345c71, type: 3}
       propertyPath: m_LocalPosition.x

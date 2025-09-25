@@ -144,7 +144,7 @@ public class MonsterSensor : MonoBehaviour
                         float distance = Vector3.Distance(element.Key.transform.position, transform.position);
                         if (distance < 0.75f * findRadius)
                         {
-                            float pow = Mathf.Pow(control.aggressive, 3.1f);
+                            float pow = Mathf.Pow(control.aggressive, 2.6f);
                             if (Random.value <= pow)
                             {
                                 //Debug.Log(pow);

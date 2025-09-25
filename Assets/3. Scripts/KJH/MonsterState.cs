@@ -12,7 +12,7 @@ public abstract class MonsterState : MonoBehaviour
     protected Astar2DXYPathFinder astar;
     protected MonsterSensor sensor;
     protected Animator anim;
-    public abstract UniTask Init(CancellationToken token);
+    public abstract UniTask Enter(CancellationToken token);
     public abstract UniTask Activate(CancellationToken token);
     #region UniTask Setting
     [HideInInspector] public CancellationTokenSource cts;
@@ -50,7 +50,7 @@ public abstract class MonsterState : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         model = transform.GetChild(0);
     }
-    public virtual void UnInit()
+    public virtual void Exit()
     {
         if (coolTime > 1f)
             if (!control.IsCoolTime(mapping))

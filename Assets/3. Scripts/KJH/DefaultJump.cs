@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 public class DefaultJump : MonsterState
 {
     public override MonsterControl.State mapping => MonsterControl.State.Jump;
-    public override async UniTask Init(CancellationToken token)
+    public override async UniTask Enter(CancellationToken token)
     {
         //Debug.Log($"{transform.name} : {control.state}");
         await UniTask.Yield(cts.Token);
@@ -12,7 +12,7 @@ public class DefaultJump : MonsterState
     }
     public override async UniTask Activate(CancellationToken token)
     {
-        anim.CrossFade("Jump", 0.18f);
+        anim.Play("Idle");
         rb.AddForce(Vector2.up * control.jumpForce * 50f);
         float startTime = Time.time;
         await UniTask.Delay(1000, cancellationToken: token);

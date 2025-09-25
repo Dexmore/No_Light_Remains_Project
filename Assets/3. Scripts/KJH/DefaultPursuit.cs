@@ -5,7 +5,7 @@ using System.Linq;
 public class DefaultPursuit : MonsterState
 {
     public override MonsterControl.State mapping => MonsterControl.State.Pursuit;
-    public override async UniTask Init(CancellationToken token)
+    public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
         Activate(token).Forget();
@@ -17,7 +17,7 @@ public class DefaultPursuit : MonsterState
         if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
         {
             await UniTask.Yield(cts.Token);
-            control.ChangeNextState();
+            control.ChangeState(MonsterControl.State.Idle);
             return;
         }
         if (sensor.memories.Count == 0)
@@ -77,12 +77,28 @@ public class DefaultPursuit : MonsterState
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
                         rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
                         // 애니매이션처리
-                        if (!isAnimation)
-                            if (control.isGround)
+                        if (control.isGround)
+                        {
+                            if (!isAnimation)
+                                if (control.isGround)
+                                {
+                                    isAnimation = true;
+                                    anim.Play("Move");
+                                }
+                            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                             {
                                 isAnimation = true;
                                 anim.Play("Move");
                             }
+                        }
+                        else if (isAnimation)
+                        {
+                            isAnimation = false;
+                            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                            {
+                                anim.Play("Idle");
+                            }
+                        }
                         // 캐릭터 좌우 방향 설정
                         if (moveHorizontal.x > 0 && model.right.x < 0)
                             model.localRotation = Quaternion.Euler(0f, 0f, 0f);

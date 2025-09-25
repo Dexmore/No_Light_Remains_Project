@@ -24,12 +24,12 @@ public class MonsterControl : MonoBehaviour
     [Header("Pattern")]
     public Pattern[] patterns;
     Astar2DXYPathFinder astar;
-
-
+    [HideInInspector] public AttackRange attackRange;
     void Awake()
     {
         SettingFSM();
         TryGetComponent(out astar);
+        attackRange = GetComponentInChildren<AttackRange>(true);
     }
     void Init()
     {
@@ -134,6 +134,7 @@ public class MonsterControl : MonoBehaviour
     }
     public void ChangeNextState()
     {
+        State curr = state;
         float totalWeightSum = 0;
         bool isPeaceful = HasCondition(Condition.Peaceful);
         for (int i = 0; i < patterns.Length; i++)
@@ -153,6 +154,8 @@ public class MonsterControl : MonoBehaviour
                 if (IsCoolTime(state)) continue;
                 // state가 그외에도 할 수 없는 상태라면 skip 
                 if (!IsCan(state)) continue;
+                // 현재와 중복된 state라면 skip
+                if(curr == state) continue;
                 totalWeightSum += patterns[i].frequencies[j].weight;
             }
         }
@@ -176,6 +179,8 @@ public class MonsterControl : MonoBehaviour
                 if (IsCoolTime(state)) continue;
                 // state가 그외에도 할 수 없는 상태라면 skip 
                 if (!IsCan(state)) continue;
+                // 현재와 중복된 state라면 skip
+                if(curr == state) continue;
                 partialWeightSum += patterns[i].frequencies[j].weight;
                 if (randomWeightSum <= partialWeightSum)
                 {
@@ -200,7 +205,7 @@ public class MonsterControl : MonoBehaviour
     {
         // 이전 state 스크립트는 Disable 처리
         if (dictionary.Count == 0) return;
-        dictionary[state].UnInit();
+        dictionary[state].Exit();
         dictionary[state].enabled = false;
         await UniTask.Yield(token);
         prevState = state;
@@ -209,7 +214,7 @@ public class MonsterControl : MonoBehaviour
         dictionary[state].enabled = true;
         dictionary[state].cts?.Cancel();
         dictionary[state].cts = new CancellationTokenSource();
-        dictionary[state].Init(dictionary[state].cts.Token).Forget();
+        dictionary[state].Enter(dictionary[state].cts.Token).Forget();
         //Debug.Log($"{transform.name},{GetInstanceID()}] --> {state} 시작");
     }
     [System.Serializable]
