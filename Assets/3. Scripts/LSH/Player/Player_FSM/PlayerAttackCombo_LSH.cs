@@ -6,53 +6,38 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
     private readonly PlayerStateMachine_LSH fsm;
 
     public PlayerAttackCombo_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm)
-    { this.ctx = ctx; this.fsm = fsm; }
+    {
+        this.ctx = ctx;
+        this.fsm = fsm;
+    }
 
     private float _t;
-    private const float AttackTotal = 0.40f; // 2타 총 길이
-    private const float LockTime = 0.22f;
+    private const float AttackTotal = 0.40f; // 2타 전체 지속(조금 길게)
+    private const float LockTime    = 0.22f;
 
     private const float GroundDampenEarly = 0.55f;
-    private const float AirDampenEarly = 0.38f;
-
-    // ★ 2타 히트 타이밍
-    private const float HitTime2 = 0.18f;
-
-    private bool _didHit;
+    private const float AirDampenEarly    = 0.38f;
 
     public void Enter()
     {
         _t = 0f;
-        _didHit = false;
-        ctx.TriggerAttack2();
+        ctx.TriggerAttack2(); // 애니메이터 트리거(2타 클립, 이벤트로 히트박스 on/off)
     }
 
-    public void Exit()
-    {
-        _didHit = false;
-        ctx.animator?.ResetTrigger("Attack");
-        ctx.animator?.ResetTrigger("Attack2");
-    }
-
-    public void PlayerKeyInput() { }
+    public void Exit() { }
+    public void PlayerKeyInput() { /* 2타는 추가 콤보 없음(원하면 3타도 가능) */ }
 
     public void UpdateState()
     {
         _t += Time.deltaTime;
 
-        // ★ 타이머로 히트 1회
-        if (!_didHit && _t >= HitTime2)
-        {
-            ctx.AttackSwingBegin();
-            ctx.DoDamage_Public(2);
-            ctx.DebugAttack("[Attack2] timed hit");
-            _didHit = true;
-        }
-
         if (_t >= AttackTotal)
         {
             if (ctx.Grounded)
-                fsm.ChangeState(Mathf.Abs(ctx.XInput) > 0.01f ? ctx.run : ctx.idle);
+            {
+                if (Mathf.Abs(ctx.XInput) > 0.01f) fsm.ChangeState(ctx.run);
+                else                                fsm.ChangeState(ctx.idle);
+            }
             else fsm.ChangeState(ctx.fall);
         }
     }
@@ -60,6 +45,7 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
     public void UpdatePhysics()
     {
         bool early = _t < LockTime;
+
         float speed = ctx.Grounded
             ? ctx.moveSpeed * (early ? GroundDampenEarly : 1f)
             : ctx.moveSpeed * (early ? AirDampenEarly : ctx.airMoveMultiplier);
