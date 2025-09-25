@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
@@ -5,6 +6,12 @@ public class PlayerCamera : MonoBehaviour
     public float smoothTime = 0.3f;
     public Vector3 offset;
     private Vector3 velocity = Vector3.zero;
+    IEnumerator Start()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(0.2f);
+        if (GameManager.I.isFade)
+            GameManager.I.FadeIn(2f);
+    }
     void FixedUpdate()
     {
         if (target != null)

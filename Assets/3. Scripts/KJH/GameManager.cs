@@ -39,12 +39,13 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
     #endregion
-
     #region Fade
+    public bool isFade;
     Image imgFade;
     Sequence sqFade;
     public void FadeOut(float duration)
     {
+        isFade = true;
         if (duration == 0)
         {
             imgFade.gameObject.SetActive(true);
@@ -60,6 +61,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
     public void FadeIn(float duration)
     {
+        isFade = false;
         if (duration == 0)
         {
             imgFade.gameObject.SetActive(false);

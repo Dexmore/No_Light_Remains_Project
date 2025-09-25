@@ -99,6 +99,7 @@ public class PlayerController_LSH : MonoBehaviour
     void JumpInput(InputAction.CallbackContext callback)
     {
         if (!isGround) return;
+        if (state != State.Idle && state != State.Run) return;
         if (!isJump)
         {
             isJump = true;
