@@ -9,13 +9,12 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     { this.ctx = ctx; this.fsm = fsm; }
 
     public void Enter() { /* 애니메이션은 파라미터로 처리 */ }
-    public void Exit() { }
+    public void Exit()  { }
 
     public void PlayerKeyInput()
     {
-        if (ctx.AttackPressed) { fsm.ChangeState(ctx.attack); return; }
-        if (ctx.JumpPressed && ctx.Grounded) { fsm.ChangeState(ctx.jump); return; }
-        if (Mathf.Abs(ctx.XInput) > 0.01f) { fsm.ChangeState(ctx.run); return; }
+        if (Mathf.Abs(ctx.XInput) > 0.01f) fsm.ChangeState(ctx.run);
+        if (ctx.JumpPressed && ctx.Grounded) fsm.ChangeState(ctx.jump);
         ctx.UpdateFacing(ctx.XInput);
     }
 
@@ -28,7 +27,7 @@ public class PlayerIdle_LSH : IPlayerState_LSH
         {
             fsm.ChangeState(ctx.attack);
             return;
-        }
+        }  
     }
 
     public void UpdatePhysics() { }
