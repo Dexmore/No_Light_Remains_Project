@@ -1085,14 +1085,14 @@ namespace Cysharp.Threading.Tasks.Triggers
 #region ControllerColliderHit
 #if !UNITY_2019_1_OR_NEWER || UNITASK_PHYSICS_SUPPORT
 
-    public interface IAsyncOnControllerColliderHitHandler
+    public interface IAsyncOnControllerColliderHandler_Hit
     {
         UniTask<ControllerColliderHit> OnControllerColliderHitAsync();
     }
 
-    public partial class AsyncTriggerHandler<T> : IAsyncOnControllerColliderHitHandler
+    public partial class AsyncTriggerHandler<T> : IAsyncOnControllerColliderHandler_Hit
     {
-        UniTask<ControllerColliderHit> IAsyncOnControllerColliderHitHandler.OnControllerColliderHitAsync()
+        UniTask<ControllerColliderHit> IAsyncOnControllerColliderHandler_Hit.OnControllerColliderHitAsync()
         {
             core.Reset();
             return new UniTask<ControllerColliderHit>((IUniTaskSource<ControllerColliderHit>)(object)this, core.Version);
@@ -1120,24 +1120,24 @@ namespace Cysharp.Threading.Tasks.Triggers
             RaiseEvent((hit));
         }
 
-        public IAsyncOnControllerColliderHitHandler GetOnControllerColliderHitAsyncHandler()
+        public IAsyncOnControllerColliderHandler_Hit GetOnControllerColliderHitAsyncHandler()
         {
             return new AsyncTriggerHandler<ControllerColliderHit>(this, false);
         }
 
-        public IAsyncOnControllerColliderHitHandler GetOnControllerColliderHitAsyncHandler(CancellationToken cancellationToken)
+        public IAsyncOnControllerColliderHandler_Hit GetOnControllerColliderHitAsyncHandler(CancellationToken cancellationToken)
         {
             return new AsyncTriggerHandler<ControllerColliderHit>(this, cancellationToken, false);
         }
 
         public UniTask<ControllerColliderHit> OnControllerColliderHitAsync()
         {
-            return ((IAsyncOnControllerColliderHitHandler)new AsyncTriggerHandler<ControllerColliderHit>(this, true)).OnControllerColliderHitAsync();
+            return ((IAsyncOnControllerColliderHandler_Hit)new AsyncTriggerHandler<ControllerColliderHit>(this, true)).OnControllerColliderHitAsync();
         }
 
         public UniTask<ControllerColliderHit> OnControllerColliderHitAsync(CancellationToken cancellationToken)
         {
-            return ((IAsyncOnControllerColliderHitHandler)new AsyncTriggerHandler<ControllerColliderHit>(this, cancellationToken, true)).OnControllerColliderHitAsync();
+            return ((IAsyncOnControllerColliderHandler_Hit)new AsyncTriggerHandler<ControllerColliderHit>(this, cancellationToken, true)).OnControllerColliderHitAsync();
         }
     }
 #endif

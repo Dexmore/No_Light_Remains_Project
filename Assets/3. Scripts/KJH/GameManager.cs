@@ -10,7 +10,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     protected override void Awake()
     {
         base.Awake();
-        imgFade = transform.Find("Canvas/Fade").GetComponent<Image>();
+        if(transform.childCount > 0)
+            imgFade = transform.Find("Canvas/Fade").GetComponent<Image>();
     }
 
     #region Load Scene

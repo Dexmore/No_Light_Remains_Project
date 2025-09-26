@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 
 public class DefaultDie : MonsterState
 {
+    public float duration = 0.4f;
     public override MonsterControl.State mapping => MonsterControl.State.Die;
     public override async UniTask Enter(CancellationToken token)
     {
@@ -12,7 +13,11 @@ public class DefaultDie : MonsterState
     }
     public override async UniTask Activate(CancellationToken token)
     {
+        control.isDie = true;
         await UniTask.Yield(cts.Token);
+        anim.Play("Die");
+        await UniTask.Delay((int)(1000f * (duration)), cancellationToken: token);
+        Destroy(gameObject);
     }
 
 

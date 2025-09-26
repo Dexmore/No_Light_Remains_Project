@@ -98,7 +98,6 @@ public class DefaultWander : MonsterState
                         }
                     }
                 }
-            rb.AddForce(moveDirection * 3f * control.data.MoveSpeed);
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cts.Token);
         }
         control.ChangeNextState();

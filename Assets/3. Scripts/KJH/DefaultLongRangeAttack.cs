@@ -10,7 +10,7 @@ public class DefaultLongRangeAttack : MonsterState
     public override MonsterControl.State mapping => MonsterControl.State.LoneRangeAttack;
     public override async UniTask Enter(CancellationToken token)
     {
-        control.attackRange.onTriggetStay2D += OnTriggerStay2D_Child;
+        control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         attackedColliders.Clear();
         await UniTask.Yield(cts.Token);
         duration = Random.Range(durationRange.x, durationRange.y);
@@ -25,10 +25,10 @@ public class DefaultLongRangeAttack : MonsterState
     public override void Exit()
     {
         base.Exit();
-        control.attackRange.onTriggetStay2D -= OnTriggerStay2D_Child;
+        control.attackRange.onTriggetStay2D -= Handler_TriggerStay2D;
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
-    void OnTriggerStay2D_Child(Collider2D coll)
+    void Handler_TriggerStay2D(Collider2D coll)
     {
         if (coll.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         if (attackedColliders.Count >= multiHitCount) return;

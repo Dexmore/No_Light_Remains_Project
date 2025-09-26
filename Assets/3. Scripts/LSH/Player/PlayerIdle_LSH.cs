@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerIdle_LSH : IPlayerState_LSH
@@ -5,13 +6,12 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerIdle_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    InputAction moveInputAction;
-    Vector2 moveDirection;
+    InputAction inputAction_Move;
+    Vector2 direction;
     public void Enter()
     {
-        moveInputAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += AttackInput;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed += DashInput;
+        inputAction_Move = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += Input_Attack;
         ctx.state = PlayerController_LSH.State.Idle;
         if (ctx.isGround)
         {
@@ -37,9 +37,9 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     }
     public void Update()
     {
-        if (moveInputAction == null) return;
-        moveDirection = moveInputAction.ReadValue<Vector2>();
-        if (moveDirection.x != 0)
+        if (inputAction_Move == null) return;
+        direction = inputAction_Move.ReadValue<Vector2>();
+        if (direction.x != 0)
             fsm.ChangeState(ctx.run);
     }
     public void FixedUpdate()
@@ -48,22 +48,17 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     }
     public void Exit()
     {
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= AttackInput;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed -= DashInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= Input_Attack;
     }
-    void AttackInput(InputAction.CallbackContext callback)
+    void Input_Attack(InputAction.CallbackContext callback)
     {
         if (ctx.isGround)
         {
             fsm.ChangeState(ctx.attack);
         }
     }
-    void DashInput(InputAction.CallbackContext callback)
-    {
-        if (ctx.isGround)
-        {
-            fsm.ChangeState(ctx.dash);
-        }
-    }
+    
+
+
 
 }

@@ -7,27 +7,26 @@ public class PlayerRun_LSH : IPlayerState_LSH
     public PlayerRun_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     public void Enter()
     {
-        moveInputAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
+        inputAction_Move = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Move").canceled += MoveInputCancel;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += AttackInput;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed += DashInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += Input_Attack;
         ctx.state = PlayerController_LSH.State.Run;
         isAnimation = false;
     }
     bool isAnimation;
     public void Update()
     {
-        moveDirection = moveInputAction.ReadValue<Vector2>();
+        direction = inputAction_Move.ReadValue<Vector2>();
     }
     public void FixedUpdate()
     {
-        float dot = Vector2.Dot(ctx.rb.linearVelocity, moveDirection);
+        float dot = Vector2.Dot(ctx.rb.linearVelocity, direction);
         // 캐릭터 좌우 방향 설정
-        if (moveDirection.x > 0 && ctx.model.right.x < 0)
+        if (direction.x > 0 && ctx.model.right.x < 0)
         {
             ctx.model.localRotation = Quaternion.Euler(0f, 0f, 0f);
         }
-        else if (moveDirection.x < 0 && ctx.model.right.x > 0)
+        else if (direction.x < 0 && ctx.model.right.x > 0)
         {
             ctx.model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
@@ -39,12 +38,12 @@ public class PlayerRun_LSH : IPlayerState_LSH
             {
                 if (Mathf.Abs(element.Value.y - ctx.transform.position.y) >= 0.09f * ctx.height)
                 {
-                    if (element.Value.x - ctx.transform.position.x > 0.25f * ctx.width && moveDirection.x > 0)
+                    if (element.Value.x - ctx.transform.position.x > 0.25f * ctx.width && direction.x > 0)
                     {
                         stopWall = true;
                         break;
                     }
-                    else if (element.Value.x - ctx.transform.position.x < -0.25f * ctx.width && moveDirection.x < 0)
+                    else if (element.Value.x - ctx.transform.position.x < -0.25f * ctx.width && direction.x < 0)
                     {
                         stopWall = true;
                         break;
@@ -57,7 +56,7 @@ public class PlayerRun_LSH : IPlayerState_LSH
             if (dot < ctx.moveSpeed)
             {
                 float multiplier = (ctx.moveSpeed - dot) + 1f;
-                ctx.rb.AddForce(multiplier * moveDirection * (ctx.moveSpeed + 4.905f) / 1.25f);
+                ctx.rb.AddForce(multiplier * direction * (ctx.moveSpeed + 4.905f) / 1.25f);
                 // 애니매이션처리
                 if (ctx.isGround)
                 {
@@ -96,27 +95,19 @@ public class PlayerRun_LSH : IPlayerState_LSH
     public void Exit()
     {
         ctx.inputActionAsset.FindActionMap("Player").FindAction("Move").canceled -= MoveInputCancel;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= AttackInput;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Dash").performed -= DashInput;
+        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= Input_Attack;
     }
-    InputAction moveInputAction;
-    Vector2 moveDirection = Vector2.zero;
+    InputAction inputAction_Move;
+    Vector2 direction = Vector2.zero;
     void MoveInputCancel(InputAction.CallbackContext callback)
     {
         fsm.ChangeState(ctx.idle);
     }
-    void AttackInput(InputAction.CallbackContext callback)
+    void Input_Attack(InputAction.CallbackContext callback)
     {
         if (ctx.isGround)
         {
             fsm.ChangeState(ctx.attack);
-        }
-    }
-    void DashInput(InputAction.CallbackContext callback)
-    {
-        if (ctx.isGround)
-        {
-            fsm.ChangeState(ctx.dash);
         }
     }
 
