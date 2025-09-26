@@ -138,7 +138,7 @@ public class PlayerController_LSH : MonoBehaviour
             yield break;
         }
         animator.Play("Player_Jump");
-        Debug.Log($"jump, {state}");
+        //Debug.Log($"jump, {state}");
         rb.AddForce(Vector2.up * jumpForce * 50);
         yield return YieldInstructionCache.WaitForSeconds(0.05f);
         bool isReachPeak = false;
@@ -293,11 +293,38 @@ public class PlayerController_LSH : MonoBehaviour
     #region Interaction
 
     #endregion
-    #region Hit
+    #region Hit & Die
 
-    #endregion
-    #region Die
     
+    // public void TakeDamage(int damage, Vector3 hitFrom)
+    // {
+    //     if (Time.time < _hurtFreeUntil) return; // 무적 중이면 무시
+
+    //     currentHealth -= damage;
+    //     _hurtFreeUntil = Time.time + hurtIFrame;
+
+    //     Debug.Log($"[Player] Damaged! -{damage}, HP:{currentHealth}");
+
+    //     if (currentHealth > 0) TriggerHit();
+    //     else { TriggerDie(); enabled = false; }
+    // }
+
+    // public void TriggerHit()
+    // {
+    //     if (!animator) return;
+    //     animator.ResetTrigger("Hit");
+    //     animator.SetTrigger("Hit");
+    //     StartCoroutine(ResetTriggerNextFrame("Hit"));
+    // }
+
+    // public void TriggerDie()
+    // {
+    //     if (!animator) return;
+    //     animator.ResetTrigger("Die");
+    //     animator.SetTrigger("Die");
+    //     StartCoroutine(ResetTriggerNextFrame("Die"));
+    // }
+
     #endregion
 
 
