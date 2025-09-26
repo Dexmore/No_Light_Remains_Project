@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 public class EventManager : SingletonBehaviour<EventManager>
 {
     public bool isDebugAttack;
     protected override bool IsDontDestroy() => false;
+    #region Attack Event
     public struct AttackData
     {
         public Transform from;
@@ -31,6 +33,8 @@ public class EventManager : SingletonBehaviour<EventManager>
     {
         Debug.Log($"{data.from.name}--Attack-->{data.target.name}..... damage : {data.damage:F1}");
     }
+    #endregion
+    #region Light Event
     public struct LightData
     {
         public float amount;
@@ -42,6 +46,16 @@ public class EventManager : SingletonBehaviour<EventManager>
         }
     }
     public UnityAction<LightData> onLightStay = (x) => { };
+    #endregion
+
+    IEnumerator Start()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        if (GameManager.I.transform.childCount > 0)
+            if (GameManager.I.isFade)
+                GameManager.I.FadeIn(2f);
+    }
+
 
 
 

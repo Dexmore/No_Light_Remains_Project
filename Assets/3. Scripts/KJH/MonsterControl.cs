@@ -60,6 +60,7 @@ public class MonsterControl : MonoBehaviour
         ChangeState(State.Idle);
         // 게임 시작시 컨디션을 Peaceful로
         condition = Condition.Peaceful;
+        EventManager.I.onAttack += Handler_Hit;
     }
     #region UniTask Setting
     [HideInInspector] public CancellationTokenSource cts;
@@ -84,6 +85,14 @@ public class MonsterControl : MonoBehaviour
             Debug.Log(e.Message);
         }
         cts = null;
+        try
+        {
+            EventManager.I.onAttack -= Handler_Hit;
+        }
+        catch
+        {
+
+        }
     }
     #endregion
     #region FSM
@@ -110,6 +119,11 @@ public class MonsterControl : MonoBehaviour
     }
     public void ChangeState(State newState)
     {
+        if (newState == State.Hit || newState == State.Die)
+        {
+            ChangeState_ut(newState, cts.Token).Forget();
+            return;
+        }
         if (dictionary[newState].coolTime == 0)
         {
             float _coolTime = 0;
@@ -118,6 +132,7 @@ public class MonsterControl : MonoBehaviour
             {
                 for (int j = 0; j < patterns.Length; j++)
                 {
+
                     Frequency frequency = patterns[i].frequencies[j];
                     if (frequency.state == newState)
                     {
@@ -155,7 +170,7 @@ public class MonsterControl : MonoBehaviour
                 // state가 그외에도 할 수 없는 상태라면 skip 
                 if (!IsCan(state)) continue;
                 // 현재와 중복된 state라면 skip
-                if(curr == state) continue;
+                if (curr == state) continue;
                 totalWeightSum += patterns[i].frequencies[j].weight;
             }
         }
@@ -180,7 +195,7 @@ public class MonsterControl : MonoBehaviour
                 // state가 그외에도 할 수 없는 상태라면 skip 
                 if (!IsCan(state)) continue;
                 // 현재와 중복된 state라면 skip
-                if(curr == state) continue;
+                if (curr == state) continue;
                 partialWeightSum += patterns[i].frequencies[j].weight;
                 if (randomWeightSum <= partialWeightSum)
                 {
@@ -547,6 +562,18 @@ public class MonsterControl : MonoBehaviour
                     break;
                 }
     }
+    #region Hit
+    void Handler_Hit(EventManager.AttackData attackData)
+    {
+        if (isDie) return;
+        if (attackData.target.root != transform) return;
+        currHP -= attackData.damage;
+        if (currHP <= 0)
+        {
+            ChangeState(State.Die);
+        }
+    }
+    #endregion
 
 
 }

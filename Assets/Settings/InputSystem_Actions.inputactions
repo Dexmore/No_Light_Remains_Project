@@ -34,13 +34,22 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dash",
+                    "name": "LeftDash",
                     "type": "Button",
                     "id": "a619cb13-e91f-4494-8d15-326ba0d7849b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightDash",
+                    "type": "Button",
+                    "id": "72d50348-bd39-47de-99f5-d8264579ff64",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Lantern",
@@ -49,6 +58,15 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "Tap",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LanternSkill",
+                    "type": "Button",
+                    "id": "b6350ad4-c9d9-4035-8c8a-94456b9bf78a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "SlowTap",
                     "initialStateCheck": false
                 },
                 {
@@ -187,50 +205,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "Arrow",
-                    "id": "9cdacf24-02a7-40c1-94ac-0011a76cc232",
-                    "path": "Dpad",
-                    "interactions": "MultiTap(tapTime=0.15,tapDelay=0.35,pressPoint=0.35)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Dash",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "left",
-                    "id": "03a2c1c4-41c8-41de-bc7d-7b54720d4438",
-                    "path": "<Keyboard>/leftArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Dash",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Arrow",
-                    "id": "516703b5-5a28-4540-9f81-e76c7098400f",
-                    "path": "Dpad",
-                    "interactions": "MultiTap(tapTime=0.15,tapDelay=0.35,pressPoint=0.35)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Dash",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "left",
-                    "id": "e4b267ff-9dd4-435d-ace2-fc6f1f8122ae",
-                    "path": "<Keyboard>/rightArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Dash",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
                     "id": "b3c1c7f0-bd20-4ee7-a0f1-899b24bca6d7",
                     "path": "<Keyboard>/z",
@@ -342,6 +316,39 @@
                 },
                 {
                     "name": "",
+                    "id": "5e453733-17b5-49ee-add1-2c4728b6fbc1",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "LanternSkill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ab0e0276-b80e-4673-8faf-f174ba403d4b",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "LanternSkill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "15978063-f5c9-43c3-aec5-b34e451eca66",
+                    "path": "<XRController>/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "LanternSkill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "1c04ea5f-b012-41d1-a6f7-02e963b52893",
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
@@ -445,7 +452,7 @@
                     "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Parry",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -456,10 +463,32 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Parry",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "a934f158-3371-445a-beb6-26a620f105ac",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "LeftDash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "127f9fb4-3c7f-4929-b83e-82b5cdfccf5c",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "RightDash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
