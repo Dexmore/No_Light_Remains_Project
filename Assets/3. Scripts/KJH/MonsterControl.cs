@@ -568,10 +568,10 @@ public class MonsterControl : MonoBehaviour
         if (isDie) return;
         if (attackData.target.root != transform) return;
         currHP -= attackData.damage;
+        if (HasCondition(Condition.Peaceful))
+            RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
-        {
             ChangeState(State.Die);
-        }
     }
     #endregion
 
