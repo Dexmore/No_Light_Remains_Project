@@ -138,7 +138,9 @@ public class PlayerController_LSH : MonoBehaviour
             yield break;
         }
         animator.Play("Player_Jump");
+        Debug.Log($"jump, {state}");
         rb.AddForce(Vector2.up * jumpForce * 50);
+        yield return YieldInstructionCache.WaitForSeconds(0.05f);
         bool isReachPeak = false;
         bool isFallAnimation = false;
         while (true)

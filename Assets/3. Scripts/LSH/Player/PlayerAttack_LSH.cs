@@ -38,8 +38,12 @@ public class PlayerAttack_LSH : IPlayerState_LSH
                 Debug.Log("Parry");
                 fsm.ChangeState(ctx.parry);
             }
+            if (!ctx.isGround)
+            {
+                fsm.ChangeState(ctx.idle);
+            }
         }
-        else if(!isAnimation)
+        else if (!isAnimation)
         {
             ctx.animator.Play("Player_Attack");
             isAnimation = true;
