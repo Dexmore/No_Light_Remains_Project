@@ -97,7 +97,8 @@ public class Astar2DXYPathFinder : MonoBehaviour
           cts?.Cancel();
           cts = new CancellationTokenSource();
           offeset = 0.1f * height + 0.2f * unit;
-          return await Find(targetWorldPos, cts.Token);
+          Vector2 nearGround = NearGround(targetWorldPos);
+          return await Find(nearGround, cts.Token);
      }
      JobHandle jobHandle1;
      void Dispose()
@@ -134,8 +135,33 @@ public class Astar2DXYPathFinder : MonoBehaviour
           // characterPosition이 된다.
           */
      }
-     Vector2 NearGroundPoint(Vector2 pos)
+     Vector2 NearGround(Vector2 pos)
      {
+          float minDist = float.MaxValue;
+          Vector2 findPoint = Vector2.zero;
+          RaycastHit2D hit;
+          for (int i = 0; i < 50; i++)
+          {
+               Vector3 dir3D = Quaternion.Euler(0f, 0f, (150f * (((float)i) / 50f)) - 75f) * Vector3.down;
+               Vector2 dir = (Vector2)dir3D;
+               if (hit = Physics2D.Raycast(pos, dir, 10f, groundLayer))
+               {
+                    if (minDist > hit.distance)
+                    {
+                         minDist = hit.distance;
+                         findPoint = hit.point;
+                    }
+                    if (hit.distance < 0.1f)
+                    {
+                         findPoint = hit.point;
+                         break;
+                    }
+               }
+          }
+          if (findPoint != Vector2.zero)
+          {
+               return findPoint;
+          }
           return pos;
      }
 #if UNITY_EDITOR

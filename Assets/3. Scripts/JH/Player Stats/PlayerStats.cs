@@ -26,6 +26,14 @@ public class PlayerStats : MonoBehaviour
         OnLightChanged?.Invoke(currentLight, maxLight);
         OnGoldChanged?.Invoke(gold);
     }
+    void OnEnable()
+    {
+        EventManager.I.onAttack += Handler_AttackEvnet;
+    }
+    void OnDisable()
+    {
+        EventManager.I.onAttack -= Handler_AttackEvnet;
+    }
 
     // 상태 변경용 메서드
     public void ApplyDamage(float dmg)
@@ -61,4 +69,11 @@ public class PlayerStats : MonoBehaviour
         OnGoldChanged?.Invoke(gold);
     }
 #endif
+
+    void Handler_AttackEvnet(EventManager.AttackData attackData)
+    {
+        if (attackData.target.root != transform) return;
+        ApplyDamage(attackData.damage);
+    }
+
 }

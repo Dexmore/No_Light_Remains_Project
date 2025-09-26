@@ -60,7 +60,7 @@ public class MonsterControl : MonoBehaviour
         ChangeState(State.Idle);
         // 게임 시작시 컨디션을 Peaceful로
         condition = Condition.Peaceful;
-        EventManager.I.onAttack += Handler_Hit;
+        EventManager.I.onAttack += Handler_AttackEvnet;
     }
     #region UniTask Setting
     [HideInInspector] public CancellationTokenSource cts;
@@ -87,7 +87,7 @@ public class MonsterControl : MonoBehaviour
         cts = null;
         try
         {
-            EventManager.I.onAttack -= Handler_Hit;
+            EventManager.I.onAttack -= Handler_AttackEvnet;
         }
         catch
         {
@@ -563,7 +563,7 @@ public class MonsterControl : MonoBehaviour
                 }
     }
     #region Hit
-    void Handler_Hit(EventManager.AttackData attackData)
+    void Handler_AttackEvnet(EventManager.AttackData attackData)
     {
         if (isDie) return;
         if (attackData.target.root != transform) return;

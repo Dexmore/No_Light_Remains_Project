@@ -29,7 +29,10 @@ public class DefaultBiteAttack : MonsterState
         }
         Transform target = sensor.memories.First().Key.transform;
         Vector2 moveDirection = target.position - transform.position;
-        if (Random.value < 0.5f && moveDirection.magnitude > sensor.closeRadius * 0.8f)
+
+        bool moveCondition = (moveDirection.magnitude > sensor.closeRadius) ||
+        (moveDirection.x > 0 && model.right.x < 0) || (moveDirection.x < 0 && model.right.x > 0);
+        if (moveCondition)
         {
             float time = Time.time;
             float slow = Random.Range(0.3f, 1.2f);

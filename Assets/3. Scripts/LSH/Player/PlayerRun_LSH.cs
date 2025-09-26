@@ -17,9 +17,16 @@ public class PlayerRun_LSH : IPlayerState_LSH
     public void Update()
     {
         direction = inputAction_Move.ReadValue<Vector2>();
+        direction.y = 0f;
+        direction.Normalize();
     }
     public void FixedUpdate()
     {
+        if (direction.sqrMagnitude == 0)
+        {
+            fsm.ChangeState(ctx.idle);
+            return;
+        }
         float dot = Vector2.Dot(ctx.rb.linearVelocity, direction);
         // 캐릭터 좌우 방향 설정
         if (direction.x > 0 && ctx.model.right.x < 0)
