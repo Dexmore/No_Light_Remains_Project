@@ -59,7 +59,6 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         {
             ctx.AttackSwingBegin();
             ctx.DoDamage_Public(1);
-            ctx.DebugAttack("[Attack1] timed hit");
             _didHit = true;
         }
 
