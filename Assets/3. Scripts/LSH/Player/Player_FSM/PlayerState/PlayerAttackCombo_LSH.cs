@@ -45,7 +45,6 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
         {
             ctx.AttackSwingBegin();
             ctx.DoDamage_Public(2);
-            ctx.DebugAttack("[Attack2] timed hit");
             _didHit = true;
         }
 

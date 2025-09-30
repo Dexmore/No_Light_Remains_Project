@@ -12,7 +12,8 @@ public class Enemy_LSH : MonoBehaviour, IDamageable_LSH
         hp -= dmg;
         Debug.Log($"[Enemy] Took {dmg}, HP:{hp}");
 
-        if (hp <= 0) Die();
+        if (hp <= 0)
+            Die();
     }
 
     // 기존 코드 호환용
