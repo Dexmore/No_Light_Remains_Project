@@ -15,29 +15,29 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     #region Load Scene
-    public void LoadScene(int index)
-    {
-        SceneManager.LoadScene(index);
-    }
-    public void LoadScene(string name)
-    {
-        SceneManager.LoadScene(name);
-    }
     public async void LoadSceneAsync(int index)
     {
+        FadeOut(1.2f);
+        await Task.Delay(1200);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
         while (!ao.isDone)
         {
             await Task.Delay(10);
         }
+        await Task.Delay(1200);
+        FadeIn(2f);
     }
     public async void LoadSceneAsync(string name)
     {
+        FadeOut(1.2f);
+        await Task.Delay(1200);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
         while (!ao.isDone)
         {
             await Task.Delay(10);
         }
+        await Task.Delay(1200);
+        FadeIn(2f);
     }
     #endregion
     #region Fade

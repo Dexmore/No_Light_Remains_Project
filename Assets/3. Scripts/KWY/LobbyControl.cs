@@ -7,8 +7,8 @@ public class LobbyControl : MonoBehaviour
     IEnumerator Start()
     {
         yield return null;
-        yield return YieldInstructionCache.WaitForSeconds(0.5f);
-        GameManager.I.FadeIn(2f);
+        // yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        // GameManager.I.FadeIn(2f);
         yield return YieldInstructionCache.WaitForSeconds(2f);
     }
     void OnEnable()

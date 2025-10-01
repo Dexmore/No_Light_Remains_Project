@@ -11,8 +11,8 @@ public class LogoControl : MonoBehaviour
         
         #endregion
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
-        GameManager.I.FadeOut(1.2f);
-        yield return YieldInstructionCache.WaitForSeconds(1.2f);
+        // GameManager.I.FadeOut(1.2f);
+        // yield return YieldInstructionCache.WaitForSeconds(1.2f);
         GameManager.I.LoadSceneAsync(1);
     }
     
