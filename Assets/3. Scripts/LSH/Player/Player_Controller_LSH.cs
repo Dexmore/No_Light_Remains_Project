@@ -1,14 +1,24 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController_LSH : MonoBehaviour
+public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
 {
     [Header("Player HP")]
     public int maxHealth = 1000;
     public int currentHealth;
+
+    [Header("Light Resource")]
+    public int maxLight = 100;
+    public int currentLight = 50;
+    public int parryLightGain = 15;
+    public void AddLight(int amount)
+    {
+        currentLight = Mathf.Clamp(currentLight + amount, 0, maxLight);
+        Debug.Log($"[Light] +{amount} => {currentLight}/{maxLight}");
+    }
 
     [Header("Move")]
     public float moveSpeed = 6f;
@@ -23,22 +33,26 @@ public class PlayerController_LSH : MonoBehaviour
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public PlayerStateMachine_LSH fsm;
 
-    // States
+    // States (기존)
     [HideInInspector] public PlayerIdle_LSH idle;
     [HideInInspector] public PlayerRun_LSH run;
     [HideInInspector] public PlayerJump_LSH jump;
     [HideInInspector] public PlayerFall_LSH fall;
     [HideInInspector] public PlayerAttack_LSH attack;
     [HideInInspector] public PlayerAttackCombo_LSH attackCombo;
+    // 새 상태
+    [HideInInspector] public PlayerParry_LSH parry;
 
     // === 입력 (액션 에셋 참조) ===
     [Header("Input (use bound actions)")]
     [SerializeField] private InputActionReference moveActionRef;
     [SerializeField] private InputActionReference jumpActionRef;
     [SerializeField] private InputActionReference attackActionRef;
+    [SerializeField] private InputActionReference parryActionRef; // ⬅ 패링
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction attackAction;
+    private InputAction parryAction;
 
     private float _baseScaleX;
 
@@ -59,12 +73,6 @@ public class PlayerController_LSH : MonoBehaviour
     public int attackDamage1 = 10;
     public int attackDamage2 = 14;
 
-
-    [Header("Hit / I-Frame")]
-    public float hurtIFrame = 0.35f;
-    private float _hurtFreeUntil = -999f;
-
-
     private readonly HashSet<Collider2D> _swingHitCache = new HashSet<Collider2D>();
     [SerializeField] private bool debugAttack = false;
 
@@ -72,6 +80,7 @@ public class PlayerController_LSH : MonoBehaviour
     private static readonly int HashSpeedX = Animator.StringToHash("speedX");
     private static readonly int HashSpeedY = Animator.StringToHash("speedY");
     private static readonly int HashGround = Animator.StringToHash("grounded");
+    private static readonly int HashHit = Animator.StringToHash("Hit");
     private bool _hasSpeedX, _hasSpeedY, _hasGround;
     private float _lastSpeedX, _lastSpeedY; private bool _lastGround;
 
@@ -80,6 +89,19 @@ public class PlayerController_LSH : MonoBehaviour
     public float XInput { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool AttackPressed { get; private set; }
+
+    // ===== Parry 설정 =====
+    [Header("Parry")]
+    public float parryGuardTime = 0.25f;   // 방어 창 길이(고정)
+    public float parryRecover = 0.12f;   // 실패 경직
+    public float parryCooldown = 0.30f;   // 재사용 대기
+    public float parrySuccessIFrame = 0.12f; // 성공 직후 무적(다단히트 방지)
+
+    [HideInInspector] public bool parryActive;       // 지금 방어 창 열려 있음
+    [HideInInspector] public bool parrySuccess;      // 이번 창에서 성공했는가
+    [HideInInspector] public float parryEndTime;      // 창 종료 시각
+    private float _parryReadyTime;                    // 쿨다운 완료 시각
+    private float _parrySuccessUntil;                 // 성공 무적 종료 시각
 
     void Awake()
     {
@@ -93,42 +115,31 @@ public class PlayerController_LSH : MonoBehaviour
         fall = new PlayerFall_LSH(this, fsm);
         attack = new PlayerAttack_LSH(this, fsm);
         attackCombo = new PlayerAttackCombo_LSH(this, fsm);
+        parry = new PlayerParry_LSH(this, fsm);   // ⬅ 추가
 
         _baseScaleX = Mathf.Abs(transform.localScale.x);
-
         CacheAnimatorParams();
 
         currentHealth = maxHealth;
+        currentLight = Mathf.Clamp(currentLight, 0, maxLight);
     }
 
     void OnEnable()
     {
-        if (moveActionRef == null || moveActionRef.action == null ||
-            jumpActionRef == null || jumpActionRef.action == null)
-        {
-            Debug.LogError("[PlayerController_LSH] InputActionReference가 비었습니다. 인스펙터에서 Move/Jump를 할당하세요.");
-            enabled = false;
-            return;
-        }
+        moveAction = moveActionRef ? moveActionRef.action : null;
+        jumpAction = jumpActionRef ? jumpActionRef.action : null;
+        attackAction = attackActionRef ? attackActionRef.action : null;
+        parryAction = parryActionRef ? parryActionRef.action : null;
 
-        if (attackActionRef == null || attackActionRef.action == null)
-        {
-            Debug.LogError("[PlayerController_LSH] Attack 액션이 비어 있습니다.");
-            enabled = false;
-            return;
-        }
-
-        moveAction = moveActionRef.action;
-        jumpAction = jumpActionRef.action;
-        attackAction = attackActionRef.action;
-
-        moveAction.Enable();
-        jumpAction.Enable();
-        attackAction.Enable();
+        moveAction?.Enable();
+        jumpAction?.Enable();
+        attackAction?.Enable();
+        parryAction?.Enable();
     }
 
     void OnDisable()
     {
+        parryAction?.Disable();
         attackAction?.Disable();
         jumpAction?.Disable();
         moveAction?.Disable();
@@ -143,13 +154,19 @@ public class PlayerController_LSH : MonoBehaviour
     {
         // 입력
         XInput = ReadMoveX(moveAction);
-        JumpPressed = jumpAction.WasPressedThisFrame();
-        AttackPressed = attackAction.WasPressedThisFrame();
+        JumpPressed = jumpAction != null && jumpAction.WasPressedThisFrame();
+        AttackPressed = attackAction != null && attackAction.WasPressedThisFrame();
+
+        // 패링 입력 → 쿨다운 완료 시에만 진입
+        if (parryAction != null && parryAction.WasPressedThisFrame() && Time.time >= _parryReadyTime)
+        {
+            fsm.ChangeState(parry);
+        }
 
         // 지면 체크
         Grounded = CheckGroundedPrecise();
 
-        // FSM 흐름
+        // FSM
         fsm.PlayerKeyInput();
         fsm.UpdateState();
 
@@ -208,43 +225,26 @@ public class PlayerController_LSH : MonoBehaviour
         }
     }
 
-    public void TriggerAttack()
+    // === Animator Trigger (1프레임 뒤 자동 Reset) ===
+    public void TriggerAttack() { SetAndAutoReset("Attack"); }
+    public void TriggerAttack2() { SetAndAutoReset("Attack2"); }
+    public void TriggerHit() { SetAndAutoReset("Hit"); }
+    public void TriggerDie() { SetAndAutoReset("Die"); }
+
+    private void SetAndAutoReset(string trig)
     {
         if (!animator) return;
-        animator.ResetTrigger("Attack"); // 혹시 이전에 남아있던 거 정리
-        animator.SetTrigger("Attack");
-        StartCoroutine(ResetTriggerNextFrame("Attack"));
+        animator.ResetTrigger(trig);
+        animator.SetTrigger(trig);
+        StartCoroutine(ResetTriggerNextFrame(trig));
     }
 
-    public void TriggerAttack2()
+    public IEnumerator ResetTriggerNextFrame(string trig)
     {
-        if (!animator) return;
-        animator.ResetTrigger("Attack2");
-        animator.SetTrigger("Attack2");
-        StartCoroutine(ResetTriggerNextFrame("Attack2"));
+        yield return null; // 한 프레임 대기(소비 시간 확보)
+        animator?.ResetTrigger(trig);
     }
 
-    public void TriggerHit()
-    {
-        if (!animator) return;
-        animator.ResetTrigger("Hit");
-        animator.SetTrigger("Hit");
-        StartCoroutine(ResetTriggerNextFrame("Hit"));
-    }
-
-    public void TriggerDie()
-    {
-        if (!animator) return;
-        animator.ResetTrigger("Die");
-        animator.SetTrigger("Die");
-        StartCoroutine(ResetTriggerNextFrame("Die"));
-    }
-
-    private IEnumerator ResetTriggerNextFrame(string triggerName)
-    {
-        yield return null; // 한 프레임 기다림
-        animator.ResetTrigger(triggerName);
-    }
     private void CacheAnimatorParams()
     {
         if (!animator) return;
@@ -259,60 +259,34 @@ public class PlayerController_LSH : MonoBehaviour
         return false;
     }
 
-    // ====== 공격 판정 유틸 (FSM에서 호출) ======
+    // ====== 공격 판정 (FSM에서 호출) ======
     public void AttackSwingBegin() => _swingHitCache.Clear();
 
     public void DoDamage_Public(int which)
     {
         if (!attackPoint) { Debug.LogWarning("[PlayerController_LSH] attackPoint 미지정"); return; }
-        if (which == 1) DoDamage(attackPoint.position, attackRange1, attackDamage1);
-        else DoDamage(attackPoint.position, attackRange2, attackDamage2);
+        if (which == 1) DoDamage((Vector2)attackPoint.position, attackRange1, attackDamage1);
+        else DoDamage((Vector2)attackPoint.position, attackRange2, attackDamage2);
     }
-
-    public void DebugAttack(string msg) { if (debugAttack) Debug.Log(msg); }
 
     private void DoDamage(Vector2 center, float radius, int damage)
     {
         var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayers);
-        Debug.Log($"[Attack] center:{center}, radius:{radius}, hits:{hits.Length}");
-
-        foreach (var h in hits)
-        {
-            Debug.Log($"[Attack] Hit object: {h.name}, layer:{LayerMask.LayerToName(h.gameObject.layer)}");
-        }
+        if (debugAttack) Debug.Log($"[Attack] center:{center}, radius:{radius}, hits:{hits.Length}");
 
         foreach (var col in hits)
         {
             if (_swingHitCache.Contains(col)) continue;
             _swingHitCache.Add(col);
 
-            // 인터페이스 우선 (부모/자식 모두 탐색)
             var d1 = col.GetComponentInParent<IDamageable_LSH>();
             if (d1 != null) { d1.TakeDamage(damage, transform.position); continue; }
-            var d2 = col.GetComponentInChildren<IDamageable_LSH>();
-            if (d2 != null) { d2.TakeDamage(damage, transform.position); continue; }
 
-            // Enemy_LSH도 지원 (부모/자식)
             var e1 = col.GetComponentInParent<Enemy_LSH>();
             if (e1 != null) { e1.TakeDamage(damage); continue; }
-            var e2 = col.GetComponentInChildren<Enemy_LSH>();
-            if (e2 != null) { e2.TakeDamage(damage); continue; }
-
-            if (debugAttack) Debug.Log($"[Attack] 맞췄지만 IDamageable_LSH/Enemy_LSH 없음: {col.name}");
         }
     }
-    public void TakeDamage(int damage, Vector3 hitFrom)
-    {
-        if (Time.time < _hurtFreeUntil) return; // 무적 중이면 무시
 
-        currentHealth -= damage;
-        _hurtFreeUntil = Time.time + hurtIFrame;
-
-        Debug.Log($"[Player] Damaged! -{damage}, HP:{currentHealth}");
-
-        if (currentHealth > 0) TriggerHit();
-        else { TriggerDie(); enabled = false; }
-    }
     private void OnDrawGizmosSelected()
     {
         if (!attackPoint) return;
@@ -320,5 +294,46 @@ public class PlayerController_LSH : MonoBehaviour
         Gizmos.DrawWireSphere(attackPoint.position, attackRange1);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange2);
+    }
+
+    // ====== 데미지 입구 (패링/무적으로 차단) ======
+    public void TakeDamage(int damage, Vector3 hitFrom)
+    {
+        // 패링 중이거나(창 열림), 방금 패링 성공 무적 창이면 데미지 무효
+        if (parryActive || Time.time < _parrySuccessUntil)
+        {
+            if (debugAttack) Debug.Log("[Player] Damage ignored by parry/iframe");
+            return;
+        }
+
+        currentHealth -= damage;
+        Debug.Log($"[Player] Damaged! -{damage}, HP:{currentHealth}");
+
+        if (currentHealth > 0) TriggerHit();
+        else { TriggerDie(); enabled = false; }
+    }
+
+    // ====== IParryReceiver 구현 (패링 성공 시 처리) ======
+    public bool TryParry(object attackSource, Vector3 hitPoint)
+    {
+        if (!parryActive) return false;
+
+        parrySuccess = true;
+        parryActive = false; // 창 닫기
+        _parrySuccessUntil = Time.time + parrySuccessIFrame; // 성공 후 무적
+        AddLight(parryLightGain);
+
+        // 성공 연출
+        animator?.ResetTrigger("Parry");
+        animator?.SetTrigger("Parry");
+        StartCoroutine(ResetTriggerNextFrame("Parry"));
+
+        return true; // 이 공격 무효화
+    }
+
+    // 패링 종료 시 쿨다운 시작 (Parry 상태 Exit에서 호출)
+    public void SetParryCooldown()
+    {
+        _parryReadyTime = Time.time + parryCooldown;
     }
 }
