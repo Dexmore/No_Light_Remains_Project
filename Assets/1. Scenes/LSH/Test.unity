@@ -649,15 +649,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController_LSH
   maxHealth: 1000
   currentHealth: 0
+  maxLight: 100
+  currentLight: 50
+  parryLightGain: 15
   moveSpeed: 6
   airMoveMultiplier: 0.85
   jumpForce: 10
   animator: {fileID: 1811707166}
+  lanternOn: 0
   rb: {fileID: 0}
   fsm: {fileID: 0}
   moveActionRef: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   jumpActionRef: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   attackActionRef: {fileID: 1120369429361536294, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  parryActionRef: {fileID: -4406795877573032067, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  lanternActionRef: {fileID: 8826926829569595503, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  dashActionRef: {fileID: -158085903742246333, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -670,8 +677,20 @@ MonoBehaviour:
     m_Bits: 64
   attackDamage1: 10
   attackDamage2: 14
-  hurtIFrame: 0.35
   debugAttack: 1
+  parryGuardTime: 0.25
+  parryRecover: 0.12
+  parryCooldown: 0.3
+  parrySuccessIFrame: 0.12
+  parryActive: 0
+  parrySuccess: 0
+  parryEndTime: 0
+  dashSpeed: 12
+  dashTime: 0.18
+  dashCooldown: 0.35
+  dashIFrame: 1
+  isDashing: 0
+  _dashReadyTime: 0
 --- !u!50 &1811707171
 Rigidbody2D:
   serializedVersion: 5
