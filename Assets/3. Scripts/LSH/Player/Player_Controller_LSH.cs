@@ -30,6 +30,10 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     [Header("Animation (Optional)")]
     public Animator animator;
 
+    // === 랜턴 관련 ===
+    [Header("Lantern")]
+    public bool lanternOn = false;   // 현재 상태
+
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public PlayerStateMachine_LSH fsm;
 
@@ -49,10 +53,14 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     [SerializeField] private InputActionReference jumpActionRef;
     [SerializeField] private InputActionReference attackActionRef;
     [SerializeField] private InputActionReference parryActionRef; // ⬅ 패링
+    [SerializeField] private InputActionReference lanternActionRef; // ⬅ 랜턴
+    [SerializeField] private InputActionReference dashActionRef; // ⬅ 대시
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction attackAction;
     private InputAction parryAction;
+    private InputAction lanternAction;
+    private InputAction dashAction;
 
     private float _baseScaleX;
 
@@ -103,6 +111,17 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     private float _parryReadyTime;                    // 쿨다운 완료 시각
     private float _parrySuccessUntil;                 // 성공 무적 종료 시각
 
+    [Header("Dash")]
+    public float dashSpeed = 12f;
+    public float dashTime = 0.18f;
+    public float dashCooldown = 0.35f;
+    public bool dashIFrame = true;
+
+    // 런타임
+    [HideInInspector] public PlayerDash_LSH dash;
+    [HideInInspector] public bool isDashing;
+    [HideInInspector] public float _dashReadyTime;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -116,7 +135,7 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         attack = new PlayerAttack_LSH(this, fsm);
         attackCombo = new PlayerAttackCombo_LSH(this, fsm);
         parry = new PlayerParry_LSH(this, fsm);   // ⬅ 추가
-
+        dash = new PlayerDash_LSH(this, fsm);
         _baseScaleX = Mathf.Abs(transform.localScale.x);
         CacheAnimatorParams();
 
@@ -130,20 +149,27 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         jumpAction = jumpActionRef ? jumpActionRef.action : null;
         attackAction = attackActionRef ? attackActionRef.action : null;
         parryAction = parryActionRef ? parryActionRef.action : null;
+        lanternAction = lanternActionRef ? lanternActionRef.action : null;
+        dashAction = dashActionRef ? dashActionRef.action : null;
 
         moveAction?.Enable();
         jumpAction?.Enable();
         attackAction?.Enable();
         parryAction?.Enable();
+        lanternAction?.Enable();
+        dashAction?.Enable();
     }
 
     void OnDisable()
     {
+        lanternAction?.Disable();
         parryAction?.Disable();
         attackAction?.Disable();
         jumpAction?.Disable();
         moveAction?.Disable();
+        dashAction?.Disable();
     }
+
 
     void Start()
     {
@@ -163,6 +189,16 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
             fsm.ChangeState(parry);
         }
 
+        if (lanternAction != null && lanternAction.WasPressedThisFrame())
+        {
+            lanternOn = !lanternOn;
+            Debug.Log($"[Lantern] {(lanternOn ? "ON" : "OFF")}");
+        }
+
+        if (dashAction != null && dashAction.WasPressedThisFrame() && Time.time >= _dashReadyTime)
+        {
+            fsm.ChangeState(dash);
+        }
         // 지면 체크
         Grounded = CheckGroundedPrecise();
 
@@ -299,12 +335,11 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     // ====== 데미지 입구 (패링/무적으로 차단) ======
     public void TakeDamage(int damage, Vector3 hitFrom)
     {
-        // 패링 중이거나(창 열림), 방금 패링 성공 무적 창이면 데미지 무효
-        if (parryActive || Time.time < _parrySuccessUntil)
-        {
-            if (debugAttack) Debug.Log("[Player] Damage ignored by parry/iframe");
-            return;
-        }
+        // 패링 무적(있다면) 우선
+        if (parryActive || Time.time < _parrySuccessUntil) return;
+
+        // ⬇대시 무적(인스펙터에서 켜면 적용)
+        if (dashIFrame && isDashing) return;
 
         currentHealth -= damage;
         Debug.Log($"[Player] Damaged! -{damage}, HP:{currentHealth}");
