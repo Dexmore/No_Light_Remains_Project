@@ -58,7 +58,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -93,7 +93,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -124,12 +124,12 @@ TextureImporter:
       name: Move_0
       rect:
         serializedVersion: 2
-        x: 41
+        x: 0
         y: 0
-        width: 47
-        height: 82
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -146,12 +146,12 @@ TextureImporter:
       name: Move_1
       rect:
         serializedVersion: 2
-        x: 404
-        y: 2
-        width: 41
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 357
+        y: 0
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: Move_2
       rect:
         serializedVersion: 2
-        x: 755
-        y: 5
-        width: 47
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 714
+        y: 0
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -190,12 +190,12 @@ TextureImporter:
       name: Move_3
       rect:
         serializedVersion: 2
-        x: 1112
-        y: 2
-        width: 47
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1071
+        y: 0
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -212,12 +212,12 @@ TextureImporter:
       name: Move_4
       rect:
         serializedVersion: 2
-        x: 1469
+        x: 1428
         y: 0
-        width: 47
-        height: 82
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -234,12 +234,12 @@ TextureImporter:
       name: Move_5
       rect:
         serializedVersion: 2
-        x: 1829
+        x: 1785
         y: 0
-        width: 44
-        height: 88
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -256,12 +256,12 @@ TextureImporter:
       name: Move_6
       rect:
         serializedVersion: 2
-        x: 2183
-        y: 5
-        width: 47
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2142
+        y: 0
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -278,12 +278,12 @@ TextureImporter:
       name: Move_7
       rect:
         serializedVersion: 2
-        x: 2540
-        y: 2
-        width: 47
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2499
+        y: 0
+        width: 357
+        height: 102
+      alignment: 9
+      pivot: {x: 0.186, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -300,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 43608bb95d41a2244803ccd8c2299a16
     internalID: 0
     vertices: []
     indices: 
@@ -308,7 +308,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":357.0,"y":102.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.1860000044107437,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Move_0: 3743957659742367504
       Move_1: 8405476814967859603

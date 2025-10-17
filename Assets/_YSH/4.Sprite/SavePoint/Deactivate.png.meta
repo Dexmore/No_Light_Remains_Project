@@ -49,7 +49,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -63,7 +63,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -112,111 +112,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Down_0
+      name: Deactivate_0
       rect:
         serializedVersion: 2
-        x: 17
-        y: 44
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 48
+        height: 57
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cce9415b760a6820800000000000000
-      internalID: 2912147235762990277
+      spriteID: f246d4a906b434e4cbb86dfd78891d43
+      internalID: 1997525464
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Down_1
+      name: Deactivate_1
       rect:
         serializedVersion: 2
-        x: 56
+        x: 48
         y: 0
-        width: 29
-        height: 52
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 48
+        height: 57
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 28cf92e0e86a4b8b0800000000000000
-      internalID: -5137298145869693822
+      spriteID: e6ccc528582938548af63d4a2b1148ad
+      internalID: -46080415
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Down_2
+      name: Deactivate_2
       rect:
         serializedVersion: 2
-        x: 104
+        x: 96
         y: 0
-        width: 29
-        height: 46
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 48
+        height: 57
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3510e49b6ea18be10800000000000000
-      internalID: 2213548795106296147
+      spriteID: 0354199e29332c34dbf7f966a2a79f5f
+      internalID: -1808772175
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Down_3
+      name: Deactivate_3
       rect:
         serializedVersion: 2
-        x: 8
+        x: 144
         y: 0
-        width: 29
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 48
+        height: 57
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1918030ecf91c4e50800000000000000
-      internalID: 6794834511678964113
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Down_4
-      rect:
-        serializedVersion: 2
-        x: 152
-        y: 0
-        width: 29
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2fdb64ddce2463fb0800000000000000
-      internalID: -4668470378630824462
+      spriteID: d60e40ee9c7f9bd4e8de6be80b34a189
+      internalID: 619098438
       vertices: []
       indices: 
       edges: []
@@ -225,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: f7d8de535244bbb4db79fecb93ad666e
     internalID: 0
     vertices: []
     indices: 
@@ -233,13 +211,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":1.0},"gridSpriteSize":{"x":48.0,"y":57.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Down_0: 2912147235762990277
-      Down_1: -5137298145869693822
-      Down_2: 2213548795106296147
-      Down_3: 6794834511678964113
-      Down_4: -4668470378630824462
+      Deactivate_0: 1997525464
+      Deactivate_1: -46080415
+      Deactivate_2: -1808772175
+      Deactivate_3: 619098438
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
