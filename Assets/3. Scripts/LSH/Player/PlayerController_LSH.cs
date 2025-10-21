@@ -222,6 +222,20 @@ public class PlayerController_LSH : MonoBehaviour
     {
         if (data.target.Root() != transform) return;
         if (fsm.currentState == die) return;
+
+        if (Avoided)
+        {
+            
+            return;
+        }
+
+        if(Parred)
+        {
+            
+            return;
+        }
+
+
         currentHealth -= (int)data.damage;
         if (currentHealth <= 0)
             fsm.ChangeState(die);
