@@ -1,32 +1,37 @@
 using UnityEngine;
+
 public class PlayerParry_LSH : IPlayerState_LSH
 {
-    public float duration = 0.4f;
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerParry_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    float elapsedTime;
+    private const float duration = 0.6f;   // 총 길이
+    private const float parryTime = 0.3f;   // 패링 시간
+    private float _elapsedTime;
     public void Enter()
     {
-        ctx.state = PlayerController_LSH.State.Parry;
-        elapsedTime = 0f;
-    }
-    public void Update()
-    {
-
-    }
-    public void FixedUpdate()
-    {
-        elapsedTime += Time.fixedDeltaTime;
-        if (elapsedTime > duration)
-        {
-            fsm.ChangeState(ctx.idle);
-        }
+        _elapsedTime = 0f;
+        ctx.animator.Play("Player_Parry");
+        ctx.Parred = true;
     }
     public void Exit()
     {
         
     }
+    public void UpdateState()
+    {
+        _elapsedTime += Time.deltaTime;
+        if(_elapsedTime > parryTime)
+        {
+            ctx.Parred = false;
+        }
+        if(_elapsedTime > duration)
+        {
+            fsm.ChangeState(ctx.idle);
+        }
+    }
+    public void UpdatePhysics()
+    {
 
-
+    }
 }
