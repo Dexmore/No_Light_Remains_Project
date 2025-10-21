@@ -5,117 +5,82 @@ public class PlayerRun_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerRun_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
+    private InputAction moveAction;
+    private InputAction jumpAction;
+    private InputAction attackAction;
+    Vector2 moveActionValue;
+    bool jumpPressed;
+    bool attackPressed;
     public void Enter()
     {
-        inputAction_Move = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Move").canceled += MoveInputCancel;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += Input_Attack;
-        ctx.state = PlayerController_LSH.State.Run;
-        isAnimation = false;
+        if (moveAction == null)
+            moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
+        if (jumpAction == null)
+            jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
+        if (attackAction == null)
+            attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
+
+        ctx.animator.Play("Player_Run");
     }
-    bool isAnimation;
-    public void Update()
+    public void Exit()
     {
-        direction = inputAction_Move.ReadValue<Vector2>();
-        direction.y = 0f;
-        direction.Normalize();
+
     }
-    public void FixedUpdate()
+    public void UpdateState()
     {
-        if (direction.sqrMagnitude == 0)
-        {
+        moveActionValue = moveAction.ReadValue<Vector2>();
+        moveActionValue.y = 0f;
+        if (moveActionValue.x == 0)
             fsm.ChangeState(ctx.idle);
-            return;
-        }
-        float dot = Vector2.Dot(ctx.rb.linearVelocity, direction);
-        // 캐릭터 좌우 방향 설정
-        if (direction.x > 0 && ctx.model.right.x < 0)
-        {
-            ctx.model.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        }
-        else if (direction.x < 0 && ctx.model.right.x > 0)
-        {
-            ctx.model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        }
-        // 벽 향해서 전진하는 버그 막기
-        bool stopWall = false;
+
+        jumpPressed = jumpAction.IsPressed();
+        if (jumpPressed && ctx.Grounded)
+            fsm.ChangeState(ctx.jump);
+
+        attackPressed = attackAction.IsPressed();
+        if (attackPressed && ctx.Grounded)
+            fsm.ChangeState(ctx.attack);
+
+        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
+            fsm.ChangeState(ctx.fall);
+    }
+    public void UpdatePhysics()
+    {
+
+        // 1. 캐릭터 좌우 바라보는 방향 변경
+        if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
+            ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        else if (moveActionValue.x < 0 && ctx.childTR.right.x > 0)
+            ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        // 2. 공중에서 벽으로 전진하면 벽에 붙어있는 버그방지
+        bool isWallClose = false;
         if (ctx.collisions.Count > 0)
         {
             foreach (var element in ctx.collisions)
             {
                 if (Mathf.Abs(element.Value.y - ctx.transform.position.y) >= 0.09f * ctx.height)
                 {
-                    if (element.Value.x - ctx.transform.position.x > 0.25f * ctx.width && direction.x > 0)
+                    if (element.Value.x - ctx.transform.position.x > 0.25f * ctx.width && moveActionValue.x > 0)
                     {
-                        stopWall = true;
+                        isWallClose = true;
                         break;
                     }
-                    else if (element.Value.x - ctx.transform.position.x < -0.25f * ctx.width && direction.x < 0)
+                    else if (element.Value.x - ctx.transform.position.x < -0.25f * ctx.width && moveActionValue.x < 0)
                     {
-                        stopWall = true;
+                        isWallClose = true;
                         break;
                     }
                 }
             }
         }
-        // AddForce방식으로 캐릭터 이동
-        if (!stopWall)
+        // 3. AddForce방식으로 캐릭터 이동
+        float dot = Vector2.Dot(ctx.rb.linearVelocity, moveActionValue);
+        //float speedInAir = ctx.Grounded ? ctx.moveSpeed : ctx.moveSpeed * ctx.airMoveMultiplier;
+        if (!isWallClose)
             if (dot < ctx.moveSpeed)
             {
                 float multiplier = (ctx.moveSpeed - dot) + 1f;
-                ctx.rb.AddForce(multiplier * direction * (ctx.moveSpeed + 4.905f) / 1.25f);
-                // 애니매이션처리
-                if (ctx.isGround)
-                {
-                    if (!isAnimation)
-                        if (ctx.isGround)
-                        {
-                            isAnimation = true;
-                            ctx.animator.Play("Player_Run");
-                        }
-                    if (!ctx.animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Run"))
-                    {
-                        isAnimation = true;
-                        ctx.animator.Play("Player_Run");
-                    }
-                }
-                else if (isAnimation)
-                {
-                    isAnimation = false;
-                    if (ctx.isJump)
-                    {
-                        if (!ctx.animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Jump"))
-                        {
-                            ctx.animator.Play("Player_Jump");
-                        }
-                    }
-                    else
-                    {
-                        if (!ctx.animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Fall"))
-                        {
-                            ctx.animator.Play("Player_Fall");
-                        }
-                    }
-                }
+                ctx.rb.AddForce(multiplier * moveActionValue * (ctx.moveSpeed + 4.905f) / 1.25f);
             }
     }
-    public void Exit()
-    {
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Move").canceled -= MoveInputCancel;
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= Input_Attack;
-    }
-    InputAction inputAction_Move;
-    Vector2 direction = Vector2.zero;
-    void MoveInputCancel(InputAction.CallbackContext callback)
-    {
-        fsm.ChangeState(ctx.idle);
-    }
-    void Input_Attack(InputAction.CallbackContext callback)
-    {
-        if (ctx.isGround)
-        {
-            fsm.ChangeState(ctx.attack);
-        }
-    }
-
 }

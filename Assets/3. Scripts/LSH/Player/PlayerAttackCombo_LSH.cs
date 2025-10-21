@@ -3,65 +3,67 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerAttackCombo_LSH : IPlayerState_LSH
 {
-    public float duration = 0.7f;
-    public int multiHitCount = 1;
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerAttackCombo_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    float elapsedTime;
-    bool isAnimation;
+    private const float duration = 1.1f;   // 1타 총 길이
+    public const int multiHitCount = 1; // 동시타격 가능한 적의 수
+    private const float comboAvailableTime = 0.75f; //콤보나 패링등으로 전환이 가능한 시간
+    private float _elapsedTime;
+    private InputAction parryAction;
+    bool parryPressed;
     public void Enter()
     {
-        ctx.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
-        ctx.state = PlayerController_LSH.State.AttackCombo;
-        elapsedTime = 0f;
-        attackedColliders.Clear();
-        isAnimation = false;
+        if (parryAction == null)
+            parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
+        ctx.attackRange.onTriggetStay2D += TriggerHandler;
+        _elapsedTime = 0f;
+        parryPressed = false;
+        attacked.Clear();
+        ctx.animator.Play("Player_Attack2");
     }
-    public void Update()
+    public void Exit()
     {
-
+        ctx.attackRange.onTriggetStay2D -= TriggerHandler;
     }
-    public void FixedUpdate()
+    public void UpdateState()
     {
-        elapsedTime += Time.fixedDeltaTime;
-        if (elapsedTime < 0.06f)
+        _elapsedTime += Time.deltaTime;
+        if(!parryPressed) parryPressed = parryAction.IsPressed();
+        if (_elapsedTime < 0.03f)
         {
-            if (ctx.isParryInput)
+            if (parryPressed)
+                fsm.ChangeState(ctx.parry);
+            if (!ctx.Grounded)
+                fsm.ChangeState(ctx.idle);
+        }
+        ///////////////////////////////////////////////////////////
+        if (_elapsedTime > comboAvailableTime)
+        {
+            if (parryPressed)
             {
-                Debug.Log("Parry");
                 fsm.ChangeState(ctx.parry);
             }
-            if (!ctx.isGround)
-            {
-                fsm.ChangeState(ctx.idle);
-            }
         }
-        else if (!isAnimation)
-        {
-            ctx.animator.Play("Player_Attack2");
-            isAnimation = true;
-        }
-        if (elapsedTime > duration)
+        ///////////////////////////////////////////////////////////
+        if (_elapsedTime > duration)
         {
             fsm.ChangeState(ctx.idle);
         }
     }
-    public void Exit()
+    public void UpdatePhysics()
     {
-        ctx.attackRange.onTriggetStay2D -= Handler_TriggerStay2D;
+
     }
-    List<Collider2D> attackedColliders = new List<Collider2D>();
-    void Handler_TriggerStay2D(Collider2D coll)
+    List<Collider2D> attacked = new List<Collider2D>();
+    void TriggerHandler(Collider2D coll)
     {
         if (coll.gameObject.layer != LayerMask.NameToLayer("Monster")) return;
-        if (attackedColliders.Count >= multiHitCount) return;
-        if (!attackedColliders.Contains(coll))
+        if (attacked.Count >= multiHitCount) return;
+        if (!attacked.Contains(coll))
         {
-            attackedColliders.Add(coll);
-            EventManager.I.onAttack(new EventManager.AttackData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 110f));
+            attacked.Add(coll);
+            GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 180));
         }
     }
-    
-    
 }
