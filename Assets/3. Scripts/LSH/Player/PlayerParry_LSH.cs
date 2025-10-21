@@ -6,7 +6,7 @@ public class PlayerParry_LSH : IPlayerState_LSH
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerParry_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.6f;   // 총 길이
-    private const float parryTime = 0.3f;   // 패링 시간
+    private const float parryTime = 0.44f;   // 패링 시간
     private float _elapsedTime;
     public void Enter()
     {

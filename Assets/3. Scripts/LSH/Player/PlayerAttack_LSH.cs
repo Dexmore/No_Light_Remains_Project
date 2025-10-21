@@ -6,9 +6,9 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerAttack_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.88f;   // 1타 총 길이
+    private const float duration = 0.78f;   // 1타 총 길이
     public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.65f; //콤보나 패링등으로 전환이 가능한 시간
+    private const float comboAvailableTime = 0.61f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction attackAction;
     bool attackComboPressed;
@@ -37,8 +37,12 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if (!parryPressed) parryPressed = parryAction.IsPressed();
-        if (_elapsedTime < 0.03f)
+        if (!parryPressed)
+        {
+            if(_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
+            parryPressed = parryAction.IsPressed();
+        }
+        if (_elapsedTime < 0.05f)
         {
             if (parryPressed)
                 fsm.ChangeState(ctx.parry);
@@ -75,7 +79,7 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     }
     void PlayerAttackComboInput(InputAction.CallbackContext callback)
     {
-        if (_elapsedTime < comboAvailableTime - 0.25f) return;
+        if (_elapsedTime < comboAvailableTime - 0.24f) return;
         if (!ctx.Grounded) return;
         attackComboPressed = true;
     }
@@ -87,7 +91,7 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         if (!attacked.Contains(coll))
         {
             attacked.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 90));
+            GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 80));
         }
     }
 }

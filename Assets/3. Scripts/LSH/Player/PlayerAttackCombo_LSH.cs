@@ -63,7 +63,7 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
         if (!attacked.Contains(coll))
         {
             attacked.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 180));
+            GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 190));
         }
     }
 }
