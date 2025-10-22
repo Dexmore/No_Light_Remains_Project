@@ -136,7 +136,6 @@ public class MonsterSensor : MonoBehaviour
             // aggressive --> Fight 상태 변화
             if (control.HasCondition(MonsterControl.Condition.Peaceful))
             {
-                bool find = false;
                 foreach (var element in visibilites)
                 {
                     if (element.Value > 0.75f)
@@ -207,6 +206,7 @@ public class MonsterSensor : MonoBehaviour
             {
                 sum++;
             }
+            await UniTask.Delay(1);
         }
         if (rayCount == 0) return 0f;
         float result = sum / rayCount;

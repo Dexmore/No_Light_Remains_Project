@@ -1,5 +1,5 @@
 using UnityEngine;
-public class Interactable : MonoBehaviour
+public abstract class Interactable : MonoBehaviour
 {
     [System.Serializable]
     [System.Flags]
@@ -9,8 +9,7 @@ public class Interactable : MonoBehaviour
         Item = 1<<1,
         NPC = 1<<2,
         Object = 1<<3,
-        Object_Light = 1<<4,
-        Object_Dark = 1<<5,
+        LightObject = 1<<4,
     }
-    public Type type;
+    public abstract Type type { get; }
 }

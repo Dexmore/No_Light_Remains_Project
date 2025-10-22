@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-public class MonsterLongRangeAttack : MonsterState
+public class MonsterRangeAttack : MonsterState
 {
     public Vector2 durationRange;
     float duration;
@@ -15,7 +15,7 @@ public class MonsterLongRangeAttack : MonsterState
         await UniTask.Yield(cts.Token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
-        anim.Play("LRAttack");
+        anim.Play("RAttack");
     }
     public override async UniTask Activate(CancellationToken token)
     {

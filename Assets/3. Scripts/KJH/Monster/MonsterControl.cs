@@ -96,14 +96,12 @@ public class MonsterControl : MonoBehaviour
         MonsterState[] abilities = GetComponents<MonsterState>();
         for (int j = 0; j < System.Enum.GetValues(typeof(State)).Length; j++)
         {
-            bool temp = false;
             for (int i = 0; i < abilities.Length; i++)
             {
                 if (abilities[i].mapping == (State)j)
                 {
                     dictionary.Add((State)j, abilities[i]);
                     abilities[i].enabled = false;
-                    temp = true;
                     break;
                 }
             }

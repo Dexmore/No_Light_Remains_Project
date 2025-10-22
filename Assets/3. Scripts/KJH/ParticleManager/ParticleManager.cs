@@ -27,18 +27,14 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         _clone.Play();
         return _clone;
     }
-    public Transform PlayTextParticle(string Name, string text, Vector3 pos, Vector3 scale, Color color, float time = 1f, Transform parent = null)
-    {
+    
+    // public Transform PlayTextParticle(string Name, string text, Vector3 pos, Vector3 scale, Color color, float time = 1f, Transform parent = null)
+    // {
 
-        //구현 예정. 주로 데미지 이펙트라던가. Miss ! Avoid ! 같은 파티클을 만들때 쓸것임 
-        return null;
-    }
+    //     //구현 예정. 주로 데미지 이펙트라던가. Miss ! Avoid ! 같은 파티클을 만들때 쓸것임 
+    //     return null;
+    // }
 
-    public RectTransform PlayEffectSprite(string Name, Vector2 screenPosition, Quaternion rot, int FPS)
-    {
-        // 구현 예정. 주로 메인메뉴나 아이템창 같은 UI 캔버스에서 스프라이트로 된것을 재생하려고 만듬. 
-        return null;
-    }
 
 
 
