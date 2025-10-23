@@ -69,7 +69,7 @@ public class KeyRemapper_KWY : MonoBehaviour
                     waitingForInputPanel.SetActive(false);
                 }
 
-                // FindObjectOfType<GameSettingManager_KWY>().OnKeyBindingChanged();
+                FindObjectOfType<GameSettingManager_KWY>().OnKeyBindingChanged();
             })
             .OnCancel(operation =>
             {

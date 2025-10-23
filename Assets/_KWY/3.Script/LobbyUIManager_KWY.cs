@@ -1,16 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 
 public class LobbyUIManager_KWY : MonoBehaviour
 {
+    [Header("Input Action")]
+    [SerializeField] private InputActionReference cancelAction;
+
     [Header("UI Panel")]
     [SerializeField] private GameObject Title_p;
     [SerializeField] private GameObject Story_p;
     [SerializeField] private GameObject Boss_p;
     [SerializeField] private GameObject Setting_p;
     [SerializeField] private GameObject Exit_p;
+    [SerializeField] private GameObject ESC_i;
+    [SerializeField] private Image Brightness_p;
 
     private Stack<GameObject> uiPanelStack = new Stack<GameObject>();
 
@@ -31,6 +37,44 @@ public class LobbyUIManager_KWY : MonoBehaviour
 
         if (Exit_p != null)
             Exit_p.SetActive(false);
+
+        if (ESC_i != null)
+            ESC_i.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        if (cancelAction != null)
+        {
+            cancelAction.action.performed += OnCancelPerformed;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (cancelAction != null)
+        {
+            cancelAction.action.performed -= OnCancelPerformed;
+        }
+    }
+
+    private void OnCancelPerformed(InputAction.CallbackContext context)
+    {
+        OnEsc();
+    }
+
+    private void Start()
+    {
+        float b = GameSettingDataManager_KWY.Instance.setting.brightness;
+        Brightness_p.color = new Color(0, 0, 0, 1 - b);
+    }
+
+    private void Update()
+    {
+        if (Story_p.activeSelf || Boss_p.activeSelf || Setting_p.activeSelf || Exit_p.activeSelf)
+            ESC_i.SetActive(true);
+        else
+            ESC_i.SetActive(false);
     }
 
     public void OnEsc()
@@ -69,9 +113,18 @@ public class LobbyUIManager_KWY : MonoBehaviour
         OpenPanel(Exit_p);
     }
 
-    public void OnDontExit()
+    private void OnDontExit()
     {
-        CloseTopPanel();
+        OnEsc();
+    }
+
+    public void OnExitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     private void OpenPanel(GameObject panelToOpen)
