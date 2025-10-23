@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem; // 새로운 Input System을 사용하기 위해 추가
 
-namespace YourProject.UI.Test
+namespace Project.UI.Test
 {
     public class InventoryUITester : MonoBehaviour
     {

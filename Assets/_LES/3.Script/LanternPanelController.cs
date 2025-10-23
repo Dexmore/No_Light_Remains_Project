@@ -12,4 +12,6 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     {
         Debug.Log("랜턴 탭이 닫혔습니다.");
     }
+
+    
 }

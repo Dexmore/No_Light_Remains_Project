@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.InputSystem;
 
-namespace YourProject.UI
+namespace Project.UI
 {
     [DisallowMultipleComponent]
     public class TabGroup : MonoBehaviour
@@ -27,10 +27,6 @@ namespace YourProject.UI
         [SerializeField] private Color tabIdleColor = Color.gray;
         [SerializeField] private Color tabHoverColor = Color.white;
         [SerializeField] private Color tabActiveColor = Color.white;
-        
-        [Header("효과 설정")]
-        [SerializeField] [Range(0.1f, 1f)] 
-        private float contentFadeDuration = 0.2f;
 
         // [추가] 각 패널의 기능 스크립트를 담을 리스트
         private List<ITabContent> _tabContents;
@@ -121,40 +117,49 @@ namespace YourProject.UI
             SelectTab(prevIndex);
         }
 
-        // [수정 2] 탭 전환 로직을 안정적으로 변경
         private void SelectTab(int newIndex)
         {
-            // 같은 탭을 또 누르면 아무것도 하지 않음
             if (_currentTabIndex == newIndex || newIndex < 0 || newIndex >= tabButtons.Count) return;
 
-            // 이전에 실행되던 전환 코루틴이 있다면 중지
-            if (_tabSwitchCoroutine != null)
-            {
-                StopCoroutine(_tabSwitchCoroutine);
-            }
-            
-            // 새로운 탭 전환 코루틴을 실행
-            _tabSwitchCoroutine = StartCoroutine(SwitchTabsCoroutine(newIndex));
-        }
-
-        private IEnumerator SwitchTabsCoroutine(int newIndex)
-        {
             int oldIndex = _currentTabIndex;
-            _currentTabIndex = newIndex; // 현재 탭 인덱스를 즉시 업데이트
+            _currentTabIndex = newIndex;
             
-            UpdateTabButtonColors(); // 탭 버튼 색상도 즉시 업데이트
-
-            // 이전 콘텐츠를 페이드 아웃
+            UpdateTabButtonColors();
+            
+            // 이전 탭 즉시 숨김
             if (oldIndex != -1)
             {
                 _tabContents[oldIndex]?.OnHide();
-                yield return StartCoroutine(FadeContent(contentPanels[oldIndex], 0f));
+                contentPanels[oldIndex].alpha = 0f;
+                contentPanels[oldIndex].interactable = false;
+                contentPanels[oldIndex].blocksRaycasts = false;
             }
 
-            // 새 콘텐츠를 페이드 인
+            // 새 탭 즉시 표시
             _tabContents[newIndex]?.OnShow();
-            yield return StartCoroutine(FadeContent(contentPanels[newIndex], 1f, true));
+            contentPanels[newIndex].alpha = 1f;
+            contentPanels[newIndex].interactable = true;
+            contentPanels[newIndex].blocksRaycasts = true;
         }
+
+        // private IEnumerator SwitchTabsCoroutine(int newIndex)
+        // {
+        //     int oldIndex = _currentTabIndex;
+        //     _currentTabIndex = newIndex; // 현재 탭 인덱스를 즉시 업데이트
+            
+        //     UpdateTabButtonColors(); // 탭 버튼 색상도 즉시 업데이트
+
+        //     // 이전 콘텐츠를 페이드 아웃
+        //     if (oldIndex != -1)
+        //     {
+        //         _tabContents[oldIndex]?.OnHide();
+        //         yield return StartCoroutine(FadeContent(contentPanels[oldIndex], 0f));
+        //     }
+
+        //     // 새 콘텐츠를 페이드 인
+        //     _tabContents[newIndex]?.OnShow();
+        //     yield return StartCoroutine(FadeContent(contentPanels[newIndex], 1f, true));
+        // }
         
         private void UpdateTabButtonColors()
         {
@@ -164,29 +169,6 @@ namespace YourProject.UI
                 colors.normalColor = (i == _currentTabIndex) ? tabActiveColor : tabIdleColor;
                 colors.highlightedColor = (i == _currentTabIndex) ? tabActiveColor : tabHoverColor;
                 tabButtons[i].colors = colors;
-            }
-        }
-
-        private IEnumerator FadeContent(CanvasGroup panel, float targetAlpha, bool isInteractableAfter = false)
-        {
-            panel.interactable = false;
-            panel.blocksRaycasts = false;
-            
-            float startAlpha = panel.alpha;
-            float timer = 0f;
-
-            while (timer < contentFadeDuration)
-            {
-                timer += Time.unscaledDeltaTime;
-                panel.alpha = Mathf.Lerp(startAlpha, targetAlpha, timer / contentFadeDuration);
-                yield return null;
-            }
-
-            panel.alpha = targetAlpha;
-            if (isInteractableAfter)
-            {
-                panel.interactable = true;
-                panel.blocksRaycasts = true;
             }
         }
     }
