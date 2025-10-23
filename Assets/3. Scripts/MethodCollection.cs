@@ -4,7 +4,7 @@ using UnityEngine;
 public static class MethodCollection
 {
 
-    // 1. 피셔-예이츠 리스트 셔플 
+    // [1. 피셔-예이츠 리스트 셔플]
     // 사용법 : 리스트 뒤에 .Shuffle()
     private static System.Random random = new System.Random();
     public static void Shuffle<T>(this IList<T> values)
@@ -33,7 +33,7 @@ public static class MethodCollection
         return array;
     }
     
-    // 2. length길이의 랜덤문자열생성.
+    // [2. length길이의 랜덤 문자열생성]
     //사용법 : string str = RandomString(8);
     private const string VALID_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
     public static string RandomString(int length)
@@ -48,7 +48,7 @@ public static class MethodCollection
         }
         return sb.ToString();
     }
-    // 3. 이름 앞에 ---가 붙은 게임오브젝트를 제외한, 씬에서 최상위 루트를 찾아주는 메소드
+    // [3. 이름앞에 ---가 붙은걸 제외한 최상위 루트를 찾아주는 메소드]
     // 사용법 : 콜라이더나 트랜스폼 뒤에 .Root()
     public static Transform Root(this Collider x)
     {
@@ -87,7 +87,7 @@ public static class MethodCollection
         }
         return result;
     }
-    // 4. 공간상에서 두 Ray 가 만나는 교점을 찾는 메소드
+    // [4. 공간상에서 두 Ray가 만나는 교점을 찾는 메소드]
     // 리턴 값이 (-999, -999, -999) 라는건 두 Ray가 공간상에서 서로 안겹친다는 의미
     public static Vector3 RayRayIntersection(Vector3 ray1_origin, Vector3 ray1_dir, Vector3 ray2_origin, Vector3 ray2_dir, bool oneside = true)
     {
@@ -122,7 +122,7 @@ public static class MethodCollection
             return result;
         return (point1 + point2) / 2f;
     }
-    // 4. 선분 p1 p2 와 선분 p3 p4 사이의 최단거리
+    // [5. 선분 p1 p2 와 선분 p3 p4 사이의 최단거리]
     public static float MinDistanceBetweenSegments(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
     {
         Vector3 d1 = p2 - p1; // 선분 1의 방향 벡터

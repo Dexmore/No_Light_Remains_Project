@@ -1,16 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
 public class Stage101Control : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [ReadOnlyInspector] [SerializeField] int remainMonsterCount;
+    List<MonsterControl> remainMonsters = new List<MonsterControl>();
+    public InteractablePortal[] nextPortal;
     void Start()
     {
-        
+        remainMonsters = FindObjectsByType<MonsterControl>(sortMode: FindObjectsSortMode.InstanceID).ToList();
     }
-
-    // Update is called once per frame
-    void Update()
+    IEnumerator CheckCount()
     {
-        
+        while(true)
+        {
+            yield return YieldInstructionCache.WaitForSeconds(1f);
+            remainMonsters.Remove(null);
+            remainMonsterCount = remainMonsters.Count;
+            if(remainMonsterCount == 0)
+            {
+                
+            }
+        }
     }
+    
+
 }

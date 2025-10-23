@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-public class Camera : MonoBehaviour
+public class FollowCamera : MonoBehaviour
 {
     public Transform target;
     public float smoothTime = 0.3f;

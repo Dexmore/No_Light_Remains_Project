@@ -33,7 +33,7 @@ public class PlayerFall_LSH : IPlayerState_LSH
     public void UpdatePhysics()
     {
         // 유승훈 기획님 요청으로 Fall상태에서 더 빨리 낙하했으면 좋겠다고 해서 추가
-        ctx.rb.AddForceY(-13f);
+        ctx.rb.AddForceY(-16f);
 
         // 아래는 낙하중에 동시에 이동 처리
 
