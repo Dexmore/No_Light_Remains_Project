@@ -9,7 +9,7 @@ public class RecordSlotUI : MonoBehaviour
     [SerializeField] private GameObject newIndicator; // "New" 알림 아이콘 (선택 사항)
 
     private RecordData _currentRecord;
-    private RecordPanelController _controller; // [중요] 부모 컨트롤러
+    private RecordPanelController _controller; //부모 컨트롤러
     private Button _button;
 
     private void Awake()
@@ -18,11 +18,7 @@ public class RecordSlotUI : MonoBehaviour
         _button?.onClick.AddListener(OnSlotClicked);
     }
 
-    /// <summary>
-    /// 이 슬롯에 기록물 데이터를 할당합니다.
-    /// </summary>
-    /// <param name="data">표시할 기록물 데이터</param>
-    /// <param name="controller">이 슬롯을 관리하는 부모 컨트롤러</param>
+    // 이 슬롯에 기록물 데이터를 할당합니다.
     public void SetData(RecordData data, RecordPanelController controller)
     {
         _currentRecord = data;
@@ -35,14 +31,12 @@ public class RecordSlotUI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 이 슬롯이 클릭되었을 때의 동작
-    /// </summary>
+    //이 슬롯이 클릭되었을 때의 동작
     public void OnSlotClicked()
     {
         if (_currentRecord != null && _controller != null)
         {
-            // [중요] 부모 컨트롤러에게 "이 기록물의 상세 내용을 보여줘"라고 알림
+            // 부모 컨트롤러에게 "이 기록물의 상세 내용을 보여줘"라고 알림
             _controller.ShowRecordDetails(_currentRecord);
             
             // 한 번 클릭하면 'New' 표시 제거

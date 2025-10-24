@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // 새로운 Input System을 사용하기 위해 추가
+using UnityEngine.InputSystem;
 
 namespace Project.UI.Test
 {
@@ -13,7 +13,7 @@ namespace Project.UI.Test
         [Header("테스트 설정")]
         [Tooltip("인벤토리를 열고 닫을 테스트용 키입니다.")]
         [SerializeField]
-        private Key toggleKey = Key.I; // KeyCode에서 Key로 변경
+        private Key toggleKey = Key.I; //KeyCode에서 Key로 변경
 
         private void Awake()
         {
@@ -26,10 +26,10 @@ namespace Project.UI.Test
 
         private void Update()
         {
-            // Keyboard.current가 null이 아닌지 확인하여 키보드가 연결되어 있는지 체크합니다.
+            //Keyboard.current가 null이 아닌지 확인하여 키보드가 연결되어 있는지 체크합니다.
             if (Keyboard.current == null) return;
             
-            // Input.GetKeyDown(toggleKey) 대신 새로운 Input System 방식으로 키 입력 확인
+            //Input.GetKeyDown(toggleKey) 대신 새로운 Input System 방식으로 키 입력 확인
             if (Keyboard.current[toggleKey].wasPressedThisFrame)
             {
                 if (inventoryUI.gameObject.activeInHierarchy)

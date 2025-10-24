@@ -28,7 +28,7 @@ namespace Project.UI
         [SerializeField] private Color tabHoverColor = Color.white;
         [SerializeField] private Color tabActiveColor = Color.white;
 
-        // [추가] 각 패널의 기능 스크립트를 담을 리스트
+        //각 패널의 기능 스크립트를 담을 리스트
         private List<ITabContent> _tabContents;
 
         private int _currentTabIndex = -1;
@@ -37,7 +37,7 @@ namespace Project.UI
         // Awake는 Start보다 먼저 호출됩니다. 초기화에 적합합니다.
         private void Awake()
         {
-            // [추가] contentPanels을 기반으로 기능 스크립트를 찾아 리스트에 저장
+            //contentPanels을 기반으로 기능 스크립트를 찾아 리스트에 저장
             _tabContents = new List<ITabContent>();
             foreach (var panel in contentPanels)
             {
@@ -68,7 +68,7 @@ namespace Project.UI
         // OnEnable은 UI가 활성화될 때마다 호출됩니다.
         private void OnEnable()
         {
-            // [수정 1] UI가 켜질 때 첫 탭 콘텐츠가 바로 보이도록 수정
+            // UI가 켜질 때 첫 탭 콘텐츠가 바로 보이도록 수정
             // 페이드 효과 없이 즉시 첫 탭의 상태를 설정합니다.
             // 전체 UI의 페이드 효과는 부모인 InventoryUI가 담당하므로 여기서 또 페이드를 할 필요가 없습니다.
             if (tabButtons.Count > 0)
@@ -90,7 +90,7 @@ namespace Project.UI
                 // 탭 버튼 색상도 첫 탭 기준으로 즉시 설정
                 UpdateTabButtonColors();
 
-                // [추가] 첫 탭의 OnShow() 호출
+                // 첫 탭의 OnShow() 호출
                 _tabContents[0]?.OnShow();
             }
         }
@@ -141,25 +141,6 @@ namespace Project.UI
             contentPanels[newIndex].interactable = true;
             contentPanels[newIndex].blocksRaycasts = true;
         }
-
-        // private IEnumerator SwitchTabsCoroutine(int newIndex)
-        // {
-        //     int oldIndex = _currentTabIndex;
-        //     _currentTabIndex = newIndex; // 현재 탭 인덱스를 즉시 업데이트
-            
-        //     UpdateTabButtonColors(); // 탭 버튼 색상도 즉시 업데이트
-
-        //     // 이전 콘텐츠를 페이드 아웃
-        //     if (oldIndex != -1)
-        //     {
-        //         _tabContents[oldIndex]?.OnHide();
-        //         yield return StartCoroutine(FadeContent(contentPanels[oldIndex], 0f));
-        //     }
-
-        //     // 새 콘텐츠를 페이드 인
-        //     _tabContents[newIndex]?.OnShow();
-        //     yield return StartCoroutine(FadeContent(contentPanels[newIndex], 1f, true));
-        // }
         
         private void UpdateTabButtonColors()
         {
