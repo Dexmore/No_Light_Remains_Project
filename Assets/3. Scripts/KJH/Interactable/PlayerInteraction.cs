@@ -40,7 +40,7 @@ public class PlayerInteraction : MonoBehaviour
     PlayerController_LSH control;
     void Init()
     {
-        camTR = FindAnyObjectByType<Camera>(FindObjectsInactive.Include).transform.GetChild(0);
+        camTR = FindAnyObjectByType<FollowCamera>(FindObjectsInactive.Include).transform.GetChild(0);
         TryGetComponent(out control);
         Sensor(cts.Token).Forget();
         target = null;

@@ -6,6 +6,7 @@ using System.Linq;
 public class MonsterBiteAttack : MonsterState
 {
     public Vector2 durationRange;
+    public float range = 1.4f;
     float duration;
     int multiHitCount = 1;
     public override MonsterControl.State mapping => MonsterControl.State.BiteAttack;
@@ -16,7 +17,6 @@ public class MonsterBiteAttack : MonsterState
         await UniTask.Yield(cts.Token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
-        anim.Play("BAttack");
     }
     public override async UniTask Activate(CancellationToken token)
     {
@@ -29,19 +29,43 @@ public class MonsterBiteAttack : MonsterState
         }
         Transform target = sensor.memories.First().Key.transform;
         Vector2 moveDirection = target.position - transform.position;
-
-        bool moveCondition = (moveDirection.magnitude > sensor.closeRadius) ||
-        (moveDirection.x > 0 && model.right.x < 0) || (moveDirection.x < 0 && model.right.x > 0);
-        if (moveCondition)
+        moveDirection.Normalize();
+        int moveCondition = 0;
+        float dist = Mathf.Abs(target.position.x - transform.position.x);
+        if (dist > 1.2f * range + 0.2f) moveCondition = 1;
+        else if (dist < 0.7f * range - 0.2f) moveCondition = 2;
+        if (moveCondition == 0)
+        {
+            await UniTask.Yield(token);
+            moveDirection = target.position - transform.position;
+            moveDirection.Normalize();
+            dist = Mathf.Abs(target.position.x - transform.position.x);
+            if (dist < 0.66f * range - 0.2f)
+                rb.AddForce(3f * -moveDirection, ForceMode2D.Impulse);
+            Debug.Log(dist);
+            if (moveDirection.x > 0 && model.right.x < 0)
+                model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            else if (moveDirection.x < 0 && model.right.x > 0)
+                model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            anim.Play("BAttack");
+        }
+        else
         {
             float time = Time.time;
-            float slow = Random.Range(0.3f, 1.2f);
-            while (Time.time - time < 0.2f)
+            while (Time.time - time < 0.4f)
             {
                 moveDirection = target.position - transform.position;
                 moveDirection.y = 0;
                 moveDirection.Normalize();
+                dist = Mathf.Abs(target.position.x - transform.position.x);
+                if (dist > 1.2f * range + 0.2f) moveCondition = 1;
+                else if (dist < 0.6f * range - 0.2f) moveCondition = 2;
+                if (moveCondition == 2)
+                {
+                    moveDirection = (transform.position - target.position).normalized;
+                }
                 float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
+
                 // 캐릭터 좌우 방향 설정
                 if (moveDirection.x > 0 && model.right.x < 0)
                 {
@@ -77,15 +101,24 @@ public class MonsterBiteAttack : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * slow * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     }
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cts.Token);
+                if (dist <= 0.9f * range && dist >= 0.7f * range) break;
             }
+            await UniTask.Yield(token);
+            moveDirection = target.position - transform.position;
+            moveDirection.Normalize();
+            dist = Mathf.Abs(target.position.x - transform.position.x);
+            if (dist < 0.66f * range - 0.2f)
+                rb.AddForce(3f * -moveDirection, ForceMode2D.Impulse);
+            if (moveDirection.x > 0 && model.right.x < 0)
+                model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            else if (moveDirection.x < 0 && model.right.x > 0)
+                model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            anim.Play("BAttack");
         }
-        else
-        {
-            await UniTask.Delay((int)(1000f * 0.2f), cancellationToken: token);
-        }
+
         await UniTask.Delay((int)(1000f * (duration - 0.2f)), cancellationToken: token);
         control.ChangeNextState();
     }

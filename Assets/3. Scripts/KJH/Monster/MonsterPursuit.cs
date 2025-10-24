@@ -12,6 +12,10 @@ public class MonsterPursuit : MonsterState
     }
     Transform target;
     bool isAnimation;
+    public void Retry()
+    {
+        Activate(cts.Token).Forget();
+    }
     public override async UniTask Activate(CancellationToken token)
     {
         if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
@@ -36,6 +40,11 @@ public class MonsterPursuit : MonsterState
         }
         for (int i = 1; i < result.Length; i++)
         {
+            if (i > 1 && Random.value < 0.25f)
+            {
+                Retry();
+                return;
+            }
             Vector2 target = result[i];
             //Debug.Log(target);
             //Debug.Log((Vector2)transform.position + astar.offeset * Vector2.up);
@@ -113,13 +122,15 @@ public class MonsterPursuit : MonsterState
                 }
             }
         }
-
-
+        await UniTask.Delay(50, cancellationToken: token);
+        if (Random.value < 0.75f)
+        {
+            Retry();
+            return;
+        }
         //Debug.Log("길 찾기");
-        await UniTask.Delay(3000, cancellationToken: token);
-
-
-
+        anim.Play("Idle");
+        await UniTask.Delay(Random.Range(500,3000), cancellationToken: token);
         await UniTask.Yield(cts.Token);
         control.ChangeNextState();
     }

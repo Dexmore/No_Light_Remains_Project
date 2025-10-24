@@ -564,6 +564,7 @@ public class MonsterControl : MonoBehaviour
             ChangeState(State.Die);
     }
     #endregion
+    
 
 
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum MonsterType { Small, Large, Boss }
+public enum MonsterType { Small, Middle, Large, Boss }
 
 [CreateAssetMenu(fileName = "MonsterData", menuName = "Game/Monster Data")]
 public class MonsterDataSO : ScriptableObject

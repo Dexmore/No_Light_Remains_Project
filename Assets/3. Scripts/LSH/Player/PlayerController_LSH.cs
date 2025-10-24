@@ -25,9 +25,7 @@ public class PlayerController_LSH : MonoBehaviour
 
     [Header("Input (use bound actions)")]
     public InputActionAsset inputActionAsset;
-    private InputAction parryAction; // ⬅ 패링
-    private InputAction lanternAction; // ⬅ 랜턴
-    private InputAction interactAction;
+    private InputAction lanternAction;
 
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Animator animator;
@@ -74,6 +72,7 @@ public class PlayerController_LSH : MonoBehaviour
         attackRange = GetComponentInChildren<AttackRange>(true);
         height = capsuleCollider2D.size.y;
         width = capsuleCollider2D.size.x;
+        lightSystem = GetComponentInChildren<LightSystem>(true);
 
         fsm = new PlayerStateMachine_LSH();
         idle = new PlayerIdle_LSH(this, fsm);
@@ -94,6 +93,8 @@ public class PlayerController_LSH : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").performed += DashInput;
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashInputCancel;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashInputCancel;
+        lanternAction = inputActionAsset.FindActionMap("Player").FindAction("Lantern");
+        lanternAction.performed += LanternInput;
         GameManager.I.onHit += HitHandler;
 
     }
@@ -103,6 +104,7 @@ public class PlayerController_LSH : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").performed -= DashInput;
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashInputCancel;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashInputCancel;
+        lanternAction.performed -= LanternInput;
     }
 
     void Update()
@@ -225,13 +227,13 @@ public class PlayerController_LSH : MonoBehaviour
 
         if (Avoided)
         {
-            
+            Debug.Log("회피 성공");
             return;
         }
 
-        if(Parred)
+        if (Parred)
         {
-            
+            Debug.Log("패링 성공");
             return;
         }
 
@@ -240,7 +242,31 @@ public class PlayerController_LSH : MonoBehaviour
         if (currentHealth <= 0)
             fsm.ChangeState(die);
     }
+    #region Use Lantern
+    LightSystem lightSystem;
+    void LanternInput(InputAction.CallbackContext callback)
+    {
+        GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
+        GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+        if (light0.activeSelf)
+        {
+            light0.SetActive(false);
+            light1.SetActive(false);
+        }
+        else
+        {
+            light0.SetActive(true);
+            light1.SetActive(true);
+        }       
+    }
 
+    #endregion
+    #region Use Potion
+
+    #endregion
+    #region Open Inventory
+    
+    #endregion
 
 
 
