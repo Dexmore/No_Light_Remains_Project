@@ -16,7 +16,7 @@ public class MonsterPursuit : MonsterState
     {
         Activate(cts.Token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
         {

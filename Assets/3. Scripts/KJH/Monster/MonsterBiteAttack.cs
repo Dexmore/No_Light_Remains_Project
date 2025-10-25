@@ -18,7 +18,7 @@ public class MonsterBiteAttack : MonsterState
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         // 이동
         if (sensor.memories.Count == 0)
@@ -42,7 +42,7 @@ public class MonsterBiteAttack : MonsterState
             dist = Mathf.Abs(target.position.x - transform.position.x);
             if (dist < 0.66f * range - 0.2f)
                 rb.AddForce(3f * -moveDirection, ForceMode2D.Impulse);
-            Debug.Log(dist);
+            //Debug.Log(dist);
             if (moveDirection.x > 0 && model.right.x < 0)
                 model.localRotation = Quaternion.Euler(0f, 0f, 0f);
             else if (moveDirection.x < 0 && model.right.x > 0)

@@ -10,7 +10,7 @@ public class MonsterJump : MonsterState
         await UniTask.Yield(cts.Token);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         anim.Play("Idle");
         rb.AddForce(Vector2.up * control.jumpForce * 50f);

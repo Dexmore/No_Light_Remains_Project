@@ -212,4 +212,6 @@ public class MonsterSensor : MonoBehaviour
         float result = sum / rayCount;
         return result;
     }
+
+    
 }

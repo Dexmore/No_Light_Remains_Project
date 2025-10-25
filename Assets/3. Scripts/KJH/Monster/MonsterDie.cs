@@ -11,7 +11,7 @@ public class MonsterDie : MonsterState
         await UniTask.Yield(cts.Token);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         control.isDie = true;
         await UniTask.Yield(cts.Token);

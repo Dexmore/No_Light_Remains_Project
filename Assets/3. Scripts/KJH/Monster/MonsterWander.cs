@@ -23,7 +23,7 @@ public class MonsterWander : MonsterState
         // }
         isAnimation = false;
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         float startTime = Time.time;
         moveDirection = Vector2.zero;

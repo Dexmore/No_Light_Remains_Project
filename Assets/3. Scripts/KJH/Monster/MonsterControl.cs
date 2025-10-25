@@ -13,6 +13,7 @@ public class MonsterControl : MonoBehaviour
     public LayerMask groundLayer;
     public float currHP;
     [Range(0f, 1f)] public float aggressive = 0.2f;
+
     [Header("SO")]
     public MonsterDataSO data;
     [ReadOnlyInspector] public string ID;
@@ -21,6 +22,7 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public float MoveSpeed;
     [ReadOnlyInspector] public float Attack;
     [ReadOnlyInspector] public float maxHP;
+
     [Header("Pattern")]
     public Pattern[] patterns;
     Astar2DXYPathFinder astar;
@@ -90,7 +92,7 @@ public class MonsterControl : MonoBehaviour
     #region FSM
     [ReadOnlyInspector] public State state;
     [HideInInspector] public State prevState;
-    [HideInInspector] public Dictionary<State, MonsterState> dictionary = new Dictionary<State, MonsterState>();
+    [HideInInspector] public Dictionary<State, MonsterState> stateDictionary = new Dictionary<State, MonsterState>();
     void SettingFSM()
     {
         MonsterState[] abilities = GetComponents<MonsterState>();
@@ -100,7 +102,7 @@ public class MonsterControl : MonoBehaviour
             {
                 if (abilities[i].mapping == (State)j)
                 {
-                    dictionary.Add((State)j, abilities[i]);
+                    stateDictionary.Add((State)j, abilities[i]);
                     abilities[i].enabled = false;
                     break;
                 }
@@ -114,7 +116,7 @@ public class MonsterControl : MonoBehaviour
             ChangeState_ut(newState, cts.Token).Forget();
             return;
         }
-        if (dictionary[newState].coolTime == 0)
+        if (stateDictionary[newState].coolTime == 0)
         {
             float _coolTime = 0;
             bool isFind = false;
@@ -133,7 +135,7 @@ public class MonsterControl : MonoBehaviour
                 }
                 if (isFind) break;
             }
-            dictionary[newState].coolTime = _coolTime;
+            stateDictionary[newState].coolTime = _coolTime;
         }
         ChangeState_ut(newState, cts.Token).Forget();
     }
@@ -154,7 +156,7 @@ public class MonsterControl : MonoBehaviour
             {
                 State state = patterns[i].frequencies[j].state;
                 // state가 dictionary에 없으면 skip 
-                if (!dictionary.ContainsKey(state)) continue;
+                if (!stateDictionary.ContainsKey(state)) continue;
                 // state가 쿨타임 중이면 skip 
                 if (IsCoolTime(state)) continue;
                 // state가 그외에도 할 수 없는 상태라면 skip 
@@ -179,7 +181,7 @@ public class MonsterControl : MonoBehaviour
             {
                 State state = patterns[i].frequencies[j].state;
                 // state가 dictionary에 없으면 skip 
-                if (!dictionary.ContainsKey(state)) continue;
+                if (!stateDictionary.ContainsKey(state)) continue;
                 // state가 쿨타임 중이면 skip
                 if (IsCoolTime(state)) continue;
                 // state가 그외에도 할 수 없는 상태라면 skip 
@@ -203,23 +205,23 @@ public class MonsterControl : MonoBehaviour
         }
         Frequency frequency = patterns[find1].frequencies[find2];
         State nextState = frequency.state;
-        dictionary[nextState].coolTime = frequency.coolTime;
+        stateDictionary[nextState].coolTime = frequency.coolTime;
         ChangeState(nextState);
     }
     async UniTask ChangeState_ut(State newState, CancellationToken token)
     {
         // 이전 state 스크립트는 Disable 처리
-        if (dictionary.Count == 0) return;
-        dictionary[state].Exit();
-        dictionary[state].enabled = false;
+        if (stateDictionary.Count == 0) return;
+        stateDictionary[state].Exit();
+        stateDictionary[state].enabled = false;
         await UniTask.Yield(token);
         prevState = state;
         state = newState;
         // 변경할 state 스크립트는 Enable 처리
-        dictionary[state].enabled = true;
-        dictionary[state].cts?.Cancel();
-        dictionary[state].cts = new CancellationTokenSource();
-        dictionary[state].Enter(dictionary[state].cts.Token).Forget();
+        stateDictionary[state].enabled = true;
+        stateDictionary[state].cts?.Cancel();
+        stateDictionary[state].cts = new CancellationTokenSource();
+        stateDictionary[state].Enter(stateDictionary[state].cts.Token).Forget();
         //Debug.Log($"{transform.name},{GetInstanceID()}] --> {state} 시작");
     }
     [System.Serializable]
@@ -239,9 +241,9 @@ public class MonsterControl : MonoBehaviour
         HandAttack,
         BiteAttack,
         JumpAttack,
-        LoneRangeAttack,
+        RangeAttack,
         RushAttack,
-        SequenceAttack,
+        ComboAttack,
     }
     [System.Serializable]
     public struct Frequency
@@ -318,8 +320,8 @@ public class MonsterControl : MonoBehaviour
     [SerializeField] List<CoolTime> coolTimeList = new List<CoolTime>();
     public void SetCoolTime(State state, float time)
     {
-        if (!dictionary.ContainsKey(state)) return;
-        string tName = dictionary[state].GetType().ToString();
+        if (!stateDictionary.ContainsKey(state)) return;
+        string tName = stateDictionary[state].GetType().ToString();
         int find = coolTimeList.FindIndex(x => x.abilityName == tName);
         // 매개변수 time이 <= 0 인 경우는 쿨타임이 만약 돌아가고 있는게 있다면 강제적으로 초기화하는 용도입니다. (주로 테스트 용)
         if (time <= 0)
@@ -346,7 +348,7 @@ public class MonsterControl : MonoBehaviour
                 //coolTimeList 에 없으므로 새로 등록
                 CoolTime coolTime = new CoolTime();
                 coolTime.abilityName = tName;
-                coolTime.type = dictionary[state].GetType();
+                coolTime.type = stateDictionary[state].GetType();
                 coolTime.cts = new CancellationTokenSource();
                 coolTime.startTime = Time.time;
                 coolTime.duration = time;
@@ -373,24 +375,24 @@ public class MonsterControl : MonoBehaviour
     }
     public void PauseCoolTime(State state)
     {
-        if (!dictionary.ContainsKey(state)) return;
-        string tName = dictionary[state].GetType().ToString();
+        if (!stateDictionary.ContainsKey(state)) return;
+        string tName = stateDictionary[state].GetType().ToString();
         int find = coolTimeList.FindIndex(x => x.abilityName == tName);
         if (find == -1) return;
         coolTimeList[find].isPause = true;
     }
     public void RemoveCoolTime(State state)
     {
-        if (!dictionary.ContainsKey(state)) return;
-        string tName = dictionary[state].GetType().ToString();
+        if (!stateDictionary.ContainsKey(state)) return;
+        string tName = stateDictionary[state].GetType().ToString();
         int find = coolTimeList.FindIndex(x => x.abilityName == tName);
         if (find == -1) return;
         coolTimeList[find].isPause = false;
     }
     public bool IsCoolTime(State state)
     {
-        if (!dictionary.ContainsKey(state)) return false;
-        string tName = dictionary[state].GetType().ToString();
+        if (!stateDictionary.ContainsKey(state)) return false;
+        string tName = stateDictionary[state].GetType().ToString();
         int find = coolTimeList.FindIndex(x => x.abilityName == tName);
         if (find == -1) return false;
         return true;
@@ -485,8 +487,8 @@ public class MonsterControl : MonoBehaviour
     }
     public void AddCanNot(State state, string reason)
     {
-        if (!dictionary.ContainsKey(state)) return;
-        string tName = dictionary[state].GetType().ToString();
+        if (!stateDictionary.ContainsKey(state)) return;
+        string tName = stateDictionary[state].GetType().ToString();
         int find = cannotList.FindIndex(o => o.abilityName == tName && o.reason == reason);
         if (find != -1) return;
         CanNot element = new CanNot(tName, reason);
@@ -504,8 +506,8 @@ public class MonsterControl : MonoBehaviour
     }
     public void RemoveCanNot(State state, string reason)
     {
-        if (!dictionary.ContainsKey(state)) return;
-        RemoveCanNot(dictionary[state].GetType(), reason);
+        if (!stateDictionary.ContainsKey(state)) return;
+        RemoveCanNot(stateDictionary[state].GetType(), reason);
     }
     public bool IsCan(System.Type type)
     {
@@ -516,8 +518,8 @@ public class MonsterControl : MonoBehaviour
     }
     public bool IsCan(State state)
     {
-        if (!dictionary.ContainsKey(state)) return false;
-        string tName = dictionary[state].GetType().ToString();
+        if (!stateDictionary.ContainsKey(state)) return false;
+        string tName = stateDictionary[state].GetType().ToString();
         int find = cannotList.ToList().FindIndex(o => o.abilityName == tName);
         if (find != -1) return false;
         return true;

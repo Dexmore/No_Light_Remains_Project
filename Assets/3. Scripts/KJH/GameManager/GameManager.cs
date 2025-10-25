@@ -10,11 +10,18 @@ public struct HitData
     public Transform attacker;
     public Transform target;
     public float damage;
-    public HitData(Transform attacker, Transform target, float damage)
+    public Type type;
+    public enum Type
+    {
+        Active,
+        Chafe,
+    }
+    public HitData(Transform attacker, Transform target, float damage, Type type = Type.Active)
     {
         this.attacker = attacker;
         this.target = target;
         this.damage = damage;
+        this.type = type;
     }
 }
 public class GameManager : SingletonBehaviour<GameManager>
@@ -221,7 +228,6 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #endregion
     #region Hit Event
-
     public UnityAction<HitData> onHit = (x) => { };
     #endregion
 

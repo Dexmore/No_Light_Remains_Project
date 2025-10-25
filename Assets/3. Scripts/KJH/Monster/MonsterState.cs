@@ -13,7 +13,6 @@ public abstract class MonsterState : MonoBehaviour
     protected MonsterSensor sensor;
     protected Animator anim;
     public abstract UniTask Enter(CancellationToken token);
-    public abstract UniTask Activate(CancellationToken token);
     #region UniTask Setting
     [HideInInspector] public CancellationTokenSource cts;
     protected virtual void OnEnable()

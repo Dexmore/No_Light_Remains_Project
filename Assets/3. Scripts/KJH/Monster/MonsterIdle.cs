@@ -13,7 +13,7 @@ public class MonsterIdle : MonsterState
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         anim.Play("Idle");
         await UniTask.Delay((int)(duration * 1000f), cancellationToken: token);

@@ -7,7 +7,7 @@ public class MonsterRangeAttack : MonsterState
     public Vector2 durationRange;
     float duration;
     int multiHitCount = 1;
-    public override MonsterControl.State mapping => MonsterControl.State.LoneRangeAttack;
+    public override MonsterControl.State mapping => MonsterControl.State.RangeAttack;
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
@@ -17,7 +17,7 @@ public class MonsterRangeAttack : MonsterState
         Activate(token).Forget();
         anim.Play("RAttack");
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
