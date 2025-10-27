@@ -10,30 +10,36 @@ public class PlayerJump_LSH : IPlayerState_LSH
 
     public void Enter()
     {
-        // 점프 실행(파라미터는 컨트롤러가 자동 업데이트)
-        var v = ctx.rb.linearVelocity;
-        v.y = ctx.jumpForce;
-        ctx.rb.linearVelocity = v;
+        // 지상 점프 진입 시 점프력 적용(네 프로젝트 기준에 맞춰 유지)
+        ctx.rb.linearVelocity = new Vector2(ctx.rb.linearVelocity.x, ctx.jumpForce);
+        ctx.animator?.ResetTrigger("Jump");
+        ctx.animator?.SetTrigger("Jump");
+        ctx.StartCoroutine(ctx.ResetTriggerNextFrame("Jump"));
     }
 
     public void Exit() { }
-    public void PlayerKeyInput() { }
 
-    public void UpdateState()
+    public void PlayerKeyInput()
     {
-        if (ctx.rb.linearVelocity.y <= 0f)
-            fsm.ChangeState(ctx.fall);
-
-        if (ctx.AttackPressed)
+        if (ctx.JumpPressed && !ctx.Grounded && ctx.CanAirJump())
         {
-            fsm.ChangeState(ctx.attack);
+            ctx.DoAirJump();
+            // 상태 유지(상승 상태) 또는 재진입 둘 다 가능.
+            fsm.ChangeState(this);
             return;
         }
     }
 
+    public void UpdateState()
+    {
+        // 상승→하강 전환 감지 시 Fall로
+        if (ctx.rb.linearVelocity.y <= 0f)
+            fsm.ChangeState(ctx.fall);
+    }
+
     public void UpdatePhysics()
     {
-        float speed = ctx.moveSpeed * ctx.airMoveMultiplier;
+        float speed = ctx.Grounded ? ctx.moveSpeed : ctx.moveSpeed * ctx.airMoveMultiplier;
         ctx.rb.linearVelocity = new Vector2(ctx.XInput * speed, ctx.rb.linearVelocity.y);
         ctx.UpdateFacing(ctx.XInput);
     }

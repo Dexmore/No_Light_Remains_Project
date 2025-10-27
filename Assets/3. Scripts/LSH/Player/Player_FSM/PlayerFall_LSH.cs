@@ -9,24 +9,27 @@ public class PlayerFall_LSH : IPlayerState_LSH
     { this.ctx = ctx; this.fsm = fsm; }
 
     public void Enter() { }
-    public void Exit()  { }
-    public void PlayerKeyInput() { }
+    public void Exit() { }
+
+    public void PlayerKeyInput()
+    {
+        // ⬇ 하강 중 에어점프
+        if (ctx.JumpPressed && ctx.CanAirJump())
+        {
+            ctx.DoAirJump();
+            fsm.ChangeState(ctx.jump);
+            return;
+        }
+    }
 
     public void UpdateState()
     {
+        // 착지 시 이동/대기
         if (ctx.Grounded)
         {
-            if (Mathf.Abs(ctx.XInput) > 0.01f)
-                fsm.ChangeState(ctx.run);
-            else
-                fsm.ChangeState(ctx.idle);
+            if (Mathf.Abs(ctx.XInput) > 0.01f) fsm.ChangeState(ctx.run);
+            else fsm.ChangeState(ctx.idle);
         }
-
-        if (ctx.AttackPressed)
-        {
-            fsm.ChangeState(ctx.attack);
-            return;
-        }   
     }
 
     public void UpdatePhysics()

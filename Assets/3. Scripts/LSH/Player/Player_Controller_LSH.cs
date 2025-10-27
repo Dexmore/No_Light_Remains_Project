@@ -122,6 +122,14 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     [HideInInspector] public bool isDashing;
     [HideInInspector] public float _dashReadyTime;
 
+    [Header("Air Jump")]
+    public int maxAirJumps = 1;    // 공중에서 가능한 추가 점프 수(= 더블점프면 1)
+    public float coyoteTime = 0.10f; // 코요테타임(지면 이탈 후 짧게 점프 허용)
+    public float jumpBuffer = 0.10f; // 점프 버퍼(조금 먼저 눌러도 허용)
+
+    private int _airJumpsRemaining;
+    private float _lastGroundedTime;
+    private float _lastJumpPressedTime;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -181,6 +189,10 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         // 입력
         XInput = ReadMoveX(moveAction);
         JumpPressed = jumpAction != null && jumpAction.WasPressedThisFrame();
+
+        if (JumpPressed)
+            _lastJumpPressedTime = Time.time;
+
         AttackPressed = attackAction != null && attackAction.WasPressedThisFrame();
 
         // 패링 입력 → 쿨다운 완료 시에만 진입
@@ -200,7 +212,14 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
             fsm.ChangeState(dash);
         }
         // 지면 체크
+
         Grounded = CheckGroundedPrecise();
+        bool wasGrounded = _lastGround != Grounded;
+        if (Grounded)
+        {
+            _lastGroundedTime = Time.time;
+            _airJumpsRemaining = maxAirJumps; // 착지 시 에어점프 갱신
+        }
 
         // FSM
         fsm.PlayerKeyInput();
@@ -221,6 +240,8 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
             if (_hasGround && _lastGround != Grounded)
             { animator.SetBool(HashGround, Grounded); _lastGround = Grounded; }
         }
+
+
     }
 
     void FixedUpdate()
@@ -370,5 +391,20 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     public void SetParryCooldown()
     {
         _parryReadyTime = Time.time + parryCooldown;
+    }
+
+    public bool CanAirJump() => _airJumpsRemaining > 0;
+
+    public void DoAirJump()
+    {
+        // 잔량 소모하고 수직 속도 리셋 후 점프력 적용
+        _airJumpsRemaining = Mathf.Max(0, _airJumpsRemaining - 1);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
+        // 점프 애니 트리거가 있으면 사용
+        animator?.ResetTrigger("Jump");
+        animator?.SetTrigger("Jump");
+        StartCoroutine(ResetTriggerNextFrame("Jump"));
     }
 }
