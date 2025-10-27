@@ -130,6 +130,29 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     private int _airJumpsRemaining;
     private float _lastGroundedTime;
     private float _lastJumpPressedTime;
+
+    [SerializeField] private InputActionReference slamActionRef; // ⬅ Slam 액션(예: KeyCode.K)
+    private InputAction slamAction;
+
+    [Header("Slam")]
+    public float slamFallSpeed = 20f;        // 내려찍기 목표 낙하속도
+    public float slamAccel = 200f;       // 그 속도까지 가속
+    public float slamImpactLock = 0.15f;     // 착지 후 잠깐 락(연출용)
+    public bool lockHorizontalOnSlam = true;// 내려찍는 동안 좌우 잠금
+
+    [Header("Slam Damage")]
+    [SerializeField] private Transform slamPoint; // 발밑/충돌 지점(없으면 transform 사용)
+    public float slamRadius = 1.2f;
+    public int slamDamage = 22;
+    public LayerMask slamHitLayers;          // 보통 enemyLayers와 동일하면 OK
+    public float slamBounceUpForce = 8f;     // 착지 튕김(0이면 없음)
+
+    [Header("Slam I-Frame")]
+    public bool slamIFrame = true;           // 내려찍는 동안 무적 여부
+
+    [HideInInspector] public PlayerSlam_LSH slam;
+    [HideInInspector] public bool isSlamming;
+    private readonly HashSet<Collider2D> _slamHitCache = new();
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -144,6 +167,7 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         attackCombo = new PlayerAttackCombo_LSH(this, fsm);
         parry = new PlayerParry_LSH(this, fsm);   // ⬅ 추가
         dash = new PlayerDash_LSH(this, fsm);
+        slam = new PlayerSlam_LSH(this, fsm);
         _baseScaleX = Mathf.Abs(transform.localScale.x);
         CacheAnimatorParams();
 
@@ -159,6 +183,7 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         parryAction = parryActionRef ? parryActionRef.action : null;
         lanternAction = lanternActionRef ? lanternActionRef.action : null;
         dashAction = dashActionRef ? dashActionRef.action : null;
+        slamAction = slamActionRef ? slamActionRef.action : null;
 
         moveAction?.Enable();
         jumpAction?.Enable();
@@ -166,6 +191,7 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         parryAction?.Enable();
         lanternAction?.Enable();
         dashAction?.Enable();
+        slamAction?.Enable();
     }
 
     void OnDisable()
@@ -176,6 +202,7 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         jumpAction?.Disable();
         moveAction?.Disable();
         dashAction?.Disable();
+        slamAction?.Disable();
     }
 
 
@@ -221,6 +248,10 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
             _airJumpsRemaining = maxAirJumps; // 착지 시 에어점프 갱신
         }
 
+        if (!Grounded && slamAction != null && slamAction.WasPressedThisFrame())
+        {
+            fsm.ChangeState(slam);
+        }
         // FSM
         fsm.PlayerKeyInput();
         fsm.UpdateState();
@@ -356,11 +387,9 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
     // ====== 데미지 입구 (패링/무적으로 차단) ======
     public void TakeDamage(int damage, Vector3 hitFrom)
     {
-        // 패링 무적(있다면) 우선
         if (parryActive || Time.time < _parrySuccessUntil) return;
-
-        // ⬇대시 무적(인스펙터에서 켜면 적용)
         if (dashIFrame && isDashing) return;
+        if (slamIFrame && isSlamming) return; // ⬅ 내려찍기 중 무적
 
         currentHealth -= damage;
         Debug.Log($"[Player] Damaged! -{damage}, HP:{currentHealth}");
@@ -406,5 +435,37 @@ public class PlayerController_LSH : MonoBehaviour, IDamageable_LSH, IParry_LSH
         animator?.ResetTrigger("Jump");
         animator?.SetTrigger("Jump");
         StartCoroutine(ResetTriggerNextFrame("Jump"));
+    }
+
+    private float ReadMoveY(InputAction action)
+    {
+        if (action == null) return 0f;
+        var ect = action.expectedControlType;
+        if (ect == "Vector2")
+        {
+            Vector2 v = action.ReadValue<Vector2>();
+            return v.y;
+        }
+        return 0f;
+    }
+
+    public void SlamSwingBegin() => _slamHitCache.Clear();
+
+    public void DoSlamDamage()
+    {
+        Vector2 center = slamPoint ? (Vector2)slamPoint.position : (Vector2)transform.position;
+        var hits = Physics2D.OverlapCircleAll(center, slamRadius, slamHitLayers);
+
+        foreach (var h in hits)
+        {
+            if (_slamHitCache.Contains(h)) continue;
+            _slamHitCache.Add(h);
+
+            var d1 = h.GetComponentInParent<IDamageable_LSH>();
+            if (d1 != null) { d1.TakeDamage(slamDamage, transform.position); continue; }
+
+            var e1 = h.GetComponentInParent<Enemy_LSH>();
+            if (e1 != null) { e1.TakeDamage(slamDamage); continue; }
+        }
     }
 }
