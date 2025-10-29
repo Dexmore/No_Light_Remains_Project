@@ -1,7 +1,6 @@
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-
 public class MonsterHit : MonsterState
 {
     public override MonsterControl.State mapping => MonsterControl.State.Hit;

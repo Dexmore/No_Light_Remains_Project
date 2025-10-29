@@ -4,6 +4,8 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 public class MonsterRangeAttack : MonsterState
 {
+    public float damageMultiplier = 1.7f;
+    public HitData.StaggerType staggerType;
     public Vector2 durationRange;
     float duration;
     int multiHitCount = 1;
@@ -35,7 +37,7 @@ public class MonsterRangeAttack : MonsterState
         if (!attackedColliders.Contains(coll))
         {
             attackedColliders.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f,1.1f) * control.data.Attack * 2.2f));
+            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f,1.1f) * damageMultiplier * control.data.Attack, staggerType));
         }
     }
     

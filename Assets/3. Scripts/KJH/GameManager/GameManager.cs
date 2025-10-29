@@ -10,18 +10,27 @@ public struct HitData
     public Transform attacker;
     public Transform target;
     public float damage;
-    public Type type;
-    public enum Type
+    public AttackType attackType;
+    public StaggerType staggerType;
+    public enum AttackType
     {
-        Active,
+        Default,
         Chafe,
     }
-    public HitData(Transform attacker, Transform target, float damage, Type type = Type.Active)
+    public enum StaggerType
+    {
+        None,
+        Small,
+        Middle,
+        Large,
+    }
+    public HitData(Transform attacker, Transform target, float damage, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
     {
         this.attacker = attacker;
         this.target = target;
         this.damage = damage;
-        this.type = type;
+        this.staggerType = staggerType;
+        this.attackType = attackType;
     }
 }
 public class GameManager : SingletonBehaviour<GameManager>

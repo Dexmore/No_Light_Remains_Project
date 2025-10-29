@@ -34,7 +34,7 @@ public class LogoControl : MonoBehaviour
         logoChildrenRT[7].anchoredPosition = new Vector2(480, logoChildrenInitPos[7].y);
         logoChildrenImg[7].DOFade(1f, 0.3f).SetEase(Ease.InSine);
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
-        AudioManager.I.PlaySFX("StretchShort");
+        AudioManager.I.PlaySFX("Stretch");
         logoChildrenRT[7].DOScaleY(2.5f, 0.7f).SetEase(Ease.OutQuad).OnComplete(() =>
         {
             logoChildrenRT[7].DOScaleY(1f, 0.25f).SetEase(Ease.OutBounce);

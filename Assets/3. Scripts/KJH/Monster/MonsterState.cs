@@ -10,7 +10,6 @@ public abstract class MonsterState : MonoBehaviour
     protected Rigidbody2D rb;
     protected Transform model;
     protected Astar2DXYPathFinder astar;
-    protected MonsterSensor sensor;
     protected Animator anim;
     public abstract UniTask Enter(CancellationToken token);
     #region UniTask Setting
@@ -45,7 +44,6 @@ public abstract class MonsterState : MonoBehaviour
         TryGetComponent(out control);
         rb = GetComponentInParent<Rigidbody2D>();
         TryGetComponent(out astar);
-        TryGetComponent(out sensor);
         anim = GetComponentInChildren<Animator>();
         model = transform.GetChild(0);
     }
