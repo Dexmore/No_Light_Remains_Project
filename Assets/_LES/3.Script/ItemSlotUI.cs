@@ -1,120 +1,105 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems; // ISelectHandler와 IPointerEnterHandler가 모두 여기 있습니다.
 
-//아이템 데이터를 담을 클래스입니다. 
-//실제 프로젝트의 아이템 데이터 클래스로 대체해야 합니다.
-public class ItemData 
-{
-    public string itemName;
-    public Sprite icon;
-    public enum ItemType { Equipment, Material }
-    public ItemType type;
-    
-    //아이템 상세 내용
-    [UnityEngine.TextArea(3, 10)]
-    public string itemDescription; 
-    
-    //새로 얻은 아이템인지 여부
-    public bool isNew; 
-
-    //생성자 수정
-    public ItemData(string name, Sprite sprite, ItemType type, string description, bool isNew = true)
-    {
-        this.itemName = name;
-        this.icon = sprite;
-        this.type = type;
-        this.itemDescription = description;
-        this.isNew = isNew;
-    }
-}
-
-public class ItemSlotUI : MonoBehaviour
+// [수정] IPointerEnterHandler 인터페이스를 추가합니다.
+public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 {
     private ItemData _currentItem;
-    private ItemPanelController _controller; //부모 컨트롤러 참조
+    private ItemPanelController _controller;
 
     [Header("슬롯 UI 요소")]
-    [Tooltip("아이템 이름을 표시할 TextMeshPro UI")]
-    [SerializeField]
-    private TextMeshProUGUI itemNameText; //Image 대신 TextMeshPro 사용
-    [SerializeField] private GameObject newIndicator; //"New" 알림 아이콘
-
-    //슬롯의 배경 이미지
-    [SerializeField]
-    private Image slotBackground;
+    [SerializeField] private Image itemIcon;
+    [SerializeField] private TextMeshProUGUI itemNameText;
+    [SerializeField] private GameObject newIndicator;
 
     private Button _button;
 
     private void Awake()
     {
         _button = GetComponent<Button>();
-        //OnSlotClicked 함수를 버튼 클릭 이벤트에 연결
         _button?.onClick.AddListener(OnSlotClicked);
-        
-        ClearSlot(); // 처음엔 비어있는 상태로 시작
     }
 
-    //이 슬롯에 특정 아이템 데이터를 할당하고 UI를 갱신합니다.
+    // --- (SetItem, ClearSlot 함수는 기존과 동일합니다) ---
     public void SetItem(ItemData itemData, ItemPanelController controller)
     {
         _currentItem = itemData;
-        _controller = controller; //컨트롤러 저장
+        _controller = controller;
 
-        if (_currentItem == null)
+        if (_currentItem == null) { ClearSlot(); return; }
+
+        if (itemIcon != null)
         {
-            ClearSlot();
-            return;
+            itemIcon.sprite = _currentItem.icon;
+            itemIcon.gameObject.SetActive(_currentItem.icon != null);
         }
-
-        //데이터가 있으면 슬롯을 채웁니다.
-        itemNameText.text = _currentItem.itemName; // 텍스트 설정
+        itemNameText.text = _currentItem.itemName;
         itemNameText.gameObject.SetActive(true);
-
-        //'New' 표시 업데이트
-        if (newIndicator != null)
-        {
-            newIndicator.SetActive(_currentItem.isNew);
-        }
-        
+        if (newIndicator != null) newIndicator.SetActive(_currentItem.isNew);
         if (_button != null) _button.interactable = true;
     }
 
-    //이 슬롯을 빈 상태로 만듭니다.
     public void ClearSlot()
     {
         _currentItem = null;
         _controller = null;
-        itemNameText.text = "";//텍스트 비우기
-        itemNameText.gameObject.SetActive(false);//텍스트 숨김
-
+        if (itemIcon != null)
+        {
+            itemIcon.sprite = null;
+            itemIcon.gameObject.SetActive(false);
+        }
+        itemNameText.text = "";
+        itemNameText.gameObject.SetActive(false);
         if (newIndicator != null) newIndicator.SetActive(false);
         if (_button != null) _button.interactable = false;
     }
+    // --- (여기까지 동일) ---
 
-    //이 슬롯이 클릭되었을 때의 동작
-    public void OnSlotClicked()
+
+    /// <summary>
+    /// [추가] 2번 요청 - 슬롯에 '마우스가 진입'했을 때 호출됩니다.
+    /// </summary>
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // 정보 표시 함수를 호출합니다.
+        ShowDetails();
+    }
+
+    /// <summary>
+    /// 1번, 2번 - 슬롯이 '선택'될 때 (방향키/클릭) 호출됩니다.
+    /// </summary>
+    public void OnSelect(BaseEventData eventData)
+    {
+        // 정보 표시 함수를 호출합니다.
+        ShowDetails();
+    }
+
+    /// <summary>
+    /// [추가] 중복되는 정보 표시 로직을 하나로 묶습니다.
+    /// </summary>
+    private void ShowDetails()
     {
         if (_currentItem != null && _controller != null)
         {
-            //부모 컨트롤러에게 상세 정보 표시 요청
             _controller.ShowItemDetails(_currentItem);
-            
-            //클릭 시 'New' 표시 제거
+        }
+    }
+
+    /// <summary>
+    /// 슬롯이 '클릭'될 때 (Enter/Space/마우스 클릭) 호출됩니다.
+    /// </summary>
+    public void OnSlotClicked()
+    {
+        // 정보 표시는 OnSelect/OnPointerEnter가 처리하므로, 여기서는 'New' 마크 제거만 합니다.
+        if (_currentItem != null && _controller != null)
+        {
             if (_currentItem.isNew)
             {
                 _currentItem.isNew = false;
                 if (newIndicator != null) newIndicator.SetActive(false);
             }
-        }
-    }
-
-    //EventSystem이 이 슬롯을 선택(포커스)하도록 합니다.
-    public void Select()
-    {
-        if (_button != null)
-        {
-            _button.Select();
         }
     }
 }
