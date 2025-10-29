@@ -9,7 +9,7 @@ public class MonsterJumpAttack : MonsterState
         await UniTask.Yield(cts.Token);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
         await UniTask.Delay((int)(1000f), cancellationToken: token);

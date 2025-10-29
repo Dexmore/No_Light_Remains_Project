@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using System.Linq;
 public class MonsterPursuit : MonsterState
 {
+    public bool closeStop;
     public override MonsterControl.State mapping => MonsterControl.State.Pursuit;
     public override async UniTask Enter(CancellationToken token)
     {
@@ -16,7 +17,7 @@ public class MonsterPursuit : MonsterState
     {
         Activate(cts.Token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
         {
@@ -24,13 +25,13 @@ public class MonsterPursuit : MonsterState
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
-        if (sensor.memories.Count == 0)
+        if (control.memories.Count == 0)
         {
             await UniTask.Yield(cts.Token);
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
-        target = sensor.memories.First().Key.transform;
+        target = control.memories.First().Key.transform;
         Vector2[] result = await astar.Find((Vector2)target.position);
         if (result.Length <= 1)
         {
@@ -60,6 +61,12 @@ public class MonsterPursuit : MonsterState
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
                 moveHorizontal = target - ((Vector2)transform.position + astar.offeset * Vector2.up);
                 distance = moveHorizontal.magnitude;
+                if (Mathf.Abs(moveHorizontal.x) <= 0.002f)
+                {
+                    await UniTask.Yield(cts.Token);
+                    control.ChangeState(MonsterControl.State.Idle);
+                    return;
+                }
                 moveHorizontal.y = 0f;
                 moveHorizontal.Normalize();
                 float dot = Vector2.Dot(rb.linearVelocity, moveHorizontal);
@@ -114,6 +121,7 @@ public class MonsterPursuit : MonsterState
                         else if (moveHorizontal.x < 0 && model.right.x > 0)
                             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
                     }
+                if(closeStop)
                 if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
                 {
                     await UniTask.Yield(cts.Token);

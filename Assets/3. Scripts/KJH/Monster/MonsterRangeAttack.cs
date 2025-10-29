@@ -4,10 +4,12 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 public class MonsterRangeAttack : MonsterState
 {
+    public float damageMultiplier = 1.7f;
+    public HitData.StaggerType staggerType;
     public Vector2 durationRange;
     float duration;
     int multiHitCount = 1;
-    public override MonsterControl.State mapping => MonsterControl.State.LoneRangeAttack;
+    public override MonsterControl.State mapping => MonsterControl.State.RangeAttack;
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
@@ -17,7 +19,7 @@ public class MonsterRangeAttack : MonsterState
         Activate(token).Forget();
         anim.Play("RAttack");
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
@@ -35,7 +37,7 @@ public class MonsterRangeAttack : MonsterState
         if (!attackedColliders.Contains(coll))
         {
             attackedColliders.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f,1.1f) * control.data.Attack * 2.2f));
+            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f,1.1f) * damageMultiplier * control.data.Attack, staggerType));
         }
     }
     

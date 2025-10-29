@@ -5,6 +5,8 @@ using Cysharp.Threading.Tasks;
 using System.Linq;
 public class MonsterBiteAttack : MonsterState
 {
+    public float damageMultiplier = 1f;
+    public HitData.StaggerType staggerType;
     public Vector2 durationRange;
     public float range = 1.4f;
     float duration;
@@ -18,63 +20,46 @@ public class MonsterBiteAttack : MonsterState
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
-        // 이동
-        if (sensor.memories.Count == 0)
+        if (control.memories.Count == 0)
         {
             await UniTask.Yield(cts.Token);
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
-        Transform target = sensor.memories.First().Key.transform;
-        Vector2 moveDirection = target.position - transform.position;
+        Transform target;
+        Vector2 moveDirection;
+        float startTime;
+        startTime = Time.time;
+        target = control.memories.First().Key.transform;
+        moveDirection = target.position - transform.position;
+        moveDirection.y = 0;
         moveDirection.Normalize();
-        int moveCondition = 0;
         float dist = Mathf.Abs(target.position.x - transform.position.x);
-        if (dist > 1.2f * range + 0.2f) moveCondition = 1;
-        else if (dist < 0.7f * range - 0.2f) moveCondition = 2;
-        if (moveCondition == 0)
+        bool condition = dist < 0.9f * range - 0.1f;
+        bool once = false;
+        // 너무 가까우면 살짝 뒤로 이동
+        if (condition)
         {
-            await UniTask.Yield(token);
-            moveDirection = target.position - transform.position;
-            moveDirection.Normalize();
-            dist = Mathf.Abs(target.position.x - transform.position.x);
-            if (dist < 0.66f * range - 0.2f)
-                rb.AddForce(3f * -moveDirection, ForceMode2D.Impulse);
-            Debug.Log(dist);
-            if (moveDirection.x > 0 && model.right.x < 0)
-                model.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            else if (moveDirection.x < 0 && model.right.x > 0)
-                model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-            anim.Play("BAttack");
-        }
-        else
-        {
-            float time = Time.time;
-            while (Time.time - time < 0.4f)
+            while (Time.time - startTime < 0.3f)
             {
-                moveDirection = target.position - transform.position;
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
+                moveDirection = transform.position - target.position;
                 moveDirection.y = 0;
                 moveDirection.Normalize();
                 dist = Mathf.Abs(target.position.x - transform.position.x);
-                if (dist > 1.2f * range + 0.2f) moveCondition = 1;
-                else if (dist < 0.6f * range - 0.2f) moveCondition = 2;
-                if (moveCondition == 2)
+                condition = dist < 0.9f * range - 0.1f;
+                // 캐릭터 방향 설정
+                if (!once)
                 {
-                    moveDirection = (transform.position - target.position).normalized;
+                    once = true;
+                    if (moveDirection.x > 0 && model.right.x < 0)
+                        model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                    else if (moveDirection.x < 0 && model.right.x > 0)
+                        model.localRotation = Quaternion.Euler(0f, 180f, 0f);
                 }
                 float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
-
-                // 캐릭터 좌우 방향 설정
-                if (moveDirection.x > 0 && model.right.x < 0)
-                {
-                    model.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                }
-                else if (moveDirection.x < 0 && model.right.x > 0)
-                {
-                    model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-                }
                 // 벽 향해서 전진하는 버그 막기
                 bool stopWall = false;
                 if (control.collisions.Count > 0)
@@ -101,25 +86,73 @@ public class MonsterBiteAttack : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        rb.AddForce(multiplier * moveDirection * 0.75f * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     }
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cts.Token);
-                if (dist <= 0.9f * range && dist >= 0.7f * range) break;
+                if (!condition) break;
             }
-            await UniTask.Yield(token);
-            moveDirection = target.position - transform.position;
-            moveDirection.Normalize();
-            dist = Mathf.Abs(target.position.x - transform.position.x);
-            if (dist < 0.66f * range - 0.2f)
-                rb.AddForce(3f * -moveDirection, ForceMode2D.Impulse);
-            if (moveDirection.x > 0 && model.right.x < 0)
-                model.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            else if (moveDirection.x < 0 && model.right.x > 0)
-                model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-            anim.Play("BAttack");
         }
-
-        await UniTask.Delay((int)(1000f * (duration - 0.2f)), cancellationToken: token);
+        moveDirection = target.position - transform.position;
+        moveDirection.y = 0;
+        moveDirection.Normalize();
+        if (moveDirection.x > 0 && model.right.x < 0)
+        {
+            model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        }
+        else if (moveDirection.x < 0 && model.right.x > 0)
+        {
+            model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        }
+        anim.Play("BAttack");
+        // 너무 멀면 앞으로 접근
+        dist = Mathf.Abs(target.position.x - transform.position.x);
+        condition = dist > 1.1f * range + 0.1f;
+        startTime = Time.time;
+        once = false;
+        while (Time.time - startTime < 0.5f)
+        {
+            if(Time.time - startTime > 0.3f && !once)
+            {
+                once = true;
+                if(Random.value <= 0.6f)
+                rb.AddForce(model.right * Random.Range(0.5f, 1.5f), ForceMode2D.Impulse);
+            }
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
+            dist = Mathf.Abs(target.position.x - transform.position.x);
+            condition = dist > 1.1f * range + 0.1f;
+            if (condition)
+            {
+                float dot = Vector2.Dot(rb.linearVelocity, model.right);
+                // 벽 향해서 전진하는 버그 막기
+                bool stopWall = false;
+                if (control.collisions.Count > 0)
+                {
+                    foreach (var element in control.collisions)
+                    {
+                        if (Mathf.Abs(element.Value.y - transform.position.y) >= 0.09f * control.height)
+                        {
+                            if (element.Value.x - transform.position.x > 0.25f * control.width && moveDirection.x > 0)
+                            {
+                                stopWall = true;
+                                break;
+                            }
+                            else if (element.Value.x - transform.position.x < -0.25f * control.width && moveDirection.x < 0)
+                            {
+                                stopWall = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                // AddForce방식으로 캐릭터 이동
+                if (!stopWall)
+                    if (dot < control.data.MoveSpeed)
+                    {
+                        float multiplier = (control.data.MoveSpeed - dot) + 1f;
+                        rb.AddForce(multiplier * model.right * 1.8f * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                    }
+            }
+        }
+        await UniTask.Delay((int)(1000f * (duration - 0.5f)), cancellationToken: token);
         control.ChangeNextState();
     }
     public override void Exit()
@@ -135,7 +168,7 @@ public class MonsterBiteAttack : MonsterState
         if (!attackedColliders.Contains(coll))
         {
             attackedColliders.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f, 1.1f) * control.data.Attack));
+            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack, staggerType));
         }
     }
 

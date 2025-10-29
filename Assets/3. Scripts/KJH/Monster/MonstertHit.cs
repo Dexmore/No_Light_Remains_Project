@@ -1,7 +1,6 @@
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-
 public class MonsterHit : MonsterState
 {
     public override MonsterControl.State mapping => MonsterControl.State.Hit;
@@ -10,7 +9,7 @@ public class MonsterHit : MonsterState
         await UniTask.Yield(cts.Token);
         Activate(token).Forget();
     }
-    public override async UniTask Activate(CancellationToken token)
+    public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
         await UniTask.Delay((int)(1000f), cancellationToken: token);

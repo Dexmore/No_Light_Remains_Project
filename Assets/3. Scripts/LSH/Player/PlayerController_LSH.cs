@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController_LSH : MonoBehaviour
 {
@@ -45,8 +44,8 @@ public class PlayerController_LSH : MonoBehaviour
     [HideInInspector] public PlayerDie_LSH die;
     [HideInInspector] public PlayerJumpAttack_LSH jumpAttack;
     [HideInInspector] public PlayerUsePotion_LSH usePotion;
-    [HideInInspector] public PlayerOpenGear_LSH openGear;
-    
+    [HideInInspector] public PlayerOpenInventory_LSH openInventory;
+
 
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
@@ -83,6 +82,10 @@ public class PlayerController_LSH : MonoBehaviour
         attackCombo = new PlayerAttackCombo_LSH(this, fsm);
         parry = new PlayerParry_LSH(this, fsm);
         dash = new PlayerDash_LSH(this, fsm);
+        hit = new PlayerHit_LSH(this, fsm);
+        die = new PlayerDie_LSH(this, fsm);
+        usePotion = new PlayerUsePotion_LSH(this, fsm);
+        openInventory = new PlayerOpenInventory_LSH(this, fsm);
 
     }
 
@@ -219,28 +222,72 @@ public class PlayerController_LSH : MonoBehaviour
         rightDashInputCount = 0;
     }
     #endregion
-
     void HitHandler(HitData data)
     {
         if (data.target.Root() != transform) return;
         if (fsm.currentState == die) return;
-
-        if (Avoided)
+        if (data.attackType == HitData.AttackType.Chafe)
         {
-            Debug.Log("회피 성공");
+            if (isHit2) return;
+            if (isHit1) return;
+            isHit1 = true;
+            StopCoroutine(nameof(HitCoolTime1));
+            StartCoroutine(nameof(HitCoolTime1));
+            if (Avoided)
+            {
+                Debug.Log("회피 성공");
+                return;
+            }
+            Vector2 dir = 3.8f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            dir.y = 2.8f;
+            rb.AddForce(dir, ForceMode2D.Impulse);
+            currentHealth -= (int)data.damage;
+            if (currentHealth <= 0)
+                fsm.ChangeState(die);
             return;
         }
-
-        if (Parred)
+        else if(data.attackType == HitData.AttackType.Default)
         {
-            Debug.Log("패링 성공");
+            if (isHit2) return;
+            isHit2 = true;
+            StopCoroutine(nameof(HitCoolTime2));
+            StartCoroutine(nameof(HitCoolTime2));
+            if (Avoided)
+            {
+                Debug.Log("회피 성공");
+                return;
+            }
+            if (Parred)
+            {
+                AudioManager.I.PlaySFX("Parry");
+                Debug.Log("패링 성공");
+                return;
+            }
+            Vector2 dir =  4.5f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            dir.y = 3.5f;
+            rb.AddForce(dir, ForceMode2D.Impulse);
+            if(data.staggerType != HitData.StaggerType.None)
+            {
+                hit.staggerType = data.staggerType;
+                fsm.ChangeState(hit);  
+            }
+            currentHealth -= (int)data.damage;
+            if (currentHealth <= 0)
+                fsm.ChangeState(die);
             return;
         }
-
-
-        currentHealth -= (int)data.damage;
-        if (currentHealth <= 0)
-            fsm.ChangeState(die);
+    }
+    bool isHit1;
+    bool isHit2;
+    IEnumerator HitCoolTime1()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(2f);
+        isHit1 = false;
+    }
+    IEnumerator HitCoolTime2()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(2f);
+        isHit2 = false;
     }
     #region Use Lantern
     LightSystem lightSystem;
@@ -257,7 +304,7 @@ public class PlayerController_LSH : MonoBehaviour
         {
             light0.SetActive(true);
             light1.SetActive(true);
-        }       
+        }
     }
 
     #endregion
@@ -265,7 +312,7 @@ public class PlayerController_LSH : MonoBehaviour
 
     #endregion
     #region Open Inventory
-    
+
     #endregion
 
 
