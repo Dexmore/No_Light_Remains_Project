@@ -238,15 +238,15 @@ public class PlayerController_LSH : MonoBehaviour
                 Debug.Log("회피 성공");
                 return;
             }
-            Vector2 dir = 3.8f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 2.8f;
+            Vector2 dir = 3.6f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            dir.y = 2.6f;
             rb.AddForce(dir, ForceMode2D.Impulse);
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             return;
         }
-        else if(data.attackType == HitData.AttackType.Default)
+        else if (data.attackType == HitData.AttackType.Default)
         {
             if (isHit2) return;
             isHit2 = true;
@@ -263,13 +263,26 @@ public class PlayerController_LSH : MonoBehaviour
                 Debug.Log("패링 성공");
                 return;
             }
-            Vector2 dir =  4.5f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 3.5f;
+            float multiplier = 1f;
+            switch (data.staggerType)
+            {
+                case HitData.StaggerType.Small:
+                    multiplier = 1.1f;
+                    break;
+                case HitData.StaggerType.Middle:
+                    multiplier = 1.25f;
+                    break;
+                case HitData.StaggerType.Large:
+                    multiplier = 1.4f;
+                    break;
+            }
+            Vector2 dir = 3.6f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            dir.y = 2.8f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
             rb.AddForce(dir, ForceMode2D.Impulse);
-            if(data.staggerType != HitData.StaggerType.None)
+            if (data.staggerType != HitData.StaggerType.None)
             {
                 hit.staggerType = data.staggerType;
-                fsm.ChangeState(hit);  
+                fsm.ChangeState(hit);
             }
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
