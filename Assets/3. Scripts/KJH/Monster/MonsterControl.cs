@@ -599,6 +599,7 @@ public class MonsterControl : MonoBehaviour
                 {
                     memories[nearPlayers[i]] = Time.time;
                 }
+                await UniTask.Yield(token);
                 float dist = Vector2.Distance(nearPlayers[i].transform.position, transform.position);
                 if (minDist > dist)
                     minDist = dist;
@@ -755,7 +756,7 @@ public class MonsterControl : MonoBehaviour
             {
                 sum++;
             }
-            await UniTask.Delay(1);
+            await UniTask.Delay(1, cancellationToken: token);
         }
         if (rayCount == 0) return 0f;
         float result = sum / rayCount;
@@ -774,7 +775,7 @@ public class MonsterControl : MonoBehaviour
             ChangeState(State.Die);
     }
     #endregion
-    
+
 
 
 }

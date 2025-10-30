@@ -168,6 +168,10 @@ GameObject:
   - component: {fileID: 7568115688032531983}
   - component: {fileID: 4375187416448277534}
   - component: {fileID: 1492083785254466523}
+  - component: {fileID: 4554582582220120778}
+  - component: {fileID: 7499197372901428476}
+  - component: {fileID: 3383271756972594074}
+  - component: {fileID: 2925688270794320632}
   m_Layer: 6
   m_Name: OrbMage
   m_TagString: Untagged
@@ -257,8 +261,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fd3825e9d71308418961260c69ffdec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
-  height: 0.8
-  width: 1.1
+  height: 2.5
+  width: 1
   jumpForce: 0
   isDie: 0
   isGround: 0
@@ -283,6 +287,9 @@ MonoBehaviour:
     - state: 1
       weight: 120
       coolTime: 1.5
+    - state: 3
+      weight: 10
+      coolTime: 5
   - condition: 2
     frequencies:
     - state: 5
@@ -293,12 +300,12 @@ MonoBehaviour:
       coolTime: 1
   - condition: 4
     frequencies:
-    - state: 5
-      weight: 200
+    - state: 12
+      weight: 300
       coolTime: 1
-    - state: 7
-      weight: 200
-      coolTime: 1
+    - state: 14
+      weight: 150
+      coolTime: 35
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -348,6 +355,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultDie
   coolTime: 0
   duration: 1.2
+--- !u!114 &4554582582220120778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3673026413363454731}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba9c2296cd22b9245892b2a2ec698379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterWander
+  coolTime: 0
+  durationRange: {x: 2, y: 5}
+--- !u!114 &7499197372901428476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3673026413363454731}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9189b66972425964aa8ef5d443b54cf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
+  coolTime: 0
+  stopDistance: 12
+--- !u!114 &3383271756972594074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3673026413363454731}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d0dc6fd93ff7e047a8a881d7722513f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultBiteAttack
+  coolTime: 0
+  damageMultiplier: 1
+  staggerType: 1
+  durationRange: {x: 1.5, y: 2.5}
+  range: 1.2
+--- !u!114 &2925688270794320632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3673026413363454731}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9dcbd4a8c6092c4c86b1aa13d8494be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultLongRangeAttack
+  coolTime: 0
+  damageMultiplier: 1.7
+  staggerType: 2
+  durationRange: {x: 6, y: 7}
 --- !u!1 &4296926991901128437
 GameObject:
   m_ObjectHideFlags: 0

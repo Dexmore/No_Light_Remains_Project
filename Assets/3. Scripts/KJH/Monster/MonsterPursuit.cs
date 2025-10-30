@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using System.Linq;
 public class MonsterPursuit : MonsterState
 {
-    public bool closeStop;
+    public float stopDistance = 0f;
     public override MonsterControl.State mapping => MonsterControl.State.Pursuit;
     public override async UniTask Enter(CancellationToken token)
     {
@@ -46,20 +46,20 @@ public class MonsterPursuit : MonsterState
                 Retry();
                 return;
             }
-            Vector2 target = result[i];
+            Vector2 segmentPos = result[i];
             //Debug.Log(target);
             //Debug.Log((Vector2)transform.position + astar.offeset * Vector2.up);
-            Vector2 displacement = target - ((Vector2)transform.position + astar.offeset * Vector2.up);
+            Vector2 displacement = segmentPos - ((Vector2)transform.position + astar.offeset * Vector2.up);
             float distance = displacement.magnitude;
             Vector2 moveHorizontal = displacement;
             moveHorizontal.y = 0f;
             moveHorizontal.Normalize();
             float expectTime = 1.8f * (displacement.magnitude / control.data.MoveSpeed);
             float startTime = Time.time;
-            while (distance > 0.12f && Time.time - startTime < expectTime)
+            while (distance > 0.05f && Time.time - startTime < expectTime)
             {
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
-                moveHorizontal = target - ((Vector2)transform.position + astar.offeset * Vector2.up);
+                moveHorizontal = segmentPos - ((Vector2)transform.position + astar.offeset * Vector2.up);
                 distance = moveHorizontal.magnitude;
                 if (Mathf.Abs(moveHorizontal.x) <= 0.002f)
                 {
@@ -121,13 +121,21 @@ public class MonsterPursuit : MonsterState
                         else if (moveHorizontal.x < 0 && model.right.x > 0)
                             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
                     }
-                if(closeStop)
-                if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
+                
+                float sqrMagnitudeFinalTarget = ((Vector2)target.position - ((Vector2)transform.position + astar.offeset * Vector2.up)).sqrMagnitude;
+                if (sqrMagnitudeFinalTarget < stopDistance * stopDistance)
                 {
                     await UniTask.Yield(cts.Token);
                     control.ChangeNextState();
                     return;
                 }
+                if (stopDistance > 0)
+                    if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
+                    {
+                        await UniTask.Yield(cts.Token);
+                        control.ChangeNextState();
+                        return;
+                    }
             }
         }
         await UniTask.Delay(50, cancellationToken: token);
@@ -138,7 +146,7 @@ public class MonsterPursuit : MonsterState
         }
         //Debug.Log("길 찾기");
         anim.Play("Idle");
-        await UniTask.Delay(Random.Range(500,3000), cancellationToken: token);
+        await UniTask.Delay(Random.Range(500, 3000), cancellationToken: token);
         await UniTask.Yield(cts.Token);
         control.ChangeNextState();
     }

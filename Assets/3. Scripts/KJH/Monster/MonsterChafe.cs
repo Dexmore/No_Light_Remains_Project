@@ -63,7 +63,7 @@ public class MonsterChafe : MonoBehaviour
             else if (dir == 0)
                 dir = (Random.value < 0.5f) ? 1f : -1f;
             else dir = 1f;
-            rb.AddForce(force * dir * Vector2.right, ForceMode2D.Impulse);
+            rb.AddForce(0.7f * force * dir * Vector2.right, ForceMode2D.Impulse);
         }
     }
     void OnTriggerEnter2D(Collider2D collision)
