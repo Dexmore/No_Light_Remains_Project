@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1178708167106205929}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.06799984, y: 0.09200001, z: 0}
+  m_LocalPosition: {x: 0.1, y: 0.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -113,13 +113,13 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: -8212353909733460089, guid: 7eb8e9f2c6529dd40978e0a6257edf29, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -184,6 +184,89 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &5470446756990384027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2408922531648299410}
+  - component: {fileID: 1355652043439547959}
+  - component: {fileID: 627108078818613132}
+  m_Layer: 2
+  m_Name: Chafe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2408922531648299410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5470446756990384027}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2428085650299354199}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!70 &1355652043439547959
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5470446756990384027}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.3}
+  m_Size: {x: 0.8, y: 0.7}
+  m_Direction: 1
+--- !u!114 &627108078818613132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5470446756990384027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be02d6dcbfd7214e93ad2955c7db0e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterChafe
+  staggerType: 0
 --- !u!1 &8038197678873106803
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,12 +279,11 @@ GameObject:
   - component: {fileID: 1827026540426024317}
   - component: {fileID: 5219582931596386525}
   - component: {fileID: 4449204310944715833}
-  - component: {fileID: 4086672712954720708}
   - component: {fileID: 4572157595017877094}
-  - component: {fileID: 2178776774685330412}
-  - component: {fileID: 4773766649361871176}
   - component: {fileID: 3284576090474217417}
   - component: {fileID: 8665236392383287865}
+  - component: {fileID: 2178776774685330412}
+  - component: {fileID: 4773766649361871176}
   - component: {fileID: 7497169102679589641}
   - component: {fileID: 5028216363324574023}
   - component: {fileID: 3184333215785844659}
@@ -226,6 +308,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6101863826080518228}
+  - {fileID: 2408922531648299410}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1827026540426024317
@@ -241,9 +324,9 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0.8
+  m_LinearDamping: 3.5
   m_AngularDamping: 0.05
-  m_GravityScale: 1.8
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -302,7 +385,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 9
   currHP: 0
-  aggressive: 0.8
+  aggressive: 0.85
   data: {fileID: 11400000, guid: 0d74644b32103ec42adc36255e32e17f, type: 2}
   ID: 
   Name: 
@@ -344,18 +427,6 @@ MonoBehaviour:
   condition: 0
   coolTimeList: []
   cannotList: []
---- !u!114 &4086672712954720708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8038197678873106803}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 403776cda17bc20499e4b7417ed2c1c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterSensor
   findRadius: 0
   closeRadius: 0
 --- !u!114 &4572157595017877094
@@ -372,33 +443,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterIdle
   coolTime: 0
   durationRange: {x: 1, y: 2}
---- !u!114 &2178776774685330412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8038197678873106803}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba9c2296cd22b9245892b2a2ec698379, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterWander
-  coolTime: 0
-  durationRange: {x: 2, y: 5}
---- !u!114 &4773766649361871176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8038197678873106803}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2be8e1a3ac48c1043bee73b1a16579a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultJump
-  coolTime: 0
 --- !u!114 &3284576090474217417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,6 +470,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultDie
   coolTime: 0
   duration: 0.4
+--- !u!114 &2178776774685330412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8038197678873106803}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba9c2296cd22b9245892b2a2ec698379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterWander
+  coolTime: 0
+  durationRange: {x: 2, y: 5}
+--- !u!114 &4773766649361871176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8038197678873106803}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2be8e1a3ac48c1043bee73b1a16579a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultJump
+  coolTime: 0
 --- !u!114 &7497169102679589641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,6 +510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
+  closeStop: 1
 --- !u!114 &5028216363324574023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,7 +524,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultBiteAttack
   coolTime: 0
+  damageMultiplier: 1
+  staggerType: 1
   durationRange: {x: 1.5, y: 2.5}
+  range: 1.2
 --- !u!114 &3184333215785844659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,6 +541,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultLongRangeAttack
   coolTime: 0
+  damageMultiplier: 1.7
+  staggerType: 2
   durationRange: {x: 6, y: 7}
 --- !u!1001 &617368786398622256
 PrefabInstance:

@@ -7,7 +7,8 @@ public class PlayerStateMachine_LSH
         currentState?.Exit();
         currentState = newState;
         currentState.Enter();
+        //Debug.Log($"{currentState} 시작");
     }
-    public void Update() => currentState?.Update(); // 상태 업데이트
-    public void FixedUpdate() => currentState?.FixedUpdate(); // 물리 업데이트
+    public void Update() => currentState?.UpdateState(); // 상태 업데이트
+    public void FixedUpdate() => currentState?.UpdatePhysics(); // 물리 업데이트
 }
