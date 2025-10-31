@@ -1,26 +1,17 @@
-using UnityEngine; // Sprite, TextArea를 사용하기 위해
+using UnityEngine;
 
-// [System.Serializable]을 추가해야 Inspector에서 편집할 수 있습니다.
-[System.Serializable]
-public class ItemData 
+// [수정] 인스펙터에서 .asset 파일로 생성할 수 있게 메뉴를 추가합니다.
+[CreateAssetMenu(fileName = "NewItemData", menuName = "Project Data/Item")]
+public class ItemData : ScriptableObject // [수정] ScriptableObject 상속
 {
+    // (기존 변수들은 그대로)
     public string itemName;
     public Sprite icon;
     public enum ItemType { Equipment, Material }
     public ItemType type;
     
-    [TextArea(3, 10)] // Inspector에서 여러 줄로 입력
+    [TextArea(3, 10)]
     public string itemDescription; 
     
     public bool isNew; 
-
-    // 생성자 (테스트 데이터 및 코드용)
-    public ItemData(string name, Sprite icon, ItemType type, string description, bool isNew = true)
-    {
-        this.itemName = name;
-        this.icon = icon;
-        this.type = type;
-        this.itemDescription = description;
-        this.isNew = isNew;
-    }
 }

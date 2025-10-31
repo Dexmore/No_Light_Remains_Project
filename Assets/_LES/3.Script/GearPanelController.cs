@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine.EventSystems;
+using NaughtyAttributes;
 
 public class GearPanelController : MonoBehaviour, ITabContent
 {
@@ -231,10 +232,36 @@ public class GearPanelController : MonoBehaviour, ITabContent
         totalCostMeter.SetCost(_currentEquippedCost);
         FindSlotForData(gear)?.UpdateEquipVisual();
     }
-    
+
     private GearSlotUI FindSlotForData(GearData gear)
     {
         return gridSlots.FirstOrDefault(slot => slot.MyData == gear);
     }
+    #endregion
+    
+    #region 테스트용 코드
+
+    // [추가] 인스펙터에서 테스트용으로 추가할 기어를 미리 할당
+    [Header("테스트용")]
+    [SerializeField] private GearData testGearToAdd;
+
+    [Button("Test: 기어 추가")]
+    private void TestAddGear()
+    {
+        if (testGearToAdd == null)
+        {
+            Debug.LogWarning("테스트할 기어를 인스펙터 'Test Gear To Add' 필드에 할당해주세요!");
+            return;
+        }
+
+        // 1. 데이터 리스트에 기어를 추가합니다.
+        _playerGearInventory.Add(testGearToAdd);
+
+        // 2. UI를 새로고침합니다.
+        OnShow(); 
+
+        Debug.Log($"{testGearToAdd.gearName} 기어 추가 테스트 완료.");
+    }
+
     #endregion
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using NaughtyAttributes;
 
 namespace Project.UI
 {
@@ -6,7 +7,7 @@ namespace Project.UI
     public class InventoryUI : MonoBehaviour
     {
         private CanvasGroup _canvasGroup;
-
+              
         private void Awake()
         {
             _canvasGroup = GetComponent<CanvasGroup>();
