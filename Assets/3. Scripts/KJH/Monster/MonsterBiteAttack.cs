@@ -169,6 +169,7 @@ public class MonsterBiteAttack : MonsterState
         {
             attackedColliders.Add(coll);
             GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack, staggerType));
+            ParticleManager.I.PlayParticle("Hit2", coll.transform.position + Vector3.up, Quaternion.identity, null);
         }
     }
 
