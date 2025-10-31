@@ -64,8 +64,9 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
         {
             attacked.Add(coll);
             GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 120));
-            ParticleManager.I.PlayParticle("Hit2", coll.transform.position + Vector3.up, Quaternion.identity, null);
-            AudioManager.I.PlaySFX("Hit8Bit", coll.transform.position + Vector3.up, null);
+            Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            ParticleManager.I.PlayParticle("Hit2", hitPoint, Quaternion.identity, null);
+            AudioManager.I.PlaySFX("Hit8Bit", hitPoint, null);
         }
     }
 }

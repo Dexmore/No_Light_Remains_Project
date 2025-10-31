@@ -239,7 +239,7 @@ public class PlayerController_LSH : MonoBehaviour
                 return;
             }
             Vector2 dir = 3.6f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 2.6f;
+            dir.y = 1.8f;
             rb.AddForce(dir, ForceMode2D.Impulse);
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
@@ -277,7 +277,7 @@ public class PlayerController_LSH : MonoBehaviour
                     break;
             }
             Vector2 dir = 3.6f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 2.8f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            dir.y = 2.4f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
             rb.AddForce(dir, ForceMode2D.Impulse);
             if (data.staggerType != HitData.StaggerType.None)
             {
