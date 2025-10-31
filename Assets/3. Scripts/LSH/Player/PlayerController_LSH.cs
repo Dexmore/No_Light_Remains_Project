@@ -238,8 +238,8 @@ public class PlayerController_LSH : MonoBehaviour
                 Debug.Log("회피 성공");
                 return;
             }
-            Vector2 dir = 3.6f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 1.8f;
+            Vector2 dir = 4.2f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            dir.y = 2f;
             rb.AddForce(dir, ForceMode2D.Impulse);
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
@@ -276,8 +276,8 @@ public class PlayerController_LSH : MonoBehaviour
                     multiplier = 1.4f;
                     break;
             }
-            Vector2 dir = 3.6f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 2.4f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            Vector2 dir = 3.5f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            dir.y = 2.3f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
             rb.AddForce(dir, ForceMode2D.Impulse);
             if (data.staggerType != HitData.StaggerType.None)
             {
