@@ -7,6 +7,7 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, ISubmitHandler
     [Header("슬롯 UI 요소")]
     [SerializeField] private Image gearIcon;
     [SerializeField] private Image slotBackground; // 이 필드는 이제 사용 안 하지만, 연결은 해두세요.
+    [SerializeField] private GameObject newIndicator;
 
     [Header("비장착 상태 밝기")]
     [Range(0f, 1f)]
@@ -43,8 +44,13 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, ISubmitHandler
         }
         
         if (_button != null) _button.interactable = true;
-        
+
         UpdateEquipVisual();
+        
+        if (newIndicator != null)
+        {
+            newIndicator.SetActive(_myData.isNew);
+        }
     }
     
     public void ClearSlot()
@@ -59,11 +65,16 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, ISubmitHandler
         }
         
         if (_button != null) _button.interactable = false;
-        
+
         // [수정] 빈 슬롯일 때도 아이콘을 어둡게 합니다.
         if (gearIcon != null)
         {
             gearIcon.color = _originalIconColor * dimFactor;
+        }
+        
+        if (newIndicator != null)
+        {
+            newIndicator.SetActive(false);
         }
     }
     
@@ -92,6 +103,15 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, ISubmitHandler
     {
         if (_myData != null && _controller != null)
         {
+            if (_myData.isNew)
+            {
+                _myData.isNew = false;
+                if (newIndicator != null)
+                {
+                    newIndicator.SetActive(false);
+                }
+            }
+            
             _controller.ToggleEquipGear(_myData);
         }
     }

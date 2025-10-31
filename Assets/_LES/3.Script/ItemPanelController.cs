@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using NaughtyAttributes;
 
 public class ItemPanelController : MonoBehaviour, ITabContent
 {
@@ -31,13 +32,12 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     [SerializeField] private GameObject infoPanelRoot;
 
     [Header("플레이어 인벤토리 (데이터)")]
-    [SerializeField] 
-    private List<ItemData> _playerInventory;
+    public List<ItemData> _playerInventory;
 
     private List<ItemSlotUI> _spawnedSlots = new List<ItemSlotUI>();
     private ItemData.ItemType _currentFilter = ItemData.ItemType.Equipment;
-    private Coroutine _initCoroutine; // [추가] UI 초기화 코루틴을 제어하기 위함
-
+    private Coroutine _initCoroutine;
+  
     private void Awake()
     {
         // OnClick 리스너는 여기서 한 번만 설정
@@ -157,9 +157,6 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         
         _initCoroutine = null; // 코루틴 완료
     }
-    
-    // [삭제] UpdateInventoryList() 함수 (모든 기능이 InitializePanelCoroutine으로 이동)
-    // [삭제] SetInitialFocus() 코루틴 (모든 기능이 InitializePanelCoroutine으로 통합)
 
     #region (수정 없는 함수들)
     
@@ -231,8 +228,36 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         equipmentButton.GetComponentInChildren<TextMeshProUGUI>().color = ExampleColor(_currentFilter == ItemData.ItemType.Equipment);
         materialButton.GetComponentInChildren<TextMeshProUGUI>().color = ExampleColor(_currentFilter == ItemData.ItemType.Material);
     }
-    
+
     private Color ExampleColor(bool isActive) => isActive ? subTabActiveColor : subTabIdleColor;
     
+    #endregion
+    
+    #region 테스트용 코드
+
+    // [추가] 인스펙터에서 테스트용으로 추가할 아이템을 미리 할당
+    [Header("테스트용")]
+    [SerializeField] private ItemData testItemToAdd;
+
+    
+    [Button("Test: 아이템 추가 (장비/재료)")]
+    private void TestAddItem()
+    {
+        if (testItemToAdd == null)
+        {
+            Debug.LogWarning("테스트할 아이템을 인스펙터 'Test Item To Add' 필드에 할당해주세요!");
+            return;
+        }
+        
+        // 1. 데이터 리스트에 아이템을 추가합니다.
+        _playerInventory.Add(testItemToAdd);
+        
+        // 2. UI를 새로고침합니다. (가장 간단한 방법)
+        // (현재 OnFilterChanged가 private이므로 OnShow를 호출하여 강제로 갱신합니다)
+        OnShow();
+
+        Debug.Log($"{testItemToAdd.itemName} 아이템 추가 테스트 완료.");
+    }
+
     #endregion
 }

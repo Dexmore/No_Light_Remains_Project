@@ -1,13 +1,15 @@
 using UnityEngine;
 
-// [System.Serializable]을 추가해야 Inspector에서 편집할 수 있습니다.
-[System.Serializable] 
-public class LanternFunctionData
+[CreateAssetMenu(fileName = "NewLanternData", menuName = "Project Data/Lantern Function")]
+public class LanternFunctionData : ScriptableObject // [수정] ScriptableObject 상속
 {
+    // (기존 변수들은 그대로)
     public string functionName;
-    public Sprite functionIcon; // 슬롯과 원형 장착부에 사용할 이미지
+    public Sprite functionIcon;
     [TextArea(3, 10)]
     public string functionDescription;
     
-    public bool isEquipped; // 현재 장착 여부
+    public bool isEquipped;
+    
+    // (참고: 이 데이터에는 'isNew'가 없었으므로 추가하지 않았습니다.)
 }

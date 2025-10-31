@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine.EventSystems;
+using NaughtyAttributes;
 
 public class LanternPanelController : MonoBehaviour, ITabContent
 {
@@ -158,7 +159,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             Button btn = slot.GetComponent<Button>();
             if (btn.interactable) interactableSlots.Add(btn);
         }
-        
+
         if (interactableSlots.Count == 0) return;
 
         // 2. 활성화된 슬롯끼리만 연결
@@ -171,7 +172,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             // 'Up'은 탭으로 탈출
             nav.selectOnUp = mainTabButton;
             nav.selectOnDown = null; // 아래는 막음
-            
+
             // 'Left' (래핑)
             nav.selectOnLeft = interactableSlots[(i - 1 + interactableSlots.Count) % interactableSlots.Count];
             // 'Right' (래핑)
@@ -180,4 +181,30 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             currentButton.navigation = nav;
         }
     }
+    
+    #region 테스트용 코드
+
+    // [추가] 인스펙터에서 테스트용으로 추가할 랜턴 기능을 미리 할당
+    [Header("테스트용")]
+    [SerializeField] private LanternFunctionData testLanternFunctionToAdd;
+
+    [Button("Test: 랜턴 기능 추가")]
+    private void TestAddLanternFunction()
+    {
+        if (testLanternFunctionToAdd == null)
+        {
+            Debug.LogWarning("테스트할 랜턴 기능을 인스펙터 필드에 할당해주세요!");
+            return;
+        }
+
+        // 1. 데이터 리스트에 기능을 추가합니다.
+        _playerLanternFunctions.Add(testLanternFunctionToAdd);
+
+        // 2. UI를 새로고침합니다.
+        OnShow(); 
+
+        Debug.Log($"{testLanternFunctionToAdd.functionName} 랜턴 기능 추가 테스트 완료.");
+    }
+
+    #endregion
 }
