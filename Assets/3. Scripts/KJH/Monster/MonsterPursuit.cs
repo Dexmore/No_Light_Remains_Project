@@ -56,6 +56,11 @@ public class MonsterPursuit : MonsterState
             moveHorizontal.Normalize();
             float expectTime = 1.8f * (displacement.magnitude / control.data.MoveSpeed);
             float startTime = Time.time;
+            // 캐릭터 좌우 방향 설정
+            if (moveHorizontal.x > 0 && model.right.x < 0)
+                model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            else if (moveHorizontal.x < 0 && model.right.x > 0)
+                model.localRotation = Quaternion.Euler(0f, 180f, 0f);
             while (distance > 0.05f && Time.time - startTime < expectTime)
             {
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
@@ -115,24 +120,18 @@ public class MonsterPursuit : MonsterState
                                 anim.Play("Idle");
                             }
                         }
-                        // 캐릭터 좌우 방향 설정
-                        if (moveHorizontal.x > 0 && model.right.x < 0)
-                            model.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                        else if (moveHorizontal.x < 0 && model.right.x > 0)
-                            model.localRotation = Quaternion.Euler(0f, 180f, 0f);
                     }
-                
                 float sqrMagnitudeFinalTarget = ((Vector2)target.position - ((Vector2)transform.position + astar.offeset * Vector2.up)).sqrMagnitude;
                 if (sqrMagnitudeFinalTarget < stopDistance * stopDistance)
                 {
-                    await UniTask.Yield(cts.Token);
+                    await UniTask.Delay(5, cancellationToken: token);
                     control.ChangeNextState();
                     return;
                 }
                 if (stopDistance > 0)
                     if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
                     {
-                        await UniTask.Yield(cts.Token);
+                        await UniTask.Delay(5, cancellationToken: token);
                         control.ChangeNextState();
                         return;
                     }
@@ -150,7 +149,6 @@ public class MonsterPursuit : MonsterState
         await UniTask.Yield(cts.Token);
         control.ChangeNextState();
     }
-
 
 
 

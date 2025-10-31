@@ -1,31 +1,34 @@
 fileFormatVersion: 2
-guid: d4462ac99dde8fc47aad212c028e6921
+guid: eba6cf1c2fe61cb44b21f3021a8da57b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3743957659742367504
-    second: Move_0
+      213: 3857340551932084213
+    second: LanternKeeper@Move_0
   - first:
-      213: 8405476814967859603
-    second: Move_1
+      213: -26530501965412080
+    second: LanternKeeper@Move_1
   - first:
-      213: -5086530901905536447
-    second: Move_2
+      213: 240474858565856452
+    second: LanternKeeper@Move_2
   - first:
-      213: 1521079245874940812
-    second: Move_3
+      213: -9122364880330080966
+    second: LanternKeeper@Move_3
   - first:
-      213: 4010896587680814743
-    second: Move_4
+      213: 4756737234531428972
+    second: LanternKeeper@Move_4
   - first:
-      213: 8831429847189535439
-    second: Move_5
+      213: 7317336431454034830
+    second: LanternKeeper@Move_5
   - first:
-      213: 2035570627030528938
-    second: Move_6
+      213: -1520620113864170349
+    second: LanternKeeper@Move_6
   - first:
-      213: 2303739067743378419
-    second: Move_7
+      213: 7093413978142661825
+    second: LanternKeeper@Move_7
+  - first:
+      213: 5800343315732775330
+    second: LanternKeeper@Move_8
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +75,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -93,7 +96,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 16384
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -117,181 +120,229 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Move_0
+      name: LanternKeeper@Move_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 01feb0bb7a535f330800000000000000
-      internalID: 3743957659742367504
+      spriteID: 5fffe9f7bc6088530800000000000000
+      internalID: 3857340551932084213
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_1
+      name: LanternKeeper@Move_1
       rect:
         serializedVersion: 2
-        x: 357
+        x: 32
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 399e0fb01a046a470800000000000000
-      internalID: 8405476814967859603
+      spriteID: 01983a626aeb1aff0800000000000000
+      internalID: -26530501965412080
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_2
+      name: LanternKeeper@Move_2
       rect:
         serializedVersion: 2
-        x: 714
+        x: 64
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14a8fd428130969b0800000000000000
-      internalID: -5086530901905536447
+      spriteID: 4ccea3a1c96565300800000000000000
+      internalID: 240474858565856452
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_3
+      name: LanternKeeper@Move_3
       rect:
         serializedVersion: 2
-        x: 1071
+        x: 96
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c8b489dd385fb1510800000000000000
-      internalID: 1521079245874940812
+      spriteID: a3d3d644979d66180800000000000000
+      internalID: -9122364880330080966
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_4
+      name: LanternKeeper@Move_4
       rect:
         serializedVersion: 2
-        x: 1428
+        x: 128
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7969a83223199a730800000000000000
-      internalID: 4010896587680814743
+      spriteID: c6aae120053530240800000000000000
+      internalID: 4756737234531428972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_5
+      name: LanternKeeper@Move_5
       rect:
         serializedVersion: 2
-        x: 1785
+        x: 160
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fcab384b7aa8f8a70800000000000000
-      internalID: 8831429847189535439
+      spriteID: e8b97da27b66c8560800000000000000
+      internalID: 7317336431454034830
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_6
+      name: LanternKeeper@Move_6
       rect:
         serializedVersion: 2
-        x: 2142
+        x: 192
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: aa3bf5b43bccf3c10800000000000000
-      internalID: 2035570627030528938
+      spriteID: 394efc2201ca5eae0800000000000000
+      internalID: -1520620113864170349
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_7
+      name: LanternKeeper@Move_7
       rect:
         serializedVersion: 2
-        x: 2499
+        x: 224
         y: 0
-        width: 357
-        height: 102
+        width: 32
+        height: 64
       alignment: 9
-      pivot: {x: 0.186, y: 0}
+      pivot: {x: 0.6, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3fb9804f97688ff10800000000000000
-      internalID: 2303739067743378419
+      spriteID: 1ccdbfb3e6ed07260800000000000000
+      internalID: 7093413978142661825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LanternKeeper@Move_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 64
+      alignment: 9
+      pivot: {x: 0.6, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a1409d9385fe7050800000000000000
+      internalID: 5800343315732775330
       vertices: []
       indices: 
       edges: []
@@ -300,7 +351,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 43608bb95d41a2244803ccd8c2299a16
+    spriteID: 7802f486d0ba33e4c82648e9a99592d0
     internalID: 0
     vertices: []
     indices: 
@@ -310,16 +361,17 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":357.0,"y":102.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.1860000044107437,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":9.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.6000000238418579,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Move_0: 3743957659742367504
-      Move_1: 8405476814967859603
-      Move_2: -5086530901905536447
-      Move_3: 1521079245874940812
-      Move_4: 4010896587680814743
-      Move_5: 8831429847189535439
-      Move_6: 2035570627030528938
-      Move_7: 2303739067743378419
+      LanternKeeper@Move_0: 3857340551932084213
+      LanternKeeper@Move_1: -26530501965412080
+      LanternKeeper@Move_2: 240474858565856452
+      LanternKeeper@Move_3: -9122364880330080966
+      LanternKeeper@Move_4: 4756737234531428972
+      LanternKeeper@Move_5: 7317336431454034830
+      LanternKeeper@Move_6: -1520620113864170349
+      LanternKeeper@Move_7: 7093413978142661825
+      LanternKeeper@Move_8: 5800343315732775330
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

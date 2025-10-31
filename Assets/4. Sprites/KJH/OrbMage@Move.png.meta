@@ -1,31 +1,34 @@
 fileFormatVersion: 2
-guid: ecd8cb141ccc22242ac53bb6ee8c86b0
+guid: f5b80e457ed5f3842808fefff24c8f4e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3743957659742367504
-    second: Move_0
+      213: 3518795517897070944
+    second: OrbMage@Move_0
   - first:
-      213: 8405476814967859603
-    second: Move_1
+      213: -5482400818756261408
+    second: OrbMage@Move_1
   - first:
-      213: -5086530901905536447
-    second: Move_2
+      213: -6334422923763920240
+    second: OrbMage@Move_2
   - first:
-      213: 1521079245874940812
-    second: Move_3
+      213: 7449929655732275401
+    second: OrbMage@Move_3
   - first:
-      213: 4010896587680814743
-    second: Move_4
+      213: 222613742586661313
+    second: OrbMage@Move_4
   - first:
-      213: 8831429847189535439
-    second: Move_5
+      213: 8089018830758770241
+    second: OrbMage@Move_5
   - first:
-      213: 2035570627030528938
-    second: Move_6
+      213: -8100284411790756352
+    second: OrbMage@Move_6
   - first:
-      213: 2303739067743378419
-    second: Move_7
+      213: -7715783755773835968
+    second: OrbMage@Move_7
+  - first:
+      213: 2268444051385802801
+    second: OrbMage@Move_8
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +75,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -93,7 +96,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -117,181 +120,207 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Move_0
+      name: OrbMage@Move_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 01feb0bb7a535f330800000000000000
-      internalID: 3743957659742367504
+      spriteID: 069dd7151e545d030800000000000000
+      internalID: 3518795517897070944
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_1
+      name: OrbMage@Move_1
       rect:
         serializedVersion: 2
-        x: 264
+        x: 32
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 399e0fb01a046a470800000000000000
-      internalID: 8405476814967859603
+      spriteID: 0e9e8b990899ae3b0800000000000000
+      internalID: -5482400818756261408
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_2
+      name: OrbMage@Move_2
       rect:
         serializedVersion: 2
-        x: 528
+        x: 64
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14a8fd428130969b0800000000000000
-      internalID: -5086530901905536447
+      spriteID: 092d5fb79eb9718a0800000000000000
+      internalID: -6334422923763920240
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_3
+      name: OrbMage@Move_3
       rect:
         serializedVersion: 2
-        x: 792
+        x: 96
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c8b489dd385fb1510800000000000000
-      internalID: 1521079245874940812
+      spriteID: 9c8029bec87736760800000000000000
+      internalID: 7449929655732275401
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_4
+      name: OrbMage@Move_4
       rect:
         serializedVersion: 2
-        x: 1056
+        x: 128
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7969a83223199a730800000000000000
-      internalID: 4010896587680814743
+      spriteID: 1c98ff8f402e61300800000000000000
+      internalID: 222613742586661313
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_5
+      name: OrbMage@Move_5
       rect:
         serializedVersion: 2
-        x: 1320
+        x: 160
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fcab384b7aa8f8a70800000000000000
-      internalID: 8831429847189535439
+      spriteID: 14672d4e4c7f14070800000000000000
+      internalID: 8089018830758770241
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_6
+      name: OrbMage@Move_6
       rect:
         serializedVersion: 2
-        x: 1584
+        x: 192
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: aa3bf5b43bccf3c10800000000000000
-      internalID: 2035570627030528938
+      spriteID: 006f39f9e32069f80800000000000000
+      internalID: -8100284411790756352
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_7
+      name: OrbMage@Move_7
       rect:
         serializedVersion: 2
-        x: 1848
+        x: 224
         y: 0
-        width: 264
-        height: 90
-      alignment: 9
-      pivot: {x: 0.315, y: 0}
+        width: 32
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3fb9804f97688ff10800000000000000
-      internalID: 2303739067743378419
+      spriteID: 0450f59dd870ce490800000000000000
+      internalID: -7715783755773835968
       vertices: []
       indices: 
       edges: []
@@ -300,7 +329,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 86c3824ea41a4134286916ae7650a71d
+    spriteID: 78496f28c9da912498888067d78d0677
     internalID: 0
     vertices: []
     indices: 
@@ -310,16 +339,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":264.0,"y":90.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.3149999976158142,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Move_0: 3743957659742367504
-      Move_1: 8405476814967859603
-      Move_2: -5086530901905536447
-      Move_3: 1521079245874940812
-      Move_4: 4010896587680814743
-      Move_5: 8831429847189535439
-      Move_6: 2035570627030528938
-      Move_7: 2303739067743378419
+      OrbMage@Move_0: 3518795517897070944
+      OrbMage@Move_1: -5482400818756261408
+      OrbMage@Move_2: -6334422923763920240
+      OrbMage@Move_3: 7449929655732275401
+      OrbMage@Move_4: 222613742586661313
+      OrbMage@Move_5: 8089018830758770241
+      OrbMage@Move_6: -8100284411790756352
+      OrbMage@Move_7: -7715783755773835968
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
