@@ -93,6 +93,7 @@ public class PlayerAttack_LSH : IPlayerState_LSH
             attacked.Add(coll);
             GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 55));
             ParticleManager.I.PlayParticle("Hit2", coll.transform.position + Vector3.up, Quaternion.identity, null);
+            AudioManager.I.PlaySFX("Hit8Bit", coll.transform.position + Vector3.up, null);
         }
     }
 }
