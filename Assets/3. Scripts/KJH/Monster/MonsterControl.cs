@@ -240,12 +240,16 @@ public class MonsterControl : MonoBehaviour
         Hit,
         KnockDown,
         Die,
-        HandAttack,
         BiteAttack,
-        JumpAttack,
         RangeAttack,
+        NormalAttack,
+        HandAttack,
         RushAttack,
-        ComboAttack,
+        SlamAttack,
+        SpinAttack,
+        JumpAttack,
+        ComboAttack1,
+        ComboAttack2,
     }
     [System.Serializable]
     public struct Frequency
@@ -773,6 +777,8 @@ public class MonsterControl : MonoBehaviour
             RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
             ChangeState(State.Die);
+        ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
+        AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
     }
     #endregion
 

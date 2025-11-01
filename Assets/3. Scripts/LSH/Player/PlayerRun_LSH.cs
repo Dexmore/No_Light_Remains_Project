@@ -19,7 +19,6 @@ public class PlayerRun_LSH : IPlayerState_LSH
             jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
-
         ctx.animator.Play("Player_Run");
     }
     public void Exit()
@@ -46,7 +45,7 @@ public class PlayerRun_LSH : IPlayerState_LSH
     }
     public void UpdatePhysics()
     {
-
+        if (isStagger) return;
         // 1. 캐릭터 좌우 바라보는 방향 변경
         if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
             ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -83,4 +82,5 @@ public class PlayerRun_LSH : IPlayerState_LSH
                 ctx.rb.AddForce(multiplier * moveActionValue * (ctx.moveSpeed + 4.905f) / 1.25f);
             }
     }
+    [HideInInspector] public bool isStagger = false;
 }
