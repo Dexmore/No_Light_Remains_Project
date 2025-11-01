@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 public static class MethodCollection
 {
-
+    public static Vector3 zeroVector = Vector3.zero;
     // [1. 피셔-예이츠 리스트 셔플]
     // 사용법 : 리스트 뒤에 .Shuffle()
     private static System.Random random = new System.Random();
