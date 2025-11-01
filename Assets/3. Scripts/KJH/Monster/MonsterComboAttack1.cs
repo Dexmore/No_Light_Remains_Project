@@ -1,9 +1,9 @@
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-public class MonsterSquenceAttack : MonsterState
+public class MonsterSquenceAttack1 : MonsterState
 {
-    public override MonsterControl.State mapping => MonsterControl.State.ComboAttack;
+    public override MonsterControl.State mapping => MonsterControl.State.ComboAttack1;
     public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);

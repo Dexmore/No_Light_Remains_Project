@@ -231,6 +231,7 @@ public class PlayerController_LSH : MonoBehaviour
             if (isHit2) return;
             if (isHit1) return;
             isHit1 = true;
+            run.isStagger = true;
             StopCoroutine(nameof(HitCoolTime1));
             StartCoroutine(nameof(HitCoolTime1));
             if (Avoided)
@@ -240,6 +241,8 @@ public class PlayerController_LSH : MonoBehaviour
             }
             Vector2 dir = 4.2f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
             dir.y = 2f;
+            Vector3 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
@@ -278,6 +281,8 @@ public class PlayerController_LSH : MonoBehaviour
             }
             Vector2 dir = 3.5f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
             dir.y = 2.3f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            Vector3 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
             if (data.staggerType != HitData.StaggerType.None)
             {
@@ -287,6 +292,8 @@ public class PlayerController_LSH : MonoBehaviour
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
+            ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
+            AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
             return;
         }
     }
@@ -294,7 +301,9 @@ public class PlayerController_LSH : MonoBehaviour
     bool isHit2;
     IEnumerator HitCoolTime1()
     {
-        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(0.2f);
+        run.isStagger = false;
+        yield return YieldInstructionCache.WaitForSeconds(1.6f - 0.2f);
         isHit1 = false;
     }
     IEnumerator HitCoolTime2()

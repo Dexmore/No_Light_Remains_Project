@@ -170,8 +170,7 @@ GameObject:
   - component: {fileID: 1492083785254466523}
   - component: {fileID: 4554582582220120778}
   - component: {fileID: 7499197372901428476}
-  - component: {fileID: 3383271756972594074}
-  - component: {fileID: 2925688270794320632}
+  - component: {fileID: 3538120705773755397}
   m_Layer: 6
   m_Name: OrbMage
   m_TagString: Untagged
@@ -293,19 +292,19 @@ MonoBehaviour:
   - condition: 2
     frequencies:
     - state: 5
-      weight: 250
+      weight: 200
       coolTime: 1
     - state: 0
       weight: 100
       coolTime: 1
   - condition: 4
     frequencies:
-    - state: 12
-      weight: 300
+    - state: 7
+      weight: 50
+      coolTime: 0
+    - state: 13
+      weight: 500
       coolTime: 1
-    - state: 14
-      weight: 150
-      coolTime: 35
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -327,7 +326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterIdle
   coolTime: 0
-  durationRange: {x: 1, y: 2}
+  durationRange: {x: 0.5, y: 1}
 --- !u!114 &4375187416448277534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +382,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
   stopDistance: 12
---- !u!114 &3383271756972594074
+--- !u!114 &3538120705773755397
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -392,30 +391,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3673026413363454731}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d0dc6fd93ff7e047a8a881d7722513f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b9d7480d62f3f24eac14bfbb2b184e9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultBiteAttack
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterNormalAttack
   coolTime: 0
   damageMultiplier: 1
   staggerType: 1
-  durationRange: {x: 1.5, y: 2.5}
-  range: 1.2
---- !u!114 &2925688270794320632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3673026413363454731}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9dcbd4a8c6092c4c86b1aa13d8494be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultLongRangeAttack
-  coolTime: 0
-  damageMultiplier: 1.7
-  staggerType: 2
-  durationRange: {x: 6, y: 7}
+  durationRange: {x: 2.8, y: 3.4}
+  range: 1.4
 --- !u!1 &4296926991901128437
 GameObject:
   m_ObjectHideFlags: 0

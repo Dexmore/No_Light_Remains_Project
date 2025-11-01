@@ -3,7 +3,7 @@ using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Linq;
-public class MonsterBiteAttack : MonsterState
+public class MonsterNormalAttack : MonsterState
 {
     public float damageMultiplier = 1f;
     public HitData.StaggerType staggerType;
@@ -11,7 +11,7 @@ public class MonsterBiteAttack : MonsterState
     public float range = 1.4f;
     float duration;
     int multiHitCount = 1;
-    public override MonsterControl.State mapping => MonsterControl.State.BiteAttack;
+    public override MonsterControl.State mapping => MonsterControl.State.NormalAttack;
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
@@ -102,7 +102,7 @@ public class MonsterBiteAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
-        anim.Play("BAttack");
+        anim.Play("NAttack");
         // 너무 멀면 앞으로 접근
         dist = Mathf.Abs(target.position.x - transform.position.x);
         condition = dist > 1.1f * range + 0.1f;
@@ -173,7 +173,7 @@ public class MonsterBiteAttack : MonsterState
             (
                 new HitData
                 (
-                    "BiteAttack",
+                    "NormalAttack",
                     transform,
                     coll.transform,
                     Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
