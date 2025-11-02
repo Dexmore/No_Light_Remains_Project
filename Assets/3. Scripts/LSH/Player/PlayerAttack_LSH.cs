@@ -99,7 +99,7 @@ public class PlayerAttack_LSH : IPlayerState_LSH
                     "Attack",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * 40f,
+                    Random.Range(0.9f, 1.1f) * 38f,
                     hitPoint
                 )
             );

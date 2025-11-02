@@ -139,12 +139,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6683451873586012720}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3892374320967840150}
+  m_Father: {fileID: 7121646833509647018}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!70 &8067572970646842355
 CapsuleCollider2D:
@@ -222,6 +222,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3892374320967840150}
+  - {fileID: 4949162288550169659}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &6049760449392651556
@@ -318,10 +319,10 @@ MonoBehaviour:
   - condition: 2
     frequencies:
     - state: 5
-      weight: 200
+      weight: 120
       coolTime: 1
     - state: 0
-      weight: 100
+      weight: 50
       coolTime: 1
   - condition: 4
     frequencies:
@@ -460,7 +461,6 @@ Transform:
   - {fileID: 1951716461197470809}
   - {fileID: 9044417810316143771}
   - {fileID: 5589423570005473887}
-  - {fileID: 4949162288550169659}
   m_Father: {fileID: 7121646833509647018}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1477755555506531392

@@ -167,10 +167,10 @@ MonoBehaviour:
   - condition: 2
     frequencies:
     - state: 5
-      weight: 200
+      weight: 120
       coolTime: 1
     - state: 0
-      weight: 100
+      weight: 50
       coolTime: 1
   - condition: 4
     frequencies:
@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterNormalAttack
   coolTime: 0
-  damageMultiplier: 1
+  damageMultiplier: 0.3
   staggerType: 1
   durationRange: {x: 1, y: 3}
   range: 1.4

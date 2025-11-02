@@ -245,7 +245,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onHit = (x) => { };
     #endregion
 
-
+    #region Hit Tint Color
+    public Material hitTintMat;
+    #endregion
 
 
 }
