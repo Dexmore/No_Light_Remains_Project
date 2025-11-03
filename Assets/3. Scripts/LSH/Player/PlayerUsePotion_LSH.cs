@@ -19,6 +19,7 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     public void UpdateState()
     {
         ctx.currentHealth += (1f / duration) * ctx.maxHealth * Time.deltaTime;
+        ctx.currentHealth = Mathf.Clamp(ctx.currentHealth, 0f, ctx.maxHealth);
         _elapsedTime += Time.deltaTime;
         if (_elapsedTime > duration)
         {

@@ -247,6 +247,7 @@ public class PlayerController_LSH : MonoBehaviour
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
             currentHealth -= (int)data.damage;
+            currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             HitChangeColor(Color.white);
@@ -293,6 +294,7 @@ public class PlayerController_LSH : MonoBehaviour
                 fsm.ChangeState(hit);
             }
             currentHealth -= (int)data.damage;
+            currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
