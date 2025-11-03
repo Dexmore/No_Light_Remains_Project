@@ -63,7 +63,7 @@ public class MonsterChafe : MonoBehaviour
             else if (dir == 0)
                 dir = (Random.value < 0.5f) ? 1f : -1f;
             else dir = 1f;
-            rb.AddForce(force * dir * Vector2.right, ForceMode2D.Impulse);
+            rb.AddForce(0.7f * force * dir * Vector2.right, ForceMode2D.Impulse);
         }
     }
     void OnTriggerEnter2D(Collider2D collision)
@@ -113,11 +113,13 @@ public class MonsterChafe : MonoBehaviour
             if (playerColliders.Count > 0)
             {
                 HitData hitData = new HitData();
+                hitData.attackName = "Chafe";
+                hitData.hitPoint = playerCol.transform.position + Vector3.up + 0.5f * (playerCol.transform.position - control.transform.position).normalized;
                 hitData.attackType = HitData.AttackType.Chafe;
                 hitData.staggerType = staggerType;
                 hitData.attacker = control.transform;
                 hitData.target = playerCol.transform;
-                hitData.damage = Random.Range(0.15f, 0.25f) * control.Attack;
+                hitData.damage = Random.Range(0.25f, 0.45f) * control.Attack;
                 GameManager.I.onHit.Invoke(hitData);
             }
             int timeDelta = Random.Range(1200, 1800);

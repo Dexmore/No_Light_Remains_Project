@@ -408,18 +408,18 @@ MonoBehaviour:
   - condition: 2
     frequencies:
     - state: 5
-      weight: 250
+      weight: 120
       coolTime: 1
     - state: 0
       weight: 100
       coolTime: 1
   - condition: 4
     frequencies:
-    - state: 12
-      weight: 300
+    - state: 11
+      weight: 350
       coolTime: 1
-    - state: 14
-      weight: 150
+    - state: 12
+      weight: 250
       coolTime: 35
   attackRange: {fileID: 0}
   state: 0
@@ -510,7 +510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
-  closeStop: 1
+  stopDistance: 1.2
 --- !u!114 &5028216363324574023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -526,7 +526,7 @@ MonoBehaviour:
   coolTime: 0
   damageMultiplier: 1
   staggerType: 1
-  durationRange: {x: 1.5, y: 2.5}
+  durationRange: {x: 1.7, y: 2.3}
   range: 1.2
 --- !u!114 &3184333215785844659
 MonoBehaviour:

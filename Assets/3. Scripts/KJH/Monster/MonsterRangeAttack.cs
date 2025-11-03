@@ -37,10 +37,23 @@ public class MonsterRangeAttack : MonsterState
         if (!attackedColliders.Contains(coll))
         {
             attackedColliders.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f,1.1f) * damageMultiplier * control.data.Attack, staggerType));
+            Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            GameManager.I.onHit.Invoke
+            (
+                new HitData
+                (
+                    "RangeAttack",
+                    transform,
+                    coll.transform,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    hitPoint,
+                    staggerType
+                )
+            );
+            
         }
     }
-    
+
 
 
 

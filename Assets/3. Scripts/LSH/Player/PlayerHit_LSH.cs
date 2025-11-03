@@ -6,7 +6,7 @@ public class PlayerHit_LSH : IPlayerState_LSH
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerHit_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     [HideInInspector] public HitData.StaggerType staggerType;
-    private const float duration = 0.5f;   // 총 길이
+    private const float duration = 0.3f;   // 총 길이
     private float _elapsedTime;
     public void Enter()
     {

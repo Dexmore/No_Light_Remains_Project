@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 public class MonsterControl : MonoBehaviour
 {
     public float height = 1.5f;
@@ -33,6 +34,7 @@ public class MonsterControl : MonoBehaviour
         TryGetComponent(out astar);
         attackRange = GetComponentInChildren<AttackRange>(true);
         eye = transform.GetChild(0).Find("Eye");
+        InitMatInfo();
     }
     void Init()
     {
@@ -240,12 +242,16 @@ public class MonsterControl : MonoBehaviour
         Hit,
         KnockDown,
         Die,
-        HandAttack,
         BiteAttack,
-        JumpAttack,
         RangeAttack,
+        NormalAttack,
+        HandAttack,
         RushAttack,
-        ComboAttack,
+        SlamAttack,
+        SpinAttack,
+        JumpAttack,
+        ComboAttack1,
+        ComboAttack2,
     }
     [System.Serializable]
     public struct Frequency
@@ -599,6 +605,7 @@ public class MonsterControl : MonoBehaviour
                 {
                     memories[nearPlayers[i]] = Time.time;
                 }
+                await UniTask.Yield(token);
                 float dist = Vector2.Distance(nearPlayers[i].transform.position, transform.position);
                 if (minDist > dist)
                     minDist = dist;
@@ -755,7 +762,7 @@ public class MonsterControl : MonoBehaviour
             {
                 sum++;
             }
-            await UniTask.Delay(1);
+            await UniTask.Delay(1, cancellationToken: token);
         }
         if (rayCount == 0) return 0f;
         float result = sum / rayCount;
@@ -772,9 +779,74 @@ public class MonsterControl : MonoBehaviour
             RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
             ChangeState(State.Die);
+        ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
+        AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
+        HitChangeColor(Color.white);
+    }
+    class MatInfo
+    {
+        public SpriteRenderer spriteRenderer;
+        public Material[] originalMats;
+        public Sequence[] sequences;
+    }
+    List<MatInfo> matInfos = new List<MatInfo>();
+    void InitMatInfo()
+    {
+        matInfos.Clear();
+        SpriteRenderer[] srs = GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < srs.Length; i++)
+        {
+            MatInfo matInfo = new MatInfo();
+            matInfo.spriteRenderer = srs[i];
+            matInfo.originalMats = srs[i].sharedMaterials;
+            matInfo.sequences = new Sequence[srs[i].sharedMaterials.Length];
+            matInfos.Add(matInfo);
+        }
+    }
+    void HitChangeColor(Color color)
+    {
+        HitChangeColor_ut(color, cts.Token).Forget();
+    }
+    async UniTask HitChangeColor_ut(Color color, CancellationToken token)
+    {
+        await UniTask.Yield(token);
+        foreach (var element in matInfos)
+        {
+            Material[] newMats = new Material[element.spriteRenderer.materials.Length];
+            // element변수의 로컬 복사본을 만듭니다 (클로저 문제방지)
+            var currentElement = element;
+            for (int i = 0; i < currentElement.originalMats.Length; i++)
+            {
+                // 루프변수i의 로컬 복사본을 만듭니다 (클로저 문제방지)
+                int materialIndex = i;
+                if (currentElement.sequences[materialIndex] != null && currentElement.sequences[materialIndex].IsActive())
+                    currentElement.sequences[materialIndex].Kill();
+                newMats[materialIndex] = Instantiate(GameManager.I.hitTintMat);
+                newMats[materialIndex].color = currentElement.originalMats[materialIndex].color;
+                newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
+                currentElement.sequences[materialIndex] = DOTween.Sequence();
+                currentElement.sequences[materialIndex].AppendInterval(0.08f);
+                Tween colorTween = newMats[materialIndex].DOVector(
+                    new Vector4(color.r, color.g, color.b, 0f),
+                    "_TintColor",
+                    0.22f
+                ).SetEase(Ease.OutBounce);
+                currentElement.sequences[materialIndex].Append(colorTween);
+                currentElement.sequences[materialIndex].OnComplete(() =>
+                {
+                    Material[] currentMats = currentElement.spriteRenderer.materials;
+                    currentMats[materialIndex] = currentElement.originalMats[materialIndex];
+                    currentElement.spriteRenderer.materials = currentMats;
+                    // 인스턴스화된 hitTintMat을 제거합니다. (메모리 누수 방지)
+                    Destroy(newMats[materialIndex]);
+                });
+                currentElement.sequences[materialIndex].Play();
+            }
+            currentElement.spriteRenderer.materials = newMats;
+        }
     }
     #endregion
-    
+
 
 
 }

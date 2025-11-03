@@ -7,8 +7,10 @@ using DG.Tweening;
 using Steamworks;
 public struct HitData
 {
+    public string attackName;
     public Transform attacker;
     public Transform target;
+    public Vector3 hitPoint;
     public float damage;
     public AttackType attackType;
     public StaggerType staggerType;
@@ -24,10 +26,12 @@ public struct HitData
         Middle,
         Large,
     }
-    public HitData(Transform attacker, Transform target, float damage, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
+    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
     {
+        this.attackName = attackName;
         this.attacker = attacker;
         this.target = target;
+        this.hitPoint = hitPoint;
         this.damage = damage;
         this.staggerType = staggerType;
         this.attackType = attackType;
@@ -35,6 +39,7 @@ public struct HitData
 }
 public class GameManager : SingletonBehaviour<GameManager>
 {
+    
     protected override bool IsDontDestroy() => true;
     void OnEnable()
     {
@@ -240,7 +245,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onHit = (x) => { };
     #endregion
 
-
+    #region Hit Tint Color
+    public Material hitTintMat;
+    #endregion
 
 
 }

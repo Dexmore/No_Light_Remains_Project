@@ -255,7 +255,7 @@ GameObject:
   - component: {fileID: 5338324552298598927}
   m_Layer: 6
   m_Name: WallCrawler
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -371,18 +371,18 @@ MonoBehaviour:
   - condition: 2
     frequencies:
     - state: 5
-      weight: 250
+      weight: 200
       coolTime: 1
     - state: 0
-      weight: 100
+      weight: 50
       coolTime: 1
   - condition: 4
     frequencies:
     - state: 5
-      weight: 200
+      weight: 80
       coolTime: 1
     - state: 7
-      weight: 200
+      weight: 250
       coolTime: 1
   attackRange: {fileID: 0}
   state: 0
@@ -446,7 +446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
-  closeStop: 0
+  stopDistance: 0
 --- !u!114 &5338324552298598927
 MonoBehaviour:
   m_ObjectHideFlags: 0
