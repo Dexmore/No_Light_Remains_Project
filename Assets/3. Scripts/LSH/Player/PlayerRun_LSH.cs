@@ -8,9 +8,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction attackAction;
+    private InputAction potionAction;
     Vector2 moveActionValue;
     bool jumpPressed;
     bool attackPressed;
+    bool potionPressed;
     public void Enter()
     {
         if (moveAction == null)
@@ -19,6 +21,8 @@ public class PlayerRun_LSH : IPlayerState_LSH
             jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
+        if (potionAction == null)
+            potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         ctx.animator.Play("Player_Run");
     }
     public void Exit()
@@ -42,6 +46,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
 
         if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
             fsm.ChangeState(ctx.fall);
+        
+        potionPressed = potionAction.IsPressed();
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+            fsm.ChangeState(ctx.usePotion);
+        
     }
     public void UpdatePhysics()
     {

@@ -167,10 +167,10 @@ MonoBehaviour:
   - condition: 2
     frequencies:
     - state: 5
-      weight: 120
+      weight: 100
       coolTime: 1
     - state: 0
-      weight: 50
+      weight: 30
       coolTime: 1
   - condition: 4
     frequencies:
@@ -178,7 +178,7 @@ MonoBehaviour:
       weight: 50
       coolTime: 1
     - state: 13
-      weight: 500
+      weight: 1000
       coolTime: 1
   attackRange: {fileID: 0}
   state: 0
@@ -201,7 +201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterIdle
   coolTime: 0
-  durationRange: {x: 0.5, y: 1}
+  durationRange: {x: 0.3, y: 0.7}
 --- !u!114 &4621898366151545844
 MonoBehaviour:
   m_ObjectHideFlags: 0

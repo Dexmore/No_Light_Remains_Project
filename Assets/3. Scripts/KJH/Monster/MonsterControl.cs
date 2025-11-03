@@ -805,11 +805,6 @@ public class MonsterControl : MonoBehaviour
     }
     void HitChangeColor(Color color)
     {
-        HitChangeColor_ut(color, cts.Token).Forget();
-    }
-    async UniTask HitChangeColor_ut(Color color, CancellationToken token)
-    {
-        await UniTask.Yield(token);
         foreach (var element in matInfos)
         {
             Material[] newMats = new Material[element.spriteRenderer.materials.Length];

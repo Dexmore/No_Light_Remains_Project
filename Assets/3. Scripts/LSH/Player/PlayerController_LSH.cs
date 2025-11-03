@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController_LSH : MonoBehaviour
 {
 
     [Header("Player HP")]
-    public int maxHealth = 1000;
-    public int currentHealth;
+    public float maxHealth = 1000;
+    public float currentHealth;
 
     // [Header("Light Resource")]
     // public int maxLight = 100;
@@ -87,6 +88,7 @@ public class PlayerController_LSH : MonoBehaviour
         usePotion = new PlayerUsePotion_LSH(this, fsm);
         openInventory = new PlayerOpenInventory_LSH(this, fsm);
 
+        InitMatInfo();
     }
 
     void OnEnable()
@@ -247,6 +249,7 @@ public class PlayerController_LSH : MonoBehaviour
             currentHealth -= (int)data.damage;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
+            HitChangeColor(Color.white);
             return;
         }
         else if (data.attackType == HitData.AttackType.Default)
@@ -294,7 +297,65 @@ public class PlayerController_LSH : MonoBehaviour
                 fsm.ChangeState(die);
             ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
             AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
+            HitChangeColor(Color.white);
             return;
+        }
+    }
+    class MatInfo
+    {
+        public SpriteRenderer spriteRenderer;
+        public Material[] originalMats;
+        public Sequence[] sequences;
+    }
+    List<MatInfo> matInfos = new List<MatInfo>();
+    void InitMatInfo()
+    {
+        matInfos.Clear();
+        SpriteRenderer[] srs = GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < srs.Length; i++)
+        {
+            MatInfo matInfo = new MatInfo();
+            matInfo.spriteRenderer = srs[i];
+            matInfo.originalMats = srs[i].sharedMaterials;
+            matInfo.sequences = new Sequence[srs[i].sharedMaterials.Length];
+            matInfos.Add(matInfo);
+        }
+    }
+    void HitChangeColor(Color color)
+    {
+        foreach (var element in matInfos)
+        {
+            Material[] newMats = new Material[element.spriteRenderer.materials.Length];
+            // element변수의 로컬 복사본을 만듭니다 (클로저 문제방지)
+            var currentElement = element;
+            for (int i = 0; i < currentElement.originalMats.Length; i++)
+            {
+                // 루프변수i의 로컬 복사본을 만듭니다 (클로저 문제방지)
+                int materialIndex = i;
+                if (currentElement.sequences[materialIndex] != null && currentElement.sequences[materialIndex].IsActive())
+                    currentElement.sequences[materialIndex].Kill();
+                newMats[materialIndex] = Instantiate(GameManager.I.hitTintMat);
+                newMats[materialIndex].color = currentElement.originalMats[materialIndex].color;
+                newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
+                currentElement.sequences[materialIndex] = DOTween.Sequence();
+                currentElement.sequences[materialIndex].AppendInterval(0.08f);
+                Tween colorTween = newMats[materialIndex].DOVector(
+                    new Vector4(color.r, color.g, color.b, 0f),
+                    "_TintColor",
+                    0.22f
+                ).SetEase(Ease.OutBounce);
+                currentElement.sequences[materialIndex].Append(colorTween);
+                currentElement.sequences[materialIndex].OnComplete(() =>
+                {
+                    Material[] currentMats = currentElement.spriteRenderer.materials;
+                    currentMats[materialIndex] = currentElement.originalMats[materialIndex];
+                    currentElement.spriteRenderer.materials = currentMats;
+                    // 인스턴스화된 hitTintMat을 제거합니다. (메모리 누수 방지)
+                    Destroy(newMats[materialIndex]);
+                });
+                currentElement.sequences[materialIndex].Play();
+            }
+            currentElement.spriteRenderer.materials = newMats;
         }
     }
     bool isHit1;
@@ -303,12 +364,12 @@ public class PlayerController_LSH : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         run.isStagger = false;
-        yield return YieldInstructionCache.WaitForSeconds(1.6f - 0.2f);
+        yield return YieldInstructionCache.WaitForSeconds(1.35f - 0.2f);
         isHit1 = false;
     }
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(1.8f);
         isHit2 = false;
     }
     #region Use Lantern
