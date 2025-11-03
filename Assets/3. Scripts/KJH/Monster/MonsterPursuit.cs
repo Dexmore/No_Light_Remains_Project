@@ -9,6 +9,7 @@ public class MonsterPursuit : MonsterState
     public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
+        isAnimation = false;
         Activate(token).Forget();
     }
     Transform target;

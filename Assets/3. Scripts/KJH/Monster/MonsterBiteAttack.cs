@@ -53,6 +53,7 @@ public class MonsterBiteAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
                         model.localRotation = Quaternion.Euler(0f, 0f, 0f);

@@ -567,7 +567,7 @@ public class MonsterControl : MonoBehaviour
     public Dictionary<Collider2D, float> visibilites = new Dictionary<Collider2D, float>();
     public Dictionary<Collider2D, float> memories = new Dictionary<Collider2D, float>();
     [ReadOnlyInspector] public float findRadius;
-    [ReadOnlyInspector] public float closeRadius;
+    public float closeRadius;
     Transform eye;
     [HideInInspector] bool isTemporalFight;
     float temporalFightTime;
@@ -575,7 +575,7 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
-        closeRadius = 1.2f * (width * 0.61f + 0.7f);
+        if(closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         while (!token.IsCancellationRequested)
         {

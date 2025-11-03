@@ -178,8 +178,8 @@ MonoBehaviour:
       weight: 50
       coolTime: 1
     - state: 13
-      weight: 1000
-      coolTime: 1
+      weight: 500
+      coolTime: 10
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -187,7 +187,7 @@ MonoBehaviour:
   coolTimeList: []
   cannotList: []
   findRadius: 0
-  closeRadius: 0
+  closeRadius: 3.5
 --- !u!114 &1348512317345828506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
-  stopDistance: 4
+  stopDistance: 3.4
 --- !u!114 &4748392690718178906
 MonoBehaviour:
   m_ObjectHideFlags: 0
