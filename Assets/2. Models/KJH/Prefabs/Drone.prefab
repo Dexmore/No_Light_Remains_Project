@@ -200,6 +200,7 @@ GameObject:
   - component: {fileID: 187305889483521521}
   - component: {fileID: 7034570537726447681}
   - component: {fileID: 1749686000128439311}
+  - component: {fileID: 1357127461751023119}
   - component: {fileID: 6811123232829218298}
   m_Layer: 6
   m_Name: Drone
@@ -217,7 +218,7 @@ Transform:
   m_GameObject: {fileID: 7445973645024490474}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -19, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -299,7 +300,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 9
   currHP: 0
-  aggressive: 0.75
+  aggressive: 0.9
   data: {fileID: 11400000, guid: c4bfa1c928c60ac44a729d8262bbb1ec, type: 2}
   ID: 
   Name: 
@@ -315,22 +316,22 @@ MonoBehaviour:
       coolTime: 1
     - state: 1
       weight: 120
-      coolTime: 1.5
+      coolTime: 1
   - condition: 2
     frequencies:
-    - state: 5
-      weight: 120
+    - state: 3
+      weight: 100
       coolTime: 1
     - state: 0
-      weight: 50
+      weight: 20
       coolTime: 1
   - condition: 4
     frequencies:
-    - state: 7
+    - state: 4
       weight: 50
       coolTime: 1
-    - state: 13
-      weight: 500
+    - state: 10
+      weight: 2000
       coolTime: 1
   attackRange: {fileID: 0}
   state: 0
@@ -339,7 +340,7 @@ MonoBehaviour:
   coolTimeList: []
   cannotList: []
   findRadius: 0
-  closeRadius: 0
+  closeRadius: 7
 --- !u!114 &8106200046209513676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,7 +354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterIdle
   coolTime: 0
-  durationRange: {x: 0.5, y: 1}
+  durationRange: {x: 0.3, y: 0.7}
 --- !u!114 &4368831220321219045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -409,6 +410,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
   stopDistance: 6
+--- !u!114 &1357127461751023119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7445973645024490474}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d0ab3651234f414f843ce65cbcf4ed9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterReposition
+  coolTime: 0
 --- !u!114 &6811123232829218298
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -53,6 +53,7 @@ public class MonsterNormalAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
                         model.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -102,57 +103,8 @@ public class MonsterNormalAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
-        anim.Play("NAttack");
-        // 너무 멀면 앞으로 접근
-        dist = Mathf.Abs(target.position.x - transform.position.x);
-        condition = dist > 1.1f * range + 0.1f;
-        startTime = Time.time;
-        once = false;
-        while (Time.time - startTime < 0.5f)
-        {
-            if(Time.time - startTime > 0.3f && !once)
-            {
-                once = true;
-                if(Random.value <= 0.6f)
-                rb.AddForce(model.right * Random.Range(0.5f, 1.5f), ForceMode2D.Impulse);
-            }
-            await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
-            dist = Mathf.Abs(target.position.x - transform.position.x);
-            condition = dist > 1.1f * range + 0.1f;
-            if (condition)
-            {
-                float dot = Vector2.Dot(rb.linearVelocity, model.right);
-                // 벽 향해서 전진하는 버그 막기
-                bool stopWall = false;
-                if (control.collisions.Count > 0)
-                {
-                    foreach (var element in control.collisions)
-                    {
-                        if (Mathf.Abs(element.Value.y - transform.position.y) >= 0.09f * control.height)
-                        {
-                            if (element.Value.x - transform.position.x > 0.25f * control.width && moveDirection.x > 0)
-                            {
-                                stopWall = true;
-                                break;
-                            }
-                            else if (element.Value.x - transform.position.x < -0.25f * control.width && moveDirection.x < 0)
-                            {
-                                stopWall = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                // AddForce방식으로 캐릭터 이동
-                if (!stopWall)
-                    if (dot < control.data.MoveSpeed)
-                    {
-                        float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * model.right * 1.8f * (control.data.MoveSpeed + 4.905f) / 1.25f);
-                    }
-            }
-        }
-        await UniTask.Delay((int)(1000f * (duration - 0.5f)), cancellationToken: token);
+        anim.Play("NormalAttack");
+        await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
     }
     public override void Exit()

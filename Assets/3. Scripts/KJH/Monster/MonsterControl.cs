@@ -171,6 +171,11 @@ public class MonsterControl : MonoBehaviour
             }
         }
         float randomWeightSum = Random.Range(0, totalWeightSum);
+        if(totalWeightSum == 0)
+        {
+            ChangeState(State.Idle);
+            return;
+        }
         int find1 = -1, find2 = -1;
         float partialWeightSum = 0;
         for (int i = 0; i < patterns.Length; i++)
@@ -233,25 +238,20 @@ public class MonsterControl : MonoBehaviour
     {
         Idle,
         Wander,
-        Rest,
         Jump,
-        Roar,
         Pursuit,
-        RunAway,
         Reposition,
+        RunAway,
+        Roar,
+        Rest,
         Hit,
-        KnockDown,
         Die,
+        NormalAttack,
         BiteAttack,
         RangeAttack,
-        NormalAttack,
-        HandAttack,
-        RushAttack,
-        SlamAttack,
-        SpinAttack,
-        JumpAttack,
-        ComboAttack1,
-        ComboAttack2,
+        ShortAttack,
+        MovingAttack,
+        
     }
     [System.Serializable]
     public struct Frequency
@@ -348,8 +348,12 @@ public class MonsterControl : MonoBehaviour
             RemoveCanNot(state, "CoolTime");
             coolTimeList.RemoveAt(find);
         }
-        // 매개변수 time이 > 0 인 경우가 실제 대부분 사용하는 케이스 입니다.
-        else if (time > 0)
+        else if(time <= 0.1f)
+        {
+            return;
+        }
+        // 매개변수 time이 > 0.1 인 경우가 실제 대부분 사용하는 케이스 입니다.
+        else
         {
             if (find == -1)
             {
@@ -567,7 +571,7 @@ public class MonsterControl : MonoBehaviour
     public Dictionary<Collider2D, float> visibilites = new Dictionary<Collider2D, float>();
     public Dictionary<Collider2D, float> memories = new Dictionary<Collider2D, float>();
     [ReadOnlyInspector] public float findRadius;
-    [ReadOnlyInspector] public float closeRadius;
+    public float closeRadius;
     Transform eye;
     [HideInInspector] bool isTemporalFight;
     float temporalFightTime;
@@ -575,7 +579,7 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
-        closeRadius = 1.2f * (width * 0.61f + 0.7f);
+        if(closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         while (!token.IsCancellationRequested)
         {
@@ -805,11 +809,6 @@ public class MonsterControl : MonoBehaviour
     }
     void HitChangeColor(Color color)
     {
-        HitChangeColor_ut(color, cts.Token).Forget();
-    }
-    async UniTask HitChangeColor_ut(Color color, CancellationToken token)
-    {
-        await UniTask.Yield(token);
         foreach (var element in matInfos)
         {
             Material[] newMats = new Material[element.spriteRenderer.materials.Length];
