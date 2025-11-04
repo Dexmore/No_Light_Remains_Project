@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 6592984424120577612}
   - component: {fileID: 969003863410519774}
   - component: {fileID: 2696717301683423513}
+  - component: {fileID: 2829082605445565019}
   - component: {fileID: 4748392690718178906}
   m_Layer: 6
   m_Name: LanternKeeper
@@ -65,7 +66,7 @@ Transform:
   m_GameObject: {fileID: 8068371728270083225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -147,7 +148,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 9
   currHP: 0
-  aggressive: 0.75
+  aggressive: 0.9
   data: {fileID: 11400000, guid: 67ffca1b65334b84dbdea82a62f6cd5b, type: 2}
   ID: 
   Name: 
@@ -163,23 +164,23 @@ MonoBehaviour:
       coolTime: 1
     - state: 1
       weight: 120
-      coolTime: 1.5
+      coolTime: 1
   - condition: 2
     frequencies:
-    - state: 5
+    - state: 3
       weight: 100
       coolTime: 1
     - state: 0
-      weight: 30
+      weight: 20
       coolTime: 1
   - condition: 4
     frequencies:
-    - state: 7
+    - state: 4
       weight: 50
       coolTime: 1
-    - state: 13
-      weight: 500
-      coolTime: 10
+    - state: 10
+      weight: 2000
+      coolTime: 1
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -257,6 +258,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultPursuit
   coolTime: 0
   stopDistance: 3.4
+--- !u!114 &2829082605445565019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d0ab3651234f414f843ce65cbcf4ed9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterReposition
+  coolTime: 0
 --- !u!114 &4748392690718178906
 MonoBehaviour:
   m_ObjectHideFlags: 0

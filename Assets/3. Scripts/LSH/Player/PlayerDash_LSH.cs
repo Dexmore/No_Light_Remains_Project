@@ -7,7 +7,7 @@ public class PlayerDash_LSH : IPlayerState_LSH
     public PlayerDash_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.5f;   // 총 길이
     private const float avoidTime = 0.38f;   // 무적 시간
-    private const float dashForce = 14f;   // 대시 세기
+    private const float dashForce = 18f;   // 대시 세기
     private float _elapsedTime;
     public bool isLeft;
     public void Enter()

@@ -9,12 +9,12 @@ using Unity.Collections;
 using AstarNode = Astar2DXYPathFinder.AstarNode;
 public class Astar2DXYPathFinder : MonoBehaviour
 {
-     [ReadOnlyInspector] public float height;
-     [ReadOnlyInspector] public float width;
-     [ReadOnlyInspector] public float unit;
-     [ReadOnlyInspector] public float offeset;
-     [ReadOnlyInspector] public bool canJump;
-     [ReadOnlyInspector] public float jumpForce;
+     public float height;
+     public float width;
+     public float unit;
+     public float offeset;
+     public bool canJump;
+     public float jumpForce;
      #region UniTask Setting
      public CancellationTokenSource cts;
      void OnEnable()
@@ -89,7 +89,10 @@ public class Astar2DXYPathFinder : MonoBehaviour
      }
      void Start()
      {
-          model = transform.GetChild(0);
+          if (transform.childCount > 0)
+               model = transform.GetChild(0);
+          else
+               model = transform;
      }
      public async UniTask<Vector2[]> Find(Vector2 targetWorldPos)
      {

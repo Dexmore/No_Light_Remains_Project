@@ -103,8 +103,8 @@ public class MonsterNormalAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
-        anim.Play("NAttack");
-        await UniTask.Delay((int)(1000f * (duration - 0.5f)), cancellationToken: token);
+        anim.Play("NormalAttack");
+        await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
     }
     public override void Exit()

@@ -171,6 +171,11 @@ public class MonsterControl : MonoBehaviour
             }
         }
         float randomWeightSum = Random.Range(0, totalWeightSum);
+        if(totalWeightSum == 0)
+        {
+            ChangeState(State.Idle);
+            return;
+        }
         int find1 = -1, find2 = -1;
         float partialWeightSum = 0;
         for (int i = 0; i < patterns.Length; i++)
@@ -233,25 +238,20 @@ public class MonsterControl : MonoBehaviour
     {
         Idle,
         Wander,
-        Rest,
         Jump,
-        Roar,
         Pursuit,
-        RunAway,
         Reposition,
+        RunAway,
+        Roar,
+        Rest,
         Hit,
-        KnockDown,
         Die,
+        NormalAttack,
         BiteAttack,
         RangeAttack,
-        NormalAttack,
-        HandAttack,
-        RushAttack,
-        SlamAttack,
-        SpinAttack,
-        JumpAttack,
-        ComboAttack1,
-        ComboAttack2,
+        ShortAttack,
+        MovingAttack,
+        
     }
     [System.Serializable]
     public struct Frequency
@@ -348,8 +348,12 @@ public class MonsterControl : MonoBehaviour
             RemoveCanNot(state, "CoolTime");
             coolTimeList.RemoveAt(find);
         }
-        // 매개변수 time이 > 0 인 경우가 실제 대부분 사용하는 케이스 입니다.
-        else if (time > 0)
+        else if(time <= 0.1f)
+        {
+            return;
+        }
+        // 매개변수 time이 > 0.1 인 경우가 실제 대부분 사용하는 케이스 입니다.
+        else
         {
             if (find == -1)
             {
