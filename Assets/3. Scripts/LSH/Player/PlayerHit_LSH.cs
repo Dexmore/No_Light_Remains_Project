@@ -14,21 +14,18 @@ public class PlayerHit_LSH : IPlayerState_LSH
         duration = 0.1f;
         if (staggerType == HitData.StaggerType.Small)
         {
-            duration = 0.4f;
-            ctx.animator.Play("Idle");
-            //Debug.Log("HitSmall");
+            duration = 0.3f;
+            Debug.Log("HitSmall");
         }
         else if (staggerType == HitData.StaggerType.Middle)
         {
-            duration = 1.2f;
-            ctx.animator.Play("Idle");
-            //Debug.Log("HitMiddle");
+            duration = 0.7f * 2f;
+            Debug.Log("HitMiddle");
         }
         else if (staggerType == HitData.StaggerType.Large)
         {
-            duration = 3.5f;
-            ctx.animator.Play("Idle");
-            //Debug.Log("HitLarge");
+            duration = 1.8f * 2f;
+            Debug.Log("HitLarge");
         }
     }
     public void Exit()

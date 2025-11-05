@@ -87,6 +87,14 @@ public class MonsterControl : MonoBehaviour
     {
         try
         {
+            GameManager.I.onHit += HitHandler;
+        }
+        catch
+        {
+            
+        }
+        try
+        {
             cts?.Cancel();
             cts?.Dispose();
         }
