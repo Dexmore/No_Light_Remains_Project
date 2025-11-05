@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using System.Linq;
 public class MonsterNormalAttack : MonsterState
 {
     public float damageMultiplier = 1f;
@@ -29,14 +29,20 @@ public class MonsterNormalAttack : MonsterState
             return;
         }
         Transform target;
+        target = control.memories.First().Key.transform;
+        float dist = Mathf.Abs(target.position.x - transform.position.x);
+        if (dist > 1.1f * range + 2f)
+        {
+            await UniTask.Yield(cts.Token);
+            control.ChangeNextState();
+            return;
+        }
         Vector2 moveDirection;
         float startTime;
         startTime = Time.time;
-        target = control.memories.First().Key.transform;
         moveDirection = target.position - transform.position;
         moveDirection.y = 0;
         moveDirection.Normalize();
-        float dist = Mathf.Abs(target.position.x - transform.position.x);
         bool condition = dist < 0.9f * range - 0.1f;
         bool once = false;
         // 너무 가까우면 살짝 뒤로 이동

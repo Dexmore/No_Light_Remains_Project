@@ -110,6 +110,7 @@ public class PlayerController_LSH : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashInputCancel;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashInputCancel;
         lanternAction.performed -= LanternInput;
+        GameManager.I.onHit -= HitHandler;
     }
 
     void Update()
@@ -274,16 +275,16 @@ public class PlayerController_LSH : MonoBehaviour
             switch (data.staggerType)
             {
                 case HitData.StaggerType.Small:
-                    multiplier = 1.1f;
+                    multiplier = 1.05f;
                     break;
                 case HitData.StaggerType.Middle:
-                    multiplier = 1.25f;
+                    multiplier = 1.22f;
                     break;
                 case HitData.StaggerType.Large:
-                    multiplier = 1.4f;
+                    multiplier = 1.3f;
                     break;
             }
-            Vector2 dir = 3.5f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            Vector2 dir = 2.8f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
             dir.y = 2.3f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;

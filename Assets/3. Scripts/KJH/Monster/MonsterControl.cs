@@ -82,16 +82,23 @@ public class MonsterControl : MonoBehaviour
     {
         try
         {
+            GameManager.I.onHit += HitHandler;
+        }
+        catch
+        {
+            
+        }
+        try
+        {
             cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)
         {
-
             Debug.Log(e.Message);
         }
         cts = null;
-    }
+        }
     #endregion
     #region FSM
     [ReadOnlyInspector] public State state;

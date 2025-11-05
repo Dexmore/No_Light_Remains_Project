@@ -127,7 +127,7 @@ public class MonsterMovingAttack : MonsterState
         anim.Play("MovingAttack");
         startTime = Time.time;
         await UniTask.Delay((int)(1000f * moveTimeRange.x), cancellationToken: token);
-        rb.AddForce(21f * model.right, ForceMode2D.Impulse);
+        rb.AddForce(23f * model.right, ForceMode2D.Impulse);
         await UniTask.Delay(50, cancellationToken: token);
         while (Time.time - startTime < moveTimeRange.y)
         {

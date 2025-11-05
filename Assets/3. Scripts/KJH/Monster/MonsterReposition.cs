@@ -84,7 +84,7 @@ public class MonsterReposition : MonsterState
             // Astar로 지정할 임시목적지 선정
             Vector2 pos = ((Vector2)target.position) + control.data.MoveSpeed * _duration * directionX * Random.Range(1.5f, 2.5f);
             int count = Physics2D.RaycastNonAlloc(pos + 5f * Vector2.up, Vector2.down, grounds, 10f, control.groundLayer);
-            Debug.DrawRay(pos + 5f * Vector2.up, 5f * Vector2.down, Color.blue, 2f);
+            //Debug.DrawRay(pos + 5f * Vector2.up, 5f * Vector2.down, Color.blue, 2f);
             if (count == 0) continue;
             int rnd2 = Random.Range(0, count);
             for (int k = 0; k < 20; k++)
