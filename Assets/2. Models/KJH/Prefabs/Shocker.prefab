@@ -172,6 +172,7 @@ GameObject:
   - component: {fileID: 7499197372901428476}
   - component: {fileID: 8414205815557459469}
   - component: {fileID: 3538120705773755397}
+  - component: {fileID: 1341867419783510611}
   m_Layer: 6
   m_Name: Shocker
   m_TagString: Monster
@@ -293,8 +294,11 @@ MonoBehaviour:
       weight: 100
       coolTime: 1
     - state: 0
-      weight: 20
+      weight: 100
       coolTime: 1
+    - state: 12
+      weight: 100
+      coolTime: 3
   - condition: 4
     frequencies:
     - state: 4
@@ -302,7 +306,7 @@ MonoBehaviour:
       coolTime: 1
     - state: 10
       weight: 2000
-      coolTime: 1
+      coolTime: 4
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -310,7 +314,7 @@ MonoBehaviour:
   coolTimeList: []
   cannotList: []
   findRadius: 0
-  closeRadius: 5
+  closeRadius: 5.5
 --- !u!114 &7568115688032531983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,10 +410,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterNormalAttack
   coolTime: 0
-  damageMultiplier: 1
-  staggerType: 1
+  damageMultiplier: 1.2
+  staggerType: 2
   durationRange: {x: 2.8, y: 3.4}
   range: 1.4
+--- !u!114 &1341867419783510611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3673026413363454731}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9dcbd4a8c6092c4c86b1aa13d8494be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterRangeAttack
+  coolTime: 0
+  range: 10
+  damageMultiplier: 0.9
+  staggerType: 2
+  durationRange: {x: 2.8, y: 3.4}
 --- !u!1 &4296926991901128437
 GameObject:
   m_ObjectHideFlags: 0

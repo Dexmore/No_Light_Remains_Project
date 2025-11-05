@@ -4,6 +4,7 @@ using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using UnityEngine.Events;
 public class MonsterControl : MonoBehaviour
 {
     public float height = 1.5f;
@@ -76,7 +77,11 @@ public class MonsterControl : MonoBehaviour
         Application.quitting += UniTaskCancel;
         Init();
     }
-    void OnDisable() => UniTaskCancel();
+    void OnDisable()
+    {
+        GameManager.I.onHit -= HitHandler;
+        UniTaskCancel();
+    }
     void OnDestroy() => UniTaskCancel();
     void UniTaskCancel()
     {
@@ -87,11 +92,10 @@ public class MonsterControl : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
             Debug.Log(e.Message);
         }
         cts = null;
-    }
+        }
     #endregion
     #region FSM
     [ReadOnlyInspector] public State state;
