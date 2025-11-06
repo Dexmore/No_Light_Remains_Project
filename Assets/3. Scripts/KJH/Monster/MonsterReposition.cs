@@ -55,7 +55,7 @@ public class MonsterReposition : MonsterState
         // 몸통 박치기형 몬스터의 경우 더욱 충분한 시간동안 이동해서 플레이어를 지나쳐 넘어가야함
         if (a < 1f)
         {
-            _duration += (b / control.data.MoveSpeed) + Random.Range(0.5f, 2.5f);
+            _duration += (b / control.data.MoveSpeed) + Random.Range(0.5f, 1.7f);
         }
         // 멀어지려하는 몬스터의 경우. stopDistance보다 멀어지는건 방지해야함.
         else if (rnd <= result)

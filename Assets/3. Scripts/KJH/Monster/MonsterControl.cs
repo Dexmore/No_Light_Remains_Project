@@ -89,14 +89,6 @@ public class MonsterControl : MonoBehaviour
     {
         try
         {
-            GameManager.I.onHit += HitHandler;
-        }
-        catch
-        {
-            
-        }
-        try
-        {
             cts?.Cancel();
             cts?.Dispose();
         }
@@ -105,7 +97,7 @@ public class MonsterControl : MonoBehaviour
             Debug.Log(e.Message);
         }
         cts = null;
-        }
+    }
     #endregion
     #region FSM
     [ReadOnlyInspector] public State state;
@@ -185,7 +177,7 @@ public class MonsterControl : MonoBehaviour
             }
         }
         float randomWeightSum = Random.Range(0, totalWeightSum);
-        if(totalWeightSum == 0)
+        if (totalWeightSum == 0)
         {
             ChangeState(State.Idle);
             return;
@@ -265,7 +257,7 @@ public class MonsterControl : MonoBehaviour
         RangeAttack,
         ShortAttack,
         MovingAttack,
-        
+
     }
     [System.Serializable]
     public struct Frequency
@@ -362,7 +354,7 @@ public class MonsterControl : MonoBehaviour
             RemoveCanNot(state, "CoolTime");
             coolTimeList.RemoveAt(find);
         }
-        else if(time <= 0.1f)
+        else if (time <= 0.1f)
         {
             return;
         }
@@ -593,7 +585,7 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
-        if(closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
+        if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         while (!token.IsCancellationRequested)
         {
@@ -788,43 +780,62 @@ public class MonsterControl : MonoBehaviour
     }
     #endregion
     #region Hit
-    void HitHandler(HitData data)
+    void HitHandler(HitData hData)
     {
         if (isDie) return;
-        if (data.target.Root() != transform) return;
-        currHP -= data.damage;
+        if (hData.target.Root() != transform) return;
+
+        // Effect
+        ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+        AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+        HitChangeColor(Color.white);
+
+        // Stagger
+        if (Random.value <= 0.88f)
+        {
+            float staggerForce = 5.8f;
+            float staggerFactor1 = 1f;
+            switch (data.Type)
+            {
+                case MonsterType.Middle:
+                    staggerFactor1 = 0.81f;
+                    break;
+                case MonsterType.Large:
+                    staggerFactor1 = 0.69f;
+                    break;
+                case MonsterType.Boss:
+                    staggerFactor1 = 0.43f;
+                    break;
+            }
+            float staggerFactor2 = 1f;
+            switch (hData.attackName)
+            {
+                case "Attack":
+                    staggerFactor2 = 0.7f;
+                    break;
+                case "AttackCombo":
+                    staggerFactor2 = 1f;
+                    break;
+            }
+            float temp = hData.damage / data.HP;
+            float staggerFactor3 = 0.71f + 0.29f * temp;
+            Vector2 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
+            Vector2 dir = transform.position - hData.hitPoint;
+            dir.y = dir.y * 0.1f + 0.02f;
+            if (dir.y < 0) dir.y = 0.02f;
+            dir.Normalize();
+            rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
+        }
+
+        // Set HP
+        currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
             RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
             ChangeState(State.Die);
 
-        //
 
-
-
-        // //
-        // float force = 6.2f; //6.2f가 최대치로 되게
-        // switch (data.attackName)
-        // {
-        //     case "Attack":
-
-        //         break;
-        //     case "AttackCombo":
-
-        //         break;
-        // }
-        // Vector2 velo = rb.linearVelocity;
-        // rb.linearVelocity = 0.4f * velo;
-        // Vector2 dir = transform.position - data.hitPoint;
-        // dir.y = dir.y * 0.1f + 0.02f;
-        // if (dir.y < 0) dir.y = 0.02f;
-        // dir.Normalize();
-        // rb.AddForce(force * dir, ForceMode2D.Impulse);
-        // //
-
-        ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
-        AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
-        HitChangeColor(Color.white);
     }
     class MatInfo
     {

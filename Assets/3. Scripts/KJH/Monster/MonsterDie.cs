@@ -32,7 +32,7 @@ public class MonsterDie : MonsterState
         foreach (var element in dropTables)
         {
             if (Random.value > element.probability) continue;
-            int count = Random.Range(element.countRange.x, element.countRange.y);
+            int count = Random.Range(element.countRange.x, element.countRange.y + 1);
             for (int k = 0; k < count; k++)
             {
                 DropItem dropItem = Instantiate(element.dropItem);
@@ -43,7 +43,7 @@ public class MonsterDie : MonsterState
                 {
                     Vector2 dir = Quaternion.Euler(0f, 0f, Random.Range(5f, 15f)) * Vector2.up;
                     if (Random.value <= 0.5f) dir.x = -dir.x;
-                    rigidbody2D.AddForce(Random.Range(5f,10f) * dir, ForceMode2D.Impulse);
+                    rigidbody2D.AddForce(Random.Range(5f, 10f) * dir, ForceMode2D.Impulse);
                 }
             }
             await UniTask.Delay(10, cancellationToken: cts.Token);
