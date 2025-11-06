@@ -11,6 +11,9 @@ public class DBManager : SingletonBehaviour<DBManager>
     protected override bool IsDontDestroy() => true;
     public SaveData saveData;
 
+    // Steam API 초기화 성공 여부를 저장하는 플래그
+    private bool isSteamInitialized = false;
+
     private string saveDirectoryPath => Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
 
     // 최종 저장 파일 경로 (".../SaveData.json")를 반환합니다.
@@ -23,6 +26,16 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         yield return null;
         StartCoroutine(StartSteam());
+    }
+
+    // [중요] 스팀 API 종료 처리
+    private void OnApplicationQuit()
+    {
+        if (isSteamInitialized)
+        {
+            SteamAPI.Shutdown();
+            Debug.Log("[DBManager] SteamAPI Shutdown.");
+        }
     }
     
     public IEnumerator StartSteam()
