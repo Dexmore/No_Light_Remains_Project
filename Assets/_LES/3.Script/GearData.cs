@@ -14,4 +14,5 @@ public class GearData : ScriptableObject // [수정] ScriptableObject 상속
     
     public bool isEquipped;
     public bool isNew;
+    
 }
