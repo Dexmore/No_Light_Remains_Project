@@ -7,8 +7,8 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerAttackCombo_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 1.3f;   // 1타 총 길이
-    public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.77f; //콤보나 패링등으로 전환이 가능한 시간
+    public const int multiHitCount = 2; // 동시타격 가능한 적의 수
+    private const float comboAvailableTime = 0.8f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;

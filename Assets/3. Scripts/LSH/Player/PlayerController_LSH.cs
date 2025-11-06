@@ -205,14 +205,14 @@ public class PlayerController_LSH : MonoBehaviour
     }
     IEnumerator DashRelease()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.18f);
+        yield return YieldInstructionCache.WaitForSeconds(0.23f);
         leftDashInputCount = 0;
         rightDashInputCount = 0;
     }
     IEnumerator Dash()
     {
         float time = Time.time;
-        while (Time.time - time < 0.45f)
+        while (Time.time - time < 0.55f)
         {
             yield return null;
             if (fsm.currentState == dash) break;
@@ -241,7 +241,7 @@ public class PlayerController_LSH : MonoBehaviour
             StartCoroutine(nameof(HitCoolTime1));
             if (Avoided)
             {
-                //Debug.Log("회피 성공");
+                Debug.Log("회피 성공");
                 return;
             }
             Vector2 dir = 4.2f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
@@ -264,13 +264,13 @@ public class PlayerController_LSH : MonoBehaviour
             StartCoroutine(nameof(HitCoolTime2));
             if (Avoided)
             {
-                //Debug.Log("회피 성공");
+                Debug.Log("회피 성공");
                 return;
             }
             if (Parred)
             {
                 AudioManager.I.PlaySFX("Parry");
-                //Debug.Log("패링 성공");
+                Debug.Log("패링 성공");
                 return;
             }
             float multiplier = 1f;
