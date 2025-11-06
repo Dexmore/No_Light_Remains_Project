@@ -1,32 +1,47 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+
 public class PlayerHit_LSH : IPlayerState_LSH
 {
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerHit_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    float elapsedTime;
+    [HideInInspector] public HitData.StaggerType staggerType;
+    float duration = 0.1f;
+    private float _elapsedTime;
     public void Enter()
     {
-        ctx.animator.Play("Player_Attack");
-        ctx.state = PlayerController_LSH.State.Attack;
-        elapsedTime = 0f;
-    }
-    public void Update()
-    {
-
-    }
-    public void FixedUpdate()
-    {
-        elapsedTime += Time.fixedDeltaTime;
-        if (elapsedTime > 0.7f)
+        _elapsedTime = 0f;
+        duration = 0.1f;
+        if (staggerType == HitData.StaggerType.Small)
         {
-            fsm.ChangeState(ctx.idle);
+            duration = 0.3f;
+            Debug.Log("HitSmall");
+        }
+        else if (staggerType == HitData.StaggerType.Middle)
+        {
+            duration = 0.7f * 2f;
+            Debug.Log("HitMiddle");
+        }
+        else if (staggerType == HitData.StaggerType.Large)
+        {
+            duration = 1.8f * 2f;
+            Debug.Log("HitLarge");
         }
     }
     public void Exit()
     {
+        
+    }
+    public void UpdateState()
+    {
+        _elapsedTime += Time.deltaTime;
+        if(_elapsedTime > duration)
+        {
+            fsm.ChangeState(ctx.idle);
+        }
+    }
+    public void UpdatePhysics()
+    {
 
     }
-    
 }

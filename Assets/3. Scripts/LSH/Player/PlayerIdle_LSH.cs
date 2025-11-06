@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerIdle_LSH : IPlayerState_LSH
@@ -6,59 +5,54 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerIdle_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    InputAction inputAction_Move;
-    Vector2 direction;
+    private InputAction moveAction;
+    Vector2 moveActionValue;
+    private InputAction jumpAction;
+    bool jumpPressed;
+    private InputAction attackAction;
+    bool attackPressed;
+    private InputAction potionAction;
+    bool potionPressed;
     public void Enter()
     {
-        inputAction_Move = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed += Input_Attack;
-        ctx.state = PlayerController_LSH.State.Idle;
-        if (ctx.isGround)
-        {
-            ctx.animator.Play("Player_Idle");
-        }
-        else
-        {
-            if (ctx.isJump)
-            {
-                if (!ctx.animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Jump"))
-                {
-                    ctx.animator.Play("Player_Jump");
-                }
-            }
-            else
-            {
-                if (!ctx.animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Fall"))
-                {
-                    ctx.animator.Play("Player_Fall");
-                }
-            }
-        }
-    }
-    public void Update()
-    {
-        if (inputAction_Move == null) return;
-        direction = inputAction_Move.ReadValue<Vector2>();
-        if (direction.x != 0)
-            fsm.ChangeState(ctx.run);
-    }
-    public void FixedUpdate()
-    {
-
+        if (moveAction == null)
+            moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
+        if (jumpAction == null)
+            jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
+        if (attackAction == null)
+            attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
+        if (potionAction == null)
+            potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
+        ctx.animator.Play("Player_Idle");
     }
     public void Exit()
     {
-        ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack").performed -= Input_Attack;
+        
     }
-    void Input_Attack(InputAction.CallbackContext callback)
+    public void UpdateState()
     {
-        if (ctx.isGround)
-        {
+        moveActionValue = moveAction.ReadValue<Vector2>();
+        if (moveActionValue.x != 0)
+            fsm.ChangeState(ctx.run);
+        
+        jumpPressed = jumpAction.IsPressed();
+        if (jumpPressed && ctx.Grounded)
+            fsm.ChangeState(ctx.jump);
+
+        attackPressed = attackAction.IsPressed();
+        if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);
-        }
+
+        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
+            fsm.ChangeState(ctx.fall);
+
+        potionPressed = potionAction.IsPressed();
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+            fsm.ChangeState(ctx.usePotion);
+        
     }
-    
+    public void UpdatePhysics()
+    {
 
-
-
+    }
 }
