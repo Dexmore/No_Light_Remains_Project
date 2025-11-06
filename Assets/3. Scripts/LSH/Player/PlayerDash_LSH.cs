@@ -25,10 +25,12 @@ public class PlayerDash_LSH : IPlayerState_LSH
             ctx.rb.AddForce(Vector2.right * dashForce, ForceMode2D.Impulse);
         }
         ctx.Avoided = true;
+        ctx.isDash = false;
     }
     public void Exit()
     {
         ctx.Avoided = false;
+        ctx.isDash = false;
     }
     public void UpdateState()
     {

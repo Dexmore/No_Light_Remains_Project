@@ -6,9 +6,9 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerAttackCombo_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 1.3f;   // 1타 총 길이
+    private const float duration = 1.28f;   // 1타 총 길이
     public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.77f; //콤보나 패링등으로 전환이 가능한 시간
+    private const float comboAvailableTime = 0.62f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;
@@ -43,6 +43,13 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
             if (parryPressed)
             {
                 fsm.ChangeState(ctx.parry);
+            }
+        }
+        if (_elapsedTime > comboAvailableTime + (duration - comboAvailableTime) * 0.3f)
+        {
+            if (ctx.isDash)
+            {
+                fsm.ChangeState(ctx.dash);
             }
         }
         ///////////////////////////////////////////////////////////

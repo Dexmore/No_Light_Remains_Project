@@ -28,11 +28,13 @@ public class MonsterControl : MonoBehaviour
     [Header("Pattern")]
     public Pattern[] patterns;
     Astar2DXYPathFinder astar;
+    Rigidbody2D rb;
     [HideInInspector] public AttackRange attackRange;
     void Awake()
     {
         SettingFSM();
         TryGetComponent(out astar);
+        TryGetComponent(out rb);
         attackRange = GetComponentInChildren<AttackRange>(true);
         eye = transform.GetChild(0).Find("Eye");
         InitMatInfo();
@@ -795,6 +797,31 @@ public class MonsterControl : MonoBehaviour
             RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
             ChangeState(State.Die);
+
+        //
+
+
+
+        // //
+        // float force = 6.2f; //6.2f가 최대치로 되게
+        // switch (data.attackName)
+        // {
+        //     case "Attack":
+
+        //         break;
+        //     case "AttackCombo":
+
+        //         break;
+        // }
+        // Vector2 velo = rb.linearVelocity;
+        // rb.linearVelocity = 0.4f * velo;
+        // Vector2 dir = transform.position - data.hitPoint;
+        // dir.y = dir.y * 0.1f + 0.02f;
+        // if (dir.y < 0) dir.y = 0.02f;
+        // dir.Normalize();
+        // rb.AddForce(force * dir, ForceMode2D.Impulse);
+        // //
+
         ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
         AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
         HitChangeColor(Color.white);

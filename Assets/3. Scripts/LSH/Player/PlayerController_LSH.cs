@@ -64,6 +64,7 @@ public class PlayerController_LSH : MonoBehaviour
     [ReadOnlyInspector] public bool Grounded { get; private set; }
     [ReadOnlyInspector] public bool Parred { get; set; }
     [ReadOnlyInspector] public bool Avoided { get; set; }
+    [ReadOnlyInspector] public bool Dead { get; set; }
 
     void Awake()
     {
@@ -172,6 +173,7 @@ public class PlayerController_LSH : MonoBehaviour
             {
                 if (rightDashInputCount != 0) rightDashInputCount = 0;
                 dash.isLeft = true;
+                isDash = true;
                 StopCoroutine(nameof(Dash));
                 StartCoroutine(nameof(Dash));
             }
@@ -189,12 +191,13 @@ public class PlayerController_LSH : MonoBehaviour
             {
                 if (leftDashInputCount != 0) leftDashInputCount = 0;
                 dash.isLeft = false;
+                isDash = true;
                 StopCoroutine(nameof(Dash));
                 StartCoroutine(nameof(Dash));
             }
         }
     }
-    bool isDash;
+    [ReadOnlyInspector] public bool isDash;
     void DashInputCancel(InputAction.CallbackContext callback)
     {
         if (!Grounded) return;
@@ -212,7 +215,7 @@ public class PlayerController_LSH : MonoBehaviour
     IEnumerator Dash()
     {
         float time = Time.time;
-        while (Time.time - time < 0.45f)
+        while (Time.time - time < 0.48f)
         {
             yield return null;
             if (fsm.currentState == dash) break;
@@ -223,6 +226,7 @@ public class PlayerController_LSH : MonoBehaviour
             }
         }
         yield return null;
+        isDash = false;
         leftDashInputCount = 0;
         rightDashInputCount = 0;
     }

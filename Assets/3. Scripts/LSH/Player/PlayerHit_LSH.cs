@@ -19,12 +19,12 @@ public class PlayerHit_LSH : IPlayerState_LSH
         }
         else if (staggerType == HitData.StaggerType.Middle)
         {
-            duration = 0.7f * 2f;
+            duration = 0.9f;
             //Debug.Log("HitMiddle");
         }
         else if (staggerType == HitData.StaggerType.Large)
         {
-            duration = 1.8f * 2f;
+            duration = 1.9f;
             //Debug.Log("HitLarge");
         }
     }

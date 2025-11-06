@@ -41,7 +41,9 @@ public class MonsterDie : MonsterState
                 Rigidbody2D rigidbody2D = dropItem.GetComponentInChildren<Rigidbody2D>();
                 if (rigidbody2D != null)
                 {
-                    rigidbody2D.AddForce(10f * Vector2.up, ForceMode2D.Impulse);
+                    Vector2 dir = Quaternion.Euler(0f, 0f, Random.Range(5f, 15f)) * Vector2.up;
+                    if (Random.value <= 0.5f) dir.x = -dir.x;
+                    rigidbody2D.AddForce(Random.Range(5f,10f) * dir, ForceMode2D.Impulse);
                 }
             }
             await UniTask.Delay(10, cancellationToken: cts.Token);
