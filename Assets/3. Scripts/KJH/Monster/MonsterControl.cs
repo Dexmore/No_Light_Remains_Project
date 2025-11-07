@@ -791,9 +791,9 @@ public class MonsterControl : MonoBehaviour
         HitChangeColor(Color.white);
 
         // Stagger
-        if (Random.value <= 0.88f)
+        if (Random.value <= 0.77f)
         {
-            float staggerForce = 5.5f;
+            float staggerForce = 4.8f;
             float staggerFactor1 = 1f;
             switch (data.Type)
             {
@@ -818,7 +818,7 @@ public class MonsterControl : MonoBehaviour
                     break;
             }
             float temp = hData.damage / data.HP;
-            float staggerFactor3 = 0.71f + 0.29f * temp;
+            float staggerFactor3 = 0.68f + 0.32f * temp;
             Vector2 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             Vector2 dir = transform.position - hData.hitPoint;
