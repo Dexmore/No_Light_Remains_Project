@@ -793,7 +793,7 @@ public class MonsterControl : MonoBehaviour
         // Stagger
         if (Random.value <= 0.88f)
         {
-            float staggerForce = 5.8f;
+            float staggerForce = 5.5f;
             float staggerFactor1 = 1f;
             switch (data.Type)
             {

@@ -373,12 +373,12 @@ public class PlayerController_LSH : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         run.isStagger = false;
-        yield return YieldInstructionCache.WaitForSeconds(1.35f - 0.2f);
+        yield return YieldInstructionCache.WaitForSeconds(0.9f - 0.2f);
         isHit1 = false;
     }
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(1.8f);
+        yield return YieldInstructionCache.WaitForSeconds(1.4f);
         isHit2 = false;
     }
     #region Use Lantern

@@ -73,8 +73,8 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(1000);
-        FadeIn(0.7f);
+        await Task.Delay(800);
+        FadeIn(0.6f);
     }
     public async void LoadSceneAsync(string name, bool loadingScreen = false)
     {
@@ -98,8 +98,8 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(1000);
-        FadeIn(0.7f);
+        await Task.Delay(800);
+        FadeIn(0.6f);
     }
     #endregion
     #region Fade
@@ -177,7 +177,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         dimImg.color = new Color(0f, 0f, 0f, 1f);
         //진행
         Tween tween;
-        tween = dimImg.DOFade(0f, 3.45f).SetEase(Ease.InSine);
+        tween = dimImg.DOFade(0f, 2.8f).SetEase(Ease.InSine);
         tween.OnComplete(() =>
         {
             fadeScreen.SetActive(false);

@@ -18,7 +18,10 @@ public class MonsterDie : MonsterState
     public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
-        chafe = transform.Find("Chafe").gameObject;
+        if(transform.Find("Chafe") != null)
+            chafe = transform.Find("Chafe").gameObject;
+        else
+            chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
         Activate(token).Forget();
     }
@@ -43,7 +46,7 @@ public class MonsterDie : MonsterState
                 {
                     Vector2 dir = Quaternion.Euler(0f, 0f, Random.Range(5f, 15f)) * Vector2.up;
                     if (Random.value <= 0.5f) dir.x = -dir.x;
-                    rigidbody2D.AddForce(Random.Range(5f, 10f) * dir, ForceMode2D.Impulse);
+                    rigidbody2D.AddForce(Random.Range(4f, 8.5f) * dir, ForceMode2D.Impulse);
                 }
             }
             await UniTask.Delay(10, cancellationToken: cts.Token);

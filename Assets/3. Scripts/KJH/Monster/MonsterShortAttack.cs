@@ -17,7 +17,10 @@ public class MonsterShortAttack : MonsterState
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         attackedColliders.Clear();
-        chafe = transform.Find("Chafe").gameObject;
+        if(transform.Find("Chafe") != null)
+            chafe = transform.Find("Chafe").gameObject;
+        else
+            chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
         await UniTask.Yield(cts.Token);
         duration = Random.Range(durationRange.x, durationRange.y);
