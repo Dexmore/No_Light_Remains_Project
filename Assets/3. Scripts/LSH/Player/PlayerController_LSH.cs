@@ -231,11 +231,11 @@ public class PlayerController_LSH : MonoBehaviour
         rightDashInputCount = 0;
     }
     #endregion
-    void HitHandler(HitData data)
+    void HitHandler(HitData hData)
     {
-        if (data.target.Root() != transform) return;
+        if (hData.target.Root() != transform) return;
         if (fsm.currentState == die) return;
-        if (data.attackType == HitData.AttackType.Chafe)
+        if (hData.attackType == HitData.AttackType.Chafe)
         {
             if (isHit2) return;
             if (isHit1) return;
@@ -248,19 +248,19 @@ public class PlayerController_LSH : MonoBehaviour
                 //Debug.Log("회피 성공");
                 return;
             }
-            Vector2 dir = 4.2f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            Vector2 dir = 4.2f * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
             dir.y = 2f;
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
-            currentHealth -= (int)data.damage;
+            currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             HitChangeColor(Color.white);
             return;
         }
-        else if (data.attackType == HitData.AttackType.Default)
+        else if (hData.attackType == HitData.AttackType.Default)
         {
             if (isHit2) return;
             isHit2 = true;
@@ -278,34 +278,37 @@ public class PlayerController_LSH : MonoBehaviour
                 return;
             }
             float multiplier = 1f;
-            switch (data.staggerType)
+            switch (hData.staggerType)
             {
                 case HitData.StaggerType.Small:
                     multiplier = 1.05f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.25f);
                     break;
                 case HitData.StaggerType.Middle:
                     multiplier = 1.22f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.45f);
                     break;
                 case HitData.StaggerType.Large:
                     multiplier = 1.3f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.65f);
                     break;
             }
-            Vector2 dir = 2.8f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
+            Vector2 dir = 2.8f * multiplier * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
             dir.y = 2.3f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
-            if (data.staggerType != HitData.StaggerType.None)
+            if (hData.staggerType != HitData.StaggerType.None)
             {
-                hit.staggerType = data.staggerType;
+                hit.staggerType = hData.staggerType;
                 fsm.ChangeState(hit);
             }
-            currentHealth -= (int)data.damage;
+            currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
-            ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
-            AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
+            ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+            AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
             HitChangeColor(Color.white);
             return;
         }

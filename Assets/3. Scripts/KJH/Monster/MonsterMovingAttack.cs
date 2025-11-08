@@ -12,9 +12,11 @@ public class MonsterMovingAttack : MonsterState
     public float range = 1.4f;
     public Vector2 moveTimeRange;
     int multiHitCount = 1;
+    MonsterShortAttack monsterShortAttack;
     public override MonsterControl.State mapping => MonsterControl.State.MovingAttack;
     public override async UniTask Enter(CancellationToken token)
     {
+        TryGetComponent(out monsterShortAttack);
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         attackedColliders.Clear();
         await UniTask.Yield(cts.Token);
@@ -164,8 +166,24 @@ public class MonsterMovingAttack : MonsterState
                 }
         }
         anim.Play("Idle");
-        await UniTask.Delay((int)(1000f * (duration - (moveTimeRange.y - moveTimeRange.x))), cancellationToken: token);
-        control.ChangeNextState();
+        //await UniTask.Delay((int)(1000f * (duration - (moveTimeRange.y - moveTimeRange.x))), cancellationToken: token);
+        PlayerController_LSH pControl = target.GetComponentInParent<PlayerController_LSH>();
+        startTime = Time.time;
+        bool isPlayerHit = false;
+        while (Time.time - startTime < duration - (moveTimeRange.y - moveTimeRange.x))
+        {
+            if (monsterShortAttack == null) break;
+            await UniTask.Yield(token);
+            if (!isPlayerHit && pControl.fsm.currentState == pControl.hit) 
+            {
+                isPlayerHit = true;
+                startTime -= 1.7f;
+            }
+        }
+        if (isPlayerHit)
+            control.ChangeState(MonsterControl.State.ShortAttack, true);
+        else
+            control.ChangeNextState();
     }
     public override void Exit()
     {

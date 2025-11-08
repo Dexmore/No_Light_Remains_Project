@@ -38,6 +38,7 @@ public class MonsterControl : MonoBehaviour
         attackRange = GetComponentInChildren<AttackRange>(true);
         eye = transform.GetChild(0).Find("Eye");
         InitMatInfo();
+        TryGetComponent(out monsterHit);
     }
     void Init()
     {
@@ -119,9 +120,9 @@ public class MonsterControl : MonoBehaviour
             }
         }
     }
-    public void ChangeState(State newState)
+    public void ChangeState(State newState, bool force = false)
     {
-        if (newState == State.Hit || newState == State.Die)
+        if (newState == State.Hit || newState == State.Die || force)
         {
             ChangeState_ut(newState, cts.Token).Forget();
             return;
@@ -780,6 +781,13 @@ public class MonsterControl : MonoBehaviour
     }
     #endregion
     #region Hit
+    public int parryCount;
+    public float curHitAmount;
+    public float maxHitAmount;
+    int prevHitType;
+    float prevHitTime;
+    float hitCoolTime;
+    MonsterHit monsterHit;
     void HitHandler(HitData hData)
     {
         if (isDie) return;
@@ -788,6 +796,7 @@ public class MonsterControl : MonoBehaviour
         // Effect
         ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
         AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+        GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
 
         // Stagger
@@ -826,8 +835,33 @@ public class MonsterControl : MonoBehaviour
             if (dir.y < 0) dir.y = 0.02f;
             dir.Normalize();
             rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
-        }
 
+
+            bool pass = false;
+            if (state == State.Jump) pass = true;
+            if (!pass && Random.value <= 0.87)
+            {
+                curHitAmount += hData.damage;
+                if (maxHitAmount == 0) maxHitAmount = Random.Range(0.19f, 0.24f) * Mathf.Clamp(data.HP, 300, 700);
+                if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
+                if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+                if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
+                {
+                    if (Random.value < 0.88f)
+                    {
+                        monsterHit.type = 1;
+                        monsterHit.prevState = state;
+                        ChangeState(State.Hit);
+                        curHitAmount = 0;
+                        prevHitTime = Time.time;
+                        hitCoolTime = Random.Range(0.2f, 0.8f);
+                        if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+                    }
+                    else
+                        curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
+                }
+            }
+        }
         // Set HP
         currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))

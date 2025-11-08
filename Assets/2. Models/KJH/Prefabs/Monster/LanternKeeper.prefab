@@ -189,6 +189,9 @@ MonoBehaviour:
   cannotList: []
   findRadius: 0
   closeRadius: 3.5
+  parryCount: 0
+  curHitAmount: 0
+  maxHitAmount: 0
 --- !u!114 &1348512317345828506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +219,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultHit
   coolTime: 0
+  type: 0
+  prevState: 0
 --- !u!114 &6592984424120577612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,7 +296,7 @@ MonoBehaviour:
   coolTime: 0
   damageMultiplier: 0.3
   staggerType: 1
-  durationRange: {x: 1, y: 3}
+  durationRange: {x: 1.8, y: 2.8}
   range: 1.4
 --- !u!1 &8351178544674619736
 GameObject:

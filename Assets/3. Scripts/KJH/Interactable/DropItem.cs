@@ -6,6 +6,8 @@ public class DropItem : Interactable
     
     public bool isAuto = true;
     public ItemData itemData;
+    public GearData gearData;
+    public LanternFunctionData lanternData;
     public int money;
     bool isRun = false;
     public override bool isReady { get; protected set;}
