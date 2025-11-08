@@ -45,10 +45,11 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         InitFade();
         InitLoading();
+        //onHit += HitHandler;
     }
     void OnDisable()
     {
-
+        //onHit -= HitHandler;
     }
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
@@ -73,8 +74,8 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(1000);
-        FadeIn(0.7f);
+        await Task.Delay(800);
+        FadeIn(0.6f);
     }
     public async void LoadSceneAsync(string name, bool loadingScreen = false)
     {
@@ -98,8 +99,8 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(1000);
-        FadeIn(0.7f);
+        await Task.Delay(800);
+        FadeIn(0.6f);
     }
     #endregion
     #region Fade
@@ -177,7 +178,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         dimImg.color = new Color(0f, 0f, 0f, 1f);
         //진행
         Tween tween;
-        tween = dimImg.DOFade(0f, 3.45f).SetEase(Ease.InSine);
+        tween = dimImg.DOFade(0f, 2.8f).SetEase(Ease.InSine);
         tween.OnComplete(() =>
         {
             fadeScreen.SetActive(false);
@@ -241,12 +242,60 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     #endregion
-    #region Hit Event
+    #region Hit
     public UnityAction<HitData> onHit = (x) => { };
-    #endregion
-
-    #region Hit Tint Color
     public Material hitTintMat;
+    #endregion
+    #region HitEffect
+    float hitEffectStartTime;
+    Transform camMainTr;
+    private Tween timeSlowTween;
+    public void HitEffect(Vector2 point, float amount)
+    {
+        if (camMainTr == null) camMainTr = Camera.main.transform;
+        if (Time.time - hitEffectStartTime < 0.3f) return;
+        amount = Mathf.Clamp01(amount);
+        hitEffectStartTime = Time.time;
+        ScreenShake(amount);
+        TimeSlow(amount);
+        LineEffect(point, amount);
+    }
+    async void ScreenShake(float amount)
+    {
+        if (amount <= 0f) return;
+        if (camMainTr == null) return;
+        float duration = 0.03f + 0.06f * amount;
+        float strength = 0.08f + 0.14f * amount;
+        int vibrato = 7; // 흔들림 횟수
+        float randomness = 70f; // 랜덤성
+        if (duration > 0.2f) duration = 0.2f;
+        DOTween.Kill(camMainTr);
+        await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).AsyncWaitForCompletion();
+    }
+    async void TimeSlow(float amount)
+    {
+        float a = amount;
+        if (a <= 0.01f) a = 0.01f;
+        float slowTimeScale = 0.1f * (1f / a);
+        slowTimeScale = Mathf.Clamp01(slowTimeScale);
+        float slowDuration = 0.008f + 0.011f * amount;
+        float resetDuration = 0.01f + 0.022f * amount;
+        timeSlowTween?.Kill();
+        timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, slowTimeScale, 0.1f).SetUpdate(true);
+        await Task.Delay((int)(1000 * 0.1f)); // 감속 트윈이 완료될 때까지 대기
+        await Task.Delay((int)(1000 * slowDuration));
+        timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, resetDuration)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                Time.timeScale = 1f; // 혹시 모를 오차를 위해 명확하게 1로 설정
+            });
+        await Task.Delay((int)(1000 * resetDuration)); // 복구 트윈이 완료될 때까지 대기
+    }
+    async void LineEffect(Vector2 pos, float amount)
+    {
+
+    }
     #endregion
 
 

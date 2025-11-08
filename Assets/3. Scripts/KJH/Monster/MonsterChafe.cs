@@ -119,7 +119,7 @@ public class MonsterChafe : MonoBehaviour
                 hitData.staggerType = staggerType;
                 hitData.attacker = control.transform;
                 hitData.target = playerCol.transform;
-                hitData.damage = Random.Range(0.25f, 0.45f) * control.Attack;
+                hitData.damage = Random.Range(0.2f, 0.4f) * control.Attack;
                 GameManager.I.onHit.Invoke(hitData);
             }
             int timeDelta = Random.Range(1200, 1800);

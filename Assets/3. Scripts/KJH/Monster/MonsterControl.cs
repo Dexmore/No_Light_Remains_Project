@@ -28,14 +28,17 @@ public class MonsterControl : MonoBehaviour
     [Header("Pattern")]
     public Pattern[] patterns;
     Astar2DXYPathFinder astar;
+    Rigidbody2D rb;
     [HideInInspector] public AttackRange attackRange;
     void Awake()
     {
         SettingFSM();
         TryGetComponent(out astar);
+        TryGetComponent(out rb);
         attackRange = GetComponentInChildren<AttackRange>(true);
         eye = transform.GetChild(0).Find("Eye");
         InitMatInfo();
+        TryGetComponent(out monsterHit);
     }
     void Init()
     {
@@ -87,14 +90,6 @@ public class MonsterControl : MonoBehaviour
     {
         try
         {
-            GameManager.I.onHit += HitHandler;
-        }
-        catch
-        {
-            
-        }
-        try
-        {
             cts?.Cancel();
             cts?.Dispose();
         }
@@ -103,7 +98,7 @@ public class MonsterControl : MonoBehaviour
             Debug.Log(e.Message);
         }
         cts = null;
-        }
+    }
     #endregion
     #region FSM
     [ReadOnlyInspector] public State state;
@@ -125,9 +120,9 @@ public class MonsterControl : MonoBehaviour
             }
         }
     }
-    public void ChangeState(State newState)
+    public void ChangeState(State newState, bool force = false)
     {
-        if (newState == State.Hit || newState == State.Die)
+        if (newState == State.Hit || newState == State.Die || force)
         {
             ChangeState_ut(newState, cts.Token).Forget();
             return;
@@ -183,7 +178,7 @@ public class MonsterControl : MonoBehaviour
             }
         }
         float randomWeightSum = Random.Range(0, totalWeightSum);
-        if(totalWeightSum == 0)
+        if (totalWeightSum == 0)
         {
             ChangeState(State.Idle);
             return;
@@ -263,7 +258,7 @@ public class MonsterControl : MonoBehaviour
         RangeAttack,
         ShortAttack,
         MovingAttack,
-        
+
     }
     [System.Serializable]
     public struct Frequency
@@ -360,7 +355,7 @@ public class MonsterControl : MonoBehaviour
             RemoveCanNot(state, "CoolTime");
             coolTimeList.RemoveAt(find);
         }
-        else if(time <= 0.1f)
+        else if (time <= 0.1f)
         {
             return;
         }
@@ -591,7 +586,7 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
-        if(closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
+        if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         while (!token.IsCancellationRequested)
         {
@@ -786,18 +781,95 @@ public class MonsterControl : MonoBehaviour
     }
     #endregion
     #region Hit
-    void HitHandler(HitData data)
+    public int parryCount;
+    public float curHitAmount;
+    public float maxHitAmount;
+    int prevHitType;
+    float prevHitTime;
+    float hitCoolTime;
+    MonsterHit monsterHit;
+    void HitHandler(HitData hData)
     {
         if (isDie) return;
-        if (data.target.Root() != transform) return;
-        currHP -= data.damage;
+        if (hData.target.Root() != transform) return;
+
+        // Effect
+        ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+        AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+        GameManager.I.HitEffect(hData.hitPoint, 0.5f);
+        HitChangeColor(Color.white);
+
+        // Stagger
+        if (Random.value <= 0.77f)
+        {
+            float staggerForce = 4.8f;
+            float staggerFactor1 = 1f;
+            switch (data.Type)
+            {
+                case MonsterType.Middle:
+                    staggerFactor1 = 0.81f;
+                    break;
+                case MonsterType.Large:
+                    staggerFactor1 = 0.69f;
+                    break;
+                case MonsterType.Boss:
+                    staggerFactor1 = 0.43f;
+                    break;
+            }
+            float staggerFactor2 = 1f;
+            switch (hData.attackName)
+            {
+                case "Attack":
+                    staggerFactor2 = 0.7f;
+                    break;
+                case "AttackCombo":
+                    staggerFactor2 = 1f;
+                    break;
+            }
+            float temp = hData.damage / data.HP;
+            float staggerFactor3 = 0.68f + 0.32f * temp;
+            Vector2 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
+            Vector2 dir = transform.position - hData.hitPoint;
+            dir.y = dir.y * 0.1f + 0.02f;
+            if (dir.y < 0) dir.y = 0.02f;
+            dir.Normalize();
+            rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
+
+
+            bool pass = false;
+            if (state == State.Jump) pass = true;
+            if (!pass && Random.value <= 0.87)
+            {
+                curHitAmount += hData.damage;
+                if (maxHitAmount == 0) maxHitAmount = Random.Range(0.19f, 0.24f) * Mathf.Clamp(data.HP, 300, 700);
+                if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
+                if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+                if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
+                {
+                    if (Random.value < 0.88f)
+                    {
+                        monsterHit.type = 1;
+                        monsterHit.prevState = state;
+                        ChangeState(State.Hit);
+                        curHitAmount = 0;
+                        prevHitTime = Time.time;
+                        hitCoolTime = Random.Range(0.2f, 0.8f);
+                        if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+                    }
+                    else
+                        curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
+                }
+            }
+        }
+        // Set HP
+        currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
             RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
             ChangeState(State.Die);
-        ParticleManager.I.PlayParticle("Hit2", data.hitPoint, Quaternion.identity, null);
-        AudioManager.I.PlaySFX("Hit8Bit", data.hitPoint, null);
-        HitChangeColor(Color.white);
+
+
     }
     class MatInfo
     {

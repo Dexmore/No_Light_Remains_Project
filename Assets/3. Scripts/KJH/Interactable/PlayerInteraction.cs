@@ -70,10 +70,28 @@ public class PlayerInteraction : MonoBehaviour
                 Transform root = colliders[i].transform.Root();
                 if (root.TryGetComponent(out Interactable interactable))
                 {
+                    if (!interactable.isReady) continue;
                     SensorData data = new SensorData();
                     data.collider = colliders[i];
                     data.interactable = interactable;
                     sensorDatas.Add(data);
+                    switch (interactable.type)
+                    {
+                        case Interactable.Type.Portal:
+                            Portal portal = interactable as Portal;
+                            if (portal.isAuto)
+                            {
+                                portal.Run();
+                            }
+                            break;
+                        case Interactable.Type.DropItem:
+                            DropItem dropItem = interactable as DropItem;
+                            if (dropItem.isAuto)
+                            {
+                                dropItem.Get();
+                            }
+                            break;
+                    }
                 }
             }
             sensorDatas.Sort
@@ -86,6 +104,7 @@ public class PlayerInteraction : MonoBehaviour
             foreach (var e in sensorDatas)
             {
                 Debug.DrawLine(e.collider.transform.position, distancePivot, Color.yellow, 15f * Time.deltaTime, true);
+
             }
 #endif
             if (sensorDatas.Count > 0)
@@ -105,18 +124,16 @@ public class PlayerInteraction : MonoBehaviour
     }
     void OpenPrompt(Interactable interactable)
     {
-        if (interactable.type == Interactable.Type.Portal)
-        {
-            Portal portal = interactable as Portal;
-            if (portal.isAuto)
-                portal.Run();
-        }
-        else if(interactable.type == Interactable.Type.DropItem)
-        {
-            DropItem dropItem = interactable as DropItem;
-            if (dropItem.isAuto)
-                dropItem.Get();
-        }
+        // if (interactable.type == Interactable.Type.Portal)
+        // {
+        //     Portal portal = interactable as Portal;
+        //     if (portal.isAuto) return;
+        // }
+        // else if (interactable.type == Interactable.Type.DropItem)
+        // {
+        //     DropItem dropItem = interactable as DropItem;
+        //     if (dropItem.isAuto) return;
+        // }
     }
     void ClosePrompt()
     {

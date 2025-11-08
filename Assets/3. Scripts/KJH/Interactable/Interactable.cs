@@ -12,4 +12,5 @@ public abstract class Interactable : MonoBehaviour
         LightObject = 1<<4,
     }
     public abstract Type type { get; }
+    public abstract bool isReady { get; protected set; }
 }
