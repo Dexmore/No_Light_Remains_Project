@@ -13,10 +13,43 @@ public class MonsterHit : MonsterState
     }
     public async UniTask Activate(CancellationToken token)
     {
-        Debug.Log($"{type}, {prevState}, {anim.GetCurrentAnimatorStateInfo(0).shortNameHash} , {anim.GetCurrentAnimatorStateInfo(0).normalizedTime}/{anim.GetCurrentAnimatorStateInfo(0).length} ");
         await UniTask.Yield(cts.Token);
-        anim.Play("Idle");
-        await UniTask.Delay((int)(600f), cancellationToken: token);
+        
+        float duration = 0.6f;
+        if (type == 1)
+        {
+            if (control.isDie) return;
+            anim.Play("Idle");
+            duration = 0.6f;
+        }
+        //
+        MonsterControl.State next = MonsterControl.State.Idle;
+        float newCoolTime = 0f;
+        if (prevState.ToString().Contains("Attack"))
+        {
+            float normalTime = anim.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            if (normalTime < 0.22f)
+            {
+                if (Random.value < 0.5f)
+                    next = prevState;
+                else
+                {
+                    newCoolTime = Random.Range(0f, 0.2f) * control.stateDictionary[prevState].coolTime;
+                    control.SetCoolTime(prevState, newCoolTime);
+                }
+            }
+            else if (normalTime < 0.77f)
+            {
+                newCoolTime = Random.Range(0.6f, 1f) * control.stateDictionary[prevState].coolTime;
+                control.SetCoolTime(prevState, newCoolTime);
+            }
+        }
+        await UniTask.Delay((int)(1000 * duration), cancellationToken: token);
+        if (next != MonsterControl.State.Idle)
+        {
+            control.ChangeState(next, true);
+            return;
+        }
         control.ChangeNextState();
     }
 

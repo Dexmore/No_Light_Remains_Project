@@ -15,12 +15,16 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     private InputAction parryAction;
     bool parryPressed;
     bool flag1;
+    private InputAction moveAction;
+    Vector2 moveActionValue;
     public void Enter()
     {
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
         if (parryAction == null)
             parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
+        if (moveAction == null)
+            moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
         attackAction.performed += PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
         _elapsedTime = 0f;
@@ -39,8 +43,8 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         _elapsedTime += Time.deltaTime;
         if (!parryPressed)
         {
-            if(_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
-            parryPressed = parryAction.IsPressed();
+            if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
+                parryPressed = parryAction.IsPressed();
         }
         if (_elapsedTime < 0.05f)
         {
@@ -71,6 +75,16 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         if (_elapsedTime > duration)
         {
             fsm.ChangeState(ctx.idle);
+        }
+        //
+        moveActionValue = moveAction.ReadValue<Vector2>();
+        moveActionValue.y = 0f;
+        if (_elapsedTime < 0.07f)
+        {
+            if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
+                ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            else if (moveActionValue.x < 0 && ctx.childTR.right.x > 0)
+                ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
     }
     public void UpdatePhysics()

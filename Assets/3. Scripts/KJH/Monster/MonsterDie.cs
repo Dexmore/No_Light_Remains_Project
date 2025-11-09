@@ -17,6 +17,7 @@ public class MonsterDie : MonsterState
     [SerializeField] DropTable[] dropTables;
     public override async UniTask Enter(CancellationToken token)
     {
+        control.isDie = true;
         await UniTask.Yield(cts.Token);
         if(transform.Find("Chafe") != null)
             chafe = transform.Find("Chafe").gameObject;
@@ -27,7 +28,6 @@ public class MonsterDie : MonsterState
     }
     public async UniTask Activate(CancellationToken token)
     {
-        control.isDie = true;
         await UniTask.Yield(cts.Token);
         anim.Play("Die");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);

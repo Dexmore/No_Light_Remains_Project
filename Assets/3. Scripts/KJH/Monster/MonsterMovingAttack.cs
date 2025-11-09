@@ -126,6 +126,7 @@ public class MonsterMovingAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
+        if (control.isDie) return;
         anim.Play("MovingAttack");
         startTime = Time.time;
         await UniTask.Delay((int)(1000f * moveTimeRange.x), cancellationToken: token);
