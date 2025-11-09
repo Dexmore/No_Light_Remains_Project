@@ -109,6 +109,7 @@ public class MonsterNormalAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
+        if (control.isDie) return;
         anim.Play("NormalAttack");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();

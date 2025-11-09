@@ -103,6 +103,7 @@ public class MonsterBiteAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
+        if (control.isDie) return;
         anim.Play("BiteAttack");
         rb.AddForce(model.right * Random.Range(0.2f, 1f), ForceMode2D.Impulse);
         // 너무 멀면 앞으로 접근

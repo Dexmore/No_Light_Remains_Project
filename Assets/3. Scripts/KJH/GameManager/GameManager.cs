@@ -264,11 +264,11 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (amount <= 0f) return;
         if (camMainTr == null) return;
-        float duration = 0.03f + 0.06f * amount;
-        float strength = 0.08f + 0.14f * amount;
+        float duration = 0.025f + 0.055f * amount;
+        float strength = 0.065f + 0.12f * amount;
         int vibrato = 7; // 흔들림 횟수
         float randomness = 70f; // 랜덤성
-        if (duration > 0.2f) duration = 0.2f;
+        if (duration > 0.18f) duration = 0.18f;
         DOTween.Kill(camMainTr);
         await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).AsyncWaitForCompletion();
     }
@@ -276,10 +276,10 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         float a = amount;
         if (a <= 0.01f) a = 0.01f;
-        float slowTimeScale = 0.1f * (1f / a);
+        float slowTimeScale = 0.2f * (1f / a);
         slowTimeScale = Mathf.Clamp01(slowTimeScale);
-        float slowDuration = 0.008f + 0.011f * amount;
-        float resetDuration = 0.01f + 0.022f * amount;
+        float slowDuration = 0.005f + 0.01f * amount;
+        float resetDuration = 0.008f + 0.015f * amount;
         timeSlowTween?.Kill();
         timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, slowTimeScale, 0.1f).SetUpdate(true);
         await Task.Delay((int)(1000 * 0.1f)); // 감속 트윈이 완료될 때까지 대기

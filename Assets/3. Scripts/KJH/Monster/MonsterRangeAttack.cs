@@ -45,6 +45,7 @@ public class MonsterRangeAttack : MonsterState
             model.localRotation = Quaternion.Euler(0f, 0f, 0f);
         else if (direction.x < 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        if (control.isDie) return;
         anim.Play("RangeAttack");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();

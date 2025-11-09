@@ -15,6 +15,7 @@ public class MonsterIdle : MonsterState
     }
     public async UniTask Activate(CancellationToken token)
     {
+        if (control.isDie) return;
         anim.Play("Idle");
         await UniTask.Delay((int)(duration * 1000f), cancellationToken: token);
         control.ChangeNextState();

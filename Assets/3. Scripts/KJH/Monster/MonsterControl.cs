@@ -800,9 +800,9 @@ public class MonsterControl : MonoBehaviour
         HitChangeColor(Color.white);
 
         // Stagger
-        if (Random.value <= 0.77f)
+        if (Random.value <= 0.23f)
         {
-            float staggerForce = 4.8f;
+            float staggerForce = 3.9f;
             float staggerFactor1 = 1f;
             switch (data.Type)
             {
@@ -835,33 +835,40 @@ public class MonsterControl : MonoBehaviour
             if (dir.y < 0) dir.y = 0.02f;
             dir.Normalize();
             rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
+        }
 
-
-            bool pass = false;
-            if (state == State.Jump) pass = true;
-            if (!pass && Random.value <= 0.87)
+        // Hit Small
+        bool pass = true;
+        if (state == State.Idle) pass = false;
+        if (state == State.Pursuit) pass = false;
+        if (state == State.Reposition) pass = false;
+        if (state == State.NormalAttack) pass = false;
+        if (state == State.RangeAttack) pass = false;
+        if (state == State.BiteAttack) pass = false;
+        if (state == State.MovingAttack) pass = false;
+        if (!pass && Random.value <= 0.35)
+        {
+            curHitAmount += hData.damage;
+            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.2f, 0.25f) * Mathf.Clamp(data.HP, 400, 900);
+            if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
+            if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+            if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
             {
-                curHitAmount += hData.damage;
-                if (maxHitAmount == 0) maxHitAmount = Random.Range(0.19f, 0.24f) * Mathf.Clamp(data.HP, 300, 700);
-                if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
-                if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
-                if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
+                if (Random.value < 0.35f)
                 {
-                    if (Random.value < 0.88f)
-                    {
-                        monsterHit.type = 1;
-                        monsterHit.prevState = state;
-                        ChangeState(State.Hit);
-                        curHitAmount = 0;
-                        prevHitTime = Time.time;
-                        hitCoolTime = Random.Range(0.2f, 0.8f);
-                        if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
-                    }
-                    else
-                        curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
+                    monsterHit.type = 1;
+                    monsterHit.prevState = state;
+                    ChangeState(State.Hit);
+                    curHitAmount = 0;
+                    prevHitTime = Time.time;
+                    hitCoolTime = Random.Range(0.2f, 0.8f);
+                    if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
                 }
+                else
+                    curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
             }
         }
+
         // Set HP
         currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
