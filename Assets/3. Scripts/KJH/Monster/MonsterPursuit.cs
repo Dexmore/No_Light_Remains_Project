@@ -103,6 +103,7 @@ public class MonsterPursuit : MonsterState
                                     if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                                     {
                                         isAnimation = true;
+                                        if (control.isDie) return;
                                         anim.Play("Move");
                                     }
                         }
@@ -111,6 +112,7 @@ public class MonsterPursuit : MonsterState
                             isAnimation = false;
                             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                             {
+                                if (control.isDie) return;
                                 anim.Play("Idle");
                             }
                         }

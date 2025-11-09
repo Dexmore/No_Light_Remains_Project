@@ -12,6 +12,7 @@ public class MonsterJump : MonsterState
     }
     public async UniTask Activate(CancellationToken token)
     {
+        if (control.isDie) return;
         anim.Play("Idle");
         rb.AddForce(Vector2.up * control.jumpForce * 50f);
         float startTime = Time.time;

@@ -29,7 +29,7 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if(!parryPressed) parryPressed = parryAction.IsPressed();
+        if (!parryPressed) parryPressed = parryAction.IsPressed();
         if (_elapsedTime < 0.03f)
         {
             if (parryPressed)
