@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 2696717301683423513}
   - component: {fileID: 2829082605445565019}
   - component: {fileID: 4748392690718178906}
+  - component: {fileID: 4559949027452656385}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -160,18 +161,18 @@ MonoBehaviour:
   - condition: 1
     frequencies:
     - state: 0
-      weight: 50
+      weight: 40
       coolTime: 1
     - state: 1
-      weight: 120
+      weight: 200
       coolTime: 1
   - condition: 2
     frequencies:
     - state: 3
-      weight: 100
+      weight: 120
       coolTime: 1
     - state: 0
-      weight: 20
+      weight: 15
       coolTime: 1
   - condition: 4
     frequencies:
@@ -181,6 +182,16 @@ MonoBehaviour:
     - state: 10
       weight: 2000
       coolTime: 1
+  - condition: 16
+    frequencies:
+    - state: 15
+      weight: 500
+      coolTime: 11
+  - condition: 32
+    frequencies:
+    - state: 15
+      weight: 1000
+      coolTime: 7
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -190,8 +201,6 @@ MonoBehaviour:
   findRadius: 0
   closeRadius: 3.5
   parryCount: 0
-  curHitAmount: 0
-  maxHitAmount: 0
 --- !u!114 &1348512317345828506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,6 +307,26 @@ MonoBehaviour:
   staggerType: 1
   durationRange: {x: 1.8, y: 2.8}
   range: 1.4
+--- !u!114 &4559949027452656385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d71e8165d135d5d498178180691d70e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack1
+  coolTime: 0
+  damageMultiplier1: 0.7
+  staggerType1: 1
+  damageMultiplier2: 2.3
+  staggerType2: 3
+  damageMultiplier3: 1.2
+  staggerType3: 2
+  durationRange: {x: 1.9, y: 3.5}
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

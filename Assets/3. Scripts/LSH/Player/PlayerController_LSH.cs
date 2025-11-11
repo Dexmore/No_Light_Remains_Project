@@ -76,7 +76,6 @@ public class PlayerController_LSH : MonoBehaviour
         height = capsuleCollider2D.size.y;
         width = capsuleCollider2D.size.x;
         lightSystem = GetComponentInChildren<LightSystem>(true);
-
         fsm = new PlayerStateMachine_LSH();
         idle = new PlayerIdle_LSH(this, fsm);
         run = new PlayerRun_LSH(this, fsm);
@@ -90,8 +89,29 @@ public class PlayerController_LSH : MonoBehaviour
         die = new PlayerDie_LSH(this, fsm);
         usePotion = new PlayerUsePotion_LSH(this, fsm);
         openInventory = new PlayerOpenInventory_LSH(this, fsm);
-
         InitMatInfo();
+    }
+    void Start()
+    {
+        CharacterData characterData = DBManager.I.currentCharData;
+        if (characterData.sceneName == "" && characterData.HP == 0)
+        {
+            CharacterData newData = new CharacterData();
+            newData.money = 0;
+            newData.sceneName = "Stage1";
+            newData.lastPosition = Vector2.zero;
+            newData.HP = maxHealth;
+            newData.MP = 0;
+            newData.potionCount = 5;
+            newData.itemDatas = new List<CharacterData.ItemData>();
+            newData.gearDatas = new List<CharacterData.GearData>();
+            newData.lanternDatas = new List<CharacterData.LanternData>();
+            DBManager.I.currentCharData = newData;
+        }
+        else
+        {
+            currentHealth = DBManager.I.currentCharData.HP;
+        }
     }
 
     void OnEnable()
@@ -255,6 +275,7 @@ public class PlayerController_LSH : MonoBehaviour
             rb.AddForce(dir, ForceMode2D.Impulse);
             currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+            DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             HitChangeColor(Color.white);
@@ -269,12 +290,14 @@ public class PlayerController_LSH : MonoBehaviour
             if (Avoided)
             {
                 //Debug.Log("회피 성공");
+                GameManager.I.onAvoid.Invoke(hData.attacker.Root());
                 return;
             }
             if (Parred)
             {
                 AudioManager.I.PlaySFX("Parry");
                 //Debug.Log("패링 성공");
+                GameManager.I.onParry.Invoke(hData.attacker.Root());
                 return;
             }
             float multiplier = 1f;
@@ -305,6 +328,7 @@ public class PlayerController_LSH : MonoBehaviour
             }
             currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+            DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
@@ -401,7 +425,6 @@ public class PlayerController_LSH : MonoBehaviour
             light1.SetActive(true);
         }
     }
-
     #endregion
     #region Use Potion
 

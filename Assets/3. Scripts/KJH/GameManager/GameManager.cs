@@ -244,6 +244,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     #endregion
     #region Hit
     public UnityAction<HitData> onHit = (x) => { };
+    public UnityAction<Transform> onParry = (x) => { };
+    public UnityAction<Transform> onAvoid = (x) => { };
     public Material hitTintMat;
     #endregion
     #region HitEffect

@@ -14,17 +14,20 @@ public class PlayerHit_LSH : IPlayerState_LSH
         duration = 0.1f;
         if (staggerType == HitData.StaggerType.Small)
         {
+            ctx.animator.Play("Player_Idle");
             duration = 0.3f;
             //Debug.Log("HitSmall");
         }
         else if (staggerType == HitData.StaggerType.Middle)
         {
-            duration = 0.9f;
+            ctx.animator.Play("Player_Idle");
+            duration = 0.95f;
             //Debug.Log("HitMiddle");
         }
         else if (staggerType == HitData.StaggerType.Large)
         {
-            duration = 1.9f;
+            ctx.animator.Play("Player_Idle");
+            duration = 2.4f;
             //Debug.Log("HitLarge");
         }
     }

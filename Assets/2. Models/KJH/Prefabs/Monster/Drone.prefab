@@ -312,18 +312,18 @@ MonoBehaviour:
   - condition: 1
     frequencies:
     - state: 0
-      weight: 50
+      weight: 40
       coolTime: 1
     - state: 1
-      weight: 120
+      weight: 200
       coolTime: 1
   - condition: 2
     frequencies:
     - state: 3
-      weight: 100
+      weight: 120
       coolTime: 1
     - state: 0
-      weight: 20
+      weight: 15
       coolTime: 1
   - condition: 4
     frequencies:
@@ -368,6 +368,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster.DefaultHit
   coolTime: 0
+  type: 0
+  prevState: 0
 --- !u!114 &187305889483521521
 MonoBehaviour:
   m_ObjectHideFlags: 0

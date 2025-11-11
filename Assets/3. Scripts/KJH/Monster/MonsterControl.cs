@@ -70,6 +70,7 @@ public class MonsterControl : MonoBehaviour
         // 게임 시작시 컨디션을 Peaceful로
         condition = Condition.Peaceful;
         GameManager.I.onHit += HitHandler;
+        GameManager.I.onParry += ParryHandler;
         Sensor(cts.Token).Forget();
     }
     #region UniTask Setting
@@ -83,6 +84,7 @@ public class MonsterControl : MonoBehaviour
     void OnDisable()
     {
         GameManager.I.onHit -= HitHandler;
+        GameManager.I.onParry -= ParryHandler;
         UniTaskCancel();
     }
     void OnDestroy() => UniTaskCancel();
@@ -130,7 +132,7 @@ public class MonsterControl : MonoBehaviour
         if (stateDictionary[newState].coolTime == 0)
         {
             float _coolTime = 0;
-            bool isFind = false;
+            bool canInjury1 = false;
             for (int i = 0; i < patterns.Length; i++)
             {
                 for (int j = 0; j < patterns.Length; j++)
@@ -139,12 +141,12 @@ public class MonsterControl : MonoBehaviour
                     Frequency frequency = patterns[i].frequencies[j];
                     if (frequency.state == newState)
                     {
-                        isFind = true;
+                        canInjury1 = true;
                         _coolTime = frequency.coolTime;
                         break;
                     }
                 }
-                if (isFind) break;
+                if (canInjury1) break;
             }
             stateDictionary[newState].coolTime = _coolTime;
         }
@@ -258,6 +260,10 @@ public class MonsterControl : MonoBehaviour
         RangeAttack,
         ShortAttack,
         MovingAttack,
+        SequenceAttack1,
+        SequenceAttack2,
+        SequenceAttack3,
+
 
     }
     [System.Serializable]
@@ -588,6 +594,20 @@ public class MonsterControl : MonoBehaviour
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
+        bool canInjury1 = false;
+        bool canInjury2 = false;
+        foreach (var element in patterns)
+            if ((element.condition & Condition.Injury1) != 0)
+            {
+                canInjury1 = true;
+                break;
+            }
+        foreach (var element in patterns)
+            if ((element.condition & Condition.Injury2) != 0)
+            {
+                canInjury2 = true;
+                break;
+            }
         while (!token.IsCancellationRequested)
         {
             int timeDelta = Random.Range(150, 500);
@@ -721,6 +741,32 @@ public class MonsterControl : MonoBehaviour
                     isTemporalFight = false;
                 }
             }
+            // Injury
+            float ratio = (currHP / maxHP);
+            if (canInjury1)
+            {
+                if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Injury1))
+                {
+                    AddCondition(Condition.Injury1);
+                    RemoveCondition(Condition.Injury2);
+                }
+            }
+            if (canInjury2)
+            {
+                if (ratio <= 0.4f && !HasCondition(Condition.Injury2))
+                {
+                    RemoveCondition(Condition.Injury1);
+                    AddCondition(Condition.Injury2);
+                }
+            }
+            if (HasCondition(Condition.Injury1) || HasCondition(Condition.Injury2))
+            {
+                if (ratio > 0.7f)
+                {
+                    RemoveCondition(Condition.Injury1);
+                    RemoveCondition(Condition.Injury2);
+                }
+            }
         }
     }
     // 2D로 수정된 코드
@@ -781,9 +827,8 @@ public class MonsterControl : MonoBehaviour
     }
     #endregion
     #region Hit
-    public int parryCount;
-    public float curHitAmount;
-    public float maxHitAmount;
+    [HideInInspector] float curHitAmount;
+    [HideInInspector] float maxHitAmount;
     int prevHitType;
     float prevHitTime;
     float hitCoolTime;
@@ -868,7 +913,6 @@ public class MonsterControl : MonoBehaviour
                     curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
             }
         }
-
         // Set HP
         currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
@@ -876,7 +920,22 @@ public class MonsterControl : MonoBehaviour
         if (currHP <= 0)
             ChangeState(State.Die);
 
-
+    }
+    public int parryCount = 0;
+    void ParryHandler(Transform target)
+    {
+        if (target != transform) return;
+        if (isDie) return;
+        if (state == State.Hit) return;
+        parryCount++;
+        if (parryCount >= data.ParryCount)
+        {
+            Debug.Log("HitKnockDown");
+            parryCount = 0;
+            monsterHit.type = 2;
+            monsterHit.prevState = state;
+            ChangeState(State.Hit);
+        }
     }
     class MatInfo
     {
