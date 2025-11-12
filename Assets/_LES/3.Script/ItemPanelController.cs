@@ -32,23 +32,50 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     [SerializeField] private GameObject infoPanelRoot;
 
     [Header("플레이어 인벤토리 (데이터)")]
-    public List<ItemData> _playerInventory;
-
     private List<ItemSlotUI> _spawnedSlots = new List<ItemSlotUI>();
     private ItemData.ItemType _currentFilter = ItemData.ItemType.Equipment;
     private Coroutine _initCoroutine;
-  
-    private void Awake()
+
+    // [수정] Awake 대신 OnEnable/OnDisable 사용
+    private void OnEnable()
     {
-        // OnClick 리스너는 여기서 한 번만 설정
+        // 1. '장비' 버튼 클릭 이벤트를 여기서 연결
         equipmentButton?.onClick.AddListener(() => OnFilterChanged(ItemData.ItemType.Equipment));
         materialButton?.onClick.AddListener(() => OnFilterChanged(ItemData.ItemType.Material));
-        ShowItemDetails(null); // 처음엔 정보창 비우기
+
+        // 2. [핵심] PlayerDataManager의 '방송'을 구독(Subscribe)
+        // "데이터가 바뀌면, 내 UI를 새로고침해줘"
+        if (InventoryDataManager.Instance != null)
+        {
+            InventoryDataManager.Instance.OnInventoryChanged += RefreshUIFromEvent;
+        }
+
+        // 3. 돈 텍스트 즉시 갱신
+        UpdateMoneyText();
     }
 
-    /// <summary>
-    /// 탭이 열릴 때 호출됩니다.
-    /// </summary>
+    private void OnDisable()
+    {
+        // 1. 버튼 리스너 해제 (메모리 누수 방지)
+        equipmentButton?.onClick.RemoveAllListeners();
+        materialButton?.onClick.RemoveAllListeners();
+
+        // 2. [핵심] '방송' 구독 해제
+        if (InventoryDataManager.Instance != null)
+        {
+            InventoryDataManager.Instance.OnInventoryChanged -= RefreshUIFromEvent;
+        }
+    }
+    
+    //'방송'을 받았을 때 호출될 함수
+    private void RefreshUIFromEvent()
+    {
+        // 현재 열려있는 필터 기준으로 UI를 새로고침
+        StartMasterCoroutine(_currentFilter, false); 
+        UpdateMoneyText(); // 돈도 갱신
+    }
+
+    // 탭이 열릴 때 호출됩니다.    
     public void OnShow()
     {
         // [수정] '장비' 탭을 기준으로, '초기 로드'임을 알리며 마스터 코루틴 실행
@@ -112,12 +139,12 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         // 1. 필터 및 서브탭 버튼 색상 설정
         _currentFilter = filter;
         UpdateSubTabButtons();
-        
+
         // 2. 기존 슬롯 삭제
         ClearAllSpawnedSlots();
 
         // 3. 데이터 필터링
-        List<ItemData> filteredList = _playerInventory
+        List<ItemData> filteredList = InventoryDataManager.Instance.PlayerItems
             .Where(item => item != null && item.type == _currentFilter)
             .ToList();
 
@@ -132,10 +159,10 @@ public class ItemPanelController : MonoBehaviour, ITabContent
                 _spawnedSlots.Add(slotUI);
             }
         }
-        
+
         // 5. [핵심] VerticalLayoutGroup이 슬롯 위치를 계산할 때까지 단 1 프레임 대기
-        yield return new WaitForEndOfFrame(); 
-        
+        yield return new WaitForEndOfFrame();
+
         // 6. '모든 슬롯이 제자리를 찾은 후'에 내비게이션 설정
         SetupSlotNavigation();
 
@@ -154,8 +181,16 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         {
             EventSystem.current.SetSelectedGameObject(firstSelectable.gameObject);
         }
-        
+
         _initCoroutine = null; // 코루틴 완료
+    }
+    
+    private void UpdateMoneyText()
+    {
+        if (moneyText != null)
+        {
+            moneyText.text = InventoryDataManager.Instance.PlayerMoney.ToString("N0");
+        }
     }
 
     #region (수정 없는 함수들)
@@ -250,7 +285,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         }
         
         // 1. 데이터 리스트에 아이템을 추가합니다.
-        _playerInventory.Add(testItemToAdd);
+        InventoryDataManager.Instance.AddItem(testItemToAdd);
         
         // 2. UI를 새로고침합니다. (가장 간단한 방법)
         // (현재 OnFilterChanged가 private이므로 OnShow를 호출하여 강제로 갱신합니다)

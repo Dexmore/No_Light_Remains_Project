@@ -75,6 +75,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         result = SteamAPI.IsSteamRunning();
         return result;
     }
+    
     [Button]
     public void Save()
     {
@@ -92,7 +93,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             else
             {
                 allSaveDataSteam.characterDatas[currentSlotIndex] = savedCharData;
-            }            
+            }
             SaveSteam();
         }
         else if (currentSlotIndex >= 3 && currentSlotIndex <= 5)
@@ -103,6 +104,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
         else return;
     }
+    
     [Button]
     public void Load()
     {
