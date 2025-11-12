@@ -263,6 +263,9 @@ public class MonsterControl : MonoBehaviour
         SequenceAttack1,
         SequenceAttack2,
         SequenceAttack3,
+        BeamAttack,
+        Heal,
+        MovingCharge,
 
 
     }
@@ -928,6 +931,7 @@ public class MonsterControl : MonoBehaviour
         if (isDie) return;
         if (state == State.Hit) return;
         parryCount++;
+        if (state == State.SequenceAttack1) return;
         if (parryCount >= data.ParryCount)
         {
             Debug.Log("HitKnockDown");

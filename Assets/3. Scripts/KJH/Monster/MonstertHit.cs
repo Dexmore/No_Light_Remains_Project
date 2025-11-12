@@ -27,9 +27,9 @@ public class MonsterHit : MonsterState
             if (control.isDie) return;
             anim.Play("Idle");
             if (control.data.Type != MonsterType.Large && control.data.Type != MonsterType.Boss)
-                duration = 6.8f;
+                duration = 4.8f;
             else
-                duration = 2.4f;
+                duration = 6.8f;
         }
         //
         MonsterControl.State next = MonsterControl.State.Idle;

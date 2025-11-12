@@ -22,14 +22,14 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > 0.2f)
+        if (_elapsedTime > 0.52f)
         {
             if(!sfxFlag)
             {
                 sfxFlag = true;
                 
             }
-            ctx.currentHealth += (1f / (duration - 0.2f)) * ctx.maxHealth * Time.deltaTime;
+            ctx.currentHealth += (1f / (duration - 0.52f)) * ctx.maxHealth * Time.deltaTime;
             ctx.currentHealth = Mathf.Clamp(ctx.currentHealth, 0f, ctx.maxHealth);
             DBManager.I.currentCharData.HP = ctx.currentHealth;
         }
