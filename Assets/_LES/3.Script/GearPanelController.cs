@@ -275,7 +275,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         }
 
         // 1. 데이터 리스트에 기어를 추가합니다.
-        InventoryDataManager.Instance.AddGear(testGearToAdd);
+        InventoryDataManager.Instance.AddItem(testGearToAdd);
 
         // 2. UI를 새로고침합니다.
         OnShow(); 
