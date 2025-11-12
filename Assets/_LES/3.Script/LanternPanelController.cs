@@ -24,13 +24,26 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     [Tooltip("슬롯에서 위로 갔을 때 선택될 탭 버튼 (예: '랜턴' 탭 버튼)")]
     [SerializeField] private Selectable mainTabButton;
 
-    [Header("플레이어 랜턴 기능 (데이터)")]
-    [SerializeField] private List<LanternFunctionData> _playerLanternFunctions;
+    private void OnEnable()
+    {
+        if (InventoryDataManager.Instance != null)
+        {
+            InventoryDataManager.Instance.OnLanternsChanged += RefreshPanel;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (InventoryDataManager.Instance != null)
+        {
+            InventoryDataManager.Instance.OnLanternsChanged -= RefreshPanel;
+        }
+    }
 
     public void OnShow()
     {
         RefreshPanel();
-        
+
         // 활성화된 첫 번째 슬롯을 찾아 선택
         LanternSlotUI firstInteractableSlot = functionSlots.FirstOrDefault(slot => slot.GetComponent<Button>().interactable);
         if (firstInteractableSlot != null)
@@ -53,27 +66,27 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     /// </summary>
     private void RefreshPanel()
     {
-        // 1. 3개의 슬롯에 데이터 할당
+        if (InventoryDataManager.Instance == null) return; // 매니저가 없으면 중단
+        
+        // [수정] InventoryDataManager의 데이터를 사용
+        List<LanternFunctionData> playerFunctions = InventoryDataManager.Instance.PlayerLanternFunctions;
+        
         for (int i = 0; i < functionSlots.Count; i++)
         {
-            if (i < _playerLanternFunctions.Count && _playerLanternFunctions[i] != null && !string.IsNullOrEmpty(_playerLanternFunctions[i].functionName))
+            if (i < playerFunctions.Count && playerFunctions[i] != null && !string.IsNullOrEmpty(playerFunctions[i].functionName))
             {
-                functionSlots[i].SetData(_playerLanternFunctions[i], this);
+                functionSlots[i].SetData(playerFunctions[i], this);
             }
             else
             {
-                functionSlots[i].ClearSlot(); // 비활성화
+                functionSlots[i].ClearSlot();
             }
         }
         
-        // 2. 장착된 기능 이미지 갱신 (2번 요청)
         UpdateMainEquippedImage();
-        
-        // 3. 내비게이션 설정 (1번 요청)
         SetupNavigation();
 
-        // 4. 상세 정보창 갱신 (3번 요청)
-        LanternFunctionData firstAvailableFunc = _playerLanternFunctions.FirstOrDefault(f => f != null && !string.IsNullOrEmpty(f.functionName));
+        LanternFunctionData firstAvailableFunc = playerFunctions.FirstOrDefault(f => f != null && !string.IsNullOrEmpty(f.functionName));
         ShowFunctionDetails(firstAvailableFunc);
     }
 
@@ -103,27 +116,22 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     {
         bool wasEquipped = dataToToggle.isEquipped;
 
-        // 1. 모든 기능의 장착 상태를 '해제'로 초기화
-        foreach (var funcData in _playerLanternFunctions)
+        // [수정] InventoryDataManager의 데이터를 사용
+        foreach (var funcData in InventoryDataManager.Instance.PlayerLanternFunctions)
         {
             if (funcData != null) funcData.isEquipped = false;
         }
         
-        // 2. 이전에 장착되지 않았던 아이템이라면, '장착' 상태로 변경
-        // (랜턴은 기어와 달리 하나만 장착 가능 = 라디오 버튼)
         if (!wasEquipped)
         {
             dataToToggle.isEquipped = true;
         }
-        // (이미 장착된 걸 또 누르면 1번 단계에서 해제만 되고 끝남)
 
-        // 3. 모든 슬롯의 시각적 상태(어둡게) 갱신 (2번 요청)
         foreach (var slot in functionSlots)
         {
             slot.UpdateEquipVisual();
         }
 
-        // 4. 메인 장착부 이미지 갱신 (2번 요청)
         UpdateMainEquippedImage();
     }
 
@@ -132,7 +140,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     /// </summary>
     private void UpdateMainEquippedImage()
     {
-        LanternFunctionData equippedFunction = _playerLanternFunctions.FirstOrDefault(f => f.isEquipped);
+        LanternFunctionData equippedFunction = InventoryDataManager.Instance.PlayerLanternFunctions.FirstOrDefault(f => f.isEquipped);
 
         if (equippedFunction != null)
         {
@@ -141,7 +149,6 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
         else
         {
-            // 장착된 게 없으면 이미지를 숨김
             equippedFunctionImage.sprite = null;
             equippedFunctionImage.gameObject.SetActive(false);
         }
@@ -198,7 +205,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
 
         // 1. 데이터 리스트에 기능을 추가합니다.
-        _playerLanternFunctions.Add(testLanternFunctionToAdd);
+        InventoryDataManager.Instance.AddLanternFunction(testLanternFunctionToAdd);
 
         // 2. UI를 새로고침합니다.
         OnShow(); 
