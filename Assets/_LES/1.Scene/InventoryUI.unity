@@ -3745,6 +3745,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::YourProject.UI.Test.InventoryUITester
   inventoryUI: {fileID: 1842019283}
   toggleKey: 23
+  testItemsToAdd:
+  - {fileID: 11400000, guid: d4bbcd8597f49924fbc6d2d55df1eb18, type: 2}
+  - {fileID: 11400000, guid: 3b431443ba3b1f24497789d005593fa8, type: 2}
+  testGearsToAdd:
+  - {fileID: 11400000, guid: 2de72cb0b3235aa489794fe53ecc1c72, type: 2}
+  testLanternsToAdd:
+  - {fileID: 11400000, guid: 994a793e24d6c8f41b7d3694d26e1e4b, type: 2}
 --- !u!1 &581882467
 GameObject:
   m_ObjectHideFlags: 0
@@ -6074,7 +6081,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36532fb61af32f41bd416e67e2b4aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternSlotUI
-  functionIcon: {fileID: 319892769}
+  functionIcon: {fileID: 1313883938}
   dimFactor: 0.5
 --- !u!114 &978608149
 MonoBehaviour:
@@ -6893,7 +6900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36532fb61af32f41bd416e67e2b4aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternSlotUI
-  functionIcon: {fileID: 647351520}
+  functionIcon: {fileID: 1014392732}
   dimFactor: 0.5
 --- !u!114 &1071152369
 MonoBehaviour:
@@ -6991,7 +6998,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36532fb61af32f41bd416e67e2b4aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternSlotUI
-  functionIcon: {fileID: 2086944540}
+  functionIcon: {fileID: 1454189756}
   dimFactor: 0.5
 --- !u!114 &1072874447
 MonoBehaviour:
@@ -7846,7 +7853,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1179742588
 RectTransform:
   m_ObjectHideFlags: 0

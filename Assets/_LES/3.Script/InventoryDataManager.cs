@@ -37,77 +37,64 @@ public class InventoryDataManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject); // 씬이 바뀌어도 파괴되지 않음
-            
-            // TODO: (나중에) 여기서 저장된 게임 데이터를 불러옵니다. (예: LoadData())
         }
     }
 
     // --- 4. [핵심] 팀원들이 호출할 공개 API (AddItem) ---
 
     /// <summary>
-    /// (1번) 몬스터 드롭 등으로 소지템/재료를 추가합니다.
+    /// (1번) 소지템/재료를 추가합니다. (기존과 동일)
     /// </summary>
     public void AddItem(ItemData itemToAdd)
     {
         if (itemToAdd == null) return;
-        
-        // TODO: (중요) ScriptableObject는 '원본'이므로, '복사본'을 만들어 추가해야 합니다.
-        // ItemData newItemInstance = Instantiate(itemToAdd);
-        // PlayerItems.Add(newItemInstance);
-        
-        // (지금은 간단하게 원본 참조로 추가)
         PlayerItems.Add(itemToAdd);
-        
-        // "소지템 UI야, 갱신해!"라고 방송(Invoke)
         OnInventoryChanged?.Invoke();
         Debug.Log($"[InventoryDataManager] 아이템 추가: {itemToAdd.name}");
     }
 
     /// <summary>
-    /// (2번) 보스 드롭 등으로 랜턴 기능을 추가합니다.
+    /// (2번) 기어를 추가합니다. (이름이 AddGear -> AddItem으로 변경됨)
     /// </summary>
-    public void AddLanternFunction(LanternFunctionData functionToAdd)
-    {
-        if (functionToAdd == null) return;
-        PlayerLanternFunctions.Add(functionToAdd);
-        OnLanternsChanged?.Invoke();
-    }
-
-    /// <summary>
-    /// (3번) 드롭 등으로 기어를 추가합니다.
-    /// </summary>
-    public void AddGear(GearData gearToAdd)
+    public void AddItem(GearData gearToAdd)
     {
         if (gearToAdd == null) return;
         PlayerGears.Add(gearToAdd);
         OnGearsChanged?.Invoke();
+        Debug.Log($"[InventoryDataManager] 기어 추가: {gearToAdd.name}");
     }
 
-    // --- 5. (핵심) 아이템 제거 API ---
+    /// <summary>
+    /// (3번) 랜턴 기능을 추가합니다. (이름이 AddLanternFunction -> AddItem으로 변경됨)
+    /// </summary>
+    public void AddItem(LanternFunctionData functionToAdd)
+    {
+        if (functionToAdd == null) return;
+        PlayerLanternFunctions.Add(functionToAdd);
+        OnLanternsChanged?.Invoke();
+        Debug.Log($"[InventoryDataManager] 랜턴 기능 추가: {functionToAdd.name}");
+    }
+
+    // --- (이하 RemoveItem, PurchaseGearCostSlot, AddMoney 함수는 기존과 동일) ---
     public void RemoveItem(ItemData itemToRemove)
     {
-        if (itemToRemove == null) return;
-        
-        if (PlayerItems.Remove(itemToRemove))
+        if (itemToRemove != null && PlayerItems.Remove(itemToRemove))
         {
-            OnInventoryChanged?.Invoke(); // 제거 성공 시 갱신
+            OnInventoryChanged?.Invoke();
         }
     }
     
-    // (기어/랜턴 제거 함수도 동일하게 만드시면 됩니다)
-    
-    // --- 6. (3번) 기어 코스트 구매 API ---
     public bool PurchaseGearCostSlot(int cost)
     {
         if (PlayerMoney >= cost && MaxGearCost < 6)
         {
             PlayerMoney -= cost;
             MaxGearCost++;
-            OnGearsChanged?.Invoke();       // 기어 UI 갱신 방송
-            OnInventoryChanged?.Invoke();   // 돈 UI 갱신 방송
-            return true; // 구매 성공
+            OnGearsChanged?.Invoke();
+            OnInventoryChanged?.Invoke();
+            return true;
         }
-        return false; // 구매 실패
+        return false;
     }
     
     public void AddMoney(int amount)

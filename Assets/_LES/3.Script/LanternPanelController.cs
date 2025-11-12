@@ -205,7 +205,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
 
         // 1. 데이터 리스트에 기능을 추가합니다.
-        InventoryDataManager.Instance.AddLanternFunction(testLanternFunctionToAdd);
+        InventoryDataManager.Instance.AddItem(testLanternFunctionToAdd);
 
         // 2. UI를 새로고침합니다.
         OnShow(); 
