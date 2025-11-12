@@ -239,6 +239,7 @@ public class PlayerController_LSH : MonoBehaviour
         {
             yield return null;
             if (fsm.currentState == dash) break;
+            if (fsm.currentState == hit) break;
             if (fsm.currentState == idle || fsm.currentState == run)
             {
                 fsm.ChangeState(dash);

@@ -67,7 +67,14 @@ public class PlayerAttack_LSH : IPlayerState_LSH
                 fsm.ChangeState(ctx.parry);
             }
         }
-        if(_elapsedTime > comboAvailableTime + 0.5f * (duration - comboAvailableTime))
+        if(_elapsedTime > comboAvailableTime + 0.35f * (duration - comboAvailableTime))
+        {
+            if (ctx.isDash)
+            {
+                fsm.ChangeState(ctx.dash);
+            }
+        }
+        if(_elapsedTime > comboAvailableTime + 0.6f * (duration - comboAvailableTime))
         {
             if (attackComboPressed)
             {
