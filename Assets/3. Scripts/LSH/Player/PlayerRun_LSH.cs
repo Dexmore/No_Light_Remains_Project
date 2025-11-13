@@ -8,9 +8,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction attackAction;
+    private InputAction potionAction;
     Vector2 moveActionValue;
     bool jumpPressed;
     bool attackPressed;
+    bool potionPressed;
     public void Enter()
     {
         if (moveAction == null)
@@ -19,7 +21,8 @@ public class PlayerRun_LSH : IPlayerState_LSH
             jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
-
+        if (potionAction == null)
+            potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         ctx.animator.Play("Player_Run");
     }
     public void Exit()
@@ -43,10 +46,15 @@ public class PlayerRun_LSH : IPlayerState_LSH
 
         if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
             fsm.ChangeState(ctx.fall);
+        
+        potionPressed = potionAction.IsPressed();
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+            fsm.ChangeState(ctx.usePotion);
+        
     }
     public void UpdatePhysics()
     {
-
+        if (isStagger) return;
         // 1. 캐릭터 좌우 바라보는 방향 변경
         if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
             ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -83,4 +91,5 @@ public class PlayerRun_LSH : IPlayerState_LSH
                 ctx.rb.AddForce(multiplier * moveActionValue * (ctx.moveSpeed + 4.905f) / 1.25f);
             }
     }
+    [HideInInspector] public bool isStagger = false;
 }

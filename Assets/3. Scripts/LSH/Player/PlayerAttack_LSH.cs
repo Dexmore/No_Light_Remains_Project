@@ -6,21 +6,25 @@ public class PlayerAttack_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerAttack_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.85f;   // 1타 총 길이
-    public const int multiHitCount = 2; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.7f; //콤보나 패링등으로 전환이 가능한 시간
+    private const float duration = 0.82f;   // 1타 총 길이
+    public const int multiHitCount = 1; // 동시타격 가능한 적의 수
+    private const float comboAvailableTime = 0.62f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction attackAction;
     bool attackComboPressed;
     private InputAction parryAction;
     bool parryPressed;
     bool flag1;
+    private InputAction moveAction;
+    Vector2 moveActionValue;
     public void Enter()
     {
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
         if (parryAction == null)
             parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
+        if (moveAction == null)
+            moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
         attackAction.performed += PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
         _elapsedTime = 0f;
@@ -39,8 +43,8 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         _elapsedTime += Time.deltaTime;
         if (!parryPressed)
         {
-            if(_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
-            parryPressed = parryAction.IsPressed();
+            if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
+                parryPressed = parryAction.IsPressed();
         }
         if (_elapsedTime < 0.05f)
         {
@@ -62,7 +66,17 @@ public class PlayerAttack_LSH : IPlayerState_LSH
             {
                 fsm.ChangeState(ctx.parry);
             }
-            else if (attackComboPressed)
+        }
+        if(_elapsedTime > comboAvailableTime + 0.35f * (duration - comboAvailableTime))
+        {
+            if (ctx.isDash)
+            {
+                fsm.ChangeState(ctx.dash);
+            }
+        }
+        if(_elapsedTime > comboAvailableTime + 0.6f * (duration - comboAvailableTime))
+        {
+            if (attackComboPressed)
             {
                 fsm.ChangeState(ctx.attackCombo);
             }
@@ -72,10 +86,20 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         {
             fsm.ChangeState(ctx.idle);
         }
+        //
+        moveActionValue = moveAction.ReadValue<Vector2>();
+        moveActionValue.y = 0f;
+        if (_elapsedTime < 0.07f)
+        {
+            if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
+                ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            else if (moveActionValue.x < 0 && ctx.childTR.right.x > 0)
+                ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        }
     }
     public void UpdatePhysics()
     {
-
+        
     }
     void PlayerAttackComboInput(InputAction.CallbackContext callback)
     {
@@ -91,7 +115,18 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         if (!attacked.Contains(coll))
         {
             attacked.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(ctx.transform, coll.transform, Random.Range(0.9f, 1.1f) * 55));
+            Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            GameManager.I.onHit.Invoke
+            (
+                new HitData
+                (
+                    "Attack",
+                    ctx.transform,
+                    coll.transform,
+                    Random.Range(0.9f, 1.1f) * 33f,
+                    hitPoint
+                )
+            );
         }
     }
 }

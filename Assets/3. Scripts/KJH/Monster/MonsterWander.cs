@@ -35,18 +35,14 @@ public class MonsterWander : MonsterState
         {
             moveDirection = Vector2.left;
         }
+        // 캐릭터 좌우 방향 설정
+        if (moveDirection.x > 0 && model.right.x < 0)
+            model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        else if (moveDirection.x < 0 && model.right.x > 0)
+            model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         while (Time.time - startTime < duration)
         {
             float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
-            // 캐릭터 좌우 방향 설정
-            if (moveDirection.x > 0 && model.right.x < 0)
-            {
-                model.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            }
-            else if (moveDirection.x < 0 && model.right.x > 0)
-            {
-                model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-            }
             // 벽 향해서 전진하는 버그 막기
             bool stopWall = false;
             if (control.collisions.Count > 0)

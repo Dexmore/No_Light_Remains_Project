@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using UnityEngine.Events;
 public class MonsterControl : MonoBehaviour
 {
     public float height = 1.5f;
@@ -26,13 +28,17 @@ public class MonsterControl : MonoBehaviour
     [Header("Pattern")]
     public Pattern[] patterns;
     Astar2DXYPathFinder astar;
+    Rigidbody2D rb;
     [HideInInspector] public AttackRange attackRange;
     void Awake()
     {
         SettingFSM();
         TryGetComponent(out astar);
+        TryGetComponent(out rb);
         attackRange = GetComponentInChildren<AttackRange>(true);
         eye = transform.GetChild(0).Find("Eye");
+        InitMatInfo();
+        TryGetComponent(out monsterHit);
     }
     void Init()
     {
@@ -64,6 +70,7 @@ public class MonsterControl : MonoBehaviour
         // 게임 시작시 컨디션을 Peaceful로
         condition = Condition.Peaceful;
         GameManager.I.onHit += HitHandler;
+        GameManager.I.onParry += ParryHandler;
         Sensor(cts.Token).Forget();
     }
     #region UniTask Setting
@@ -74,7 +81,12 @@ public class MonsterControl : MonoBehaviour
         Application.quitting += UniTaskCancel;
         Init();
     }
-    void OnDisable() => UniTaskCancel();
+    void OnDisable()
+    {
+        GameManager.I.onHit -= HitHandler;
+        GameManager.I.onParry -= ParryHandler;
+        UniTaskCancel();
+    }
     void OnDestroy() => UniTaskCancel();
     void UniTaskCancel()
     {
@@ -85,7 +97,6 @@ public class MonsterControl : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
             Debug.Log(e.Message);
         }
         cts = null;
@@ -111,9 +122,9 @@ public class MonsterControl : MonoBehaviour
             }
         }
     }
-    public void ChangeState(State newState)
+    public void ChangeState(State newState, bool force = false)
     {
-        if (newState == State.Hit || newState == State.Die)
+        if (newState == State.Hit || newState == State.Die || force)
         {
             ChangeState_ut(newState, cts.Token).Forget();
             return;
@@ -121,7 +132,7 @@ public class MonsterControl : MonoBehaviour
         if (stateDictionary[newState].coolTime == 0)
         {
             float _coolTime = 0;
-            bool isFind = false;
+            bool canInjury1 = false;
             for (int i = 0; i < patterns.Length; i++)
             {
                 for (int j = 0; j < patterns.Length; j++)
@@ -130,12 +141,12 @@ public class MonsterControl : MonoBehaviour
                     Frequency frequency = patterns[i].frequencies[j];
                     if (frequency.state == newState)
                     {
-                        isFind = true;
+                        canInjury1 = true;
                         _coolTime = frequency.coolTime;
                         break;
                     }
                 }
-                if (isFind) break;
+                if (canInjury1) break;
             }
             stateDictionary[newState].coolTime = _coolTime;
         }
@@ -169,6 +180,11 @@ public class MonsterControl : MonoBehaviour
             }
         }
         float randomWeightSum = Random.Range(0, totalWeightSum);
+        if (totalWeightSum == 0)
+        {
+            ChangeState(State.Idle);
+            return;
+        }
         int find1 = -1, find2 = -1;
         float partialWeightSum = 0;
         for (int i = 0; i < patterns.Length; i++)
@@ -231,21 +247,27 @@ public class MonsterControl : MonoBehaviour
     {
         Idle,
         Wander,
-        Rest,
         Jump,
-        Roar,
         Pursuit,
-        RunAway,
         Reposition,
+        RunAway,
+        Roar,
+        Rest,
         Hit,
-        KnockDown,
         Die,
-        HandAttack,
+        NormalAttack,
         BiteAttack,
-        JumpAttack,
         RangeAttack,
-        RushAttack,
-        ComboAttack,
+        ShortAttack,
+        MovingAttack,
+        SequenceAttack1,
+        SequenceAttack2,
+        SequenceAttack3,
+        BeamAttack,
+        Heal,
+        MovingCharge,
+
+
     }
     [System.Serializable]
     public struct Frequency
@@ -342,8 +364,12 @@ public class MonsterControl : MonoBehaviour
             RemoveCanNot(state, "CoolTime");
             coolTimeList.RemoveAt(find);
         }
-        // 매개변수 time이 > 0 인 경우가 실제 대부분 사용하는 케이스 입니다.
-        else if (time > 0)
+        else if (time <= 0.1f)
+        {
+            return;
+        }
+        // 매개변수 time이 > 0.1 인 경우가 실제 대부분 사용하는 케이스 입니다.
+        else
         {
             if (find == -1)
             {
@@ -561,7 +587,7 @@ public class MonsterControl : MonoBehaviour
     public Dictionary<Collider2D, float> visibilites = new Dictionary<Collider2D, float>();
     public Dictionary<Collider2D, float> memories = new Dictionary<Collider2D, float>();
     [ReadOnlyInspector] public float findRadius;
-    [ReadOnlyInspector] public float closeRadius;
+    public float closeRadius;
     Transform eye;
     [HideInInspector] bool isTemporalFight;
     float temporalFightTime;
@@ -569,8 +595,22 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
-        closeRadius = 1.2f * (width * 0.61f + 0.7f);
+        if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
+        bool canInjury1 = false;
+        bool canInjury2 = false;
+        foreach (var element in patterns)
+            if ((element.condition & Condition.Injury1) != 0)
+            {
+                canInjury1 = true;
+                break;
+            }
+        foreach (var element in patterns)
+            if ((element.condition & Condition.Injury2) != 0)
+            {
+                canInjury2 = true;
+                break;
+            }
         while (!token.IsCancellationRequested)
         {
             int timeDelta = Random.Range(150, 500);
@@ -599,6 +639,7 @@ public class MonsterControl : MonoBehaviour
                 {
                     memories[nearPlayers[i]] = Time.time;
                 }
+                await UniTask.Yield(token);
                 float dist = Vector2.Distance(nearPlayers[i].transform.position, transform.position);
                 if (minDist > dist)
                     minDist = dist;
@@ -703,6 +744,32 @@ public class MonsterControl : MonoBehaviour
                     isTemporalFight = false;
                 }
             }
+            // Injury
+            float ratio = (currHP / maxHP);
+            if (canInjury1)
+            {
+                if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Injury1))
+                {
+                    AddCondition(Condition.Injury1);
+                    RemoveCondition(Condition.Injury2);
+                }
+            }
+            if (canInjury2)
+            {
+                if (ratio <= 0.4f && !HasCondition(Condition.Injury2))
+                {
+                    RemoveCondition(Condition.Injury1);
+                    AddCondition(Condition.Injury2);
+                }
+            }
+            if (HasCondition(Condition.Injury1) || HasCondition(Condition.Injury2))
+            {
+                if (ratio > 0.7f)
+                {
+                    RemoveCondition(Condition.Injury1);
+                    RemoveCondition(Condition.Injury2);
+                }
+            }
         }
     }
     // 2D로 수정된 코드
@@ -755,7 +822,7 @@ public class MonsterControl : MonoBehaviour
             {
                 sum++;
             }
-            await UniTask.Delay(1);
+            await UniTask.Delay(1, cancellationToken: token);
         }
         if (rayCount == 0) return 0f;
         float result = sum / rayCount;
@@ -763,18 +830,176 @@ public class MonsterControl : MonoBehaviour
     }
     #endregion
     #region Hit
-    void HitHandler(HitData data)
+    [HideInInspector] float curHitAmount;
+    [HideInInspector] float maxHitAmount;
+    int prevHitType;
+    float prevHitTime;
+    float hitCoolTime;
+    MonsterHit monsterHit;
+    void HitHandler(HitData hData)
     {
         if (isDie) return;
-        if (data.target.Root() != transform) return;
-        currHP -= data.damage;
+        if (hData.target.Root() != transform) return;
+
+        // Effect
+        ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+        AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+        GameManager.I.HitEffect(hData.hitPoint, 0.5f);
+        HitChangeColor(Color.white);
+
+        // Stagger
+        if (Random.value <= 0.23f)
+        {
+            float staggerForce = 3.9f;
+            float staggerFactor1 = 1f;
+            switch (data.Type)
+            {
+                case MonsterType.Middle:
+                    staggerFactor1 = 0.81f;
+                    break;
+                case MonsterType.Large:
+                    staggerFactor1 = 0.69f;
+                    break;
+                case MonsterType.Boss:
+                    staggerFactor1 = 0.43f;
+                    break;
+            }
+            float staggerFactor2 = 1f;
+            switch (hData.attackName)
+            {
+                case "Attack":
+                    staggerFactor2 = 0.7f;
+                    break;
+                case "AttackCombo":
+                    staggerFactor2 = 1f;
+                    break;
+            }
+            float temp = hData.damage / data.HP;
+            float staggerFactor3 = 0.68f + 0.32f * temp;
+            Vector2 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
+            Vector2 dir = transform.position - hData.hitPoint;
+            dir.y = dir.y * 0.1f + 0.02f;
+            if (dir.y < 0) dir.y = 0.02f;
+            dir.Normalize();
+            rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
+        }
+
+        // Hit Small
+        bool pass = true;
+        if (state == State.Idle) pass = false;
+        if (state == State.Pursuit) pass = false;
+        if (state == State.Reposition) pass = false;
+        if (state == State.NormalAttack) pass = false;
+        if (state == State.RangeAttack) pass = false;
+        if (state == State.BiteAttack) pass = false;
+        if (state == State.MovingAttack) pass = false;
+        if (!pass && Random.value <= 0.35)
+        {
+            curHitAmount += hData.damage;
+            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.2f, 0.25f) * Mathf.Clamp(data.HP, 400, 900);
+            if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
+            if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+            if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
+            {
+                if (Random.value < 0.35f)
+                {
+                    monsterHit.type = 1;
+                    monsterHit.prevState = state;
+                    ChangeState(State.Hit);
+                    curHitAmount = 0;
+                    prevHitTime = Time.time;
+                    hitCoolTime = Random.Range(0.2f, 0.8f);
+                    if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+                }
+                else
+                    curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
+            }
+        }
+        // Set HP
+        currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
             RemoveCondition(Condition.Peaceful);
         if (currHP <= 0)
             ChangeState(State.Die);
+
+    }
+    public int parryCount = 0;
+    void ParryHandler(Transform target)
+    {
+        if (target != transform) return;
+        if (isDie) return;
+        if (state == State.Hit) return;
+        parryCount++;
+        if (state == State.SequenceAttack1) return;
+        if (parryCount >= data.ParryCount)
+        {
+            Debug.Log("HitKnockDown");
+            parryCount = 0;
+            monsterHit.type = 2;
+            monsterHit.prevState = state;
+            ChangeState(State.Hit);
+        }
+    }
+    class MatInfo
+    {
+        public SpriteRenderer spriteRenderer;
+        public Material[] originalMats;
+        public Sequence[] sequences;
+    }
+    List<MatInfo> matInfos = new List<MatInfo>();
+    void InitMatInfo()
+    {
+        matInfos.Clear();
+        SpriteRenderer[] srs = GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < srs.Length; i++)
+        {
+            MatInfo matInfo = new MatInfo();
+            matInfo.spriteRenderer = srs[i];
+            matInfo.originalMats = srs[i].sharedMaterials;
+            matInfo.sequences = new Sequence[srs[i].sharedMaterials.Length];
+            matInfos.Add(matInfo);
+        }
+    }
+    void HitChangeColor(Color color)
+    {
+        foreach (var element in matInfos)
+        {
+            Material[] newMats = new Material[element.spriteRenderer.materials.Length];
+            // element변수의 로컬 복사본을 만듭니다 (클로저 문제방지)
+            var currentElement = element;
+            for (int i = 0; i < currentElement.originalMats.Length; i++)
+            {
+                // 루프변수i의 로컬 복사본을 만듭니다 (클로저 문제방지)
+                int materialIndex = i;
+                if (currentElement.sequences[materialIndex] != null && currentElement.sequences[materialIndex].IsActive())
+                    currentElement.sequences[materialIndex].Kill();
+                newMats[materialIndex] = Instantiate(GameManager.I.hitTintMat);
+                newMats[materialIndex].color = currentElement.originalMats[materialIndex].color;
+                newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
+                currentElement.sequences[materialIndex] = DOTween.Sequence();
+                currentElement.sequences[materialIndex].AppendInterval(0.08f);
+                Tween colorTween = newMats[materialIndex].DOVector(
+                    new Vector4(color.r, color.g, color.b, 0f),
+                    "_TintColor",
+                    0.22f
+                ).SetEase(Ease.OutBounce);
+                currentElement.sequences[materialIndex].Append(colorTween);
+                currentElement.sequences[materialIndex].OnComplete(() =>
+                {
+                    Material[] currentMats = currentElement.spriteRenderer.materials;
+                    currentMats[materialIndex] = currentElement.originalMats[materialIndex];
+                    currentElement.spriteRenderer.materials = currentMats;
+                    // 인스턴스화된 hitTintMat을 제거합니다. (메모리 누수 방지)
+                    Destroy(newMats[materialIndex]);
+                });
+                currentElement.sequences[materialIndex].Play();
+            }
+            currentElement.spriteRenderer.materials = newMats;
+        }
     }
     #endregion
-    
+
 
 
 }

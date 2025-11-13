@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 public class MonsterRangeAttack : MonsterState
 {
+    public float range;
     public float damageMultiplier = 1.7f;
     public HitData.StaggerType staggerType;
     public Vector2 durationRange;
@@ -17,10 +19,34 @@ public class MonsterRangeAttack : MonsterState
         await UniTask.Yield(cts.Token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
-        anim.Play("RAttack");
+
     }
     public async UniTask Activate(CancellationToken token)
     {
+        Transform target;
+        target = control.memories.First().Key.transform;
+        float dist = Mathf.Abs(target.position.x - transform.position.x);
+        if (dist > 1.1f * range + 2f)
+        {
+            await UniTask.Yield(cts.Token);
+            control.ChangeNextState();
+            return;
+        }
+        if (dist > 1.1f * range + 2f)
+        {
+            await UniTask.Yield(cts.Token);
+            control.ChangeNextState();
+            return;
+        }
+        Vector2 direction = target.position - transform.position;
+        direction.y = 0;
+        direction.Normalize();
+        if (direction.x > 0 && model.right.x < 0)
+            model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        else if (direction.x < 0 && model.right.x > 0)
+            model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        if (control.isDie) return;
+        anim.Play("RangeAttack");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
     }
@@ -37,10 +63,23 @@ public class MonsterRangeAttack : MonsterState
         if (!attackedColliders.Contains(coll))
         {
             attackedColliders.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f,1.1f) * damageMultiplier * control.data.Attack, staggerType));
+            Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            GameManager.I.onHit.Invoke
+            (
+                new HitData
+                (
+                    "RangeAttack",
+                    transform,
+                    coll.transform,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    hitPoint,
+                    staggerType
+                )
+            );
+
         }
     }
-    
+
 
 
 

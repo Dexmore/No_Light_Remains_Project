@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
+using DG.Tweening;
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController_LSH : MonoBehaviour
 {
 
     [Header("Player HP")]
-    public int maxHealth = 1000;
-    public int currentHealth;
+    public float maxHealth = 1000;
+    public float currentHealth;
 
     // [Header("Light Resource")]
     // public int maxLight = 100;
@@ -61,6 +64,7 @@ public class PlayerController_LSH : MonoBehaviour
     [ReadOnlyInspector] public bool Grounded { get; private set; }
     [ReadOnlyInspector] public bool Parred { get; set; }
     [ReadOnlyInspector] public bool Avoided { get; set; }
+    [ReadOnlyInspector] public bool Dead { get; set; }
 
     void Awake()
     {
@@ -72,7 +76,6 @@ public class PlayerController_LSH : MonoBehaviour
         height = capsuleCollider2D.size.y;
         width = capsuleCollider2D.size.x;
         lightSystem = GetComponentInChildren<LightSystem>(true);
-
         fsm = new PlayerStateMachine_LSH();
         idle = new PlayerIdle_LSH(this, fsm);
         run = new PlayerRun_LSH(this, fsm);
@@ -86,7 +89,29 @@ public class PlayerController_LSH : MonoBehaviour
         die = new PlayerDie_LSH(this, fsm);
         usePotion = new PlayerUsePotion_LSH(this, fsm);
         openInventory = new PlayerOpenInventory_LSH(this, fsm);
-
+        InitMatInfo();
+    }
+    void Start()
+    {
+        CharacterData characterData = DBManager.I.currentCharData;
+        if (characterData.sceneName == "" && characterData.HP == 0)
+        {
+            CharacterData newData = new CharacterData();
+            newData.money = 0;
+            newData.sceneName = "Stage1";
+            newData.lastPosition = Vector2.zero;
+            newData.HP = maxHealth;
+            newData.MP = 0;
+            newData.potionCount = 5;
+            newData.itemDatas = new List<CharacterData.ItemData>();
+            newData.gearDatas = new List<CharacterData.GearData>();
+            newData.lanternDatas = new List<CharacterData.LanternData>();
+            DBManager.I.currentCharData = newData;
+        }
+        else
+        {
+            currentHealth = DBManager.I.currentCharData.HP;
+        }
     }
 
     void OnEnable()
@@ -108,6 +133,7 @@ public class PlayerController_LSH : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashInputCancel;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashInputCancel;
         lanternAction.performed -= LanternInput;
+        GameManager.I.onHit -= HitHandler;
     }
 
     void Update()
@@ -167,6 +193,7 @@ public class PlayerController_LSH : MonoBehaviour
             {
                 if (rightDashInputCount != 0) rightDashInputCount = 0;
                 dash.isLeft = true;
+                isDash = true;
                 StopCoroutine(nameof(Dash));
                 StartCoroutine(nameof(Dash));
             }
@@ -184,12 +211,13 @@ public class PlayerController_LSH : MonoBehaviour
             {
                 if (leftDashInputCount != 0) leftDashInputCount = 0;
                 dash.isLeft = false;
+                isDash = true;
                 StopCoroutine(nameof(Dash));
                 StartCoroutine(nameof(Dash));
             }
         }
     }
-    bool isDash;
+    [ReadOnlyInspector] public bool isDash;
     void DashInputCancel(InputAction.CallbackContext callback)
     {
         if (!Grounded) return;
@@ -200,17 +228,18 @@ public class PlayerController_LSH : MonoBehaviour
     }
     IEnumerator DashRelease()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.23f);
+        yield return YieldInstructionCache.WaitForSeconds(0.18f);
         leftDashInputCount = 0;
         rightDashInputCount = 0;
     }
     IEnumerator Dash()
     {
         float time = Time.time;
-        while (Time.time - time < 0.55f)
+        while (Time.time - time < 0.48f)
         {
             yield return null;
             if (fsm.currentState == dash) break;
+            if (fsm.currentState == hit) break;
             if (fsm.currentState == idle || fsm.currentState == run)
             {
                 fsm.ChangeState(dash);
@@ -218,35 +247,42 @@ public class PlayerController_LSH : MonoBehaviour
             }
         }
         yield return null;
+        isDash = false;
         leftDashInputCount = 0;
         rightDashInputCount = 0;
     }
     #endregion
-    void HitHandler(HitData data)
+    void HitHandler(HitData hData)
     {
-        if (data.target.Root() != transform) return;
+        if (hData.target.Root() != transform) return;
         if (fsm.currentState == die) return;
-        if (data.attackType == HitData.AttackType.Chafe)
+        if (hData.attackType == HitData.AttackType.Chafe)
         {
             if (isHit2) return;
             if (isHit1) return;
             isHit1 = true;
+            run.isStagger = true;
             StopCoroutine(nameof(HitCoolTime1));
             StartCoroutine(nameof(HitCoolTime1));
             if (Avoided)
             {
-                Debug.Log("회피 성공");
+                //Debug.Log("회피 성공");
                 return;
             }
-            Vector2 dir = 3.6f * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 2.6f;
+            Vector2 dir = 4.2f * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
+            dir.y = 2f;
+            Vector3 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
-            currentHealth -= (int)data.damage;
+            currentHealth -= (int)hData.damage;
+            currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+            DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
+            HitChangeColor(Color.white);
             return;
         }
-        else if (data.attackType == HitData.AttackType.Default)
+        else if (hData.attackType == HitData.AttackType.Default)
         {
             if (isHit2) return;
             isHit2 = true;
@@ -254,52 +290,123 @@ public class PlayerController_LSH : MonoBehaviour
             StartCoroutine(nameof(HitCoolTime2));
             if (Avoided)
             {
-                Debug.Log("회피 성공");
+                //Debug.Log("회피 성공");
+                GameManager.I.onAvoid.Invoke(hData.attacker.Root());
                 return;
             }
             if (Parred)
             {
                 AudioManager.I.PlaySFX("Parry");
-                Debug.Log("패링 성공");
+                //Debug.Log("패링 성공");
+                GameManager.I.onParry.Invoke(hData.attacker.Root());
                 return;
             }
             float multiplier = 1f;
-            switch (data.staggerType)
+            switch (hData.staggerType)
             {
                 case HitData.StaggerType.Small:
-                    multiplier = 1.1f;
+                    multiplier = 1.05f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.25f);
                     break;
                 case HitData.StaggerType.Middle:
-                    multiplier = 1.25f;
+                    multiplier = 1.22f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.45f);
                     break;
                 case HitData.StaggerType.Large:
-                    multiplier = 1.4f;
+                    multiplier = 1.3f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.65f);
                     break;
             }
-            Vector2 dir = 3.6f * multiplier * (data.target.position.x - data.attacker.position.x) * Vector2.right;
-            dir.y = 2.8f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            Vector2 dir = 2.8f * multiplier * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
+            dir.y = 2.3f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            Vector3 velo = rb.linearVelocity;
+            rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
-            if (data.staggerType != HitData.StaggerType.None)
+            if (hData.staggerType != HitData.StaggerType.None)
             {
-                hit.staggerType = data.staggerType;
+                hit.staggerType = hData.staggerType;
                 fsm.ChangeState(hit);
             }
-            currentHealth -= (int)data.damage;
+            currentHealth -= (int)hData.damage;
+            currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+            DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
+            ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+            AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+            HitChangeColor(Color.white);
             return;
+        }
+    }
+    class MatInfo
+    {
+        public SpriteRenderer spriteRenderer;
+        public Material[] originalMats;
+        public Sequence[] sequences;
+    }
+    List<MatInfo> matInfos = new List<MatInfo>();
+    void InitMatInfo()
+    {
+        matInfos.Clear();
+        SpriteRenderer[] srs = GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < srs.Length; i++)
+        {
+            MatInfo matInfo = new MatInfo();
+            matInfo.spriteRenderer = srs[i];
+            matInfo.originalMats = srs[i].sharedMaterials;
+            matInfo.sequences = new Sequence[srs[i].sharedMaterials.Length];
+            matInfos.Add(matInfo);
+        }
+    }
+    void HitChangeColor(Color color)
+    {
+        foreach (var element in matInfos)
+        {
+            Material[] newMats = new Material[element.spriteRenderer.materials.Length];
+            // element변수의 로컬 복사본을 만듭니다 (클로저 문제방지)
+            var currentElement = element;
+            for (int i = 0; i < currentElement.originalMats.Length; i++)
+            {
+                // 루프변수i의 로컬 복사본을 만듭니다 (클로저 문제방지)
+                int materialIndex = i;
+                if (currentElement.sequences[materialIndex] != null && currentElement.sequences[materialIndex].IsActive())
+                    currentElement.sequences[materialIndex].Kill();
+                newMats[materialIndex] = Instantiate(GameManager.I.hitTintMat);
+                newMats[materialIndex].color = currentElement.originalMats[materialIndex].color;
+                newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
+                currentElement.sequences[materialIndex] = DOTween.Sequence();
+                currentElement.sequences[materialIndex].AppendInterval(0.08f);
+                Tween colorTween = newMats[materialIndex].DOVector(
+                    new Vector4(color.r, color.g, color.b, 0f),
+                    "_TintColor",
+                    0.22f
+                ).SetEase(Ease.OutBounce);
+                currentElement.sequences[materialIndex].Append(colorTween);
+                currentElement.sequences[materialIndex].OnComplete(() =>
+                {
+                    Material[] currentMats = currentElement.spriteRenderer.materials;
+                    currentMats[materialIndex] = currentElement.originalMats[materialIndex];
+                    currentElement.spriteRenderer.materials = currentMats;
+                    // 인스턴스화된 hitTintMat을 제거합니다. (메모리 누수 방지)
+                    Destroy(newMats[materialIndex]);
+                });
+                currentElement.sequences[materialIndex].Play();
+            }
+            currentElement.spriteRenderer.materials = newMats;
         }
     }
     bool isHit1;
     bool isHit2;
     IEnumerator HitCoolTime1()
     {
-        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(0.2f);
+        run.isStagger = false;
+        yield return YieldInstructionCache.WaitForSeconds(0.9f - 0.2f);
         isHit1 = false;
     }
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(1.4f);
         isHit2 = false;
     }
     #region Use Lantern
@@ -319,7 +426,6 @@ public class PlayerController_LSH : MonoBehaviour
             light1.SetActive(true);
         }
     }
-
     #endregion
     #region Use Potion
 

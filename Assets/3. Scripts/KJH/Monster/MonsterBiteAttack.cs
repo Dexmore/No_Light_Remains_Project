@@ -53,6 +53,7 @@ public class MonsterBiteAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
                         model.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -102,7 +103,9 @@ public class MonsterBiteAttack : MonsterState
         {
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
-        anim.Play("BAttack");
+        if (control.isDie) return;
+        anim.Play("BiteAttack");
+        rb.AddForce(model.right * Random.Range(0.2f, 1f), ForceMode2D.Impulse);
         // 너무 멀면 앞으로 접근
         dist = Mathf.Abs(target.position.x - transform.position.x);
         condition = dist > 1.1f * range + 0.1f;
@@ -168,7 +171,19 @@ public class MonsterBiteAttack : MonsterState
         if (!attackedColliders.Contains(coll))
         {
             attackedColliders.Add(coll);
-            GameManager.I.onHit.Invoke(new HitData(transform, coll.transform, Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack, staggerType));
+            Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            GameManager.I.onHit.Invoke
+            (
+                new HitData
+                (
+                    "BiteAttack",
+                    transform,
+                    coll.transform,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    hitPoint,
+                    staggerType
+                )
+            );
         }
     }
 
