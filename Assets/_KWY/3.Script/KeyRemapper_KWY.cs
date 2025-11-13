@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -14,6 +15,7 @@ public class KeyRemapper_KWY : MonoBehaviour
 
     private InputAction actionToRebind;
     private int bindingIndex;
+    private string oldBindingPath;
     private InputActionRebindingExtensions.RebindingOperation rebindingOperation;
 
 
@@ -53,13 +55,47 @@ public class KeyRemapper_KWY : MonoBehaviour
 
         actionToRebind.Disable();
 
+        oldBindingPath = actionToRebind.bindings[bindingIndex].effectivePath;
+
         rebindingOperation?.Cancel();
 
         rebindingOperation = actionToRebind.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsExcluding("Mouse") 
+            .WithControlsExcluding("Mouse")
             .OnMatchWaitForAnother(0.1f)
             .OnComplete(operation =>
             {
+                var newBinding = actionToRebind.bindings[bindingIndex];
+                var newBindingPath = newBinding.effectivePath;
+                bool isDuplicate = false;
+
+                foreach (var action in actionToRebind.actionMap.asset.actionMaps.SelectMany(map => map.actions))
+                {
+                    foreach (var binding in action.bindings)
+                    {
+                        if (binding.id == newBinding.id) continue;
+
+                        if (!binding.path.Contains("<Keyboard>") && !binding.path.Contains("<Mouse>")) continue;
+
+                        if (binding.effectivePath == newBindingPath)
+                        {
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+                    if (isDuplicate) break;
+                }
+
+                if (isDuplicate)
+                {
+                    actionToRebind.ApplyBindingOverride(bindingIndex, oldBindingPath);
+                    Debug.LogWarning($"중복된 키 입력({newBindingPath})입니다. 원래 키({oldBindingPath})로 되돌립니다.");
+                }
+                else
+                {
+                    FindObjectOfType<GameSettingManager_KWY>().OnKeyBindingChanged();
+                }
+
+                // 리바인딩 작업 정리
                 operation.Dispose();
                 actionToRebind.Enable();
                 UpdateBindingDisplay();
@@ -68,8 +104,6 @@ public class KeyRemapper_KWY : MonoBehaviour
                 {
                     waitingForInputPanel.SetActive(false);
                 }
-
-                FindObjectOfType<GameSettingManager_KWY>().OnKeyBindingChanged();
             })
             .OnCancel(operation =>
             {
