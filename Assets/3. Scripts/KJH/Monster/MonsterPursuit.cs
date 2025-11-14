@@ -40,7 +40,7 @@ public class MonsterPursuit : MonsterState
             float distance = Mathf.Abs(target.position.x - transform.position.x);
             if(distance < 0.3f)
             {
-                await UniTask.Delay(Random.Range(0, 200), cancellationToken: token);
+                await UniTask.Delay(Random.Range(0, 1000), cancellationToken: token);
                 if(Random.value < 0.81f)
                     addPos = Random.Range(-3f, 3f) * Vector2.right;
                 else
@@ -61,6 +61,7 @@ public class MonsterPursuit : MonsterState
         {
             await UniTask.Yield(cts.Token);
             control.ChangeNextState();
+            Debug.Log("3");
             return;
         }
         for (int i = 1; i < result.Length; i++)
@@ -86,12 +87,6 @@ public class MonsterPursuit : MonsterState
             {
                 moveHorizontal = segmentPos - ((Vector2)transform.position + astar.offeset * Vector2.up);
                 distance = moveHorizontal.magnitude;
-                if (Mathf.Abs(moveHorizontal.x) <= 0.002f)
-                {
-                    await UniTask.Yield(cts.Token);
-                    control.ChangeNextState();
-                    return;
-                }
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
                 moveHorizontal.y = 0f;
                 moveHorizontal.Normalize();
