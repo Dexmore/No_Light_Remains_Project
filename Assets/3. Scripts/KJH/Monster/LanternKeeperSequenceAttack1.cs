@@ -65,9 +65,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         // 2번 공격
         attackIndex = 1;
         anim.Play("SlamAttack");
-        await UniTask.Delay(2000, cancellationToken: token);
-
-
+        await UniTask.Delay(600, cancellationToken: token);
         chafe?.SetActive(true);
         int dur = Random.Range((int)(durationRange.x * 1000f), (int)(durationRange.y * 1000f));
         await UniTask.Delay(dur, cancellationToken: token);
