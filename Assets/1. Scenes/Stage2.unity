@@ -7368,7 +7368,6 @@ MonoBehaviour:
   detailItemImage: {fileID: 1059697510}
   detailItemDescriptionText: {fileID: 55757713}
   infoPanelRoot: {fileID: 730555567}
-  _playerInventory: []
   testItemToAdd: {fileID: 0}
 --- !u!225 &776339290
 CanvasGroup:
@@ -9020,6 +9019,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::YourProject.UI.Test.InventoryUITester
   inventoryUI: {fileID: 151995433}
   toggleKey: 23
+  testItemsToAdd: []
+  testGearsToAdd: []
+  testLanternsToAdd: []
 --- !u!1 &1069347815
 GameObject:
   m_ObjectHideFlags: 0
@@ -10230,7 +10232,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8636516834246777513, guid: 727f219c1de3c63458dc8adfc850ecc8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8636516834246777513, guid: 727f219c1de3c63458dc8adfc850ecc8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11235,14 +11237,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GearPanelController
   gridSlots: []
   totalCostMeter: {fileID: 0}
-  maxCost: 3
   detailGearName: {fileID: 0}
   detailGearImage: {fileID: 0}
   detailGearDescription: {fileID: 0}
   detailCostMeter: {fileID: 0}
   detailModulePanel: {fileID: 0}
   mainTabButton: {fileID: 0}
-  _playerGearInventory: []
   testGearToAdd: {fileID: 0}
 --- !u!225 &1389332279
 CanvasGroup:
@@ -14145,7 +14145,6 @@ MonoBehaviour:
   detailDescriptionText: {fileID: 0}
   detailPanelRoot: {fileID: 0}
   mainTabButton: {fileID: 0}
-  _playerLanternFunctions: []
   testLanternFunctionToAdd: {fileID: 0}
 --- !u!225 &1861345173
 CanvasGroup:
