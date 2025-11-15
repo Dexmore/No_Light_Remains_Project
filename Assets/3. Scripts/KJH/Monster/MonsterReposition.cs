@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using System.Collections.Generic;
 public class MonsterReposition : MonsterState
 {
@@ -39,12 +38,14 @@ public class MonsterReposition : MonsterState
         // a가 1f보다 작은 몬스터는. 몸톰 박치기 위주 몬스터이므로. 지나가는 확률을 매우 키워야하고.. (아래에서 result가 0에 가까워야 다가가는 방향임)
         // a가 5f보다 큰 몬스터는. 원거리 공격형 위주 몬스터이므로. 거리를 벌리는 확률을 키워야함. (아래에서 result가 1에 가까워야 멀어지는 방향임)
         result = 1f - Mathf.Exp(-0.8f * a); //위의 로직은 이 곡선이 적당함
+        bool isTowardPlayer = true;
         Vector2 directionX = target.position - transform.position; // 다가가는 방향
         directionX.y = 0f;
         directionX.Normalize();
         float rnd = Random.value;
         if (rnd <= result)
         {
+            isTowardPlayer = false;
             directionX = transform.position - target.position; // 멀어지는 방향
             directionX.y = 0f;
             directionX.Normalize();
@@ -174,7 +175,8 @@ public class MonsterReposition : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        if(!isTowardPlayer || (isTowardPlayer && !control.isStagger))
+                            rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
                         if (control.isGround)
                         {
                             if (!isAnimation)
@@ -230,7 +232,8 @@ public class MonsterReposition : MonsterState
                 if (dot < control.data.MoveSpeed)
                 {
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                    rb.AddForce(multiplier * moveDirection * 2.9f * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                    if(!isTowardPlayer || (isTowardPlayer && !control.isStagger))
+                        rb.AddForce(multiplier * moveDirection * 2.9f * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     if (control.isGround)
                     {
                         if (!isAnimation)
