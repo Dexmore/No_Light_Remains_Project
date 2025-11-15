@@ -112,7 +112,8 @@ public class MonsterPursuit : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        if(!control.isStagger)
+                            rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
                         if (control.isGround)
                         {
                             if (!isAnimation)
