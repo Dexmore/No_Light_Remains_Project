@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 7867875104381242568}
   - component: {fileID: 2134497279704763176}
   - component: {fileID: 7925719910065025023}
+  - component: {fileID: 1862046869389580314}
   - component: {fileID: 8349045221369651068}
   - component: {fileID: 5338324552298598927}
   m_Layer: 6
@@ -392,6 +393,7 @@ MonoBehaviour:
   cannotList: []
   findRadius: 0
   closeRadius: 0
+  parryCount: 0
 --- !u!114 &7867875104381242568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,7 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterIdle
   coolTime: 0
-  durationRange: {x: 0.1, y: 0.5}
+  durationRange: {x: 0.3, y: 0.7}
 --- !u!114 &2134497279704763176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -440,6 +442,20 @@ MonoBehaviour:
     money: 3
     countRange: {x: 1, y: 1}
     probability: 0.75
+--- !u!114 &1862046869389580314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3785753429681866502}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba9c2296cd22b9245892b2a2ec698379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterWander
+  coolTime: 0
+  durationRange: {x: 2, y: 5}
 --- !u!114 &8349045221369651068
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -21,24 +21,47 @@ public class MonsterPursuit : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
 
-        if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
+        if (stopDistance > 0 && control.HasCondition(MonsterControl.Condition.ClosePlayer))
         {
             await UniTask.Yield(cts.Token);
-            control.ChangeState(MonsterControl.State.Idle);
+            control.ChangeNextState();
             return;
         }
         if (control.memories.Count == 0)
         {
             await UniTask.Yield(cts.Token);
-            control.ChangeState(MonsterControl.State.Idle);
+            control.ChangeNextState();
             return;
         }
         target = control.memories.First().Key.transform;
-        Vector2[] result = await astar.Find((Vector2)target.position);
+        Vector2 addPos = Vector2.zero;
+        if (stopDistance < 1f)
+        {
+            float distance = Mathf.Abs(target.position.x - transform.position.x);
+            if(distance < 0.3f)
+            {
+                await UniTask.Delay(Random.Range(0, 1000), cancellationToken: token);
+                if(Random.value < 0.81f)
+                    addPos = Random.Range(-3f, 3f) * Vector2.right;
+                else
+                {
+                    if(Random.value < 0.5f)
+                        addPos = Random.Range(6f , 12f) * Vector2.right;
+                    else
+                        addPos = Random.Range(6f , 12f) * Vector2.left;
+                }
+            }
+            else
+            {
+                addPos = Random.Range(0f, 4f)  * (target.position - transform.position).normalized;
+            }
+        }
+        Vector2[] result = await astar.Find((Vector2)target.position + addPos);
         if (result.Length <= 1)
         {
             await UniTask.Yield(cts.Token);
-            control.ChangeState(MonsterControl.State.Idle);
+            control.ChangeNextState();
+            //Debug.Log("3");
             return;
         }
         for (int i = 1; i < result.Length; i++)
@@ -64,12 +87,6 @@ public class MonsterPursuit : MonsterState
             {
                 moveHorizontal = segmentPos - ((Vector2)transform.position + astar.offeset * Vector2.up);
                 distance = moveHorizontal.magnitude;
-                if (Mathf.Abs(moveHorizontal.x) <= 0.002f)
-                {
-                    await UniTask.Yield(cts.Token);
-                    control.ChangeState(MonsterControl.State.Idle);
-                    return;
-                }
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
                 moveHorizontal.y = 0f;
                 moveHorizontal.Normalize();
@@ -95,7 +112,8 @@ public class MonsterPursuit : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        if(!control.isStagger)
+                            rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
                         if (control.isGround)
                         {
                             if (!isAnimation)

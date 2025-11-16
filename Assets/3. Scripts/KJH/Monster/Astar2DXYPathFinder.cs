@@ -65,8 +65,9 @@ public class Astar2DXYPathFinder : MonoBehaviour
      public Vector2Int astarArraySize = new Vector2Int(73, 9);
 
      // RaycastNonAlloc 및 OverlapBoxNonAlloc을 위한 버퍼
-     RaycastHit2D[] rayHitsBuffer = new RaycastHit2D[11]; // 넉넉하게 11개까지 히트 감지 가능
-     List<RaycastHit2D> rayHitsBuffer2 = new List<RaycastHit2D>();
+     // Astar2DXYPathFinder 클래스 멤버 변수 영역 (overlapCollidersBuffer 주변)에 추가해주세요.
+     RaycastHit2D[] rayHitsBuffer = new RaycastHit2D[100]; // astarArraySize.y * 2 보다 큰 넉넉한 크기
+     List<float> distinctYPoints = new List<float>(32);
      Collider2D[] overlapCollidersBuffer = new Collider2D[11]; // 넉넉하게 11개까지 콜라이더 감지 가능
 
      // 캐릭터를 주변 공간정보를 아래 node 다차원배열--> 잡일시 1D로 평탄화된 네이티브 배열에 담는다
@@ -206,6 +207,56 @@ public class Astar2DXYPathFinder : MonoBehaviour
 #endif
           return result;
      }
+     private void ProcessAndAssignNode(int x, int y, float yPos, Vector2 targetWorldPos, ref float minDistToEnd, ref AstarNode endNode, ref float minDistToStart, ref AstarNode startNode, Vector2 halfBox, Collider2D[] overlapCollidersBuffer, Vector2Int astarArraySize, NativeArray<AstarNode> allNodes, float unit, int centerXIndex, Vector2 characterPosition)
+     {
+          AstarNode node = new AstarNode();
+          node.isValid = true;
+          node.xIndex = x;
+          node.yIndex = y;
+          int index = x * (astarArraySize.y) + y;
+          node.index = index;
+          node.parentIndex = -1;
+          node.yWorldPos = yPos;
+          bool canMove = true;
+
+          Vector2 nodeWorldPos = NodeToWorld(node);
+
+          // 1. OverlapBox 검사 (장애물/벽 검사)
+          int countB = Physics2D.OverlapBoxNonAlloc(
+              nodeWorldPos + (0.25f + 0.5f * (height - 0.25f)) * Vector2.up,
+              halfBox,
+              0f,
+              overlapCollidersBuffer,
+              groundLayer | obstacleLayer
+          );
+          if (countB > 0)
+          {
+               canMove = false;
+          }
+
+          // 2. Start/End Node 찾기
+          // End Node (Target) 찾기
+          float dist = (targetWorldPos - nodeWorldPos).sqrMagnitude;
+          if (dist < minDistToEnd)
+          {
+               minDistToEnd = dist;
+               endNode = node;
+          }
+          // Start Node (Character Center) 찾기
+          if (x == centerXIndex)
+          {
+               float dist2 = (characterPosition - nodeWorldPos).sqrMagnitude;
+               if (dist2 < minDistToStart)
+               {
+                    minDistToStart = dist2;
+                    startNode = node;
+               }
+          }
+
+          // 3. 최종 할당
+          node.canMove = canMove;
+          allNodes[index] = node;
+     }
      #endregion
      public async UniTask<Vector2[]> Find(Vector2 targetWorldPos, CancellationToken token)
      {
@@ -229,83 +280,131 @@ public class Astar2DXYPathFinder : MonoBehaviour
                // y=1 ~ y=astarArraySize.y-1 의 allNodes[i] 값은 y=0 에서 하는 레이캐스트 과정에서 다 담긴다.
                if (y == 0)
                {
-                    // 레이 오리진의 높이좌표는 대충 캐릭터의 position.y + unit * astarArraySize.x * 0.5 로 했음.
-                    // 이렇게하면 검사영역의 크기가 캐릭터를 중심으로 하는 거대한 정사각형 형태가 된다
                     Vector2 rayOrigin = new Vector2
                     (
                          characterPosition.x + (x - centerXIndex) * unit,
                          characterPosition.y + unit * astarArraySize.x * 0.5f
                     );
-                    // Ray를 수직아래로 쏴서 하늘과 가장 가까운 순서대로 담자
-                    int countR = Physics2D.RaycastNonAlloc(rayOrigin, Vector2.down, rayHitsBuffer, unit * astarArraySize.x, groundLayer | obstacleLayer);
-                    rayHitsBuffer2.Clear();
-                    for (int k = 0; k < countR; k++) rayHitsBuffer2.Add(rayHitsBuffer[k]);
-                    rayHitsBuffer2.Sort((a, b) => a.distance.CompareTo(b.distance));
-                    for (int k = 0; k < astarArraySize.y; k++)
+                    Vector2 currentRayStartPos = rayOrigin; // 반복적으로 갱신될 레이 시작 위치
+
+                    ////////////////////////
+                    /// 현재 X-열에서 하늘 위에서 아래로 레이를 쏘아서 부딪히는 모든 층에 대한 정보를
+                    /// 노드화 시켜야 하는데 문제가..
+                    ///  
+                    /// 방법1) Physics2D.RaycastNonAlloc 을 써서 충돌하는 astarArraySize.y개 이하의 점들의 정보를 담는 방법을 쓸경우.
+                    /// 박스콜라이더 서클, 캡슐 2D들로만 이루어진 씬에서는 잘 작동하나... 
+                    /// 타일맵 콜라이더 같은게 있을경우 타일상으로 여러 복잡한 층이 나눠져있는 지형이면
+                    /// RaycastNonAlloc을 썼음에도 불구하고 타일의 천장(제일 윗부분에서) 한번만 충돌하고 끝남
+                    /// 
+                    /// 방법2) 방법1의 단점을 보완하려고 
+                    /// 타일맵 콜라이더 같은거에서도 출동 층 정보를 잘 담기위해 Physics2D.Raycast 를 쏘고 닿는지점이 있다면 약간아래에 
+                    /// 즉.. 땅(벽)속에서 다시 아래로 쏘아 새로운 땅(층)을 반복적으로 담는 방법을 사용한다면
+                    /// 타일맵 콜라이더로만 이루어진 씬에서도 층 정보를 잘 담아냄. 근데 이러면 문제가 기존의 박스콜라이더들은
+                    /// 약간아래의 콜라이더속에서 아래로 레이를 쏘면 타일맵에서때와 달리 콜라이더 속 레이 원점에서 바로 충돌 완료했다고 인식해서
+                    /// 첫 충돌에서 9개가 다 차버림..
+                    /// 
+                    /// 방법3) 그래서 위 두가지 방법을 조합하여
+                    /// 레이캐스트올(혹은 NonAlloc)으로 여러개의 개별로된 게임오브젝트 콜라이더들을 전부 감지하고 (방법1)
+                    /// 이중에 타일맵 콜라이더가 있는경우. 타일맵콜라이더의 첫 충돌포인트에서 한개만 감지하는 Physics2D.Raycast를 약간아래 내부에서 파고들어서 다시 반복하는 로직 (방법2)
+                    /// 를 같이 사용하고 싶음
+                    /// 단 이때 하늘하고 가까운 위치대로 잘 담겨야함.
+                    /// 만약 씬에 복합적으로 여러 장애물 플랫폼이 있다고 했을때
+                    /// 하늘 레이 시작위치에서 시작해서 가까운 순서대로
+                    /// 박스콜1 --> 타일맵(같은 타일맵 게임오브젝트 1지점) --> 서클콜라이더 --> 타일맵(같은 타일맵 게임오브젝트 2지점) --> 타일맵(같은 타일맵 게임오브젝트 3지점) --> 박스콜2
+                    /// 이런순서로 잘 담기게 해야함
+                    ///////////////////////
+                    
+                    float maxDist = unit * astarArraySize.x * 2.0f; // 충분히 큰 최대 거리
+                    // 1. 첫 번째 레이를 쏘아 충돌체의 종류를 확인
+                    RaycastHit2D firstHit = Physics2D.Raycast(rayOrigin, Vector2.down, maxDist, groundLayer | obstacleLayer);
+
+                    int layerCount = 0; // 이 X-열에서 실제로 감지된 층의 개수
+
+                    // 2. 충돌이 발생한 경우 (콜라이더 종류에 따라 분기)
+                    if (firstHit.collider)
                     {
-                         AstarNode node = new AstarNode();
-                         node.isValid = true;
-                         node.xIndex = x;
-                         node.yIndex = k;
-                         int index = x * (astarArraySize.y) + k;
-                         node.index = index;
-                         node.parentIndex = -1; //처음에는 부모 없음
-                         bool canMove;
-                         float yPos;
-                         //Debug.Log($"{k} / {countR} / {astarArraySize.y}");
-                         if (k >= countR)
+                         // TilemapCollider2D, CompositeCollider2D 인지 확인
+                         // CompositeCollider2D는 TilemapCollider2D와 함께 복합 지형을 만들 때 사용됩니다.
+                         bool isTilemapCollider = firstHit.collider is UnityEngine.Tilemaps.TilemapCollider2D || firstHit.collider is UnityEngine.CompositeCollider2D;
+                         // --- Case 1: TilemapCollider2D 또는 CompositeCollider2D (복합 콜라이더) - 반복 Raycast 사용 ---
+                         if (isTilemapCollider)
                          {
-                              node.isValid = false;
-                              canMove = false;
-                              yPos = 9999f;
+                              Vector2 currentRayStartPos_Loop = rayOrigin; // 반복 루프 내에서 사용할 시작점
+                              while (layerCount < astarArraySize.y)
+                              {
+                                   // currentRayStartPos에서 rayOrigin까지의 거리를 계산하여 maxDist를 재설정 (안전성 확보)
+                                   float currentMaxDist = maxDist + (rayOrigin.y - currentRayStartPos_Loop.y);
+                                   RaycastHit2D hit = Physics2D.Raycast(currentRayStartPos_Loop, Vector2.down, currentMaxDist, groundLayer | obstacleLayer);
+                                   if (!hit.collider)
+                                   {
+                                        // 더 이상 층이 없으므로 루프 종료
+                                        break;
+                                   }
+                                   // 노드 처리 로직 실행 (ProcessAndAssignNode 헬퍼 메서드 사용)
+                                   ProcessAndAssignNode(x, layerCount, hit.point.y, targetWorldPos, ref minDistToEnd, ref endNode, ref minDistToStart, ref startNode, halfBox, overlapCollidersBuffer, astarArraySize, allNodes, unit, centerXIndex, characterPosition);
+                                   
+                                   // 다음 레이 발사 위치 갱신 (콜라이더 내부에서 재발사)
+                                   currentRayStartPos_Loop = hit.point - Vector2.up * 0.2f; 
+                                   layerCount++;
+                              }
                          }
+                         // --- Case 2: Box, Circle, Polygon, Edge 등 (단일 콜라이더) - RaycastNonAlloc + 필터링 사용 ---
                          else
                          {
-                              canMove = true;
-                              yPos = rayHitsBuffer2[k].point.y;
-#if UNITY_EDITOR
-                              //DebugExtension.DebugCircle(rayHitsBuffer2[k].point, Vector3.forward, Color.yellow, 0.3f * unit, 5f, true);
-#endif
-                         }
-                         node.yWorldPos = yPos;
-                         Vector2 nodeWorldPos = NodeToWorld(node);
-                         // 이 다음으로 각 그리드 포인트에 장애물이 있는지 충돌 검사도 해버리자.
-                         if (canMove)
-                         {
-                              int countB = Physics2D.OverlapBoxNonAlloc(
-                                  nodeWorldPos + (0.25f + 0.5f * (height - 0.25f)) * Vector2.up,
-                                  halfBox,
-                                  0f, // 2D 오버랩 박스는 회전 각도가 Z축 회전이라서 0으로 고정
-                                  overlapCollidersBuffer,
-                                  groundLayer | obstacleLayer
-                              );
-                              if (countB > 0)
+                              distinctYPoints.Clear(); // Y 좌표 리스트 초기화
+                              
+                              // RaycastNonAlloc을 사용하여 모든 충돌 지점을 한 번에 가져옴
+                              int countR = Physics2D.RaycastNonAlloc(rayOrigin, Vector2.down, rayHitsBuffer, maxDist, groundLayer | obstacleLayer);
+
+                              // 3-1. 고유한 Y 좌표(층 높이)만 추출
+                              for (int j = 0; j < countR; j++)
                               {
-                                   canMove = false;
+                                   // 충돌 지점의 y좌표
+                                   float yPos = rayHitsBuffer[j].point.y;
+                                   bool isNew = true;
+                                   
+                                   // 작은 오차 범위(0.01f) 내에서 중복 제거 (float 비교 안전성 확보)
+                                   foreach (float existingY in distinctYPoints)
+                                   {
+                                        if (Mathf.Abs(existingY - yPos) < 0.01f)
+                                        {
+                                             isNew = false;
+                                             break;
+                                        }
+                                   }
+                                   if (isNew)
+                                   {
+                                        distinctYPoints.Add(yPos);
+                                   }
                               }
-                         }
-                         // 모든 그리드 다중 for문으로 전체 검사하는김에.
-                         // 겸사겸사 startNode 와 endNode도 여기서 찾아버리자.
-                         float dist = (targetWorldPos - nodeWorldPos).sqrMagnitude;
-                         if (dist < minDistToEnd)
-                         {
-                              minDistToEnd = dist;
-                              endNode = node;
-                         }
-                         if (x == centerXIndex)
-                         {
-                              float dist2 = (characterPosition - nodeWorldPos).sqrMagnitude;
-                              if (dist2 < minDistToStart)
+                              
+                              // 3-2. Y 좌표를 높은 순서(천장 -> 바닥)로 정렬
+                              distinctYPoints.Sort((a, b) => b.CompareTo(a));
+                              
+                              // 3-3. 정렬된 고유 Y 좌표로 노드 할당
+                              for (int k = 0; k < distinctYPoints.Count && k < astarArraySize.y; k++)
                               {
-                                   minDistToStart = dist2;
-                                   startNode = node;
+                                   float yPos = distinctYPoints[k];
+                                   // 노드 처리 로직 실행 (ProcessAndAssignNode 헬퍼 메서드 사용)
+                                   ProcessAndAssignNode(x, k, yPos, targetWorldPos, ref minDistToEnd, ref endNode, ref minDistToStart, ref startNode, halfBox, overlapCollidersBuffer, astarArraySize, allNodes, unit, centerXIndex, characterPosition);
+                                   layerCount++;
                               }
-                         }
-                         // canMove 값은 위 과정을 모두 거치고 최종적으로 대입하자. 
-                         // 레이검사든 -> 오버랩충돌검사든 어느 과정상에서라도 갈수없는 판정이 하나라도 나오면 갈수없는 곳이다.
-                         node.canMove = canMove;
-                         //Debug.Log(index);
-                         // 최종적으로 node 를 allNodes[x * k * z]에 넣자
+                         } // end else (Simple Collider)
+                    } // end if (firstHit.collider)
+
+                    // 4. Case 1 또는 Case 2에서 할당 후 남은 노드를 Invalid로 채우는 마무리 루프
+                    for (int k = layerCount; k < astarArraySize.y; k++)
+                    {
+                         int index = x * (astarArraySize.y) + k;
+                         AstarNode node = new AstarNode { 
+                             isValid = false, 
+                             canMove = false, 
+                             xIndex = x, 
+                             yIndex = k, 
+                             index = index, 
+                             yWorldPos = 9999f,
+                             parentIndex = -1
+                         };
                          allNodes[index] = node;
                     }
                }
@@ -375,7 +474,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
                unit = unit,
                characterHeight = height,
                characterDiameter = width,
-               characterJumpMaxHeight = math.max(0.0175f * (jumpForce)*(jumpForce) + 0.0075f * (jumpForce) - 0.025f, 0.5f * height),
+               characterJumpMaxHeight = math.max(0.0175f * (jumpForce) * (jumpForce) + 0.0075f * (jumpForce) - 0.025f, 0.5f * height),
                characterDownMax = 8f,
                characterPosition = characterPosition,
                modelForward = new float2(model.forward.x, model.forward.z),
@@ -396,7 +495,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
           Dispose();
           for (int i = 0; i < result.Length; i++)
           {
-               result[i] += offeset * Vector2.up;    
+               result[i] += offeset * Vector2.up;
           }
           return result;
      }
@@ -463,106 +562,207 @@ public struct AstarJob : IJob
                     result[0] = currNode;
                     return;
                }
-               //현재노드의 모든 이웃노드 탐색해서 openSet에 넣기 (26방향: X, Y, Z축으로 -1, 0, 1 범위)
+
+               //현재노드의 모든 이웃노드 탐색해서 openSet에 넣기
                for (int x = -1; x <= 1; x++)
-                    for (int y = -1; y <= 1; y++)
+               {
+                    // '이 이웃 노드'의 X 좌표
+                    int neighborX = currNode.xIndex + x;
+
+                    // '이 이웃 노드'가 그리드 X 범위를 벗어나면 건너뛰기
+                    if (neighborX < 0 || neighborX >= astarArraySize.x)
                     {
-                         // 자기 자신 노드는 건너뛰기
-                         if (x == 0 && y == 0) continue;
-                         // '이 이웃 노드'의 좌표는
-                         int neighborX = currNode.xIndex + x;
-                         int neighborY = currNode.yIndex + y;
-
-
-                         // '이 이웃 노드'가 그리드 범위를 벗어나면 건너뛰기
-                         if (neighborX < 0 || neighborX >= astarArraySize.x
-                             || neighborY < 0 || neighborY >= astarArraySize.y)
-                         {
-                              continue;
-                         }
-
-                         AstarNode neighbor = allNodes[neighborX * (astarArraySize.y) + neighborY];
-
-                         neighbor.xIndex = neighborX;
-                         neighbor.yIndex = neighborY;
-                         int index = neighborX * (astarArraySize.y) + neighborY;
-                         neighbor.index = index;
-
-
-                         // 이동 불가능한 노드이거나 이미 ClosedSet에 있다면 건너뛰기
-                         if (!neighbor.isValid || !neighbor.canMove)
-                         {
-                              continue;
-                         }
-                         bool temp = false;
-                         for (int i = 0; i < closedSet.Length; i++)
-                         {
-                              if (closedSet[i].Equals(neighbor))
-                              {
-                                   temp = true;
-                                   break;
-                              }
-                         }
-                         if (temp) continue;
-                         // 높이 차이 검사
-                         float heightDifference = neighbor.yWorldPos - currNode.yWorldPos;
-                         if (heightDifference > characterJumpMaxHeight   // 너무 높이 올라갈 수 없음
-                         || heightDifference < -characterDownMax)       // 너무 깊이 내려갈 수 없음
-                         {
-                              continue;
-                         }
-                         // '현재 노드'에서 '이 이웃 노드'로 가는 새로운 G 값 계산
-                         // GetCost는 아래 헬퍼 메서드에 정의
-                         int cost = currNode.G + GetCost(currNode, neighbor);
-                         // 플레이어 근처이면서 & 모델의 방향과 많이 꺽인 노드라면 방향전환 비용 증가.
-                         // 캐릭터 근처 노드인지 판단하는 정도
-                         float2 world = NodeToWorld(currNode);
-                         // 대충 캐릭터와 제일 가까운 노드는 64정도 값이 되고. 가장 먼 노드는 10 정도의 값이 됨. 이를 바탕으로
-                         float near = astarArraySize.x + 10 - (math.abs(currNode.xIndex - centerXIndex));
-                         near = near / (astarArraySize.x + 10); // 정규화
-                                                                // 가까운 노드로 한정하여.
-                         if (near > 0.3f)
-                         {
-                              // Vector2.Angle 대신 math.acos(math.dot) 또는 float2.Angle 사용
-                              // Burst에 친화적인 math 라이브러리 사용을 권장합니다.
-                              float angleRad = math.acos(math.dot(math.normalize(world - characterPosition), math.normalize(modelForward)));
-                              float angleDeg = math.degrees(angleRad); // 라디안을 다시 각도로 변환
-                              float angle = angleDeg / 180f; //정규화
-                              int addCost = (int)(20f * angle * near);
-                              cost += addCost;
-                         }
-                         // 만약 이웃 노드가 OpenSet에 없거나, 새로운 G 값이 기존 G 값보다 낮다면
-                         bool isNeighborInOpenSet = false;
-                         for (int i = 0; i < openMinHeap.Count; i++) // <- .Length 사용
-                         {
-                              if (openMinHeap.items[i].Equals(neighbor))
-                              {
-                                   isNeighborInOpenSet = true;
-                                   break;
-                              }
-                         }
-                         if (!isNeighborInOpenSet || cost < neighbor.G)
-                         {
-                              neighbor.G = cost; // G 값 업데이트
-                              neighbor.H = GetCost(neighbor, endNode); // H 값 업데이트 (휴리스틱)
-                              neighbor.parentIndex = currNode.index; // 부모 노드 설정
-                              allNodes[index] = neighbor; // struct 갱신
-                                                          // 이웃 노드가 OpenSet에 없다면 추가
-                              if (!isNeighborInOpenSet)
-                              {
-                                   openMinHeap.Add(neighbor);
-                              }
-                              // 이웃 노드가 OpenSet에 이미있다면 G값 갱신
-                              else
-                              {
-                                   openMinHeap.UpdateItem(neighbor);
-                              }
-
-                         }
+                         continue;
                     }
 
+                    // X축 변화가 없을 때: 제자리에서 위층(+1)과 아래층(-1)만 확인
+                    if (x == 0)
+                    {
+                         for (int yDelta = -1; yDelta <= 1; yDelta++)
+                         {
+                              // 자기 자신 노드 (x=0, yDelta=0)는 건너뛰기
+                              if (yDelta == 0) continue;
 
-          }
+                              int neighborY = currNode.yIndex + yDelta;
+
+                              // '이 이웃 노드'가 그리드 Y 범위를 벗어나면 건너뛰기
+                              if (neighborY < 0 || neighborY >= astarArraySize.y)
+                              {
+                                   continue;
+                              }
+
+                              // ------------ 이웃 노드 처리 시작 ------------
+                              AstarNode neighbor = allNodes[neighborX * (astarArraySize.y) + neighborY];
+
+                              neighbor.xIndex = neighborX;
+                              neighbor.yIndex = neighborY;
+                              int index = neighborX * (astarArraySize.y) + neighborY;
+                              neighbor.index = index;
+
+
+                              // 이동 불가능한 노드이거나 이미 ClosedSet에 있다면 건너뛰기
+                              if (!neighbor.isValid || !neighbor.canMove)
+                              {
+                                   continue;
+                              }
+                              bool temp = false;
+                              for (int i = 0; i < closedSet.Length; i++)
+                              {
+                                   if (closedSet[i].Equals(neighbor))
+                                   {
+                                        temp = true;
+                                        break;
+                                   }
+                              }
+                              if (temp) continue;
+                              // 높이 차이 검사
+                              float heightDifference = neighbor.yWorldPos - currNode.yWorldPos;
+                              if (heightDifference > characterJumpMaxHeight   // 너무 높이 올라갈 수 없음
+                              || heightDifference < -characterDownMax)       // 너무 깊이 내려갈 수 없음
+                              {
+                                   continue;
+                              }
+                              // '현재 노드'에서 '이 이웃 노드'로 가는 새로운 G 값 계산
+                              int cost = currNode.G + GetCost(currNode, neighbor);
+                              // 플레이어 근처이면서 & 모델의 방향과 많이 꺽인 노드라면 방향전환 비용 증가.
+                              // 캐릭터 근처 노드인지 판단하는 정도
+                              float2 world = NodeToWorld(currNode);
+                              // 대충 캐릭터와 제일 가까운 노드는 64정도 값이 되고. 가장 먼 노드는 10 정도의 값이 됨. 이를 바탕으로
+                              float near = astarArraySize.x + 10 - (math.abs(currNode.xIndex - centerXIndex));
+                              near = near / (astarArraySize.x + 10); // 정규화
+                                                                     // 가까운 노드로 한정하여.
+                              if (near > 0.3f)
+                              {
+                                   // Vector2.Angle 대신 math.acos(math.dot) 또는 float2.Angle 사용
+                                   // Burst에 친화적인 math 라이브러리 사용을 권장합니다.
+                                   float angleRad = math.acos(math.dot(math.normalize(world - characterPosition), math.normalize(modelForward)));
+                                   float angleDeg = math.degrees(angleRad); // 라디안을 다시 각도로 변환
+                                   float angle = angleDeg / 180f; //정규화
+                                   int addCost = (int)(20f * angle * near);
+                                   cost += addCost;
+                              }
+                              // 만약 이웃 노드가 OpenSet에 없거나, 새로운 G 값이 기존 G 값보다 낮다면
+                              bool isNeighborInOpenSet = false;
+                              for (int i = 0; i < openMinHeap.Count; i++) // <- .Length 사용
+                              {
+                                   if (openMinHeap.items[i].Equals(neighbor))
+                                   {
+                                        isNeighborInOpenSet = true;
+                                        break;
+                                   }
+                              }
+                              if (!isNeighborInOpenSet || cost < neighbor.G)
+                              {
+                                   neighbor.G = cost; // G 값 업데이트
+                                   neighbor.H = GetCost(neighbor, endNode); // H 값 업데이트 (휴리스틱)
+                                   neighbor.parentIndex = currNode.index; // 부모 노드 설정
+                                   allNodes[index] = neighbor; // struct 갱신
+                                                               // 이웃 노드가 OpenSet에 없다면 추가
+                                   if (!isNeighborInOpenSet)
+                                   {
+                                        openMinHeap.Add(neighbor);
+                                   }
+                                   // 이웃 노드가 OpenSet에 이미있다면 G값 갱신
+                                   else
+                                   {
+                                        openMinHeap.UpdateItem(neighbor);
+                                   }
+
+                              }
+                              // ------------ 이웃 노드 처리 끝 ------------
+                         }
+                    }
+                    // X축 변화가 있을 때: 좌우 이동 시, 이웃 X열의 모든 Y층을 확인
+                    else // x == -1 or x == 1
+                    {
+                         for (int neighborY = 0; neighborY < astarArraySize.y; neighborY++)
+                         {
+                              // 모든 Y층을 검사하며, 높이 차이 검사를 통해 유효한 층만 걸러짐
+
+                              // ------------ 이웃 노드 처리 시작 ------------
+                              AstarNode neighbor = allNodes[neighborX * (astarArraySize.y) + neighborY];
+
+                              neighbor.xIndex = neighborX;
+                              neighbor.yIndex = neighborY;
+                              int index = neighborX * (astarArraySize.y) + neighborY;
+                              neighbor.index = index;
+
+
+                              // 이동 불가능한 노드이거나 이미 ClosedSet에 있다면 건너뛰기
+                              if (!neighbor.isValid || !neighbor.canMove)
+                              {
+                                   continue;
+                              }
+                              bool temp = false;
+                              for (int i = 0; i < closedSet.Length; i++)
+                              {
+                                   if (closedSet[i].Equals(neighbor))
+                                   {
+                                        temp = true;
+                                        break;
+                                   }
+                              }
+                              if (temp) continue;
+                              // 높이 차이 검사
+                              float heightDifference = neighbor.yWorldPos - currNode.yWorldPos;
+                              if (heightDifference > characterJumpMaxHeight   // 너무 높이 올라갈 수 없음
+                              || heightDifference < -characterDownMax)       // 너무 깊이 내려갈 수 없음
+                              {
+                                   continue;
+                              }
+                              // '현재 노드'에서 '이 이웃 노드'로 가는 새로운 G 값 계산
+                              int cost = currNode.G + GetCost(currNode, neighbor);
+                              // 플레이어 근처이면서 & 모델의 방향과 많이 꺽인 노드라면 방향전환 비용 증가.
+                              // 캐릭터 근처 노드인지 판단하는 정도
+                              float2 world = NodeToWorld(currNode);
+                              // 대충 캐릭터와 제일 가까운 노드는 64정도 값이 되고. 가장 먼 노드는 10 정도의 값이 됨. 이를 바탕으로
+                              float near = astarArraySize.x + 10 - (math.abs(currNode.xIndex - centerXIndex));
+                              near = near / (astarArraySize.x + 10); // 정규화
+                                                                     // 가까운 노드로 한정하여.
+                              if (near > 0.3f)
+                              {
+                                   // Vector2.Angle 대신 math.acos(math.dot) 또는 float2.Angle 사용
+                                   // Burst에 친화적인 math 라이브러리 사용을 권장합니다.
+                                   float angleRad = math.acos(math.dot(math.normalize(world - characterPosition), math.normalize(modelForward)));
+                                   float angleDeg = math.degrees(angleRad); // 라디안을 다시 각도로 변환
+                                   float angle = angleDeg / 180f; //정규화
+                                   int addCost = (int)(20f * angle * near);
+                                   cost += addCost;
+                              }
+                              // 만약 이웃 노드가 OpenSet에 없거나, 새로운 G 값이 기존 G 값보다 낮다면
+                              bool isNeighborInOpenSet = false;
+                              for (int i = 0; i < openMinHeap.Count; i++) // <- .Length 사용
+                              {
+                                   if (openMinHeap.items[i].Equals(neighbor))
+                                   {
+                                        isNeighborInOpenSet = true;
+                                        break;
+                                   }
+                              }
+                              if (!isNeighborInOpenSet || cost < neighbor.G)
+                              {
+                                   neighbor.G = cost; // G 값 업데이트
+                                   neighbor.H = GetCost(neighbor, endNode); // H 값 업데이트 (휴리스틱)
+                                   neighbor.parentIndex = currNode.index; // 부모 노드 설정
+                                   allNodes[index] = neighbor; // struct 갱신
+                                                               // 이웃 노드가 OpenSet에 없다면 추가
+                                   if (!isNeighborInOpenSet)
+                                   {
+                                        openMinHeap.Add(neighbor);
+                                   }
+                                   // 이웃 노드가 OpenSet에 이미있다면 G값 갱신
+                                   else
+                                   {
+                                        openMinHeap.UpdateItem(neighbor);
+                                   }
+
+                              }
+                              // ------------ 이웃 노드 처리 끝 ------------
+                         }
+                    }
+               } // end for x
+          } // end while
+
           // while 루프가 openSet.Length > 0 조건을 만족하지 못해 종료된 경우 (경로를 찾지 못함)
           //Debug.Log("경로를 찾지 못했습니다.");
           result[0] = new AstarNode { isValid = false, parentIndex = -1 };

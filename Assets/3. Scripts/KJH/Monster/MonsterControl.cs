@@ -12,6 +12,7 @@ public class MonsterControl : MonoBehaviour
     public float jumpForce = 9f;
     [ReadOnlyInspector] public bool isDie;
     [ReadOnlyInspector] public bool isGround;
+    [HideInInspector] public bool isStagger;
     public LayerMask groundLayer;
     public float currHP;
     [Range(0f, 1f)] public float aggressive = 0.2f;
@@ -848,9 +849,9 @@ public class MonsterControl : MonoBehaviour
         HitChangeColor(Color.white);
 
         // Stagger
-        if (Random.value <= 0.23f)
+        if (Random.value <= 0.34f)
         {
-            float staggerForce = 3.9f;
+            float staggerForce = 4.4f;
             float staggerFactor1 = 1f;
             switch (data.Type)
             {
@@ -883,6 +884,10 @@ public class MonsterControl : MonoBehaviour
             if (dir.y < 0) dir.y = 0.02f;
             dir.Normalize();
             rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
+            ctsStagger?.Cancel();
+            ctsStagger = new CancellationTokenSource();
+            var ctsComb = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
+            ReleaseStagger(ctsComb.Token).Forget();
         }
 
         // Hit Small
@@ -923,6 +928,13 @@ public class MonsterControl : MonoBehaviour
         if (currHP <= 0)
             ChangeState(State.Die);
 
+    }
+    CancellationTokenSource ctsStagger = new CancellationTokenSource();
+    async UniTask ReleaseStagger(CancellationToken token)
+    {
+        isStagger = true;
+        await UniTask.Delay((int)(1000f * Random.Range(0.18f,0.48f)),cancellationToken:token);
+        isStagger = false;
     }
     public int parryCount = 0;
     void ParryHandler(Transform target)
