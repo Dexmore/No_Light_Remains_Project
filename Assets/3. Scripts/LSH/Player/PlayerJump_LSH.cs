@@ -49,8 +49,10 @@ public class PlayerJump_LSH : IPlayerState_LSH
         {
             if (!ctx.Jumped)
             {
-                if (Time.time - startTime > 0.1f)
+                if (Time.time - startTime > 0.12f)
                     ctx.rb.AddForce(Vector2.down * ctx.jumpForce * 0.0221f, ForceMode2D.Impulse);
+                else
+                    ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
             }
             else
                 ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
