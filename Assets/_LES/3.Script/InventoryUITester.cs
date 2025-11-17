@@ -30,6 +30,9 @@ namespace YourProject.UI.Test
 
         [SerializeField]
         private List<LanternFunctionData> testLanternsToAdd;
+
+        [SerializeField]
+        private List<RecordData> testRecordsToAdd;
         
         // ------------------------------
 
@@ -59,9 +62,7 @@ namespace YourProject.UI.Test
             }
         }
 
-        /// <summary>
-        /// [추가] NaughtyAttributes로 만든 테스트 버튼입니다.
-        /// </summary>
+        // [추가] NaughtyAttributes로 만든 테스트 버튼입니다.
         [Button("Test: 모든 테스트 아이템 일괄 추가")]
         private void AddAllTestItems()
         {
@@ -91,6 +92,12 @@ namespace YourProject.UI.Test
             foreach (LanternFunctionData lantern in testLanternsToAdd)
             {
                 InventoryDataManager.Instance.AddItem(lantern);
+                count++;
+            }
+
+            foreach (RecordData record in testRecordsToAdd)
+            {
+                InventoryDataManager.Instance.AddItem(record);
                 count++;
             }
 
