@@ -65,7 +65,6 @@ public class PlayerController_LSH : MonoBehaviour
     [ReadOnlyInspector] public bool Parred { get; set; }
     [ReadOnlyInspector] public bool Avoided { get; set; }
     [ReadOnlyInspector] public bool Dead { get; set; }
-
     void Awake()
     {
         TryGetComponent(out rb);
@@ -93,6 +92,8 @@ public class PlayerController_LSH : MonoBehaviour
     }
     void Start()
     {
+        GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
+        GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
         CharacterData characterData = DBManager.I.currentCharData;
         if (characterData.sceneName == "" && characterData.HP == 0)
         {
@@ -107,10 +108,14 @@ public class PlayerController_LSH : MonoBehaviour
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             DBManager.I.currentCharData = newData;
+            light0.SetActive(false);
+            light1.SetActive(false);
         }
         else
         {
             currentHealth = DBManager.I.currentCharData.HP;
+            light0.SetActive(DBManager.I.isLanternOn);
+            light1.SetActive(DBManager.I.isLanternOn);
         }
     }
 
@@ -119,19 +124,21 @@ public class PlayerController_LSH : MonoBehaviour
         fsm.ChangeState(idle);
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").performed += DashInput;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").performed += DashInput;
-        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashInputCancel;
-        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashInputCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled += JumpCancel;
         lanternAction = inputActionAsset.FindActionMap("Player").FindAction("Lantern");
         lanternAction.performed += LanternInput;
         GameManager.I.onHit += HitHandler;
-
     }
     void OnDisable()
     {
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").performed -= DashInput;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").performed -= DashInput;
-        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashInputCancel;
-        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashInputCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled -= JumpCancel;
         lanternAction.performed -= LanternInput;
         GameManager.I.onHit -= HitHandler;
     }
@@ -161,6 +168,9 @@ public class PlayerController_LSH : MonoBehaviour
             if (collisions.ContainsKey(collision.collider))
                 collisions.Remove(collision.collider);
     }
+    Ray2D groundRay = new Ray2D();
+    RaycastHit2D groundRayHit;
+    float groundCheckTime;
     void CheckGroundedPrecise()
     {
         Grounded = false;
@@ -171,6 +181,20 @@ public class PlayerController_LSH : MonoBehaviour
                     Grounded = true;
                     break;
                 }
+        if (!Grounded)
+        {
+            if (Time.time - groundCheckTime > 0.1f)
+            {
+                groundCheckTime = Time.time;
+                groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
+                groundRay.direction = Vector2.down;
+                groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
+                if (groundRayHit)
+                {
+                    Grounded = true;
+                }
+            }
+        }
     }
 
     #region Dash
@@ -218,7 +242,7 @@ public class PlayerController_LSH : MonoBehaviour
         }
     }
     [ReadOnlyInspector] public bool isDash;
-    void DashInputCancel(InputAction.CallbackContext callback)
+    void DashCancel(InputAction.CallbackContext callback)
     {
         if (!Grounded) return;
         if (leftDashInputCount == 1)
@@ -252,6 +276,11 @@ public class PlayerController_LSH : MonoBehaviour
         rightDashInputCount = 0;
     }
     #endregion
+    [ReadOnlyInspector] public bool Jumped;
+    void JumpCancel(InputAction.CallbackContext callback)
+    {
+        Jumped = false;
+    }
     void HitHandler(HitData hData)
     {
         if (hData.target.Root() != transform) return;
@@ -409,7 +438,7 @@ public class PlayerController_LSH : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(1.4f);
         isHit2 = false;
     }
-    #region Use Lantern
+    #region Turn ON/OFF Lantern
     LightSystem lightSystem;
     void LanternInput(InputAction.CallbackContext callback)
     {
@@ -419,70 +448,19 @@ public class PlayerController_LSH : MonoBehaviour
         {
             light0.SetActive(false);
             light1.SetActive(false);
+            DBManager.I.isLanternOn = false;
         }
         else
         {
             light0.SetActive(true);
             light1.SetActive(true);
+            DBManager.I.isLanternOn = true;
         }
     }
     #endregion
-    #region Use Potion
+    #region Lantern Interaction
 
     #endregion
-    #region Open Inventory
-
-    #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

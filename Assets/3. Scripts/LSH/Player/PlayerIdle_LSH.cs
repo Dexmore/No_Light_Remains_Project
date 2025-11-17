@@ -36,9 +36,11 @@ public class PlayerIdle_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.run);
         
         jumpPressed = jumpAction.IsPressed();
-        if (jumpPressed && ctx.Grounded)
+        if (jumpPressed && !ctx.Jumped && ctx.Grounded)
+        {
+            ctx.Jumped = true;
             fsm.ChangeState(ctx.jump);
-
+        }
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);
@@ -49,7 +51,6 @@ public class PlayerIdle_LSH : IPlayerState_LSH
         potionPressed = potionAction.IsPressed();
         if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
             fsm.ChangeState(ctx.usePotion);
-        
     }
     public void UpdatePhysics()
     {
