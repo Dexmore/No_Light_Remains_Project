@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System; // C# Event (Action)을 사용하기 위해
+using System;
+using System.Linq; // C# Event (Action)을 사용하기 위해
 
 // <summary>
 // 플레이어의 모든 인벤토리 관련 데이터를 소유하고 관리하는 중앙 싱글톤 매니저.
@@ -108,5 +109,19 @@ public class InventoryDataManager : MonoBehaviour
     {
         PlayerMoney += amount;
         OnInventoryChanged?.Invoke();
+    }
+
+    //[캐릭터 담당자용 API] 현재 '장착 중'인 모든 기어 리스트를 반환합니다.
+    public List<GearData> GetEquippedGears()
+    {
+        //LINQ를 사용해 PlayerGears 리스트에서 isEquipped == true인 모든 항목을 찾아 새 리스트로 반환
+        return PlayerGears.Where(gear => gear != null && gear.isEquipped).ToList();
+    }
+
+    //[캐릭터 담당자용 API] 현재 '장착 중'인 랜턴 기능을 반환합니다. (최대 1개)
+    public LanternFunctionData GetEquippedLanternFunction()
+    {
+        //LINQ를 사용해 isEquipped == true인 첫 번째 항목을 반환 (없으면 null)
+        return PlayerLanternFunctions.FirstOrDefault(func => func != null && func.isEquipped);
     }
 }
