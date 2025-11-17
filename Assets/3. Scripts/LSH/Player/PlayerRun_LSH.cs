@@ -27,7 +27,7 @@ public class PlayerRun_LSH : IPlayerState_LSH
     }
     public void Exit()
     {
-
+        
     }
     public void UpdateState()
     {
@@ -37,9 +37,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.idle);
 
         jumpPressed = jumpAction.IsPressed();
-        if (jumpPressed && ctx.Grounded)
+        if (jumpPressed && !ctx.Jumped && ctx.Grounded)
+        {
+            ctx.Jumped = true;
             fsm.ChangeState(ctx.jump);
-
+        }
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);
@@ -92,4 +94,5 @@ public class PlayerRun_LSH : IPlayerState_LSH
             }
     }
     [HideInInspector] public bool isStagger = false;
+    
 }

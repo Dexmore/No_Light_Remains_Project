@@ -15,6 +15,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     CharacterData savedCharData;
     [HideInInspector] public SaveData allSaveDataSteam;
     [HideInInspector] public SaveData allSaveDataLocal;
+    [HideInInspector] public bool isLanternOn;
 
     // Steam API 초기화 성공 여부를 저장하는 플래그
     private bool isSteamInitialized = false;

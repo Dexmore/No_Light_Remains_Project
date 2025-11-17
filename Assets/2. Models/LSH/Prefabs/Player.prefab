@@ -240,7 +240,7 @@ MonoBehaviour:
   currentHealth: 400
   moveSpeed: 7.6
   airMoveMultiplier: 0.6
-  jumpForce: 21.5
+  jumpForce: 18.1
   inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   rb: {fileID: 0}
   animator: {fileID: 0}
@@ -252,6 +252,7 @@ MonoBehaviour:
   height: 0
   width: 0
   isDash: 0
+  Jumped: 0
 --- !u!114 &3935313567020253974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,10 +321,6 @@ PrefabInstance:
     - target: {fileID: 5128489353773589176, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Name
       value: LightSystem
-      objectReference: {fileID: 0}
-    - target: {fileID: 5358630656840962844, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_Intensity
-      value: 0.09
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
