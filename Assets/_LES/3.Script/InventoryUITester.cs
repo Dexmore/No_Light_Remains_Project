@@ -19,7 +19,6 @@ namespace YourProject.UI.Test
         [SerializeField]
         private Key toggleKey = Key.I;
 
-        // --- [추가된 테스트 기능] ---
         [Header("일괄 아이템 추가 테스트")]
         [Tooltip("Test 버튼을 누르면 이 리스트의 모든 아이템이 InventoryDataManager에 추가됩니다.")]
         [SerializeField]
@@ -33,6 +32,9 @@ namespace YourProject.UI.Test
 
         [SerializeField]
         private List<RecordData> testRecordsToAdd;
+
+        [SerializeField]
+        private int testMoneyToAdd;
         
         // ------------------------------
 
@@ -101,6 +103,7 @@ namespace YourProject.UI.Test
                 count++;
             }
 
+            InventoryDataManager.Instance.AddMoney(testMoneyToAdd);
             Debug.Log($"[InventoryUITester] 총 {count}개의 아이템을 InventoryDataManager에 성공적으로 추가했습니다.");
         }
     }
