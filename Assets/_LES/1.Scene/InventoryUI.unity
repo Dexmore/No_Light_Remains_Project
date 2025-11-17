@@ -363,7 +363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &59351635
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3211,8 +3211,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uAE30\uB85D\uBB3C \uC81C\uBAA9"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7b842a69ff1f2664dab32477e5c3040f, type: 2}
-  m_sharedMaterial: {fileID: 2077733235751138414, guid: 7b842a69ff1f2664dab32477e5c3040f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 597d73fe962152844bcd9b9105117f45, type: 2}
+  m_sharedMaterial: {fileID: 6668121448278709461, guid: 597d73fe962152844bcd9b9105117f45, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3703,6 +3703,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2de72cb0b3235aa489794fe53ecc1c72, type: 2}
   testLanternsToAdd:
   - {fileID: 11400000, guid: 994a793e24d6c8f41b7d3694d26e1e4b, type: 2}
+  testRecordsToAdd:
+  - {fileID: 11400000, guid: d2c104e110f0fd849aa85a413a00b3ff, type: 2}
+  testMoneyToAdd: 5000
 --- !u!1 &581882467
 GameObject:
   m_ObjectHideFlags: 0
@@ -6033,6 +6036,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternSlotUI
   functionIcon: {fileID: 1313883938}
+  newIndicator: {fileID: 1906797906}
   dimFactor: 0.5
 --- !u!114 &978608149
 MonoBehaviour:
@@ -6852,6 +6856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternSlotUI
   functionIcon: {fileID: 1014392732}
+  newIndicator: {fileID: 1884506103}
   dimFactor: 0.5
 --- !u!114 &1071152369
 MonoBehaviour:
@@ -6950,6 +6955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternSlotUI
   functionIcon: {fileID: 1454189756}
+  newIndicator: {fileID: 59351634}
   dimFactor: 0.5
 --- !u!114 &1072874447
 MonoBehaviour:
@@ -7804,7 +7810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1179742588
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7863,6 +7869,7 @@ MonoBehaviour:
   detailTitleText: {fileID: 536322539}
   detailContentText: {fileID: 1889185389}
   mainTabButton: {fileID: 294745453}
+  testRecordToAdd: {fileID: 0}
 --- !u!1 &1181595275
 GameObject:
   m_ObjectHideFlags: 0
@@ -13374,7 +13381,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1884506104
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13491,8 +13498,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uAE30\uB85D\uBB3C \uB0B4\uC6A9"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7b842a69ff1f2664dab32477e5c3040f, type: 2}
-  m_sharedMaterial: {fileID: 2077733235751138414, guid: 7b842a69ff1f2664dab32477e5c3040f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 597d73fe962152844bcd9b9105117f45, type: 2}
+  m_sharedMaterial: {fileID: 6668121448278709461, guid: 597d73fe962152844bcd9b9105117f45, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13585,7 +13592,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1906797907
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15423,6 +15430,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8087959356530380354, guid: c8b3adff2574ca443ab4cd451b4f088a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8819694025904853452, guid: c8b3adff2574ca443ab4cd451b4f088a, type: 3}
+      propertyPath: PlayerMoney
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Linq; // [추가] FirstOrDefault를 사용하기 위해
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
+using NaughtyAttributes;
 
 public class RecordPanelController : MonoBehaviour, ITabContent
 {
@@ -16,24 +16,34 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     [SerializeField] private TextMeshProUGUI detailTitleText;
     [SerializeField] private TextMeshProUGUI detailContentText;
     
-    // [추가] 탭으로 돌아가기 위한 버튼
     [Header("내비게이션")]
-    [Tooltip("슬롯에서 위로 갔을 때 선택될 탭 버튼 (예: '기록물' 탭 버튼)")]
     [SerializeField] private Selectable mainTabButton; 
-
-    // [가정] 습득한 기록물 목록 (테스트용)
-    private List<RecordData> _acquiredRecords = new List<RecordData>();
 
     private List<RecordSlotUI> _spawnedSlots = new List<RecordSlotUI>();
 
-    private void Awake()
+    // [추가] 이벤트 구독
+    private void OnEnable()
     {
-        CreateTestData();
+        if (InventoryDataManager.Instance != null)
+        {
+            InventoryDataManager.Instance.OnRecordsChanged += RefreshPanel;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (InventoryDataManager.Instance != null)
+        {
+            InventoryDataManager.Instance.OnRecordsChanged -= RefreshPanel;
+        }
     }
 
     public void OnShow()
     {
-        UpdateRecordList();
+        RefreshPanel(); // 패널 새로고침
+        
+        // 한 프레임 기다린 후 첫 슬롯 선택 (포커스 문제 방지)
+        StartCoroutine(SelectFirstSlot());
     }
 
     public void OnHide()
@@ -48,17 +58,24 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         }
     }
 
-    private void UpdateRecordList()
+    // 이벤트 방송을 받거나 탭이 열릴 때 호출됩니다.
+    private void RefreshPanel()
     {
+        if (InventoryDataManager.Instance == null) return;
+
         ClearAllSpawnedSlots();
         
-        if (_acquiredRecords.Count == 0)
+        // InventoryDataManager의 데이터를 사용
+        List<RecordData> playerRecords = InventoryDataManager.Instance.PlayerRecords;
+        
+        if (playerRecords.Count == 0)
         {
             ShowRecordDetails(null);
+            SetupSlotNavigation(); // [추가] 0개일 때도 내비게이션 설정
             return;
         }
 
-        foreach (RecordData record in _acquiredRecords)
+        foreach (RecordData record in playerRecords)
         {
             GameObject slotGO = Instantiate(recordSlotPrefab, contentTransform);
             RecordSlotUI slotUI = slotGO.GetComponent<RecordSlotUI>();
@@ -66,26 +83,26 @@ public class RecordPanelController : MonoBehaviour, ITabContent
             _spawnedSlots.Add(slotUI);
         }
         
-        // 내비게이션 설정
         SetupSlotNavigation();
-        
-        // 첫 번째 기록물 내용 표시
-        ShowRecordDetails(_acquiredRecords[0]);
-        
-        // [수정] 한 프레임 기다린 후 첫 슬롯 선택 (포커스 문제 방지)
-        StartCoroutine(SelectFirstSlot());
+        ShowRecordDetails(playerRecords[0]);
     }
     
-    // [추가] 첫 슬롯 선택용 코루틴
     private IEnumerator SelectFirstSlot()
     {
-        yield return new WaitForEndOfFrame(); // 레이아웃 계산 대기
+        yield return new WaitForEndOfFrame();
         if (_spawnedSlots.Count > 0)
         {
             EventSystem.current.SetSelectedGameObject(_spawnedSlots[0].gameObject);
         }
+        else
+        {
+            // [추가] 활성화된 슬롯이 하나도 없으면 탭 버튼으로 포커스 이동
+            mainTabButton?.Select();
+        }
     }
 
+    // (단, SetupSlotNavigation을 0개일 때도 처리하도록 수정)
+    #region (수정 없는 함수들)
     public void ShowRecordDetails(RecordData data)
     {
         if (data != null)
@@ -108,40 +125,48 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         }
         _spawnedSlots.Clear();
     }
-
-    /// <summary>
-    /// [수정된] 내비게이션 설정 함수
-    /// </summary>
+    
     private void SetupSlotNavigation()
     {
-        if (_spawnedSlots.Count == 0) return;
+        if (_spawnedSlots.Count == 0)
+        {
+            // [추가] 슬롯이 0개일 때, 탭 버튼의 '아래'를 막음 (갈 곳이 없으므로)
+            // (이 로직은 RecordPanelController가 아닌, TabGroup이 관리해야 더 좋지만 일단 여기에 둡니다.)
+            return;
+        }
 
         for (int i = 0; i < _spawnedSlots.Count; i++)
         {
             Button button = _spawnedSlots[i].GetComponent<Button>();
             if (button == null) continue;
-
             Navigation nav = button.navigation;
             nav.mode = Navigation.Mode.Explicit;
-
-            // [수정] 위쪽: (첫 슬롯) -> '메인 탭 버튼' / (나머지) -> 바로 위 슬롯
             nav.selectOnUp = (i == 0) ? mainTabButton : _spawnedSlots[i - 1].GetComponent<Button>();
-            
-            // 아래쪽: (마지막 슬롯) -> 첫 슬롯 (루프) / (나머지) -> 바로 아래 슬롯
             nav.selectOnDown = (i == _spawnedSlots.Count - 1) ? _spawnedSlots[0].GetComponent<Button>() : _spawnedSlots[i + 1].GetComponent<Button>();
-            
             nav.selectOnLeft = null;
-            nav.selectOnRight = null; // (필요 시 우측 상세 패널의 스크롤바 등으로 연결 가능)
-
+            nav.selectOnRight = null;
             button.navigation = nav;
         }
     }
+    #endregion
 
-    // --- 테스트용 임시 데이터 ---
-    private void CreateTestData()
+    #region 테스트용 코드 (NaughtyAttributes)
+
+    [Header("테스트용")]
+    [SerializeField] private RecordData testRecordToAdd;
+
+    [Button("Test: 기록물 추가")]
+    private void TestAddRecord()
     {
-        _acquiredRecords.Add(new RecordData("첫 번째 기록", "이것은 게임의 첫 번째 기록물입니다. 내용은..."));
-        _acquiredRecords.Add(new RecordData("랜턴에 대하여", "랜턴은 어둠을 밝히는 중요한 도구입니다."));
-        _acquiredRecords.Add(new RecordData("괴물의 약점", "그들은 빛을 두려워하는 것 같습니다."));
+        if (testRecordToAdd == null)
+        {
+            Debug.LogWarning("테스트할 기록물(.asset)을 인스펙터 필드에 할당해주세요!");
+            return;
+        }
+        
+        // 중앙 관리자의 'AddItem' 마스터 메서드를 호출
+        InventoryDataManager.Instance.AddItem(testRecordToAdd);
     }
+
+    #endregion
 }
