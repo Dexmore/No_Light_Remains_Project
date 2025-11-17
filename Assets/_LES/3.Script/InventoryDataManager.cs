@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using System.Linq; // C# Event (Action)을 사용하기 위해
+using System.Linq;
+using NaughtyAttributes; // C# Event (Action)을 사용하기 위해
 
 // <summary>
 // 플레이어의 모든 인벤토리 관련 데이터를 소유하고 관리하는 중앙 싱글톤 매니저.
@@ -124,4 +125,42 @@ public class InventoryDataManager : MonoBehaviour
         //LINQ를 사용해 isEquipped == true인 첫 번째 항목을 반환 (없으면 null)
         return PlayerLanternFunctions.FirstOrDefault(func => func != null && func.isEquipped);
     }
+
+    #region 테스트용 코드
+
+    /// <summary>
+    [Button("Test: 현재 장착 중인 모든 아이템 출력")]
+    private void PrintEquippedItems()
+    {
+        Debug.Log("--- 현재 장착 중인 아이템 목록 ---");
+
+        // 1. 장착된 기어 확인
+        List<GearData> equippedGears = GetEquippedGears();
+        if (equippedGears.Count > 0)
+        {
+            foreach (GearData gear in equippedGears)
+            {
+                Debug.Log($"[기어] {gear.gearName} (코스트: {gear.cost})");
+            }
+        }
+        else
+        {
+            Debug.Log("[기어] 장착된 기어 없음.");
+        }
+
+        // 2. 장착된 랜턴 확인
+        LanternFunctionData equippedLantern = GetEquippedLanternFunction();
+        if (equippedLantern != null)
+        {
+            Debug.Log($"[랜턴] {equippedLantern.functionName}");
+        }
+        else
+        {
+            Debug.Log("[랜턴] 장착된 랜턴 기능 없음.");
+        }
+        
+        Debug.Log("------------------------------------");
+    }
+
+    #endregion
 }
