@@ -262,7 +262,14 @@ public class PlayerController_LSH : MonoBehaviour
         while (Time.time - time < 0.48f)
         {
             yield return null;
-            if (fsm.currentState == dash) break;
+            if (fsm.currentState == dash)
+            {
+                isDash = false;
+                leftDashInputCount = 0;
+                rightDashInputCount = 0;
+                StopCoroutine(nameof(DashRelease));
+                yield break;
+            }
             if (fsm.currentState == hit) break;
             if (fsm.currentState == idle || fsm.currentState == run)
             {

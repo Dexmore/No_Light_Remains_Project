@@ -46,7 +46,7 @@ public class DropItem : Interactable
         {
             float ratio = (Time.time - startTime)/duration;
             transform.position = Vector2.Lerp((Vector2)transform.position, (Vector2)player.transform.position + 0.6f * Vector2.up , (3.6f + 20f * ratio) * Time.deltaTime);
-            if((transform.position - player.transform.position).magnitude < 1.2f) break;
+            if((transform.position - player.transform.position).magnitude < 0.7f) break;
             await Task.Delay((int) (1000f * Time.deltaTime));
         }
         AudioManager.I.PlaySFX("GetItem");

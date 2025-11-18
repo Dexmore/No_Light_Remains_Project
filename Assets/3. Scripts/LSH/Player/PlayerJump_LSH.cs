@@ -36,6 +36,7 @@ public class PlayerJump_LSH : IPlayerState_LSH
         {
             flag1 = true;
             ctx.animator.Play("Player_Jump");
+            AudioManager.I.PlaySFX("Jump");
             ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.58f, ForceMode2D.Impulse);
         }
         moveActionValue = moveAction.ReadValue<Vector2>();

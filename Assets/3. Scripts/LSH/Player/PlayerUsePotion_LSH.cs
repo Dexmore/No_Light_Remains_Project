@@ -5,7 +5,7 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     private readonly PlayerController_LSH ctx;
     private readonly PlayerStateMachine_LSH fsm;
     public PlayerUsePotion_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 2.6f;   // 총 길이
+    private const float duration = 2.9f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState_LSH prevState;
     public void Enter()
@@ -40,7 +40,7 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > 0.82f)
+        if (_elapsedTime > 0.92f)
         {
             if (!sfxFlag)
             {
