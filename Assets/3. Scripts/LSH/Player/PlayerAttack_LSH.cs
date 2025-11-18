@@ -32,12 +32,14 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         attackComboPressed = false;
         flag1 = false;
         parryPressed = false;
+        isSFX = false;
     }
     public void Exit()
     {
         attackAction.performed -= PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D -= TriggerHandler;
     }
+    bool isSFX;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
@@ -45,6 +47,17 @@ public class PlayerAttack_LSH : IPlayerState_LSH
         {
             if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
                 parryPressed = parryAction.IsPressed();
+        }
+        if (_elapsedTime > 0.25f)
+        {
+            if(!isSFX)
+            {
+                isSFX = true;
+                if(Random.value <= 0.7f)
+                    AudioManager.I.PlaySFX("Swoosh1");
+                else
+                    AudioManager.I.PlaySFX("Swoosh2");
+            }
         }
         if (_elapsedTime < 0.05f)
         {

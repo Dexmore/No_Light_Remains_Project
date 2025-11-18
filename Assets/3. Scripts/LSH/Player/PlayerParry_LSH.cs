@@ -16,7 +16,7 @@ public class PlayerParry_LSH : IPlayerState_LSH
     }
     public void Exit()
     {
-        
+        ctx.Parred = false;
     }
     public void UpdateState()
     {

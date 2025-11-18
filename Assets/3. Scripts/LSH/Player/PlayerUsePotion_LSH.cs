@@ -7,13 +7,17 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     public PlayerUsePotion_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 2.6f;   // 총 길이
     private float _elapsedTime;
+    public IPlayerState_LSH prevState;
     public void Enter()
     {
         if (DBManager.I.currentCharData.potionCount <= 0)
         {
             Debug.Log("포션이 부족합니다.");
             AudioManager.I.PlaySFX("Fail1");
-            fsm.ChangeState(ctx.idle);
+            if(prevState == ctx.run)
+                fsm.ChangeState(ctx.run);
+            else
+                fsm.ChangeState(ctx.idle);
             return;
         }
         _elapsedTime = 0f;

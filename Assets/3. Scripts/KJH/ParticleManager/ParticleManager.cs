@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 public class ParticleManager : SingletonBehaviour<ParticleManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -27,13 +28,11 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         _clone.Play();
         return _clone;
     }
-    
-    // public Transform PlayTextParticle(string Name, string text, Vector3 pos, Vector3 scale, Color color, float time = 1f, Transform parent = null)
-    // {
-
-    //     //구현 예정. 주로 데미지 이펙트라던가. Miss ! Avoid ! 같은 파티클을 만들때 쓸것임 
-    //     return null;
-    // }
+    [SerializeField] TextEffect textEffect;
+    public TextEffect PlayText(string text, Vector3 pos)
+    {
+        return null;
+    }
 
 
 

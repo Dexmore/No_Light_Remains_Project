@@ -24,6 +24,10 @@ public class DropItem : Interactable
         isReady = false;
         isRun = false;
     }
+    void OnEnable()
+    {
+        Wait2();
+    }
     public void Get()
     {
         if (!isReady) return;
@@ -41,8 +45,8 @@ public class DropItem : Interactable
         while(Time.time - startTime < duration)
         {
             float ratio = (Time.time - startTime)/duration;
-            transform.position = Vector2.Lerp((Vector2)transform.position, (Vector2)player.transform.position + 0.6f * Vector2.up , (2.8f + 15f * ratio) * Time.deltaTime);
-            if((transform.position - player.transform.position).magnitude < 0.15f) break;
+            transform.position = Vector2.Lerp((Vector2)transform.position, (Vector2)player.transform.position + 0.6f * Vector2.up , (3.6f + 20f * ratio) * Time.deltaTime);
+            if((transform.position - player.transform.position).magnitude < 1.2f) break;
             await Task.Delay((int) (1000f * Time.deltaTime));
         }
         AudioManager.I.PlaySFX("GetItem");
@@ -54,13 +58,18 @@ public class DropItem : Interactable
         if (!isReady && !flag)
         {
             flag = true;
-            GroundReady();
+            Wait1();
         }
     }
     bool flag = false;
-    async void GroundReady()
+    async void Wait1()
     {
-        await Task.Delay(Random.Range(900, 1900));
+        await Task.Delay(Random.Range(600, 1800));
+        isReady = true;
+    }
+    async void Wait2()
+    {
+        await Task.Delay(Random.Range(2300, 4500));
         isReady = true;
     }
 

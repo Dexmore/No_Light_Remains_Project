@@ -17,7 +17,7 @@ public class MonsterShortAttack : MonsterState
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         attackedColliders.Clear();
-        if(transform.Find("Chafe") != null)
+        if (transform.Find("Chafe") != null)
             chafe = transform.Find("Chafe").gameObject;
         else
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
@@ -91,7 +91,10 @@ public class MonsterShortAttack : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveDirection * 1.28f * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        float speedFactor1 = 0.9f;
+                        if (control.prevState == MonsterControl.State.MovingAttack)
+                            speedFactor1 = 1.3f;
+                        rb.AddForce(multiplier * moveDirection * speedFactor1 * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     }
                 if (dist <= range) break;
             }
