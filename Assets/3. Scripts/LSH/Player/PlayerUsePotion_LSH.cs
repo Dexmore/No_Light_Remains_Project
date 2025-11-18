@@ -23,7 +23,13 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     }
     public void Exit()
     {
-        sfx?.aus.Stop();
+        if (sfx != null)
+            if (sfx.aus != null)
+            {
+                sfx?.aus?.Stop();
+                sfx = null;
+            }
+                
     }
     SFX sfx;
     bool sfxFlag = false;
