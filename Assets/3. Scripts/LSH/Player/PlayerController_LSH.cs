@@ -183,7 +183,7 @@ public class PlayerController_LSH : MonoBehaviour
                 }
         if (!Grounded)
         {
-            if (Time.time - groundCheckTime > 0.1f)
+            if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
             {
                 groundCheckTime = Time.time;
                 groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
@@ -252,7 +252,7 @@ public class PlayerController_LSH : MonoBehaviour
     }
     IEnumerator DashRelease()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.18f);
+        yield return YieldInstructionCache.WaitForSeconds(0.2f);
         leftDashInputCount = 0;
         rightDashInputCount = 0;
     }
@@ -306,9 +306,10 @@ public class PlayerController_LSH : MonoBehaviour
             currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             DBManager.I.currentCharData.HP = currentHealth;
+            AudioManager.I.PlaySFX("HitLittle", hData.hitPoint, null);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
-            HitChangeColor(Color.white);
+            HitChangeColor(Color.white, 0);
             return;
         }
         else if (hData.attackType == HitData.AttackType.Default)
@@ -325,10 +326,19 @@ public class PlayerController_LSH : MonoBehaviour
             }
             if (Parred)
             {
-                AudioManager.I.PlaySFX("Parry");
-                //Debug.Log("패링 성공");
-                GameManager.I.onParry.Invoke(hData.attacker.Root());
-                return;
+                if (!hData.isCannotParry)
+                {
+                    AudioManager.I.PlaySFX("Parry");
+                    //Debug.Log("패링 성공");
+                    GameManager.I.onParry.Invoke(hData.attacker.Root());
+                    StartCoroutine(nameof(ReleaseParred));
+                    return;
+                }
+                else
+                {
+                    AudioManager.I.PlaySFX("Fail1");
+                    Debug.Log("패링 불가 공격");
+                }
             }
             float multiplier = 1f;
             switch (hData.staggerType)
@@ -362,8 +372,8 @@ public class PlayerController_LSH : MonoBehaviour
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-            AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
-            HitChangeColor(Color.white);
+            AudioManager.I.PlaySFX("Hit8bit2", hData.hitPoint, null);
+            HitChangeColor(Color.white, 1);
             return;
         }
     }
@@ -387,7 +397,7 @@ public class PlayerController_LSH : MonoBehaviour
             matInfos.Add(matInfo);
         }
     }
-    void HitChangeColor(Color color)
+    void HitChangeColor(Color color, int index = 0)
     {
         foreach (var element in matInfos)
         {
@@ -404,11 +414,13 @@ public class PlayerController_LSH : MonoBehaviour
                 newMats[materialIndex].color = currentElement.originalMats[materialIndex].color;
                 newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
                 currentElement.sequences[materialIndex] = DOTween.Sequence();
-                currentElement.sequences[materialIndex].AppendInterval(0.08f);
+                currentElement.sequences[materialIndex].AppendInterval(0.09f);
+                float _dur = 0.21f;
+                if (index == 1) _dur = 0.5f;
                 Tween colorTween = newMats[materialIndex].DOVector(
                     new Vector4(color.r, color.g, color.b, 0f),
                     "_TintColor",
-                    0.22f
+                    _dur
                 ).SetEase(Ease.OutBounce);
                 currentElement.sequences[materialIndex].Append(colorTween);
                 currentElement.sequences[materialIndex].OnComplete(() =>
@@ -430,20 +442,27 @@ public class PlayerController_LSH : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         run.isStagger = false;
-        yield return YieldInstructionCache.WaitForSeconds(0.9f - 0.2f);
+        yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 0.7f));
         isHit1 = false;
     }
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(1.4f);
+        yield return YieldInstructionCache.WaitForSeconds(1.12f);
         isHit2 = false;
+    }
+    IEnumerator ReleaseParred()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(0.15f);
+        Parred = false;
     }
     #region Turn ON/OFF Lantern
     LightSystem lightSystem;
     void LanternInput(InputAction.CallbackContext callback)
     {
+        if (Dead) return;
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+        AudioManager.I.PlaySFX("FlashlightClick");
         if (light0.activeSelf)
         {
             light0.SetActive(false);

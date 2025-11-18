@@ -381,6 +381,7 @@ MonoBehaviour:
   jumpForce: 11
   isDie: 0
   isGround: 0
+  isStagger: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -429,6 +430,7 @@ MonoBehaviour:
   cannotList: []
   findRadius: 0
   closeRadius: 0
+  parryCount: 0
 --- !u!114 &4572157595017877094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -551,7 +553,7 @@ MonoBehaviour:
   range: 2.5
   damageMultiplier: 1.45
   staggerType: 2
-  durationRange: {x: 6, y: 7}
+  durationRange: {x: 3, y: 6}
 --- !u!1001 &617368786398622256
 PrefabInstance:
   m_ObjectHideFlags: 0

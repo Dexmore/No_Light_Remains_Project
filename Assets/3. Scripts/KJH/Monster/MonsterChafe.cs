@@ -10,7 +10,7 @@ public class MonsterChafe : MonoBehaviour
     {
         cts = new CancellationTokenSource();
         Application.quitting += UniTaskCancel;
-        OuterLoop(cts.Token).Forget();
+        RepulsiveLoop(cts.Token).Forget();
     }
     void OnDisable() => UniTaskCancel();
     void OnDestroy() => UniTaskCancel();
@@ -40,7 +40,7 @@ public class MonsterChafe : MonoBehaviour
         rb = GetComponentInParent<Rigidbody2D>();
         child = transform.Root().GetChild(0);
     }
-    async UniTask OuterLoop(CancellationToken token)
+    async UniTask RepulsiveLoop(CancellationToken token)
     {
         while (!token.IsCancellationRequested)
         {
@@ -119,10 +119,10 @@ public class MonsterChafe : MonoBehaviour
                 hitData.staggerType = staggerType;
                 hitData.attacker = control.transform;
                 hitData.target = playerCol.transform;
-                hitData.damage = Random.Range(0.2f, 0.4f) * control.Attack;
+                hitData.damage = Random.Range(0.16f, 0.23f) * control.Attack;
                 GameManager.I.onHit.Invoke(hitData);
             }
-            int timeDelta = Random.Range(1200, 1800);
+            int timeDelta = Random.Range(600, 1600);
             await UniTask.Delay(timeDelta, cancellationToken: token);
         }
     }

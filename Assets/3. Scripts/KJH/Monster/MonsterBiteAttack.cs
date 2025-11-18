@@ -11,6 +11,7 @@ public class MonsterBiteAttack : MonsterState
     public float range = 1.4f;
     float duration;
     int multiHitCount = 1;
+    GameObject chafe;
     public override MonsterControl.State mapping => MonsterControl.State.BiteAttack;
     public override async UniTask Enter(CancellationToken token)
     {
@@ -105,19 +106,22 @@ public class MonsterBiteAttack : MonsterState
         }
         if (control.isDie) return;
         anim.Play("BiteAttack");
-        rb.AddForce(model.right * Random.Range(0.2f, 1f), ForceMode2D.Impulse);
         // 너무 멀면 앞으로 접근
         dist = Mathf.Abs(target.position.x - transform.position.x);
         condition = dist > 1.1f * range + 0.1f;
         startTime = Time.time;
         once = false;
-        while (Time.time - startTime < 0.5f)
+        while (Time.time - startTime < 0.6f)
         {
-            if(Time.time - startTime > 0.3f && !once)
+            if (Time.time - startTime > 0.55f && !once)
             {
                 once = true;
-                if(Random.value <= 0.6f)
-                rb.AddForce(model.right * Random.Range(0.5f, 1.5f), ForceMode2D.Impulse);
+                rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
+                if (transform.Find("Chafe") != null)
+                    chafe = transform.Find("Chafe").gameObject;
+                else
+                    chafe = transform.GetChild(0).Find("Chafe").gameObject;
+                chafe?.SetActive(false);
             }
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
             dist = Mathf.Abs(target.position.x - transform.position.x);
@@ -155,6 +159,13 @@ public class MonsterBiteAttack : MonsterState
                     }
             }
         }
+        if (Time.time - startTime > 0.55f && !once)
+        {
+            Debug.Log("a");
+            once = true;
+            rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
+        }
+        if (Time.time - startTime > 1f) chafe?.SetActive(true);
         await UniTask.Delay((int)(1000f * (duration - 0.5f)), cancellationToken: token);
         control.ChangeNextState();
     }
@@ -162,6 +173,7 @@ public class MonsterBiteAttack : MonsterState
     {
         base.Exit();
         control.attackRange.onTriggetStay2D -= Handler_TriggerStay2D;
+        chafe?.SetActive(true);
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
     void Handler_TriggerStay2D(Collider2D coll)

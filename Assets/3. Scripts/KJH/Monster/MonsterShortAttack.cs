@@ -91,7 +91,7 @@ public class MonsterShortAttack : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveDirection * 0.75f * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        rb.AddForce(multiplier * moveDirection * 1.28f * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     }
                 if (dist <= range) break;
             }

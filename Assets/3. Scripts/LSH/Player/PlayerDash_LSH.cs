@@ -10,10 +10,14 @@ public class PlayerDash_LSH : IPlayerState_LSH
     private const float dashForce = 18f;   // 대시 세기
     private float _elapsedTime;
     public bool isLeft;
+    bool flag1; //버그 방지
     public void Enter()
     {
+        if(flag1) return;
+        flag1 = true;
         _elapsedTime = 0f;
         ctx.animator.Play("Player_Dash");
+        AudioManager.I.PlaySFX("Dash");
         if (isLeft)
         {
             ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
@@ -31,6 +35,7 @@ public class PlayerDash_LSH : IPlayerState_LSH
     {
         ctx.Avoided = false;
         ctx.isDash = false;
+        flag1 = false;
     }
     public void UpdateState()
     {

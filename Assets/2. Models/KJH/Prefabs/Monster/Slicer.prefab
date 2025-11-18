@@ -198,6 +198,7 @@ MonoBehaviour:
   jumpForce: 0
   isDie: 0
   isGround: 0
+  isStagger: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -237,10 +238,10 @@ MonoBehaviour:
       coolTime: 1
     - state: 14
       weight: 600
-      coolTime: 6
+      coolTime: 5
     - state: 13
-      weight: 30
-      coolTime: 20
+      weight: 48
+      coolTime: 16
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -249,6 +250,7 @@ MonoBehaviour:
   cannotList: []
   findRadius: 0
   closeRadius: 2.1
+  parryCount: 0
 --- !u!114 &5881627454104273062
 MonoBehaviour:
   m_ObjectHideFlags: 0

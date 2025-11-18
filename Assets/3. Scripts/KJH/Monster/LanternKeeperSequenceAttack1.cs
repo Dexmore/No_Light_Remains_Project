@@ -17,7 +17,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
     public override MonsterControl.State mapping => MonsterControl.State.SequenceAttack1;
     public override async UniTask Enter(CancellationToken token)
     {
-        if(transform.Find("Chafe") != null)
+        if (transform.Find("Chafe") != null)
             chafe = transform.Find("Chafe").gameObject;
         else
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
@@ -47,7 +47,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
             model.localRotation = Quaternion.Euler(0f, 0f, 0f);
         else if (moveDirection.x < 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        
+
         // 1번 공격
         attackIndex = 0;
         anim.Play("JumpAttack");
@@ -83,34 +83,38 @@ public class LanternKeeperSequenceAttack1 : MonsterState
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             HitData.StaggerType staggerType = HitData.StaggerType.Small;
             float damageMultiplier = damageMultiplier1;
+            HitData hitData = new HitData
+            (
+                "SequenceAttack",
+                transform,
+                coll.transform,
+                control.data.Attack,
+                hitPoint,
+                staggerType
+            );
             switch (attackIndex)
             {
                 case 0:
                     staggerType = HitData.StaggerType.Small;
                     damageMultiplier = damageMultiplier1;
+                    hitData.attackName = "JumpAttack";
                     break;
 
                 case 1:
                     staggerType = HitData.StaggerType.Large;
                     damageMultiplier = damageMultiplier2;
+                    hitData.isCannotParry = true;
+                    hitData.attackName = "SlamAttack";
                     break;
                 case 2:
                     staggerType = HitData.StaggerType.Middle;
                     damageMultiplier = damageMultiplier3;
+                    hitData.attackName = "BeamAttack";
                     break;
             }
-            GameManager.I.onHit.Invoke
-            (
-                new HitData
-                (
-                    "ShortAttack",
-                    transform,
-                    coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
-                    hitPoint,
-                    staggerType
-                )
-            );
+            hitData.staggerType = staggerType;
+            hitData.damage = Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack;
+            GameManager.I.onHit.Invoke(hitData);
         }
     }
 

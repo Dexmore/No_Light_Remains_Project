@@ -566,6 +566,9 @@ public class MonsterControl : MonoBehaviour
             else
                 collisions[collision.collider] = collision.contacts[0].point;
     }
+    Ray2D groundRay = new Ray2D();
+    RaycastHit2D groundRayHit;
+    float groundCheckTime;
     void OnCollisionExit2D(Collision2D collision)
     {
         if ((collision.collider.gameObject.layer & groundLayer) != 0)
@@ -582,6 +585,20 @@ public class MonsterControl : MonoBehaviour
                     isGround = true;
                     break;
                 }
+        if (!isGround)
+        {
+            if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
+            {
+                groundCheckTime = Time.time;
+                groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
+                groundRay.direction = Vector2.down;
+                groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
+                if (groundRayHit)
+                {
+                    isGround = true;
+                }
+            }
+        }
     }
     #region Sensor
     Collider2D[] nearPlayers = new Collider2D[80];
@@ -844,7 +861,7 @@ public class MonsterControl : MonoBehaviour
 
         // Effect
         ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-        AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+        AudioManager.I.PlaySFX("Hit8bit", hData.hitPoint, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
 
@@ -933,7 +950,7 @@ public class MonsterControl : MonoBehaviour
     async UniTask ReleaseStagger(CancellationToken token)
     {
         isStagger = true;
-        await UniTask.Delay((int)(1000f * Random.Range(0.18f,0.48f)),cancellationToken:token);
+        await UniTask.Delay((int)(1000f * Random.Range(0.18f, 0.48f)), cancellationToken: token);
         isStagger = false;
     }
     public int parryCount = 0;
@@ -946,7 +963,7 @@ public class MonsterControl : MonoBehaviour
         if (state == State.SequenceAttack1) return;
         if (parryCount >= data.ParryCount)
         {
-            Debug.Log("HitKnockDown");
+            Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
             parryCount = 0;
             monsterHit.type = 2;
             monsterHit.prevState = state;

@@ -14,6 +14,7 @@ public struct HitData
     public float damage;
     public AttackType attackType;
     public StaggerType staggerType;
+    public bool isCannotParry;
     public enum AttackType
     {
         Default,
@@ -35,6 +36,7 @@ public struct HitData
         this.damage = damage;
         this.staggerType = staggerType;
         this.attackType = attackType;
+        this.isCannotParry = false;
     }
 }
 public class GameManager : SingletonBehaviour<GameManager>
