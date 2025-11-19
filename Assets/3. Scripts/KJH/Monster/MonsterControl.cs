@@ -861,7 +861,8 @@ public class MonsterControl : MonoBehaviour
 
         // Effect
         ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-        AudioManager.I.PlaySFX("Hit8bit", hData.hitPoint, null);
+        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint , Quaternion.identity);
+        AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
 
@@ -903,8 +904,8 @@ public class MonsterControl : MonoBehaviour
             rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
             ctsStagger?.Cancel();
             ctsStagger = new CancellationTokenSource();
-            var ctsComb = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
-            ReleaseStagger(ctsComb.Token).Forget();
+            var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
+            ReleaseStagger(ctsLink.Token).Forget();
         }
 
         // Hit Small

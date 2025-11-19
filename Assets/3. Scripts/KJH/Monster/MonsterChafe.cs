@@ -74,8 +74,8 @@ public class MonsterChafe : MonoBehaviour
             if (!playerColliders.ContainsKey(collision))
             {
                 CancellationTokenSource ctsCA = new CancellationTokenSource();
-                var ctsCombine = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsCA.Token);
-                ChafeAttackLoop(ctsCombine.Token, collision).Forget();
+                var ctsLinkine = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsCA.Token);
+                ChafeAttackLoop(ctsLinkine.Token, collision).Forget();
                 playerColliders.Add(collision, ctsCA);
             }
         }

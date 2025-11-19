@@ -116,7 +116,7 @@ public class MonsterBiteAttack : MonsterState
             if (Time.time - startTime > 0.55f && !once)
             {
                 once = true;
-                rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
+                rb.AddForce(model.right * Random.Range(1.3f, 6.2f), ForceMode2D.Impulse);
                 if (transform.Find("Chafe") != null)
                     chafe = transform.Find("Chafe").gameObject;
                 else
