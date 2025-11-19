@@ -268,10 +268,10 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (amount <= 0f) return;
         if (camMainTr == null) return;
-        float duration = 0.035f + 0.077f * amount;
-        float strength = 0.132f + 0.192f * amount;
-        int vibrato = 8; // 흔들림 횟수
-        float randomness = 90f; // 랜덤성
+        float duration = 0.037f + 0.078f * amount;
+        float strength = 0.136f + 0.192f * amount;
+        int vibrato = 9; // 흔들림 횟수
+        float randomness = 60f; // 랜덤성
         if (duration > 0.22f) duration = 0.22f;
         DOTween.Kill(camMainTr);
         await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).AsyncWaitForCompletion();
