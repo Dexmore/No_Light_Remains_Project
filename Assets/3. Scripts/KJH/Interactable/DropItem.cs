@@ -3,14 +3,14 @@ using UnityEngine;
 public class DropItem : Interactable
 {
     public override Type type => Type.DropItem;
-    
+    public override bool isReady { get; set; }
     public bool isAuto = true;
     public ItemData itemData;
     public GearData gearData;
     public LanternFunctionData lanternData;
     public int money;
     bool isRun = false;
-    public override bool isReady { get; protected set;}
+    
     public LayerMask groundLayer;
     Rigidbody2D rb;
     PlayerController_LSH player;

@@ -269,7 +269,11 @@ MonoBehaviour:
   interactLayer:
     serializedVersion: 2
     m_Bits: 256
-  target: {fileID: 0}
+  inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  target1: {fileID: 0}
+  target2: {fileID: 0}
+  press1: 0
+  press2: 0
 --- !u!1001 &1285524087000105318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -321,6 +325,10 @@ PrefabInstance:
     - target: {fileID: 5128489353773589176, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Name
       value: LightSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 5358630656840962844, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Intensity
+      value: 0.115
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

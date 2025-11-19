@@ -74,9 +74,6 @@ public class LightSystem : MonoBehaviour
                 }
             }
             freeformLight.SetShapePath(buffer);
-
         }
     }
-
-
 }
