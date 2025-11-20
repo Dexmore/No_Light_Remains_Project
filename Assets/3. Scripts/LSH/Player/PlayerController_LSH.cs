@@ -89,6 +89,7 @@ public class PlayerController_LSH : MonoBehaviour
         usePotion = new PlayerUsePotion_LSH(this, fsm);
         openInventory = new PlayerOpenInventory_LSH(this, fsm);
         InitMatInfo();
+        sfxFootStep = GetComponentInChildren<AudioSource>();
     }
     void Start()
     {
@@ -484,8 +485,16 @@ public class PlayerController_LSH : MonoBehaviour
         }
     }
     #endregion
-    #region Lantern Interaction
-
+    #region FootStep
+    AudioSource sfxFootStep;
+    public void PlayFootStep()
+    {
+        sfxFootStep.Play();
+    }
+    public void StopFootStep()
+    {
+        sfxFootStep.Pause();
+    }
     #endregion
 
 

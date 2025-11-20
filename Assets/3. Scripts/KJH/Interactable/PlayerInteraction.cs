@@ -77,6 +77,7 @@ public class PlayerInteraction : MonoBehaviour
         interactionAction.canceled += CancelInteraction;
         lanternAction.performed += InputLantern;
         lanternAction.canceled += CancelLantern;
+        flag1 = false;
     }
     public bool press1;
     public bool press2;
@@ -86,16 +87,27 @@ public class PlayerInteraction : MonoBehaviour
         {
             if(target1 != null)
             {
+                if(flag1) return;
+                flag1 = true;
                 DropItem dropItem = target1 as DropItem;
                 if(dropItem != null)
                 {
-                    AudioManager.I.PlaySFX("Button1");
-                    dropItem.Get();
-                    prompt.Close(0);                
+                    AudioManager.I.PlaySFX("UIClick2");
+                    prompt.ClickEffect(0);
+                    GetItem_ut(dropItem, cts.Token).Forget();              
                 }
             }
         }
         press1 = true;
+    }
+    bool flag1;
+    async UniTask GetItem_ut(DropItem dropItem, CancellationToken token)
+    {
+        await UniTask.Delay(110, cancellationToken: token);
+        prompt.Close(0);
+        await UniTask.Delay(110, cancellationToken: token);
+        dropItem.Get();
+        flag1 = false;
     }
     void CancelInteraction(InputAction.CallbackContext callback)
     {

@@ -24,10 +24,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
         if (potionAction == null)
             potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         ctx.animator.Play("Player_Run");
+        ctx.PlayFootStep();
     }
     public void Exit()
     {
-        
+        ctx.StopFootStep();
     }
     public void UpdateState()
     {
