@@ -1,7 +1,7 @@
 using System.Threading;
 using UnityEngine;
-using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
+using UnityEngine.UI;
 public class TextEffect : PoolBehaviour
 {
     #region UniTask Setting
@@ -32,6 +32,15 @@ public class TextEffect : PoolBehaviour
     void Awake()
     {
         txt = GetComponentInChildren<Text>();
+    }
+
+    public void Play()
+    {
+        Play_ut(cts.Token).Forget();
+    }
+    async UniTask Play_ut(CancellationToken token)
+    {
+        
     }
     
 

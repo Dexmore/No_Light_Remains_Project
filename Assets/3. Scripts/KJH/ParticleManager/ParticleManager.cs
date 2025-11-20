@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 public class ParticleManager : SingletonBehaviour<ParticleManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -28,9 +27,20 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         _clone.Play();
         return _clone;
     }
-    [SerializeField] TextEffect textEffect;
-    public TextEffect PlayText(string text, Vector3 pos)
+    [SerializeField] TextEffect damageText;
+    public enum TextType
     {
+        Damage,
+        CiriticalDamage,
+        Miss,
+        Notice,
+    }
+    public TextEffect PlayText(string text, Vector3 pos, TextType type)
+    {
+        TextEffect _clone = PoolManager.I?.Spawn(damageText, pos, Quaternion.identity, canvas) as TextEffect;
+        _clone.transform.position = pos;
+        _clone.transform.SetParent(transform);
+        _clone.Play();
         return null;
     }
 

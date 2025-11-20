@@ -31,6 +31,7 @@ public class MonsterControl : MonoBehaviour
     Astar2DXYPathFinder astar;
     Rigidbody2D rb;
     [HideInInspector] public AttackRange attackRange;
+    BossHUD bossHUD;
     void Awake()
     {
         SettingFSM();
@@ -40,6 +41,8 @@ public class MonsterControl : MonoBehaviour
         eye = transform.GetChild(0).Find("Eye");
         InitMatInfo();
         TryGetComponent(out monsterHit);
+        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+            bossHUD = FindAnyObjectByType<BossHUD>();
     }
     void Init()
     {
@@ -727,6 +730,8 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
+                                    if(bossHUD != null)
+                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -738,6 +743,8 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
+                                    if(bossHUD != null)
+                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -861,7 +868,7 @@ public class MonsterControl : MonoBehaviour
 
         // Effect
         ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint , Quaternion.identity);
+        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
         AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
@@ -942,7 +949,11 @@ public class MonsterControl : MonoBehaviour
         // Set HP
         currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
+        {
             RemoveCondition(Condition.Peaceful);
+            if(bossHUD != null)
+                bossHUD.SetTarget(this);
+        }
         if (currHP <= 0)
             ChangeState(State.Die);
 
