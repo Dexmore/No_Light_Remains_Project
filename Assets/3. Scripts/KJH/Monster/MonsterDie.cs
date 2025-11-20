@@ -35,6 +35,7 @@ public class MonsterDie : MonsterState
         foreach (var element in dropTables)
         {
             if (Random.value > element.probability) continue;
+            AudioManager.I.PlaySFX("Tick1");
             int count = Random.Range(element.countRange.x, element.countRange.y + 1);
             for (int k = 0; k < count; k++)
             {
