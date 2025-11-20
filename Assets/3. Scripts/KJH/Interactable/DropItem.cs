@@ -10,7 +10,7 @@ public class DropItem : Interactable
     public LanternFunctionData lanternData;
     public int money;
     bool isRun = false;
-    
+
     public LayerMask groundLayer;
     Rigidbody2D rb;
     PlayerController_LSH player;
@@ -19,13 +19,11 @@ public class DropItem : Interactable
         TryGetComponent(out rb);
         player = FindAnyObjectByType<PlayerController_LSH>();
     }
-    void Start()
+    void OnEnable()
     {
         isReady = false;
         isRun = false;
-    }
-    void OnEnable()
-    {
+        sfxTime = Time.time;
         Wait2();
     }
     public void Get()
@@ -42,12 +40,12 @@ public class DropItem : Interactable
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.linearVelocity = Vector2.zero;
         transform.GetChild(0).gameObject.SetActive(false);
-        while(Time.time - startTime < duration)
+        while (Time.time - startTime < duration)
         {
-            float ratio = (Time.time - startTime)/duration;
-            transform.position = Vector2.Lerp((Vector2)transform.position, (Vector2)player.transform.position + 0.6f * Vector2.up , (3.6f + 20f * ratio) * Time.deltaTime);
-            if((transform.position - player.transform.position).magnitude < 0.7f) break;
-            await Task.Delay((int) (1000f * Time.deltaTime));
+            float ratio = (Time.time - startTime) / duration;
+            transform.position = Vector2.Lerp((Vector2)transform.position, (Vector2)player.transform.position + 0.6f * Vector2.up, (3.6f + 20f * ratio) * Time.deltaTime);
+            if ((transform.position - player.transform.position).magnitude < 0.7f) break;
+            await Task.Delay((int)(1000f * Time.deltaTime));
         }
         AudioManager.I.PlaySFX("GetItem");
         Destroy(gameObject);
@@ -55,6 +53,11 @@ public class DropItem : Interactable
     void OnCollisionEnter2D(Collision2D collision)
     {
         if ((groundLayer & (1 << collision.gameObject.layer)) == 0) return;
+        if (Time.time - sfxTime > 0.5f)
+        {
+            sfxTime = Time.time;
+            AudioManager.I.PlaySFX("Tick1");
+        }
         if (!isReady && !flag)
         {
             flag = true;
@@ -62,6 +65,7 @@ public class DropItem : Interactable
         }
     }
     bool flag = false;
+    float sfxTime;
     async void Wait1()
     {
         await Task.Delay(Random.Range(600, 1800));

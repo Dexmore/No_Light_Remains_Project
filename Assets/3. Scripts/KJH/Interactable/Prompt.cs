@@ -75,7 +75,7 @@ public class Prompt : MonoBehaviour
     {
         if (index == 0)
         {
-            if(isClosing1) return;
+            if (isClosing1) return;
             isClosing1 = true;
             ctsClose1?.Cancel();
             ctsClose1 = new CancellationTokenSource();
@@ -84,12 +84,44 @@ public class Prompt : MonoBehaviour
         }
         else if (index == 1)
         {
-            if(isClosing2) return;
+            if (isClosing2) return;
             isClosing2 = true;
             ctsClose2?.Cancel();
             ctsClose2 = new CancellationTokenSource();
             var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsClose2.Token);
             Close_ut(1, ctsLink.Token).Forget();
+        }
+    }
+    public void ClickEffect(int index)
+    {
+        Text text = null;
+        if (index == 0)
+        {
+            itrctCanvas.GetChild(0).Find("Text").TryGetComponent(out text);
+            DOTween.Kill(text.transform);
+            text.transform.localScale = 0.3f * Vector3.one;
+            text.transform.DOScale(1.2f, 0.3f).SetEase(Ease.OutSine);
+            DOTween.Kill(text.material);
+            text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
+            text.material.DOVector(new Vector4(180f, 180f, 180f, 0.9f), "_EmissionColor", 0.11f)
+            .OnComplete(() =>
+            {
+                text.material.DOVector(new Vector4(18f, 18f, 18f, 0.9f), "_EmissionColor", 0.05f);
+            });
+        }
+        else
+        {
+            lanternCanvas.GetChild(0).Find("Text").TryGetComponent(out text);
+            DOTween.Kill(text.transform);
+            text.transform.localScale = 0.3f * Vector3.one;
+            text.transform.DOScale(1.2f, 0.3f).SetEase(Ease.OutSine);
+            DOTween.Kill(text.material);
+            text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
+            text.material.DOVector(new Vector4(180f, 180f, 180f, 0.9f), "_EmissionColor", 0.11f)
+            .OnComplete(() =>
+            {
+                text.material.DOVector(new Vector4(18f, 18f, 18f, 0.9f), "_EmissionColor", 0.05f);
+            });
         }
     }
     async UniTask Open_ut(int index, CancellationToken token)
@@ -176,6 +208,10 @@ public class Prompt : MonoBehaviour
         tMP_Text.color = new Color(color.r, color.g, color.b, 0f);
         tMP_Text.DOFade(0.23f, 1f).SetEase(Ease.InSine);
         DOTween.Kill(text);
+        DOTween.Kill(text.transform);
+        text.transform.localScale = Vector3.one;
+        DOTween.Kill(text.material);
+        text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
         Color color1 = text.color;
         text.color = new Color(color1.r, color1.g, color1.b, 0f);
         text.DOFade(0.8f, 1f).SetEase(Ease.InSine);
@@ -192,36 +228,44 @@ public class Prompt : MonoBehaviour
         Text text = null;
         if (index == 0)
         {
-            DOTween.Kill(tMP_Text);
-            DOTween.Kill(text);
             ctsTracking1?.Cancel();
             wrap = itrctCanvas.GetChild(0);
             wrap.Find("Text(Press)").TryGetComponent(out tMP_Text);
             wrap.Find("Text").TryGetComponent(out text);
             await UniTask.Yield(token);
+            DOTween.Kill(tMP_Text);
+            DOTween.Kill(text);
+            DOTween.Kill(text.transform);
+            text.transform.localScale = Vector3.one;
+            DOTween.Kill(text.material);
+            text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             target1 = null;
             text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
             tMP_Text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
-            await UniTask.Delay((int)(1000f * 0.3f), cancellationToken:token);
+            await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             itrctCanvas.gameObject.SetActive(false);
             isClosing1 = false;
         }
         else if (index == 1)
         {
-            DOTween.Kill(tMP_Text);
-            DOTween.Kill(text);
             ctsTracking2?.Cancel();
             wrap = lanternCanvas.GetChild(0);
             wrap.Find("Text(Press)").TryGetComponent(out tMP_Text);
             wrap.Find("Text").TryGetComponent(out text);
             wrap.Find("PressRing").TryGetComponent(out pressRing);
-            DOTween.Kill(pressRing);
             await UniTask.Yield(token);
+            DOTween.Kill(tMP_Text);
+            DOTween.Kill(text);
+            DOTween.Kill(text.transform);
+            text.transform.localScale = Vector3.one;
+            DOTween.Kill(text.material);
+            text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
+            DOTween.Kill(pressRing);
             target2 = null;
             pressRing.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
             text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
             tMP_Text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
-            await UniTask.Delay((int)(1000f * 0.3f), cancellationToken:token);
+            await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             lanternCanvas.gameObject.SetActive(false);
             isClosing2 = false;
         }
@@ -248,7 +292,7 @@ public class Prompt : MonoBehaviour
             lanternCanvas.position = pivot;
         }
     }
-    
+
 
 
 

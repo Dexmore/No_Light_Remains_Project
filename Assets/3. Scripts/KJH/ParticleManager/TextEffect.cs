@@ -1,7 +1,7 @@
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
-using TMPro;
 public class TextEffect : PoolBehaviour
 {
     #region UniTask Setting
@@ -28,10 +28,10 @@ public class TextEffect : PoolBehaviour
         cts = null;
     }
     #endregion
-    TMP_Text tMP_Text;
+    Text txt;
     void Awake()
     {
-        tMP_Text = GetComponentInChildren<TMP_Text>();
+        txt = GetComponentInChildren<Text>();
     }
     
 
