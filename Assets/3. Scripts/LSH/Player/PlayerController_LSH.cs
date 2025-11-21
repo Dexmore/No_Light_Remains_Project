@@ -314,6 +314,12 @@ public class PlayerController_LSH : MonoBehaviour
             currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             DBManager.I.currentCharData.HP = currentHealth;
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
             AudioManager.I.PlaySFX("HitLittle", hData.hitPoint, null);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
@@ -379,7 +385,12 @@ public class PlayerController_LSH : MonoBehaviour
             DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
-            ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
             AudioManager.I.PlaySFX("Hit8bit2", hData.hitPoint, null);
             HitChangeColor(Color.white, 1);
             return;

@@ -15,6 +15,7 @@ public struct HitData
     public AttackType attackType;
     public StaggerType staggerType;
     public bool isCannotParry;
+    public string[] particleNames;
     public enum AttackType
     {
         Default,
@@ -27,7 +28,7 @@ public struct HitData
         Middle,
         Large,
     }
-    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
+    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, string[] particleNames, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
     {
         this.attackName = attackName;
         this.attacker = attacker;
@@ -37,6 +38,7 @@ public struct HitData
         this.staggerType = staggerType;
         this.attackType = attackType;
         this.isCannotParry = false;
+        this.particleNames = particleNames;
     }
 }
 public class GameManager : SingletonBehaviour<GameManager>

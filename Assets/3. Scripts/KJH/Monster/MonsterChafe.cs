@@ -120,6 +120,7 @@ public class MonsterChafe : MonoBehaviour
                 hitData.attacker = control.transform;
                 hitData.target = playerCol.transform;
                 hitData.damage = Random.Range(0.16f, 0.23f) * control.Attack;
+                hitData.particleNames = new string[1]{"SparkHit1"};
                 GameManager.I.onHit.Invoke(hitData);
             }
             int timeDelta = Random.Range(600, 1600);

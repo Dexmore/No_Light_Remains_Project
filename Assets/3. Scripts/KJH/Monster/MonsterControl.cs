@@ -730,7 +730,7 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
-                                    if(bossHUD != null)
+                                    if (bossHUD != null)
                                         bossHUD.SetTarget(this);
                                     break;
                                 }
@@ -743,7 +743,7 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
-                                    if(bossHUD != null)
+                                    if (bossHUD != null)
                                         bossHUD.SetTarget(this);
                                     break;
                                 }
@@ -867,7 +867,12 @@ public class MonsterControl : MonoBehaviour
         if (hData.target.Root() != transform) return;
 
         // Effect
-        ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+        if (hData.particleNames != null)
+        {
+            int rnd = Random.Range(0, hData.particleNames.Length);
+            string particleName = hData.particleNames[rnd];
+            ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+        }
         ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
         AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
@@ -951,7 +956,7 @@ public class MonsterControl : MonoBehaviour
         if (HasCondition(Condition.Peaceful))
         {
             RemoveCondition(Condition.Peaceful);
-            if(bossHUD != null)
+            if (bossHUD != null)
                 bossHUD.SetTarget(this);
         }
         if (currHP <= 0)

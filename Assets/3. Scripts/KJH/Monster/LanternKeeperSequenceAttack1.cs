@@ -97,6 +97,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
                 coll.transform,
                 control.data.Attack,
                 hitPoint,
+                new string[1]{"Hit2"},
                 staggerType
             );
             switch (attackIndex)
