@@ -153,16 +153,12 @@ public class GameSettingManager_KWY : MonoBehaviour
         {
             { "Move", "이동" },
             { "Jump", "점프" },
-            { "Attack", "공격" },
-            { "LeftDash", "좌측 대시" },
-            { "RightDash", "우측 대시" }
+            { "Attack", "공격" }
         };
 
         var actionsRight = new Dictionary<string, string>
         {
             { "Lantern", "랜턴" },
-            { "LanternSkill", "랜턴 스킬" },
-            { "Parry", "패링" },
             { "Potion", "물약" },
             { "Interaction", "상호작용" },
             { "Inventory", "인벤토리" }

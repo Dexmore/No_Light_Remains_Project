@@ -73,9 +73,7 @@ public class KeyRemapper_KWY : MonoBehaviour
                     foreach (var binding in action.bindings)
                     {
                         if (binding.id == newBinding.id) continue;
-
                         if (!binding.path.Contains("<Keyboard>") && !binding.path.Contains("<Mouse>")) continue;
-
                         if (binding.effectivePath == newBindingPath)
                         {
                             isDuplicate = true;
@@ -95,7 +93,6 @@ public class KeyRemapper_KWY : MonoBehaviour
                     FindObjectOfType<GameSettingManager_KWY>().OnKeyBindingChanged();
                 }
 
-                // 리바인딩 작업 정리
                 operation.Dispose();
                 actionToRebind.Enable();
                 UpdateBindingDisplay();
