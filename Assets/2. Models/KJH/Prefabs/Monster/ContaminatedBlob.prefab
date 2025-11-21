@@ -348,6 +348,7 @@ MonoBehaviour:
   jumpForce: 0
   isDie: 0
   isGround: 0
+  isStagger: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -442,6 +443,10 @@ MonoBehaviour:
     money: 3
     countRange: {x: 1, y: 1}
     probability: 0.75
+  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    money: 0
+    countRange: {x: 1, y: 1}
+    probability: 0.5
 --- !u!114 &1862046869389580314
 MonoBehaviour:
   m_ObjectHideFlags: 0

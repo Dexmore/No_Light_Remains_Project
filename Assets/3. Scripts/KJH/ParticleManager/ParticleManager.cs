@@ -27,13 +27,22 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         _clone.Play();
         return _clone;
     }
-    
-    // public Transform PlayTextParticle(string Name, string text, Vector3 pos, Vector3 scale, Color color, float time = 1f, Transform parent = null)
-    // {
-
-    //     //구현 예정. 주로 데미지 이펙트라던가. Miss ! Avoid ! 같은 파티클을 만들때 쓸것임 
-    //     return null;
-    // }
+    [SerializeField] TextEffect damageText;
+    public enum TextType
+    {
+        Damage,
+        CiriticalDamage,
+        Miss,
+        Notice,
+    }
+    public TextEffect PlayText(string text, Vector3 pos, TextType type)
+    {
+        TextEffect _clone = PoolManager.I?.Spawn(damageText, pos, Quaternion.identity, canvas) as TextEffect;
+        _clone.transform.position = pos;
+        _clone.transform.SetParent(transform);
+        _clone.Play();
+        return null;
+    }
 
 
 

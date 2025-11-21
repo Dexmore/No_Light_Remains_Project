@@ -50,7 +50,10 @@ public class PlayerIdle_LSH : IPlayerState_LSH
 
         potionPressed = potionAction.IsPressed();
         if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+        {
+            ctx.usePotion.prevState = ctx.idle;
             fsm.ChangeState(ctx.usePotion);
+        }
     }
     public void UpdatePhysics()
     {

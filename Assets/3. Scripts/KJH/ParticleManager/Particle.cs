@@ -33,7 +33,7 @@ public class Particle : PoolBehaviour
     {
         ps = GetComponentInChildren<ParticleSystem>();
     }
-    public virtual void Play()
+    public void Play()
     {
         ps.Play();
         if (!loop) Play_ut(cts.Token).Forget();

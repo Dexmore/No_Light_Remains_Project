@@ -15,6 +15,7 @@ public struct HitData
     public AttackType attackType;
     public StaggerType staggerType;
     public bool isCannotParry;
+    public string[] particleNames;
     public enum AttackType
     {
         Default,
@@ -27,7 +28,7 @@ public struct HitData
         Middle,
         Large,
     }
-    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
+    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, string[] particleNames, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
     {
         this.attackName = attackName;
         this.attacker = attacker;
@@ -37,6 +38,7 @@ public struct HitData
         this.staggerType = staggerType;
         this.attackType = attackType;
         this.isCannotParry = false;
+        this.particleNames = particleNames;
     }
 }
 public class GameManager : SingletonBehaviour<GameManager>
@@ -261,41 +263,41 @@ public class GameManager : SingletonBehaviour<GameManager>
         amount = Mathf.Clamp01(amount);
         hitEffectStartTime = Time.time;
         ScreenShake(amount);
-        TimeSlow(amount);
+        //TimeSlow(amount);
         LineEffect(point, amount);
     }
     async void ScreenShake(float amount)
     {
         if (amount <= 0f) return;
         if (camMainTr == null) return;
-        float duration = 0.025f + 0.055f * amount;
-        float strength = 0.065f + 0.12f * amount;
-        int vibrato = 7; // 흔들림 횟수
-        float randomness = 70f; // 랜덤성
-        if (duration > 0.18f) duration = 0.18f;
+        float duration = 0.037f + 0.078f * amount;
+        float strength = 0.136f + 0.192f * amount;
+        int vibrato = 9; // 흔들림 횟수
+        float randomness = 60f; // 랜덤성
+        if (duration > 0.22f) duration = 0.22f;
         DOTween.Kill(camMainTr);
         await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).AsyncWaitForCompletion();
     }
-    async void TimeSlow(float amount)
-    {
-        float a = amount;
-        if (a <= 0.01f) a = 0.01f;
-        float slowTimeScale = 0.2f * (1f / a);
-        slowTimeScale = Mathf.Clamp01(slowTimeScale);
-        float slowDuration = 0.005f + 0.01f * amount;
-        float resetDuration = 0.008f + 0.015f * amount;
-        timeSlowTween?.Kill();
-        timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, slowTimeScale, 0.1f).SetUpdate(true);
-        await Task.Delay((int)(1000 * 0.1f)); // 감속 트윈이 완료될 때까지 대기
-        await Task.Delay((int)(1000 * slowDuration));
-        timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, resetDuration)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                Time.timeScale = 1f; // 혹시 모를 오차를 위해 명확하게 1로 설정
-            });
-        await Task.Delay((int)(1000 * resetDuration)); // 복구 트윈이 완료될 때까지 대기
-    }
+    // async void TimeSlow(float amount)
+    // {
+    //     float a = amount;
+    //     if (a <= 0.01f) a = 0.01f;
+    //     float slowTimeScale = 0.2f * (1f / a);
+    //     slowTimeScale = Mathf.Clamp01(slowTimeScale);
+    //     float slowDuration = 0.005f + 0.01f * amount;
+    //     float resetDuration = 0.008f + 0.015f * amount;
+    //     timeSlowTween?.Kill();
+    //     timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, slowTimeScale, 0.1f).SetUpdate(true);
+    //     await Task.Delay((int)(1000 * 0.1f)); // 감속 트윈이 완료될 때까지 대기
+    //     await Task.Delay((int)(1000 * slowDuration));
+    //     timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, resetDuration)
+    //         .SetUpdate(true)
+    //         .OnComplete(() =>
+    //         {
+    //             Time.timeScale = 1f; // 혹시 모를 오차를 위해 명확하게 1로 설정
+    //         });
+    //     await Task.Delay((int)(1000 * resetDuration)); // 복구 트윈이 완료될 때까지 대기
+    // }
     async void LineEffect(Vector2 pos, float amount)
     {
 

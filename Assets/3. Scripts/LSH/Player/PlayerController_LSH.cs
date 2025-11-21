@@ -89,6 +89,7 @@ public class PlayerController_LSH : MonoBehaviour
         usePotion = new PlayerUsePotion_LSH(this, fsm);
         openInventory = new PlayerOpenInventory_LSH(this, fsm);
         InitMatInfo();
+        sfxFootStep = GetComponentInChildren<AudioSource>();
     }
     void Start()
     {
@@ -262,7 +263,14 @@ public class PlayerController_LSH : MonoBehaviour
         while (Time.time - time < 0.48f)
         {
             yield return null;
-            if (fsm.currentState == dash) break;
+            if (fsm.currentState == dash)
+            {
+                isDash = false;
+                leftDashInputCount = 0;
+                rightDashInputCount = 0;
+                StopCoroutine(nameof(DashRelease));
+                yield break;
+            }
             if (fsm.currentState == hit) break;
             if (fsm.currentState == idle || fsm.currentState == run)
             {
@@ -306,6 +314,12 @@ public class PlayerController_LSH : MonoBehaviour
             currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             DBManager.I.currentCharData.HP = currentHealth;
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
             AudioManager.I.PlaySFX("HitLittle", hData.hitPoint, null);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
@@ -371,7 +385,12 @@ public class PlayerController_LSH : MonoBehaviour
             DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
-            ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
             AudioManager.I.PlaySFX("Hit8bit2", hData.hitPoint, null);
             HitChangeColor(Color.white, 1);
             return;
@@ -477,8 +496,16 @@ public class PlayerController_LSH : MonoBehaviour
         }
     }
     #endregion
-    #region Lantern Interaction
-
+    #region FootStep
+    AudioSource sfxFootStep;
+    public void PlayFootStep()
+    {
+        sfxFootStep.Play();
+    }
+    public void StopFootStep()
+    {
+        sfxFootStep.Pause();
+    }
     #endregion
 
 

@@ -31,6 +31,7 @@ public class MonsterControl : MonoBehaviour
     Astar2DXYPathFinder astar;
     Rigidbody2D rb;
     [HideInInspector] public AttackRange attackRange;
+    BossHUD bossHUD;
     void Awake()
     {
         SettingFSM();
@@ -40,6 +41,8 @@ public class MonsterControl : MonoBehaviour
         eye = transform.GetChild(0).Find("Eye");
         InitMatInfo();
         TryGetComponent(out monsterHit);
+        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+            bossHUD = FindAnyObjectByType<BossHUD>();
     }
     void Init()
     {
@@ -727,6 +730,8 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
+                                    if (bossHUD != null)
+                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -738,6 +743,8 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
+                                    if (bossHUD != null)
+                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -860,8 +867,14 @@ public class MonsterControl : MonoBehaviour
         if (hData.target.Root() != transform) return;
 
         // Effect
-        ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-        AudioManager.I.PlaySFX("Hit8bit", hData.hitPoint, null);
+        if (hData.particleNames != null)
+        {
+            int rnd = Random.Range(0, hData.particleNames.Length);
+            string particleName = hData.particleNames[rnd];
+            ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+        }
+        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
+        AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
 
@@ -903,8 +916,8 @@ public class MonsterControl : MonoBehaviour
             rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
             ctsStagger?.Cancel();
             ctsStagger = new CancellationTokenSource();
-            var ctsComb = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
-            ReleaseStagger(ctsComb.Token).Forget();
+            var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
+            ReleaseStagger(ctsLink.Token).Forget();
         }
 
         // Hit Small
@@ -941,7 +954,11 @@ public class MonsterControl : MonoBehaviour
         // Set HP
         currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
+        {
             RemoveCondition(Condition.Peaceful);
+            if (bossHUD != null)
+                bossHUD.SetTarget(this);
+        }
         if (currHP <= 0)
             ChangeState(State.Die);
 

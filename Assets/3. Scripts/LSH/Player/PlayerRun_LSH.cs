@@ -24,10 +24,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
         if (potionAction == null)
             potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         ctx.animator.Play("Player_Run");
+        ctx.PlayFootStep();
     }
     public void Exit()
     {
-        
+        ctx.StopFootStep();
     }
     public void UpdateState()
     {
@@ -51,7 +52,10 @@ public class PlayerRun_LSH : IPlayerState_LSH
         
         potionPressed = potionAction.IsPressed();
         if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+        {
+            ctx.usePotion.prevState = ctx.run;
             fsm.ChangeState(ctx.usePotion);
+        }
         
     }
     public void UpdatePhysics()
