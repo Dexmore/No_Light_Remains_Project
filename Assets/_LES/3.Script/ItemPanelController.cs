@@ -86,7 +86,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         {
             // TODO: '12345'를 실제 플레이어의 돈 데이터로 교체하세요.
             // (예: GameManager.Instance.PlayerMoney)
-            int currentPlayerMoney = 12345; 
+            int currentPlayerMoney = 0; 
 
             // "N0" 포맷은 숫자에 1,234,567 처럼 콤마(,)를 찍어줍니다.
             moneyText.text = currentPlayerMoney.ToString("N0");
@@ -197,21 +197,29 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     
     public void ShowItemDetails(ItemData data)
     {
+        if (infoPanelRoot != null) 
+        {
+            infoPanelRoot.SetActive(true);
+        }
+
         if (data != null)
         {
-            if (infoPanelRoot != null) infoPanelRoot.SetActive(true);
+            // 아이템이 있을 때:
             detailItemNameText.text = data.itemName;
             detailItemImage.sprite = data.icon;
             detailItemDescriptionText.text = data.itemDescription;
+
+            // 아이콘 이미지가 있을 때만 Image 컴포넌트를 켭니다.
             detailItemImage.gameObject.SetActive(data.icon != null);
         }
         else
-        {
-            if (infoPanelRoot != null) infoPanelRoot.SetActive(false);
+        {            
             detailItemNameText.text = "아이템 선택";
             detailItemImage.sprite = null;
-            detailItemImage.gameObject.SetActive(false);
             detailItemDescriptionText.text = "목록에서 아이템을 선택하세요.";
+
+            // 아이콘 Image 컴포넌트를 끕니다.
+            detailItemImage.gameObject.SetActive(false); 
         }
     }
     
