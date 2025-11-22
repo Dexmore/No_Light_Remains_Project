@@ -22,6 +22,7 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
         }
         _elapsedTime = 0f;
         //Debug.Log("Use Potion");
+        AudioManager.I.PlaySFX("Pocket1");
         ctx.animator.Play("Player_UsePotion");
         sfxFlag = false;
     }

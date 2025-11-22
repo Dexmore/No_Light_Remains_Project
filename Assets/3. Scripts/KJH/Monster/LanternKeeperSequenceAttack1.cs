@@ -53,12 +53,12 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         anim.Play("JumpAttack");
         await UniTask.Delay(1300, cancellationToken: token);
         rb.AddForce(Vector2.up * 26f + (Vector2)model.right * 6f, ForceMode2D.Impulse);
-        await UniTask.Delay(220, cancellationToken: token);
-        rb.gravityScale = 1.41f;
-        await UniTask.Delay(640, cancellationToken: token);
+        await UniTask.Delay(180, cancellationToken: token);
+        rb.gravityScale = 1.51f;
+        await UniTask.Delay(580, cancellationToken: token);
         rb.gravityScale = 2f;
         attackedColliders.Clear();
-        await UniTask.Delay(185, cancellationToken: token);
+        await UniTask.Delay(140, cancellationToken: token);
         moveDirection = target.position - transform.position;
         moveDirection.y = 0;
         moveDirection.Normalize();
