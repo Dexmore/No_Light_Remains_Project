@@ -5,6 +5,7 @@ public class Liquid9SlicedBar : MonoBehaviour, IMaterialModifier
 {
     // --- 셰이더로 전달할 값 ---
     [Range(0f, 1f)] [SerializeField] private float _value = 0.5f;
+    [SerializeField] AnimationCurve curve;
 
     // --- 셰이더 속성 ID 캐시 ---
     // (LiquidValue는 필요할 경우에만 사용되지만, 구조를 위해 유지합니다.)
@@ -141,8 +142,10 @@ public class Liquid9SlicedBar : MonoBehaviour, IMaterialModifier
         // 2. 값 설정
         // _value와 _centerXYRatio는 이미 Awake에서 최종 값이 결정되어 저장되어 있습니다.
         if (_modifiedMaterial.HasFloat(LiquidValuePropertyId))
-            _modifiedMaterial.SetFloat(LiquidValuePropertyId, _value);
-
+        {
+            _modifiedMaterial.SetFloat(LiquidValuePropertyId, curve.Evaluate(_value));
+        }
+        
         if (_modifiedMaterial.HasFloat(CenterXYRatioPropertyId))
             _modifiedMaterial.SetFloat(CenterXYRatioPropertyId, _centerXYRatio);
 
