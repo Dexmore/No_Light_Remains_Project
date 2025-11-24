@@ -21,10 +21,9 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
             return;
         }
         _elapsedTime = 0f;
-        //Debug.Log("Use Potion");
-        AudioManager.I.PlaySFX("Pocket1");
         ctx.animator.Play("Player_UsePotion");
-        sfxFlag = false;
+        sfxFlag1 = false;
+        sfxFlag2 = false;
     }
     public void Exit()
     {
@@ -37,15 +36,21 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
                 
     }
     SFX sfx;
-    bool sfxFlag = false;
+    bool sfxFlag1 = false;
+    bool sfxFlag2 = false;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
+        if(_elapsedTime > 0.02f && !sfxFlag1)
+        {
+            sfxFlag1 = true;
+            AudioManager.I.PlaySFX("Pocket1");
+        }
         if (_elapsedTime > 0.92f)
         {
-            if (!sfxFlag)
+            if (!sfxFlag2)
             {
-                sfxFlag = true;
+                sfxFlag2 = true;
                 DBManager.I.currentCharData.potionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
             }

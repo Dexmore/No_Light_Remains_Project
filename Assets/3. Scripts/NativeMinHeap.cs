@@ -23,6 +23,7 @@ public struct NativeMinHeap<T> : IDisposable where T : unmanaged, IHeapItem<T>
         if (items.IsCreated)
         {
             items.Dispose();
+            items = default;
         }
     }
     public void Add(T item)

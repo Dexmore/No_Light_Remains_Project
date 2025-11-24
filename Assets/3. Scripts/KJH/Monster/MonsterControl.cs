@@ -980,6 +980,7 @@ public class MonsterControl : MonoBehaviour
         if (state == State.SequenceAttack1) return;
         if (parryCount >= data.ParryCount)
         {
+            if(parryCount > data.ParryCount) parryCount = data.ParryCount;
             Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
             parryCount = 0;
             monsterHit.type = 2;
