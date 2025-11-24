@@ -27,7 +27,7 @@ public class UIParticle : PoolBehaviour
         cts = null;
     }
     #endregion
-    ParticleSystem ps;
+    [HideInInspector] public ParticleSystem ps;
     public bool loop;
     void Awake()
     {

@@ -40,8 +40,8 @@ public class Particle : PoolBehaviour
     }
     async UniTask Play_ut(CancellationToken token)
     {
-        await UniTask.Delay(1, ignoreTimeScale: true, cancellationToken:token);
-        await UniTask.Delay((int)(1000f * (ps.main.duration + 0.1f)),ignoreTimeScale: true , cancellationToken:token);
+        await UniTask.Delay(1, ignoreTimeScale: true, cancellationToken: token);
+        await UniTask.Delay((int)(1000f * (ps.main.duration + 0.1f)), ignoreTimeScale: true, cancellationToken: token);
         base.Despawn();
     }
 }
