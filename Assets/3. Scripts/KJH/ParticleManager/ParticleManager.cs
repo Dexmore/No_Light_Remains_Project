@@ -58,19 +58,33 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         return _clone;
     }
     [SerializeField] TextEffect damageText;
+    [SerializeField] TextEffect playerNoticeText;
     public enum TextType
     {
         Damage,
         CiriticalDamage,
-        Miss,
-        Notice,
+        PlayerNotice,
     }
     public TextEffect PlayText(string text, Vector3 pos, TextType type)
     {
-        TextEffect _clone = PoolManager.I?.Spawn(damageText, pos, Quaternion.identity, canvas) as TextEffect;
-        _clone.transform.position = pos;
-        _clone.transform.SetParent(transform);
-        _clone.Play();
+        if (type == TextType.PlayerNotice)
+        {
+            TextEffect _clone = PoolManager.I?.Spawn(playerNoticeText, pos, Quaternion.identity, canvas) as TextEffect;
+            _clone.txt.text = text;
+            _clone.transform.position = pos + 0.2f * Vector3.up;
+            _clone.transform.SetParent(transform);
+            _clone.Play();
+            return _clone;
+        }
+        else if (type == TextType.Damage)
+        {
+            TextEffect _clone = PoolManager.I?.Spawn(damageText, pos, Quaternion.identity, canvas) as TextEffect;
+            _clone.txt.text = text;
+            _clone.transform.position = pos + new Vector3(Random.Range(0f, 0.2f), Random.Range(0.7f, 0.9f), 0f);
+            _clone.transform.SetParent(transform);
+            _clone.Play();
+            return _clone;
+        }
         return null;
     }
 

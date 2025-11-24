@@ -874,6 +874,7 @@ public class MonsterControl : MonoBehaviour
             ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
         }
         ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
+        ParticleManager.I.PlayText(hData.damage.ToString("F1"), hData.hitPoint, ParticleManager.TextType.Damage);
         AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);

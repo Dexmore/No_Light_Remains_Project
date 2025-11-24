@@ -8,13 +8,16 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     private const float duration = 2.9f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState_LSH prevState;
+    [HideInInspector] public float emptyTime;
     public void Enter()
     {
         if (DBManager.I.currentCharData.potionCount <= 0)
         {
-            Debug.Log("포션이 부족합니다.");
+            emptyTime = Time.time;
             AudioManager.I.PlaySFX("Fail1");
-            if(prevState == ctx.run)
+            ParticleManager.I.PlayText("Empty Potion", ctx.transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
+            //Debug.Log("포션이 부족합니다.");
+            if (prevState == ctx.run)
                 fsm.ChangeState(ctx.run);
             else
                 fsm.ChangeState(ctx.idle);
@@ -33,7 +36,7 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
                 sfx?.aus?.Stop();
                 sfx = null;
             }
-                
+
     }
     SFX sfx;
     bool sfxFlag1 = false;
@@ -41,7 +44,7 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if(_elapsedTime > 0.02f && !sfxFlag1)
+        if (_elapsedTime > 0.02f && !sfxFlag1)
         {
             sfxFlag1 = true;
             AudioManager.I.PlaySFX("Pocket1");

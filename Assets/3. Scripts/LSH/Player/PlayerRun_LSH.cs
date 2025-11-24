@@ -51,10 +51,14 @@ public class PlayerRun_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.fall);
         
         potionPressed = potionAction.IsPressed();
-        if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth / ctx.maxHealth) < 1f)
         {
-            ctx.usePotion.prevState = ctx.run;
-            fsm.ChangeState(ctx.usePotion);
+            if (DBManager.I.currentCharData.potionCount > 0
+            || (DBManager.I.currentCharData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            {
+                ctx.usePotion.prevState = ctx.idle;
+                fsm.ChangeState(ctx.usePotion);
+            }
         }
         
     }

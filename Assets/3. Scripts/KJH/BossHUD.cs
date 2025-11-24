@@ -17,7 +17,6 @@ public class BossHUD : MonoBehaviour
         barImage = slicedLiquidBar.GetComponent<Image>();
         currColor = phase1Color;
         barImage.color = currColor;
-        barImage.material.SetColor("_LiquidColor", phase1MatColor);
     }
     void OnEnable()
     {
@@ -31,7 +30,6 @@ public class BossHUD : MonoBehaviour
     {
         currColor = phase1Color;
         barImage.color = currColor;
-        barImage.material.SetColor("_LiquidColor", phase1MatColor);
     }
     public void SetTarget(MonsterControl target)
     {
@@ -48,25 +46,21 @@ public class BossHUD : MonoBehaviour
             {
                 currColor = phase1Color;
                 barImage.color = currColor;
-                barImage.material.SetColor("_LiquidColor", phase1MatColor);
             }
             else if (slicedLiquidBar.Value > 0.4f && slicedLiquidBar.Value <= 0.7f && currColor != phase2Color)
             {
                 currColor = phase2Color;
                 barImage.color = currColor;
-                barImage.material.SetColor("_LiquidColor", phase2MatColor);
             }
-            else if (slicedLiquidBar.Value > 0.12f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
+            else if (slicedLiquidBar.Value > 0.23f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
             {
                 currColor = phase3Color;
                 barImage.color = currColor;
-                barImage.material.SetColor("_LiquidColor", phase3MatColor);
             }
-            else if (slicedLiquidBar.Value <= 0.12f && currColor != moribundColor)
+            else if (slicedLiquidBar.Value <= 0.23f && currColor != moribundColor)
             {
                 currColor = moribundColor;
                 barImage.color = currColor;
-                barImage.material.SetColor("_LiquidColor", moribundMatColor);
             }
         }
     }
@@ -77,7 +71,7 @@ public class BossHUD : MonoBehaviour
     Color phase2MatColor = new Color(0.68f, 0.55f, 0.06f, 1f);
     Color phase3Color = new Color(0.7f, 0.24f, 0.05f, 1f);
     Color phase3MatColor = new Color(0.78f, 0.35f, 0.04f, 1f);
-    Color moribundColor = new Color(0.69f, 0.13f, 0.05f, 1f);
+    Color moribundColor = new Color(1f, 0f, 0f, 1f);
     Color moribundMatColor = new Color(0.78f, 0.13f, 0.09f, 1f);
     Transform hPBarFill;
     void HitHandler(HitData hData)
@@ -95,29 +89,29 @@ public class BossHUD : MonoBehaviour
         float addX = slicedLiquidBar.xPosRange.x + (slicedLiquidBar.xPosRange.y - slicedLiquidBar.xPosRange.x) * ratio;
         particlePos = new Vector2(x + addX, y);
         UIParticle uIParticle = ParticleManager.I.PlayUIParticle("Gush", particlePos, Quaternion.identity);
+        Color color1 = Color.Lerp(currColor, phase1Color, 0.5f);
+        Color color2 = currColor * 0.6f;
+        var main = uIParticle.ps.main;
+        main.startColor = new ParticleSystem.MinMaxGradient(color1, color2);
         if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
         {
             currColor = phase1Color;
             barImage.color = currColor;
-            barImage.material.SetColor("_LiquidColor", phase1MatColor);
         }
         else if (slicedLiquidBar.Value > 0.4f && slicedLiquidBar.Value <= 0.7f && currColor != phase2Color)
         {
             currColor = phase2Color;
             barImage.color = currColor;
-            barImage.material.SetColor("_LiquidColor", phase2MatColor);
         }
-        else if (slicedLiquidBar.Value > 0.12f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
+        else if (slicedLiquidBar.Value > 0.23f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
         {
             currColor = phase3Color;
             barImage.color = currColor;
-            barImage.material.SetColor("_LiquidColor", phase3MatColor);
         }
-        else if (slicedLiquidBar.Value <= 0.12f && currColor != moribundColor)
+        else if (slicedLiquidBar.Value <= 0.23f && currColor != moribundColor)
         {
             currColor = moribundColor;
             barImage.color = currColor;
-            barImage.material.SetColor("_LiquidColor", moribundMatColor);
         }
     }
 

@@ -334,8 +334,9 @@ public class PlayerController_LSH : MonoBehaviour
             StartCoroutine(nameof(HitCoolTime2));
             if (Avoided)
             {
-                //Debug.Log("회피 성공");
                 GameManager.I.onAvoid.Invoke(hData.attacker.Root());
+                ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                AudioManager.I.PlaySFX("Woosh1");
                 return;
             }
             if (Parred)
@@ -343,7 +344,7 @@ public class PlayerController_LSH : MonoBehaviour
                 if (!hData.isCannotParry)
                 {
                     AudioManager.I.PlaySFX("Parry");
-                    //Debug.Log("패링 성공");
+                    ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData.attacker.Root());
                     StartCoroutine(nameof(ReleaseParred));
                     return;
@@ -351,7 +352,8 @@ public class PlayerController_LSH : MonoBehaviour
                 else
                 {
                     AudioManager.I.PlaySFX("Fail1");
-                    Debug.Log("패링 불가 공격");
+                    ParticleManager.I.PlayText("Cannot Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                    //Debug.Log("패링 불가 공격");
                 }
             }
             float multiplier = 1f;
