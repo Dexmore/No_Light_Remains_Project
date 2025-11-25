@@ -27,14 +27,14 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     }
     public void Exit()
     {
-        
+
     }
     public void UpdateState()
     {
         moveActionValue = moveAction.ReadValue<Vector2>();
         if (moveActionValue.x != 0)
             fsm.ChangeState(ctx.run);
-        
+
         jumpPressed = jumpAction.IsPressed();
         if (jumpPressed && !ctx.Jumped && ctx.Grounded)
         {
@@ -49,10 +49,14 @@ public class PlayerIdle_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.fall);
 
         potionPressed = potionAction.IsPressed();
-        if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth / ctx.maxHealth) < 1f)
         {
-            ctx.usePotion.prevState = ctx.idle;
-            fsm.ChangeState(ctx.usePotion);
+            if (DBManager.I.currentCharData.potionCount > 0
+            || (DBManager.I.currentCharData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            {
+                ctx.usePotion.prevState = ctx.idle;
+                fsm.ChangeState(ctx.usePotion);
+            }
         }
     }
     public void UpdatePhysics()

@@ -32,7 +32,7 @@ public static class MethodCollection
         }
         return array;
     }
-    
+
     // [2. length길이의 랜덤 문자열생성]
     //사용법 : string str = RandomString(8);
     private const string VALID_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -211,6 +211,20 @@ public static class MethodCollection
         Vector3 closestPoint1 = p1 + s * d1;
         Vector3 closestPoint2 = p3 + t * d2;
         return Vector3.Distance(closestPoint1, closestPoint2);
+    }
+    // [5. 캔버스 우하단 기준 절대좌표]
+    public static Vector2 Absolute1920x1080Position(RectTransform targetRect)
+    {
+        // 1. 해당 캔버스를 가져옵니다.
+        Canvas canvas = targetRect.GetComponentInParent<Canvas>();
+        if (canvas == null) return Vector2.zero;
+        // 2. 캔버스 렌더 모드에 따라 사용할 카메라를 결정합니다.
+        Camera canvasCamera = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
+        // 3. RectTransform의 position (월드 좌표)를 스크린 픽셀 좌표로 변환합니다.
+        // 이 좌표는 캔버스의 왼쪽 하단 (0, 0)을 기준으로 합니다.
+        Vector2 absolutePosition = RectTransformUtility.WorldToScreenPoint(canvasCamera, targetRect.position);
+        absolutePosition = new Vector2(absolutePosition.x / canvas.transform.localScale.x, absolutePosition.y / canvas.transform.localScale.y);
+        return absolutePosition;
     }
 
 

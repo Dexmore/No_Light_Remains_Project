@@ -8,22 +8,25 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
     private const float duration = 2.9f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState_LSH prevState;
+    [HideInInspector] public float emptyTime;
     public void Enter()
     {
         if (DBManager.I.currentCharData.potionCount <= 0)
         {
-            Debug.Log("포션이 부족합니다.");
+            emptyTime = Time.time;
             AudioManager.I.PlaySFX("Fail1");
-            if(prevState == ctx.run)
+            ParticleManager.I.PlayText("Empty Potion", ctx.transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
+            //Debug.Log("포션이 부족합니다.");
+            if (prevState == ctx.run)
                 fsm.ChangeState(ctx.run);
             else
                 fsm.ChangeState(ctx.idle);
             return;
         }
         _elapsedTime = 0f;
-        //Debug.Log("Use Potion");
         ctx.animator.Play("Player_UsePotion");
-        sfxFlag = false;
+        sfxFlag1 = false;
+        sfxFlag2 = false;
     }
     public void Exit()
     {
@@ -33,18 +36,24 @@ public class PlayerUsePotion_LSH : IPlayerState_LSH
                 sfx?.aus?.Stop();
                 sfx = null;
             }
-                
+
     }
     SFX sfx;
-    bool sfxFlag = false;
+    bool sfxFlag1 = false;
+    bool sfxFlag2 = false;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
+        if (_elapsedTime > 0.02f && !sfxFlag1)
+        {
+            sfxFlag1 = true;
+            AudioManager.I.PlaySFX("Pocket1");
+        }
         if (_elapsedTime > 0.92f)
         {
-            if (!sfxFlag)
+            if (!sfxFlag2)
             {
-                sfxFlag = true;
+                sfxFlag2 = true;
                 DBManager.I.currentCharData.potionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
             }
