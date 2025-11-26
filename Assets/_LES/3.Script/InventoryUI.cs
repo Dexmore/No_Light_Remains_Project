@@ -10,7 +10,7 @@ namespace Project.UI
               
         private void Awake()
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
+            _canvasGroup = GetComponentInChildren<CanvasGroup>(true);
             //초기 상태는 비활성화
             _canvasGroup.alpha = 0f;
             _canvasGroup.interactable = false;

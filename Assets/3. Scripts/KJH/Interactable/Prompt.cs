@@ -259,7 +259,7 @@ public class Prompt : MonoBehaviour
             DOTween.Kill(text.transform);
             text.transform.localScale = Vector3.one;
             DOTween.Kill(text.material);
-            text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
+            text.material.SetVector("_EmissionColor", new Vector4(24f, 24f, 24f, 0.9f));
             DOTween.Kill(pressRing);
             target2 = null;
             pressRing.DOFade(0f, 0.3f).SetEase(Ease.OutSine);

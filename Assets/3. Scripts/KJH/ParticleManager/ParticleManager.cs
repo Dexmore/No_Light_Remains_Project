@@ -60,6 +60,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
     }
     [SerializeField] TextEffect damageText;
     [SerializeField] TextEffect playerNoticeText;
+    [SerializeField] List<NumParticle> numParticles;
     public enum TextType
     {
         Damage,
@@ -88,6 +89,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             string reText = text;
             string[] split = reText.Split(".");
             reText = $"{split[0]}<size=25>.</size>{split[1]}";
+            _clone.transform.name = damageText.transform.name;
             _clone.txt.text = reText;
             _clone.transform.position = pos + new Vector3(Random.Range(0f, 0.2f), Random.Range(0.7f, 0.9f), 0f);
             _clone.transform.SetParent(transform);
@@ -96,10 +98,21 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.2f);
             float duration = Random.Range(0.55f, 0.75f);
-            _clone.txt.DOFade(0f, duration - 0.25f).SetEase(Ease.OutQuad);
+            _clone.txt.DOFade(0f, duration - 0.38f).SetEase(Ease.OutQuad);
             return _clone;
         }
         return null;
+    }
+    public NumParticle PlayNumParticle(int number, Vector3 pos)
+    {
+        PoolBehaviour pb = numParticles[number];
+        PoolBehaviour clone = PoolManager.I?.Spawn(pb, pos, Quaternion.identity, transform);
+        NumParticle _clone = clone as NumParticle;
+        _clone.transform.position = pos;
+        _clone.transform.rotation = Quaternion.identity;
+        _clone.transform.SetParent(transform);
+        _clone.Play();
+        return _clone;
     }
 
 

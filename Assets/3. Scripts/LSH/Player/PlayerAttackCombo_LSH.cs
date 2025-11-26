@@ -91,7 +91,7 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
                     "AttackCombo",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * 80.8f,
+                    Random.Range(0.7f, 1.2f) * 80.8f,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )

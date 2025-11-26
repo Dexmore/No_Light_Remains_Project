@@ -9,14 +9,19 @@ public class BossHUD : MonoBehaviour
     TMP_Text textName;
     SlicedLiquidBar slicedLiquidBar;
     Image barImage;
+    bool isFirst = true;
     void Awake()
     {
         canvas = transform.GetChild(0);
-        transform.Find("Canvas/Bottom/Text(BossName)").TryGetComponent(out textName);
+        transform.Find("Canvas/Wrap/Text(BossName)").TryGetComponent(out textName);
         slicedLiquidBar = GetComponentInChildren<SlicedLiquidBar>(true);
         barImage = slicedLiquidBar.GetComponent<Image>();
         currColor = phase1Color;
         barImage.color = currColor;
+        isFirst = true;
+        canvas.Find("Opening").gameObject.SetActive(false);
+        canvas.Find("Wrap").gameObject.SetActive(false);
+        canvas.gameObject.SetActive(false);
     }
     void OnEnable()
     {
@@ -40,7 +45,14 @@ public class BossHUD : MonoBehaviour
         if (_target != target)
         {
             _target = target;
-            canvas.gameObject.SetActive(true);
+            if (isFirst)
+            {
+                isFirst = false;
+                StartCoroutine(nameof(Opening));
+            }
+            //
+            float ratio = _target.currHP / _target.data.HP;
+            slicedLiquidBar.Value = ratio;
             textName.text = target.data.Name;
             if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
             {
@@ -74,6 +86,21 @@ public class BossHUD : MonoBehaviour
     Color moribundColor = new Color(1f, 0f, 0f, 1f);
     Color moribundMatColor = new Color(0.78f, 0.13f, 0.09f, 1f);
     Transform hPBarFill;
+    IEnumerator Opening()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(2f);
+        canvas.gameObject.SetActive(true);
+        canvas.Find("Opening").gameObject.SetActive(true);
+        canvas.Find("Wrap").gameObject.SetActive(false);
+        yield return YieldInstructionCache.WaitForSeconds(2f);
+        canvas.Find("Opening").gameObject.SetActive(false);
+        canvas.Find("Wrap").gameObject.SetActive(true);
+    }
+    IEnumerator Closing()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(2f);
+    }
     void HitHandler(HitData hData)
     {
         if (_target == null) return;
@@ -92,6 +119,9 @@ public class BossHUD : MonoBehaviour
         Color color1 = Color.Lerp(currColor, phase1Color, 0.5f);
         Color color2 = currColor * 0.6f;
         var main = uIParticle.ps.main;
+        main.startColor = new ParticleSystem.MinMaxGradient(color1, color2);
+        uIParticle = ParticleManager.I.PlayUIParticle("Gush2", particlePos, Quaternion.identity);
+        main = uIParticle.ps.main;
         main.startColor = new ParticleSystem.MinMaxGradient(color1, color2);
         if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
         {
