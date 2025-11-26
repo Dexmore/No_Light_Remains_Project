@@ -87,6 +87,8 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         }
     }
 
+
+
     /// <summary>
     /// 슬롯이 '클릭'될 때 (Enter/Space/마우스 클릭) 호출됩니다.
     /// </summary>
@@ -98,6 +100,18 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             if (_currentItem.isNew)
             {
                 _currentItem.isNew = false;
+                int find = DBManager.I.cashingItems.FindIndex(x => x.itemName == _currentItem.itemName);
+                if(find != -1)
+                {
+                    DBManager.I.cashingItems[find].isNew = false;
+                }
+                find = DBManager.I.currentCharData.itemDatas.FindIndex(x => x.Name == _currentItem.name);
+                if(find != -1)
+                {
+                    CharacterData.ItemData citd = DBManager.I.currentCharData.itemDatas[find];
+                    citd.isNew = false;
+                    DBManager.I.currentCharData.itemDatas[find] = citd;
+                }
                 if (newIndicator != null) newIndicator.SetActive(false);
             }
         }

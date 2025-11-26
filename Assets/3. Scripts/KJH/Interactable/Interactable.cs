@@ -10,7 +10,6 @@ public abstract class Interactable : MonoBehaviour
         LightObject = 1 << 2,
         DarkObject = 1 << 3,
         NormalObject = 1 << 4,
-        NPC = 1 << 5,
     }
     public abstract Type type { get; }
     public abstract bool isReady { get; set;}

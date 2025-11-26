@@ -47,10 +47,12 @@ public class Prompt : MonoBehaviour
     Transform lanternCanvas;
     Interactable target2;
     Tween tweenLr2;
+    [HideInInspector] public Image lanternFill;
     void Awake()
     {
         itrctCanvas = transform.GetChild(0);
         lanternCanvas = transform.GetChild(1);
+        lanternFill = lanternCanvas.Find("Wrap/PressFill").GetComponent<Image>();
     }
     public void Open(int index, Interactable target)
     {
@@ -65,6 +67,17 @@ public class Prompt : MonoBehaviour
         else if (index == 1)
         {
             target2 = target;
+            LightObject lobj = target2 as LightObject;
+            DarkObject dobj = target2 as DarkObject;
+            if (lobj != null)
+            {
+                lanternFill.fillAmount = lobj.promptFill;
+            }
+            else if (dobj != null)
+            {
+                dobj.promptFill += Time.deltaTime;
+                lanternFill.fillAmount = dobj.promptFill;
+            }
             ctsTracking2?.Cancel();
             ctsTracking2 = new CancellationTokenSource();
             var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsTracking2.Token);

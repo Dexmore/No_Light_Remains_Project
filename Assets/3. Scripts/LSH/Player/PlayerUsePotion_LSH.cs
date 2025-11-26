@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class PlayerUsePotion_LSH : IPlayerState_LSH
+public class PlayerUsePotion : IPlayerState
 {
-    private readonly PlayerController_LSH ctx;
-    private readonly PlayerStateMachine_LSH fsm;
-    public PlayerUsePotion_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
+    private readonly PlayerController ctx;
+    private readonly PlayerStateMachine fsm;
+    public PlayerUsePotion(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 2.9f;   // 총 길이
     private float _elapsedTime;
-    public IPlayerState_LSH prevState;
+    public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
     public void Enter()
     {

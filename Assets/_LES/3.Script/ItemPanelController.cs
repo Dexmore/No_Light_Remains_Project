@@ -66,12 +66,12 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             InventoryDataManager.Instance.OnInventoryChanged -= RefreshUIFromEvent;
         }
     }
-    
+
     //'방송'을 받았을 때 호출될 함수
     private void RefreshUIFromEvent()
     {
         // 현재 열려있는 필터 기준으로 UI를 새로고침
-        StartMasterCoroutine(_currentFilter, false); 
+        StartMasterCoroutine(_currentFilter, false);
         UpdateMoneyText(); // 돈도 갱신
     }
 
@@ -86,13 +86,13 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         {
             // TODO: '12345'를 실제 플레이어의 돈 데이터로 교체하세요.
             // (예: GameManager.Instance.PlayerMoney)
-            int currentPlayerMoney = 0; 
+            int currentPlayerMoney = 0;
 
             // "N0" 포맷은 숫자에 1,234,567 처럼 콤마(,)를 찍어줍니다.
             moneyText.text = currentPlayerMoney.ToString("N0");
         }
     }
-    
+
     /// <summary>
     /// 탭이 닫힐 때 호출됩니다.
     /// </summary>
@@ -107,7 +107,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         // 생성된 슬롯 모두 삭제
         ClearAllSpawnedSlots();
     }
-    
+
     /// <summary>
     /// '장비' 또는 '재료' 버튼을 클릭했을 때 호출됩니다.
     /// </summary>
@@ -116,7 +116,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         // [수정] '초기 로드'가 아님(false)을 알리며 마스터 코루틴 실행
         StartMasterCoroutine(newFilter, false);
     }
-    
+
     /// <summary>
     /// [신규] 기존에 실행 중인 코루틴이 있다면 중지하고 새 코루틴을 시작합니다.
     /// </summary>
@@ -144,9 +144,42 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         ClearAllSpawnedSlots();
 
         // 3. 데이터 필터링
-        List<ItemData> filteredList = InventoryDataManager.Instance.PlayerItems
-            .Where(item => item != null && item.type == _currentFilter)
-            .ToList();
+        // List<ItemData> filteredList = InventoryDataManager.Instance.PlayerItems
+        //      .Where(item => item != null && item.type == _currentFilter)
+        //      .ToList();
+        List<ItemData> filteredList = new List<ItemData>();
+        List<CharacterData.ItemData> copy = DBManager.I.currentCharData.itemDatas.ToList();
+        foreach(var citd in copy)
+        {
+            int find = DBManager.I.cashingItems.FindIndex(x => x.itemName == citd.Name);
+            ItemData itd = null;
+            if(find != -1)
+            {
+                ItemData _itd = DBManager.I.cashingItems[find];
+                if(_itd != null)
+                {
+                    itd = Instantiate(_itd);
+                    itd.name = _itd.name;
+                }
+            }
+            else
+            {
+                ItemData _itd = Resources.Load<ItemData>(citd.Name);
+                if(_itd != null)
+                {
+                    itd = Instantiate(_itd);
+                    itd.name = _itd.name;
+                }
+            }
+            if(itd == null) continue;
+            itd.isNew = citd.isNew;
+            if(!DBManager.I.cashingItems.Contains(itd))
+            {
+                DBManager.I.cashingItems.Add(itd);
+            }
+            if(itd.type != _currentFilter) continue;
+            filteredList.Add(itd);
+        }
 
         // 4. 새 슬롯 생성 (Instantiate)
         if (filteredList.Count > 0)
@@ -184,20 +217,21 @@ public class ItemPanelController : MonoBehaviour, ITabContent
 
         _initCoroutine = null; // 코루틴 완료
     }
-    
+
     private void UpdateMoneyText()
     {
         if (moneyText != null)
         {
-            moneyText.text = InventoryDataManager.Instance.PlayerMoney.ToString("N0");
+            //moneyText.text = InventoryDataManager.Instance.PlayerMoney.ToString("N0");
+            moneyText.text = DBManager.I.currentCharData.money.ToString("N0");
         }
     }
 
     #region (수정 없는 함수들)
-    
+
     public void ShowItemDetails(ItemData data)
     {
-        if (infoPanelRoot != null) 
+        if (infoPanelRoot != null)
         {
             infoPanelRoot.SetActive(true);
         }
@@ -213,16 +247,16 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             detailItemImage.gameObject.SetActive(data.icon != null);
         }
         else
-        {            
+        {
             detailItemNameText.text = "아이템 선택";
             detailItemImage.sprite = null;
             detailItemDescriptionText.text = "목록에서 아이템을 선택하세요.";
 
             // 아이콘 Image 컴포넌트를 끕니다.
-            detailItemImage.gameObject.SetActive(false); 
+            detailItemImage.gameObject.SetActive(false);
         }
     }
-    
+
     private void ClearAllSpawnedSlots()
     {
         foreach (ItemSlotUI slot in _spawnedSlots) Destroy(slot.gameObject);
@@ -237,13 +271,13 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             Navigation eqNav = equipmentButton.navigation;
             eqNav.selectOnDown = null;
             equipmentButton.navigation = eqNav;
-            
+
             Navigation matNav = materialButton.navigation;
             matNav.selectOnDown = null;
             materialButton.navigation = matNav;
             return;
         }
-        
+
         for (int i = 0; i < _spawnedSlots.Count; i++)
         {
             Button button = _spawnedSlots[i].GetComponent<Button>();
@@ -256,11 +290,11 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             nav.selectOnRight = null;
             button.navigation = nav;
         }
-        
+
         Navigation eqNav_Btn = equipmentButton.navigation;
         eqNav_Btn.selectOnDown = _spawnedSlots[0].GetComponent<Button>();
         equipmentButton.navigation = eqNav_Btn;
-        
+
         Navigation matNav_Btn = materialButton.navigation;
         matNav_Btn.selectOnDown = _spawnedSlots[0].GetComponent<Button>();
         materialButton.navigation = matNav_Btn;
@@ -273,16 +307,16 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     }
 
     private Color ExampleColor(bool isActive) => isActive ? subTabActiveColor : subTabIdleColor;
-    
+
     #endregion
-    
+
     #region 테스트용 코드
 
     // [추가] 인스펙터에서 테스트용으로 추가할 아이템을 미리 할당
     [Header("테스트용")]
     [SerializeField] private ItemData testItemToAdd;
 
-    
+
     [Button("Test: 아이템 추가 (장비/재료)")]
     private void TestAddItem()
     {
@@ -291,10 +325,10 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             Debug.LogWarning("테스트할 아이템을 인스펙터 'Test Item To Add' 필드에 할당해주세요!");
             return;
         }
-        
+
         // 1. 데이터 리스트에 아이템을 추가합니다.
         InventoryDataManager.Instance.AddItem(testItemToAdd);
-        
+
         // 2. UI를 새로고침합니다. (가장 간단한 방법)
         // (현재 OnFilterChanged가 private이므로 OnShow를 호출하여 강제로 갱신합니다)
         OnShow();

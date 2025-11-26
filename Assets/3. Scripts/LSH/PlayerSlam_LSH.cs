@@ -1,14 +1,14 @@
 using UnityEngine;
 /*
-public class PlayerSlam_LSH : IPlayerState_LSH
+public class PlayerSlam : IPlayerState
 {
-    private readonly PlayerController_LSH ctx;
-    private readonly PlayerStateMachine_LSH fsm;
+    private readonly PlayerController ctx;
+    private readonly PlayerStateMachine fsm;
 
     private bool _impacted;
     private float _t; // 임팩트 락(잠깐 경직) 타이머
 
-    public PlayerSlam_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm)
+    public PlayerSlam(PlayerController ctx, PlayerStateMachine fsm)
     { this.ctx = ctx; this.fsm = fsm; }
 
     public void Enter()

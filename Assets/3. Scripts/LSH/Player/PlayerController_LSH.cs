@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using DG.Tweening;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController_LSH : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     [Header("Player HP")]
@@ -33,21 +33,21 @@ public class PlayerController_LSH : MonoBehaviour
     [HideInInspector] public Animator animator;
     [HideInInspector] public Transform childTR;
     [HideInInspector] public AttackRange attackRange;
-    [HideInInspector] public PlayerStateMachine_LSH fsm;
+    [HideInInspector] public PlayerStateMachine fsm;
     // States
-    [HideInInspector] public PlayerIdle_LSH idle;
-    [HideInInspector] public PlayerRun_LSH run;
-    [HideInInspector] public PlayerJump_LSH jump;
-    [HideInInspector] public PlayerFall_LSH fall;
-    [HideInInspector] public PlayerAttack_LSH attack;
-    [HideInInspector] public PlayerAttackCombo_LSH attackCombo;
-    [HideInInspector] public PlayerDash_LSH dash;
-    [HideInInspector] public PlayerParry_LSH parry;
-    [HideInInspector] public PlayerHit_LSH hit;
-    [HideInInspector] public PlayerDie_LSH die;
-    [HideInInspector] public PlayerJumpAttack_LSH jumpAttack;
-    [HideInInspector] public PlayerUsePotion_LSH usePotion;
-    [HideInInspector] public PlayerOpenInventory_LSH openInventory;
+    [HideInInspector] public PlayerIdle idle;
+    [HideInInspector] public PlayerRun run;
+    [HideInInspector] public PlayerJump jump;
+    [HideInInspector] public PlayerFall fall;
+    [HideInInspector] public PlayerAttack attack;
+    [HideInInspector] public PlayerAttackCombo attackCombo;
+    [HideInInspector] public PlayerDash dash;
+    [HideInInspector] public PlayerParry parry;
+    [HideInInspector] public PlayerHit hit;
+    [HideInInspector] public PlayerDie die;
+    [HideInInspector] public PlayerJumpAttack jumpAttack;
+    [HideInInspector] public PlayerUsePotion usePotion;
+    [HideInInspector] public PlayerOpenInventory openInventory;
 
 
     // === Ground 체크 ===
@@ -75,19 +75,19 @@ public class PlayerController_LSH : MonoBehaviour
         height = capsuleCollider2D.size.y;
         width = capsuleCollider2D.size.x;
         lightSystem = GetComponentInChildren<LightSystem>(true);
-        fsm = new PlayerStateMachine_LSH();
-        idle = new PlayerIdle_LSH(this, fsm);
-        run = new PlayerRun_LSH(this, fsm);
-        jump = new PlayerJump_LSH(this, fsm);
-        fall = new PlayerFall_LSH(this, fsm);
-        attack = new PlayerAttack_LSH(this, fsm);
-        attackCombo = new PlayerAttackCombo_LSH(this, fsm);
-        parry = new PlayerParry_LSH(this, fsm);
-        dash = new PlayerDash_LSH(this, fsm);
-        hit = new PlayerHit_LSH(this, fsm);
-        die = new PlayerDie_LSH(this, fsm);
-        usePotion = new PlayerUsePotion_LSH(this, fsm);
-        openInventory = new PlayerOpenInventory_LSH(this, fsm);
+        fsm = new PlayerStateMachine();
+        idle = new PlayerIdle(this, fsm);
+        run = new PlayerRun(this, fsm);
+        jump = new PlayerJump(this, fsm);
+        fall = new PlayerFall(this, fsm);
+        attack = new PlayerAttack(this, fsm);
+        attackCombo = new PlayerAttackCombo(this, fsm);
+        parry = new PlayerParry(this, fsm);
+        dash = new PlayerDash(this, fsm);
+        hit = new PlayerHit(this, fsm);
+        die = new PlayerDie(this, fsm);
+        usePotion = new PlayerUsePotion(this, fsm);
+        openInventory = new PlayerOpenInventory(this, fsm);
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
     }
@@ -111,6 +111,9 @@ public class PlayerController_LSH : MonoBehaviour
             DBManager.I.currentCharData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
+            DBManager.I.AddItem("UsefulSword", 1);
+            DBManager.I.AddItem("Helmet", 1);
+            DBManager.I.AddItem("LeatherArmor", 1);
         }
         else
         {
@@ -118,6 +121,7 @@ public class PlayerController_LSH : MonoBehaviour
             light0.SetActive(DBManager.I.isLanternOn);
             light1.SetActive(DBManager.I.isLanternOn);
         }
+        inventoryUI = FindAnyObjectByType<Inventory>();
     }
 
     void OnEnable()
@@ -289,6 +293,7 @@ public class PlayerController_LSH : MonoBehaviour
     {
         Jumped = false;
     }
+    [HideInInspector] public Inventory inventoryUI;
     void HitHandler(HitData hData)
     {
         if (hData.target.Root() != transform) return;
@@ -324,6 +329,10 @@ public class PlayerController_LSH : MonoBehaviour
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
             HitChangeColor(Color.white, 0);
+            if(fsm.currentState == openInventory)
+            {
+                fsm.ChangeState(idle);
+            }
             return;
         }
         else if (hData.attackType == HitData.AttackType.Default)

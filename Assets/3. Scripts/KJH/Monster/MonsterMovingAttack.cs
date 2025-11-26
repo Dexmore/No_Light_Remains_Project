@@ -168,7 +168,7 @@ public class MonsterMovingAttack : MonsterState
         }
         anim.Play("Idle");
         //await UniTask.Delay((int)(1000f * (duration - (moveTimeRange.y - moveTimeRange.x))), cancellationToken: token);
-        PlayerController_LSH pControl = target.GetComponentInParent<PlayerController_LSH>();
+        PlayerController pControl = target.GetComponentInParent<PlayerController>();
         startTime = Time.time;
         bool isPlayerHit = false;
         while (Time.time - startTime < duration - (moveTimeRange.y - moveTimeRange.x))

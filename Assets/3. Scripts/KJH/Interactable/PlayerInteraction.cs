@@ -44,14 +44,16 @@ public class PlayerInteraction : MonoBehaviour
         public Interactable interactable;
     }
     Transform camTR;
-    PlayerController_LSH control;
+    PlayerController control;
     [ReadOnlyInspector][SerializeField] Interactable target1;
     [ReadOnlyInspector][SerializeField] Interactable target2;
     Vector3 distancePivot;
     Prompt prompt;
     LightSystem lightSystem;
+    PlayerController playerController;
     void Awake()
     {
+        TryGetComponent(out playerController);
         prompt = FindAnyObjectByType<Prompt>();
         lightSystem = FindAnyObjectByType<LightSystem>();
     }
@@ -83,18 +85,20 @@ public class PlayerInteraction : MonoBehaviour
     public bool press2;
     void InputInteraction(InputAction.CallbackContext callback)
     {
-        if(!press1)
+        if (playerController.fsm.currentState == playerController.openInventory) return;
+        if (playerController.fsm.currentState == playerController.die) return;
+        if (!press1)
         {
-            if(target1 != null)
+            if (target1 != null)
             {
-                if(flag1) return;
+                if (flag1) return;
                 flag1 = true;
                 DropItem dropItem = target1 as DropItem;
-                if(dropItem != null)
+                if (dropItem != null)
                 {
                     AudioManager.I.PlaySFX("UIClick2");
                     prompt.ClickEffect(0);
-                    GetItem_ut(dropItem, cts.Token).Forget();              
+                    GetItem_ut(dropItem, cts.Token).Forget();
                 }
             }
         }
@@ -115,12 +119,45 @@ public class PlayerInteraction : MonoBehaviour
     }
     void InputLantern(InputAction.CallbackContext callback)
     {
+        if (playerController.fsm.currentState == playerController.openInventory) return;
+        if (playerController.fsm.currentState == playerController.die) return;
+        if (target2 == null) return;
+        if (!press2)
+        {
+            ctsLanternInteraction?.Cancel();
+            ctsLanternInteraction = new CancellationTokenSource();
+            var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternInteraction.Token);
+            LanternInteraction(ctsLink.Token).Forget();
+        }
         press2 = true;
-        if(target2 == null) return;
     }
     void CancelLantern(InputAction.CallbackContext callback)
     {
         press2 = false;
+        ctsLanternInteraction?.Cancel();
+    }
+    CancellationTokenSource ctsLanternInteraction;
+    async UniTask LanternInteraction(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            await UniTask.Yield(token);
+            if (playerController.fsm.currentState == playerController.openInventory) return;
+            if (playerController.fsm.currentState == playerController.die) return;
+            if (target2 == null) return;
+            LightObject lobj = target2 as LightObject;
+            DarkObject dobj = target2 as DarkObject;
+            if (lobj != null)
+            {
+                lobj.promptFill += Time.deltaTime;
+                prompt.lanternFill.fillAmount = lobj.promptFill;
+            }
+            else if (dobj != null)
+            {
+                dobj.promptFill += Time.deltaTime;
+                prompt.lanternFill.fillAmount = dobj.promptFill;
+            }
+        }
     }
     async UniTask Sensor(CancellationToken token)
     {

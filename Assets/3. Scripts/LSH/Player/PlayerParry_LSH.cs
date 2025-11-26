@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class PlayerParry_LSH : IPlayerState_LSH
+public class PlayerParry : IPlayerState
 {
-    private readonly PlayerController_LSH ctx;
-    private readonly PlayerStateMachine_LSH fsm;
-    public PlayerParry_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
+    private readonly PlayerController ctx;
+    private readonly PlayerStateMachine fsm;
+    public PlayerParry(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.8f;   // 총 길이
     private const float parryTime = 0.5f;   // 패링 시간
     private float _elapsedTime;

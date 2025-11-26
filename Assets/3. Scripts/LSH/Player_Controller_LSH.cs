@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Player_Controller_LSH : MonoBehaviour
+public class Player_Controller : MonoBehaviour
 {
     [Header("Player HP")]
     public int maxHealth = 1000;
@@ -35,17 +35,17 @@ public class Player_Controller_LSH : MonoBehaviour
     public bool lanternOn = false;   // 현재 상태
 
     [HideInInspector] public Rigidbody2D rb;
-    [HideInInspector] public PlayerStateMachine_LSH fsm;
+    [HideInInspector] public PlayerStateMachine fsm;
 
     // States (기존)
-    [HideInInspector] public PlayerIdle_LSH idle;
-    [HideInInspector] public PlayerRun_LSH run;
-    [HideInInspector] public PlayerJump_LSH jump;
-    [HideInInspector] public PlayerFall_LSH fall;
-    [HideInInspector] public PlayerAttack_LSH attack;
-    [HideInInspector] public PlayerAttackCombo_LSH attackCombo;
+    [HideInInspector] public PlayerIdle idle;
+    [HideInInspector] public PlayerRun run;
+    [HideInInspector] public PlayerJump jump;
+    [HideInInspector] public PlayerFall fall;
+    [HideInInspector] public PlayerAttack attack;
+    [HideInInspector] public PlayerAttackCombo attackCombo;
     // 새 상태
-    [HideInInspector] public PlayerParry_LSH parry;
+    [HideInInspector] public PlayerParry parry;
 
     // === 입력 (액션 에셋 참조) ===
     [Header("Input (use bound actions)")]
@@ -118,7 +118,7 @@ public class Player_Controller_LSH : MonoBehaviour
     public bool dashIFrame = true;
 
     // 런타임
-    [HideInInspector] public PlayerDash_LSH dash;
+    [HideInInspector] public PlayerDash dash;
     [HideInInspector] public bool isDashing;
     [HideInInspector] public float _dashReadyTime;
 
@@ -150,7 +150,7 @@ public class Player_Controller_LSH : MonoBehaviour
     [Header("Slam I-Frame")]
     public bool slamIFrame = true;           // 내려찍는 동안 무적 여부
 
-    //[HideInInspector] public PlayerSlam_LSH slam;
+    //[HideInInspector] public PlayerSlam slam;
     [HideInInspector] public bool isSlamming;
     private readonly HashSet<Collider2D> _slamHitCache = new();
     void Awake()
@@ -158,19 +158,19 @@ public class Player_Controller_LSH : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
 
-        fsm = new PlayerStateMachine_LSH();
+        fsm = new PlayerStateMachine();
         /*
-        idle = new PlayerIdle_LSH(this, fsm);
-        run = new PlayerRun_LSH(this, fsm);
-        jump = new PlayerJump_LSH(this, fsm);
-        fall = new PlayerFall_LSH(this, fsm);
-        attack = new PlayerAttack_LSH(this, fsm);
-        attackCombo = new PlayerAttackCombo_LSH(this, fsm);
-        parry = new PlayerParry_LSH(this, fsm);   // ⬅ 추가
-        dash = new PlayerDash_LSH(this, fsm);
+        idle = new PlayerIdle(this, fsm);
+        run = new PlayerRun(this, fsm);
+        jump = new PlayerJump(this, fsm);
+        fall = new PlayerFall(this, fsm);
+        attack = new PlayerAttack(this, fsm);
+        attackCombo = new PlayerAttackCombo(this, fsm);
+        parry = new PlayerParry(this, fsm);   // ⬅ 추가
+        dash = new PlayerDash(this, fsm);
         */
 
-        // -> 공중 찍기 추가 slam = new PlayerSlam_LSH(this, fsm);
+        // -> 공중 찍기 추가 slam = new PlayerSlam(this, fsm);
         _baseScaleX = Mathf.Abs(transform.localScale.x);
         CacheAnimatorParams();
 
@@ -360,7 +360,7 @@ public class Player_Controller_LSH : MonoBehaviour
 
     public void DoDamage_Public(int which)
     {
-        if (!attackPoint) { Debug.LogWarning("[PlayerController_LSH] attackPoint 미지정"); return; }
+        if (!attackPoint) { Debug.LogWarning("[PlayerController] attackPoint 미지정"); return; }
         if (which == 1) DoDamage((Vector2)attackPoint.position, attackRange1, attackDamage1);
         else DoDamage((Vector2)attackPoint.position, attackRange2, attackDamage2);
     }
@@ -375,10 +375,10 @@ public class Player_Controller_LSH : MonoBehaviour
             if (_swingHitCache.Contains(col)) continue;
             _swingHitCache.Add(col);
 
-            //var d1 = col.GetComponentInParent<IDamageable_LSH>();
+            //var d1 = col.GetComponentInParent<IDamageable>();
             //if (d1 != null) { d1.TakeDamage(damage, transform.position); continue; }
 
-            //var e1 = col.GetComponentInParent<Enemy_LSH>();
+            //var e1 = col.GetComponentInParent<Enemy>();
             //if (e1 != null) { e1.TakeDamage(damage); continue; }
         }
     }
@@ -469,10 +469,10 @@ public class Player_Controller_LSH : MonoBehaviour
             if (_slamHitCache.Contains(h)) continue;
             _slamHitCache.Add(h);
 
-            //var d1 = h.GetComponentInParent<IDamageable_LSH>();
+            //var d1 = h.GetComponentInParent<IDamageable>();
             //if (d1 != null) { d1.TakeDamage(slamDamage, transform.position); continue; }
 
-            //var e1 = h.GetComponentInParent<Enemy_LSH>();
+            //var e1 = h.GetComponentInParent<Enemy>();
             //if (e1 != null) { e1.TakeDamage(slamDamage); continue; }
         }
     }

@@ -1,30 +1,51 @@
 using UnityEngine;
-
-public class PlayerOpenInventory_LSH : IPlayerState_LSH
+using UnityEngine.InputSystem;
+public class PlayerOpenInventory : IPlayerState
 {
-    private readonly PlayerController_LSH ctx;
-    private readonly PlayerStateMachine_LSH fsm;
-    public PlayerOpenInventory_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.5f;   // 총 길이
-    private float _elapsedTime;
+    private readonly PlayerController ctx;
+    private readonly PlayerStateMachine fsm;
+    public PlayerOpenInventory(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    private InputAction escAction;
+    bool escPressed;
+    private InputAction inventoryAction;
+    bool inventoryPressed;
+    int flagInt = 0;
     public void Enter()
     {
-        _elapsedTime = 0f;
+        if (escAction == null)
+            escAction = ctx.inputActionAsset.FindActionMap("UI").FindAction("ESC");
+        if (inventoryAction == null)
+            inventoryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Inventory");
+        ctx.inventoryUI.Open();
+        flagInt = 0;
     }
     public void Exit()
     {
-        
+        ctx.inventoryUI.Close();
     }
     public void UpdateState()
     {
-        _elapsedTime += Time.deltaTime;
-        if(_elapsedTime > duration)
+        escPressed = escAction.IsPressed();
+        if(escPressed)
         {
             fsm.ChangeState(ctx.idle);
         }
+
+        inventoryPressed = inventoryAction.IsPressed();
+        if(!inventoryPressed && flagInt == 0)
+        {
+            flagInt = 1;
+        }
+        else if(inventoryPressed && flagInt == 1)
+        {
+            fsm.ChangeState(ctx.idle);
+        }
+
+
     }
     public void UpdatePhysics()
     {
 
     }
+    
 }

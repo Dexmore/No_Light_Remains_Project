@@ -65,7 +65,8 @@ public class TextEffect : PoolBehaviour
         }
         else
         {
-            transform.DOLocalMove(transform.position + direction, duration).SetEase(Ease.OutSine);
+            transform.position += 0.4f * direction;
+            transform.DOLocalMove(transform.position + 0.8f * direction, duration).SetEase(Ease.OutSine);
         }
         await UniTask.Delay((int)(1000f * (0.55f)), ignoreTimeScale: true, cancellationToken: token);
         base.Despawn();

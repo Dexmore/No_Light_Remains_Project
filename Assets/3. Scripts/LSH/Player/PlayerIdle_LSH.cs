@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerIdle_LSH : IPlayerState_LSH
+public class PlayerIdle : IPlayerState
 {
-    private readonly PlayerController_LSH ctx;
-    private readonly PlayerStateMachine_LSH fsm;
-    public PlayerIdle_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
+    private readonly PlayerController ctx;
+    private readonly PlayerStateMachine fsm;
+    public PlayerIdle(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction moveAction;
     Vector2 moveActionValue;
     private InputAction jumpAction;
@@ -13,6 +13,9 @@ public class PlayerIdle_LSH : IPlayerState_LSH
     bool attackPressed;
     private InputAction potionAction;
     bool potionPressed;
+    private InputAction inventoryAction;
+    bool inventoryPressed;
+    int flagInt = 0;
     public void Enter()
     {
         if (moveAction == null)
@@ -23,7 +26,10 @@ public class PlayerIdle_LSH : IPlayerState_LSH
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
         if (potionAction == null)
             potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
+        if (inventoryAction == null)
+            inventoryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Inventory");
         ctx.animator.Play("Player_Idle");
+        flagInt = 0;
     }
     public void Exit()
     {
@@ -41,6 +47,7 @@ public class PlayerIdle_LSH : IPlayerState_LSH
             ctx.Jumped = true;
             fsm.ChangeState(ctx.jump);
         }
+
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);
@@ -58,6 +65,18 @@ public class PlayerIdle_LSH : IPlayerState_LSH
                 fsm.ChangeState(ctx.usePotion);
             }
         }
+
+        inventoryPressed = inventoryAction.IsPressed();
+        if(!inventoryPressed && flagInt == 0)
+        {
+            flagInt = 1;
+        }
+        else if(inventoryPressed && flagInt == 1 && ctx.Grounded)
+        {
+            fsm.ChangeState(ctx.openInventory);
+        }
+
+
     }
     public void UpdatePhysics()
     {

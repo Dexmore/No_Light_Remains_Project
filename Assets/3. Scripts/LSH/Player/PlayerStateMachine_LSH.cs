@@ -1,8 +1,8 @@
 using UnityEngine;
-public class PlayerStateMachine_LSH
+public class PlayerStateMachine
 {
-    public IPlayerState_LSH currentState { get; private set; }
-    public void ChangeState(IPlayerState_LSH newState)
+    public IPlayerState currentState { get; private set; }
+    public void ChangeState(IPlayerState newState)
     {
         currentState?.Exit();
         currentState = newState;

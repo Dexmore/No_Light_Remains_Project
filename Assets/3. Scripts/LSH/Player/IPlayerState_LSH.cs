@@ -1,6 +1,6 @@
 using UnityEngine.UIElements;
 
-public interface IPlayerState_LSH
+public interface IPlayerState
 {
     void Enter(); // 상태가 들어올때
     void Exit(); // 상태에서 벗어날 때

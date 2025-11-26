@@ -233,6 +233,36 @@ public class DBManager : SingletonBehaviour<DBManager>
             allSaveDataLocal = new SaveData(); // 문제 발생 시 새 데이터로 초기화
         }
     }
+    [HideInInspector] public List<ItemData> cashingItems = new List<ItemData>();
+    [HideInInspector] public List<GearData> cashingGears = new List<GearData>();
+    [HideInInspector] public List<LanternFunctionData> cashingLanterns = new List<LanternFunctionData>();
+    public void AddItem(string Name, int count)
+    {
+        if(count == 0) return;
+        int find = currentCharData.itemDatas.FindIndex(x => x.Name == Name);
+        if(find == -1)
+        {
+            CharacterData.ItemData itd = new CharacterData.ItemData();
+            itd.Name = Name;
+            itd.count = count;
+            itd.isNew = true;
+            currentCharData.itemDatas.Add(itd);
+        }
+        else
+        {
+            CharacterData.ItemData currItd = currentCharData.itemDatas[find];
+            int _count = currItd.count;
+            if(_count + count <= 0)
+            {
+                currentCharData.itemDatas.Remove(currItd);
+            }
+            else
+            {
+                currItd.count = _count + count;
+            }
+        }
+    }
+
 }
 [System.Serializable]
 public struct SaveData
@@ -257,6 +287,7 @@ public struct CharacterData
     {
         public string Name;
         public int count;
+        public bool isNew;
     }
 
     [System.Serializable]

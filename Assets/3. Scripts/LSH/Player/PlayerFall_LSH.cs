@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerFall_LSH : IPlayerState_LSH
+public class PlayerFall : IPlayerState
 {
-    private readonly PlayerController_LSH ctx;
-    private readonly PlayerStateMachine_LSH fsm;
-    public PlayerFall_LSH(PlayerController_LSH ctx, PlayerStateMachine_LSH fsm) { this.ctx = ctx; this.fsm = fsm; }
+    private readonly PlayerController ctx;
+    private readonly PlayerStateMachine fsm;
+    public PlayerFall(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction moveAction;
     Vector2 moveActionValue;
     public void Enter()
