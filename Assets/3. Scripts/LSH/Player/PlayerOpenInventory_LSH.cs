@@ -18,10 +18,12 @@ public class PlayerOpenInventory : IPlayerState
             inventoryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Inventory");
         ctx.inventoryUI.Open();
         flagInt = 0;
+        AudioManager.I.PlaySFX("Pocket1");
     }
     public void Exit()
     {
         ctx.inventoryUI.Close();
+        AudioManager.I.PlaySFX("Pocket1");
     }
     public void UpdateState()
     {

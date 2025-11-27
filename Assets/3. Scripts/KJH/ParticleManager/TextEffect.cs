@@ -43,9 +43,12 @@ public class TextEffect : PoolBehaviour
     {
         DOTween.Kill(transform);
         await UniTask.Delay(1, ignoreTimeScale: true, cancellationToken: token);
-        float duration = Random.Range(0.55f, 0.75f);
+        float duration = Random.Range(0.65f, 0.75f);
         Vector3 direction = new Vector3(Random.Range(0f, 0.2f), Random.Range(0.5f, 1.5f), 0f);
-        await UniTask.Delay((int)(1000f * (duration - 0.55f)), ignoreTimeScale: true, cancellationToken: token);
+        Vector3 startPos = transform.position;
+        if (transform.name == "DamageText") duration = 0.6f;
+        else transform.position = startPos + 0.6f * direction;
+        await UniTask.Delay((int)(1000f * (duration - 0.5f)), ignoreTimeScale: true, cancellationToken: token);
         if (transform.name == "DamageText")
         {
             string str1 = txt.text.Split("<size=")[0];
@@ -65,8 +68,7 @@ public class TextEffect : PoolBehaviour
         }
         else
         {
-            transform.position += 0.4f * direction;
-            transform.DOLocalMove(transform.position + 0.8f * direction, duration).SetEase(Ease.OutSine);
+            transform.DOLocalMove(startPos + 0.85f * direction, duration).SetEase(Ease.OutSine);
         }
         await UniTask.Delay((int)(1000f * (0.55f)), ignoreTimeScale: true, cancellationToken: token);
         base.Despawn();
