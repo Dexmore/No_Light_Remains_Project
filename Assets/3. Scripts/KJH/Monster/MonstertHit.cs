@@ -43,9 +43,11 @@ public class MonsterHit : MonsterState
                 duration = 4.8f;
             else
                 duration = 6.8f;
-
             await UniTask.Delay((int)(1000 * 0.15f), cancellationToken: token);
             rb.AddForce(6.6f * Random.Range(0.9f, 1.1f) * (direction + 0.8f * Vector3.up).normalized, ForceMode2D.Impulse);
+            await UniTask.Delay((int)(1000 * 0.4f), cancellationToken: token);
+            ParticleManager.I.PlayParticle("Stun", transform.position + (control.height + 0.6f) * Vector3.up, Quaternion.identity);
+
         }
         //
         MonsterControl.State next = MonsterControl.State.Idle;
