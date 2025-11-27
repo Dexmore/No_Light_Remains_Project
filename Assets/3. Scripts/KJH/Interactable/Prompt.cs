@@ -41,10 +41,10 @@ public class Prompt : MonoBehaviour
 
     }
     #endregion
-    Transform itrctCanvas;
+    [HideInInspector] public Transform itrctCanvas;
     Interactable target1;
     Tween tweenLr1;
-    Transform lanternCanvas;
+    [HideInInspector] public Transform lanternCanvas;
     Interactable target2;
     Tween tweenLr2;
     [HideInInspector] public Image lanternFill;
@@ -69,6 +69,10 @@ public class Prompt : MonoBehaviour
             target2 = target;
             LightObject lobj = target2 as LightObject;
             DarkObject dobj = target2 as DarkObject;
+            lanternCanvas.Find("Wrap/PressFill").gameObject.SetActive(false);
+            lanternCanvas.Find("Wrap/PressRing").gameObject.SetActive(false);
+            lanternCanvas.Find("Wrap/PressFill").transform.localScale = 0.2f * Vector3.one;
+            lanternCanvas.Find("Wrap/PressRing").transform.localScale = 0.2f * Vector3.one;
             if (lobj != null)
             {
                 lanternFill.fillAmount = lobj.promptFill;
@@ -88,6 +92,7 @@ public class Prompt : MonoBehaviour
     {
         if (index == 0)
         {
+            if (!itrctCanvas.gameObject.activeSelf) return;
             if (isClosing1) return;
             isClosing1 = true;
             ctsClose1?.Cancel();
@@ -97,12 +102,17 @@ public class Prompt : MonoBehaviour
         }
         else if (index == 1)
         {
+            if (!lanternCanvas.gameObject.activeSelf) return;
             if (isClosing2) return;
             isClosing2 = true;
             ctsClose2?.Cancel();
             ctsClose2 = new CancellationTokenSource();
             var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsClose2.Token);
             Close_ut(1, ctsLink.Token).Forget();
+            DOTween.Kill(lanternCanvas.transform.Find("Wrap/PressFill"));
+            DOTween.Kill(lanternCanvas.transform.Find("Wrap/PressRing"));
+            lanternCanvas.transform.Find("Wrap/PressFill").DOScale(0.2f, 0.5f);
+            lanternCanvas.transform.Find("Wrap/PressRing").DOScale(0.2f, 0.5f);
         }
     }
     public void ClickEffect(int index)

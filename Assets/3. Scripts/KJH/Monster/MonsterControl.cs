@@ -930,15 +930,15 @@ public class MonsterControl : MonoBehaviour
         if (state == State.RangeAttack) pass = false;
         if (state == State.BiteAttack) pass = false;
         if (state == State.MovingAttack) pass = false;
-        if (!pass && Random.value <= 0.35)
+        if (!pass && Random.value <= 0.67f)
         {
             curHitAmount += hData.damage;
-            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.2f, 0.25f) * Mathf.Clamp(data.HP, 400, 900);
-            if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
-            if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.2f, 0.25f) * Mathf.Clamp(data.HP, 150, 1000);
+            if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.6f);
+            if (hitCoolTime >= 0.5f) hitCoolTime = Random.Range(0.2f, 1f);
             if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
             {
-                if (Random.value < 0.35f)
+                if (Random.value < 0.67f)
                 {
                     monsterHit.type = 1;
                     monsterHit.prevState = state;
@@ -949,7 +949,7 @@ public class MonsterControl : MonoBehaviour
                     if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
                 }
                 else
-                    curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
+                    curHitAmount = Random.Range(0.3f, 0.7f) * maxHitAmount;
             }
         }
         // Set HP

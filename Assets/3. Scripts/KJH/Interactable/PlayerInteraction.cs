@@ -3,6 +3,7 @@ using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 public class PlayerInteraction : MonoBehaviour
 {
     #region UniTask Setting
@@ -135,28 +136,55 @@ public class PlayerInteraction : MonoBehaviour
     {
         press2 = false;
         ctsLanternInteraction?.Cancel();
+        DOTween.Kill(prompt.lanternCanvas.transform.Find("Wrap/PressFill"));
+        DOTween.Kill(prompt.lanternCanvas.transform.Find("Wrap/PressRing"));
     }
     CancellationTokenSource ctsLanternInteraction;
     async UniTask LanternInteraction(CancellationToken token)
     {
+        Transform tr1 = prompt.lanternCanvas.transform.Find("Wrap/PressFill");
+        Transform tr2 = prompt.lanternCanvas.transform.Find("Wrap/PressRing");
+        DOTween.Kill(tr1);
+        DOTween.Kill(tr2);
+        tr1.gameObject.SetActive(true);
+        tr2.gameObject.SetActive(true);
+        tr1.DOScale(1f, 2f);
+        tr2.DOScale(1f, 2f);
+        LightObject lobj = target2 as LightObject;
+        DarkObject dobj = target2 as DarkObject;
         while (!token.IsCancellationRequested)
         {
             await UniTask.Yield(token);
-            if (playerController.fsm.currentState == playerController.openInventory) return;
-            if (playerController.fsm.currentState == playerController.die) return;
-            if (target2 == null) return;
-            LightObject lobj = target2 as LightObject;
-            DarkObject dobj = target2 as DarkObject;
+            if (playerController.fsm.currentState == playerController.openInventory)
+                return;
+            if (playerController.fsm.currentState == playerController.die)
+                return;
+            if (target2 == null)
+                return;
             if (lobj != null)
             {
                 lobj.promptFill += Time.deltaTime;
+                lobj.promptFill = Mathf.Clamp01(lobj.promptFill);
                 prompt.lanternFill.fillAmount = lobj.promptFill;
+                if (lobj.promptFill == 1f) break;
             }
             else if (dobj != null)
             {
                 dobj.promptFill += Time.deltaTime;
+                dobj.promptFill = Mathf.Clamp01(dobj.promptFill);
                 prompt.lanternFill.fillAmount = dobj.promptFill;
+                if (dobj.promptFill == 1f) break;
             }
+        }
+        if (lobj != null)
+        {
+            lobj.Run();
+            prompt.Close(1);
+        }
+        else if (dobj != null)
+        {
+            dobj.Run();
+            prompt.Close(1);
         }
     }
     async UniTask Sensor(CancellationToken token)
@@ -167,6 +195,18 @@ public class PlayerInteraction : MonoBehaviour
         {
             int rnd = Random.Range(12, 18);
             await UniTask.DelayFrame(rnd, cancellationToken: token);
+            if (playerController.fsm.currentState == playerController.openInventory)
+            {
+                prompt.Close(0);
+                prompt.Close(1);
+                continue;
+            }
+            if (playerController.fsm.currentState == playerController.die)
+            {
+                prompt.Close(0);
+                prompt.Close(1);
+                continue;
+            }
             distancePivot = transform.position + (0.4f * control.height * Vector3.up) + (0.4f * interactDistance * (camTR.position - transform.position).normalized);
             colliders = Physics2D.OverlapCircleAll(transform.position, interactDistance, interactLayer);
             sensorDatas.Clear();

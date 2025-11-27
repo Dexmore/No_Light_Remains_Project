@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Linq;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 public class MonsterHit : MonsterState
@@ -14,22 +15,37 @@ public class MonsterHit : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(cts.Token);
-        
-        float duration = 0.6f;
+        Transform target = control.memories.First().Key.transform;
+        Vector3 direction = transform.position - target.position;
+        direction.y = 0;
+        direction.Normalize();
+        if (direction.x < 0 && model.right.x < 0)
+            model.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        else if (direction.x > 0 && model.right.x > 0)
+            model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+        float duration = 0.53f;
         if (type == 1)
         {
             if (control.isDie) return;
-            anim.Play("Idle");
-            duration = 0.6f;
+            anim.Play("HitSmall");
+            duration = 0.53f;
+            if (Random.value <= 0.5f)
+            {
+                rb.AddForce(3f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized, ForceMode2D.Impulse);
+            }
         }
-        else if(type == 2)
+        else if (type == 2)
         {
             if (control.isDie) return;
-            anim.Play("Idle");
+            anim.Play("HitLarge");
             if (control.data.Type != MonsterType.Large && control.data.Type != MonsterType.Boss)
                 duration = 4.8f;
             else
                 duration = 6.8f;
+
+            await UniTask.Delay((int)(1000 * 0.15f), cancellationToken: token);
+            rb.AddForce(6.6f * Random.Range(0.9f, 1.1f) * (direction + 0.8f * Vector3.up).normalized, ForceMode2D.Impulse);
         }
         //
         MonsterControl.State next = MonsterControl.State.Idle;
