@@ -100,12 +100,13 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             if (_currentItem.isNew)
             {
                 _currentItem.isNew = false;
-                int find = DBManager.I.cashingItems.FindIndex(x => x.itemName == _currentItem.itemName);
-                if(find != -1)
-                {
-                    DBManager.I.cashingItems[find].isNew = false;
-                }
-                find = DBManager.I.currentCharData.itemDatas.FindIndex(x => x.Name == _currentItem.name);
+                int find = 0;
+                // find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == _currentItem.itemName);
+                // if(find != -1)
+                // {
+                //     DBManager.I.itemDatabase.allItems[find].isNew = false;
+                // }
+                find = DBManager.I.currentCharData.itemDatas.FindIndex(x => x.Name == _currentItem.itemName);
                 if(find != -1)
                 {
                     CharacterData.ItemData citd = DBManager.I.currentCharData.itemDatas[find];

@@ -52,7 +52,7 @@ public class DropItem : Interactable
         DBManager.I.currentCharData.money += money;
         if (itemData != null)
         {
-            DBManager.I.AddItem(itemData.name, 1);
+            DBManager.I.AddItem(itemData.itemName, 1);
         }
         else if (gearData != null)
         {

@@ -233,9 +233,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             allSaveDataLocal = new SaveData(); // 문제 발생 시 새 데이터로 초기화
         }
     }
-    [HideInInspector] public List<ItemData> cashingItems = new List<ItemData>();
-    [HideInInspector] public List<GearData> cashingGears = new List<GearData>();
-    [HideInInspector] public List<LanternFunctionData> cashingLanterns = new List<LanternFunctionData>();
+    public ItemDatabase itemDatabase;
     public void AddItem(string Name, int count)
     {
         if(count == 0) return;

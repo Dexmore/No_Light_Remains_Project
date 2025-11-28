@@ -144,18 +144,15 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         ClearAllSpawnedSlots();
 
         // 3. 데이터 필터링
-        // List<ItemData> filteredList = InventoryDataManager.Instance.PlayerItems
-        //      .Where(item => item != null && item.type == _currentFilter)
-        //      .ToList();
         List<ItemData> filteredList = new List<ItemData>();
         List<CharacterData.ItemData> copy = DBManager.I.currentCharData.itemDatas.ToList();
         foreach(var citd in copy)
         {
-            int find = DBManager.I.cashingItems.FindIndex(x => x.itemName == citd.Name);
+            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == citd.Name);
             ItemData itd = null;
             if(find != -1)
             {
-                ItemData _itd = DBManager.I.cashingItems[find];
+                ItemData _itd = DBManager.I.itemDatabase.allItems[find];
                 if(_itd != null)
                 {
                     itd = Instantiate(_itd);
@@ -173,10 +170,6 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             }
             if(itd == null) continue;
             itd.isNew = citd.isNew;
-            if(!DBManager.I.cashingItems.Contains(itd))
-            {
-                DBManager.I.cashingItems.Add(itd);
-            }
             if(itd.type != _currentFilter) continue;
             filteredList.Add(itd);
         }

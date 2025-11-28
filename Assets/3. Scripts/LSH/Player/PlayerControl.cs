@@ -108,9 +108,9 @@ public class PlayerControl : MonoBehaviour
             DBManager.I.currentCharData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
-            DBManager.I.AddItem("UsefulSword", 1);
+            DBManager.I.AddItem("Useful Sword", 1);
             DBManager.I.AddItem("Helmet", 1);
-            DBManager.I.AddItem("LeatherArmor", 1);
+            DBManager.I.AddItem("Leather Armor", 1);
         }
         else
         {
