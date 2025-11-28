@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PlayerDash : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerDash(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerDash(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.5f;   // 총 길이
     private const float avoidTime = 0.38f;   // 무적 시간
     private const float dashForce = 18f;   // 대시 세기

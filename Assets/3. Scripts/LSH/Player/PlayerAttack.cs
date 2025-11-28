@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerAttack : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerAttack(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerAttack(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.87f;   // 1타 총 길이
     public const int multiHitCount = 1; // 동시타격 가능한 적의 수
     private const float comboAvailableTime = 0.67f; //콤보나 패링등으로 전환이 가능한 시간

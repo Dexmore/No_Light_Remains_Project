@@ -13,11 +13,11 @@ public class DropItem : Interactable
 
     public LayerMask groundLayer;
     Rigidbody2D rb;
-    PlayerController player;
+    PlayerControl player;
     void Awake()
     {
         TryGetComponent(out rb);
-        player = FindAnyObjectByType<PlayerController>();
+        player = FindAnyObjectByType<PlayerControl>();
     }
     void OnEnable()
     {

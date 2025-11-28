@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PlayerHit : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerHit(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerHit(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     [HideInInspector] public HitData.StaggerType staggerType;
     float duration = 0.1f;
     private float _elapsedTime;

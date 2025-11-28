@@ -1,65 +1,70 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerJump : IPlayerState
+public class PlayerRun : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerJump(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerRun(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction moveAction;
+    private InputAction jumpAction;
+    private InputAction attackAction;
+    private InputAction potionAction;
     Vector2 moveActionValue;
-    private InputAction parryAction;
-    bool parryPressed;
-    float startTime;
-    bool flag1;
+    bool jumpPressed;
+    bool attackPressed;
+    bool potionPressed;
     public void Enter()
     {
         if (moveAction == null)
             moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        if (parryAction == null)
-            parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
-        startTime = Time.time;
-        flag1 = false;
+        if (jumpAction == null)
+            jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
+        if (attackAction == null)
+            attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
+        if (potionAction == null)
+            potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
+        ctx.animator.Play("Player_Run");
+        ctx.PlayFootStep();
     }
     public void Exit()
     {
-
+        ctx.StopFootStep();
     }
     public void UpdateState()
     {
-        if (Time.time - startTime < 0.03f)
-        {
-            parryPressed = parryAction.IsPressed();
-            if (parryPressed)
-                fsm.ChangeState(ctx.parry);
-        }
-        else if (!flag1)
-        {
-            flag1 = true;
-            ctx.animator.Play("Player_Jump");
-            AudioManager.I.PlaySFX("Jump");
-            ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.58f, ForceMode2D.Impulse);
-        }
         moveActionValue = moveAction.ReadValue<Vector2>();
         moveActionValue.y = 0f;
-        if (ctx.rb.linearVelocity.y <= 1.8f && Time.time - startTime > 0.05f)
+        if (moveActionValue.x == 0)
+            fsm.ChangeState(ctx.idle);
+
+        jumpPressed = jumpAction.IsPressed();
+        if (jumpPressed && !ctx.Jumped && ctx.Grounded)
+        {
+            ctx.Jumped = true;
+            fsm.ChangeState(ctx.jump);
+        }
+        attackPressed = attackAction.IsPressed();
+        if (attackPressed && ctx.Grounded)
+            fsm.ChangeState(ctx.attack);
+
+        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
             fsm.ChangeState(ctx.fall);
+        
+        potionPressed = potionAction.IsPressed();
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth / ctx.maxHealth) < 1f)
+        {
+            if (DBManager.I.currentCharData.potionCount > 0
+            || (DBManager.I.currentCharData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            {
+                ctx.usePotion.prevState = ctx.idle;
+                fsm.ChangeState(ctx.usePotion);
+            }
+        }
+        
     }
     public void UpdatePhysics()
     {
-        if (Time.time - startTime < 0.2535f)
-        {
-            if (!ctx.Jumped)
-            {
-                if (Time.time - startTime > 0.12f)
-                    ctx.rb.AddForce(Vector2.down * ctx.jumpForce * 0.0221f, ForceMode2D.Impulse);
-                else
-                    ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
-            }
-            else
-                ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
-        }
-
-        // 아래는 점프중 이동 처리
+        if (isStagger) return;
         // 1. 캐릭터 좌우 바라보는 방향 변경
         if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
             ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -68,7 +73,9 @@ public class PlayerJump : IPlayerState
         // 2. 공중에서 벽으로 전진하면 벽에 붙어있는 버그방지
         bool isWallClose = false;
         if (ctx.collisions.Count > 0)
+        {
             foreach (var element in ctx.collisions)
+            {
                 if (Mathf.Abs(element.Value.y - ctx.transform.position.y) >= 0.09f * ctx.height)
                 {
                     if (element.Value.x - ctx.transform.position.x > 0.25f * ctx.width && moveActionValue.x > 0)
@@ -82,18 +89,18 @@ public class PlayerJump : IPlayerState
                         break;
                     }
                 }
+            }
+        }
         // 3. AddForce방식으로 캐릭터 이동
         float dot = Vector2.Dot(ctx.rb.linearVelocity, moveActionValue);
         //float speedInAir = ctx.Grounded ? ctx.moveSpeed : ctx.moveSpeed * ctx.airMoveMultiplier;
         if (!isWallClose)
             if (dot < ctx.moveSpeed)
             {
-                // 공중이므로 기존 이동보다 ctx.airMoveMultiplier 만큼 감속
-                float multiplier = ctx.airMoveMultiplier * 0.5f * ((ctx.moveSpeed - dot) + 1f);
+                float multiplier = (ctx.moveSpeed - dot) + 1f;
                 ctx.rb.AddForce(multiplier * moveActionValue * (ctx.moveSpeed + 4.905f) / 1.25f);
             }
-
-
-
     }
+    [HideInInspector] public bool isStagger = false;
+    
 }

@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerIdle : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerIdle(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerIdle(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction moveAction;
     Vector2 moveActionValue;
     private InputAction jumpAction;

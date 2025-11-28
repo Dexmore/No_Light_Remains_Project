@@ -1,70 +1,59 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerRun : IPlayerState
+public class PlayerFall : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerRun(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerFall(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction moveAction;
-    private InputAction jumpAction;
-    private InputAction attackAction;
-    private InputAction potionAction;
     Vector2 moveActionValue;
-    bool jumpPressed;
-    bool attackPressed;
-    bool potionPressed;
     public void Enter()
     {
         if (moveAction == null)
             moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        if (jumpAction == null)
-            jumpAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Jump");
-        if (attackAction == null)
-            attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
-        if (potionAction == null)
-            potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
-        ctx.animator.Play("Player_Run");
-        ctx.PlayFootStep();
+        ctx.animator.Play("Player_Fall");
+        startTime = Time.time;
     }
+    float startTime;
     public void Exit()
     {
-        ctx.StopFootStep();
+
     }
     public void UpdateState()
     {
         moveActionValue = moveAction.ReadValue<Vector2>();
         moveActionValue.y = 0f;
-        if (moveActionValue.x == 0)
-            fsm.ChangeState(ctx.idle);
-
-        jumpPressed = jumpAction.IsPressed();
-        if (jumpPressed && !ctx.Jumped && ctx.Grounded)
+        if (ctx.Grounded)
         {
-            ctx.Jumped = true;
-            fsm.ChangeState(ctx.jump);
-        }
-        attackPressed = attackAction.IsPressed();
-        if (attackPressed && ctx.Grounded)
-            fsm.ChangeState(ctx.attack);
+            if (Mathf.Abs(moveActionValue.x) > 0.01f)
+                fsm.ChangeState(ctx.run);
+            else
+                fsm.ChangeState(ctx.idle);
 
-        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
-            fsm.ChangeState(ctx.fall);
-        
-        potionPressed = potionAction.IsPressed();
-        if (potionPressed && ctx.Grounded && (ctx.currentHealth / ctx.maxHealth) < 1f)
-        {
-            if (DBManager.I.currentCharData.potionCount > 0
-            || (DBManager.I.currentCharData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            SFX sfx;
+            float vol = Time.time - startTime;
+            if (vol > 0.2f)
             {
-                ctx.usePotion.prevState = ctx.idle;
-                fsm.ChangeState(ctx.usePotion);
+                vol = Mathf.Clamp01(vol - 0.3f) * 0.4f;
+                sfx = AudioManager.I.PlaySFX("Land");
+                if (sfx != null)
+                    if (sfx.aus != null)
+                        sfx.aus.volume = vol * sfx.aus.volume;
             }
         }
-        
     }
     public void UpdatePhysics()
     {
-        if (isStagger) return;
+        ctx.rb.AddForceY(-16f);
+        if (Time.time - startTime > 0.4f)
+        {
+            float _time = Time.time - startTime - 0.4f;
+            _time = Mathf.Clamp(_time, 0f, 10f);
+            ctx.rb.AddForce(Vector2.down * _time * 0.44f, ForceMode2D.Impulse);
+        }
+
+        // 아래는 낙하중에 동시에 이동 처리
+
         // 1. 캐릭터 좌우 바라보는 방향 변경
         if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
             ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -73,9 +62,7 @@ public class PlayerRun : IPlayerState
         // 2. 공중에서 벽으로 전진하면 벽에 붙어있는 버그방지
         bool isWallClose = false;
         if (ctx.collisions.Count > 0)
-        {
             foreach (var element in ctx.collisions)
-            {
                 if (Mathf.Abs(element.Value.y - ctx.transform.position.y) >= 0.09f * ctx.height)
                 {
                     if (element.Value.x - ctx.transform.position.x > 0.25f * ctx.width && moveActionValue.x > 0)
@@ -89,18 +76,17 @@ public class PlayerRun : IPlayerState
                         break;
                     }
                 }
-            }
-        }
         // 3. AddForce방식으로 캐릭터 이동
         float dot = Vector2.Dot(ctx.rb.linearVelocity, moveActionValue);
         //float speedInAir = ctx.Grounded ? ctx.moveSpeed : ctx.moveSpeed * ctx.airMoveMultiplier;
         if (!isWallClose)
             if (dot < ctx.moveSpeed)
             {
-                float multiplier = (ctx.moveSpeed - dot) + 1f;
+                // 공중이므로 기존 이동보다 ctx.airMoveMultiplier 만큼 감속
+                float multiplier = ctx.airMoveMultiplier * 0.5f * ((ctx.moveSpeed - dot) + 1f);
                 ctx.rb.AddForce(multiplier * moveActionValue * (ctx.moveSpeed + 4.905f) / 1.25f);
             }
+
+
     }
-    [HideInInspector] public bool isStagger = false;
-    
 }

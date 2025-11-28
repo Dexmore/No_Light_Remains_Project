@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PlayerUsePotion : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerUsePotion(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 2.9f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;

@@ -3,7 +3,7 @@ using UnityEngine;
 public class HUDBinder : MonoBehaviour
 {
     [Header("References")]
-    public PlayerController player;          // Player 오브젝트 지정
+    public PlayerControl player;          // Player 오브젝트 지정
     public HealthBar healthBar;         // HUD_RuntimeHooks에 있는 컴포넌트 참조
     public LighthouseBar lighthouseBar; // 등대게이지 
     public CurrencyUI currencyUI;       // 보여지고 있는 UI 
@@ -12,7 +12,7 @@ public class HUDBinder : MonoBehaviour
     {
         if (!player)
         {
-            player = FindObjectOfType<PlayerController>();
+            player = FindObjectOfType<PlayerControl>();
         }
         if (!healthBar)     healthBar     = FindObjectOfType<HealthBar>();
         if (!lighthouseBar) lighthouseBar = FindObjectOfType<LighthouseBar>();

@@ -1,59 +1,65 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerFall : IPlayerState
+public class PlayerJump : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerFall(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerJump(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction moveAction;
     Vector2 moveActionValue;
+    private InputAction parryAction;
+    bool parryPressed;
+    float startTime;
+    bool flag1;
     public void Enter()
     {
         if (moveAction == null)
             moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        ctx.animator.Play("Player_Fall");
+        if (parryAction == null)
+            parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
         startTime = Time.time;
+        flag1 = false;
     }
-    float startTime;
     public void Exit()
     {
 
     }
     public void UpdateState()
     {
+        if (Time.time - startTime < 0.03f)
+        {
+            parryPressed = parryAction.IsPressed();
+            if (parryPressed)
+                fsm.ChangeState(ctx.parry);
+        }
+        else if (!flag1)
+        {
+            flag1 = true;
+            ctx.animator.Play("Player_Jump");
+            AudioManager.I.PlaySFX("Jump");
+            ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.58f, ForceMode2D.Impulse);
+        }
         moveActionValue = moveAction.ReadValue<Vector2>();
         moveActionValue.y = 0f;
-        if (ctx.Grounded)
-        {
-            if (Mathf.Abs(moveActionValue.x) > 0.01f)
-                fsm.ChangeState(ctx.run);
-            else
-                fsm.ChangeState(ctx.idle);
-
-            SFX sfx;
-            float vol = Time.time - startTime;
-            if (vol > 0.2f)
-            {
-                vol = Mathf.Clamp01(vol - 0.3f) * 0.4f;
-                sfx = AudioManager.I.PlaySFX("Land");
-                if (sfx != null)
-                    if (sfx.aus != null)
-                        sfx.aus.volume = vol * sfx.aus.volume;
-            }
-        }
+        if (ctx.rb.linearVelocity.y <= 1.8f && Time.time - startTime > 0.05f)
+            fsm.ChangeState(ctx.fall);
     }
     public void UpdatePhysics()
     {
-        ctx.rb.AddForceY(-16f);
-        if (Time.time - startTime > 0.4f)
+        if (Time.time - startTime < 0.2535f)
         {
-            float _time = Time.time - startTime - 0.4f;
-            _time = Mathf.Clamp(_time, 0f, 10f);
-            ctx.rb.AddForce(Vector2.down * _time * 0.44f, ForceMode2D.Impulse);
+            if (!ctx.Jumped)
+            {
+                if (Time.time - startTime > 0.12f)
+                    ctx.rb.AddForce(Vector2.down * ctx.jumpForce * 0.0221f, ForceMode2D.Impulse);
+                else
+                    ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
+            }
+            else
+                ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
         }
 
-        // 아래는 낙하중에 동시에 이동 처리
-
+        // 아래는 점프중 이동 처리
         // 1. 캐릭터 좌우 바라보는 방향 변경
         if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
             ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -86,6 +92,7 @@ public class PlayerFall : IPlayerState
                 float multiplier = ctx.airMoveMultiplier * 0.5f * ((ctx.moveSpeed - dot) + 1f);
                 ctx.rb.AddForce(multiplier * moveActionValue * (ctx.moveSpeed + 4.905f) / 1.25f);
             }
+
 
 
     }

@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PlayerParry : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerParry(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerParry(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.8f;   // 총 길이
     private const float parryTime = 0.5f;   // 패링 시간
     private float _elapsedTime;

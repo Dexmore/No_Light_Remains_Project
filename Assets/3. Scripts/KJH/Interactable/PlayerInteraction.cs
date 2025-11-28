@@ -45,16 +45,16 @@ public class PlayerInteraction : MonoBehaviour
         public Interactable interactable;
     }
     Transform camTR;
-    PlayerController control;
+    PlayerControl control;
     [ReadOnlyInspector][SerializeField] Interactable target1;
     [ReadOnlyInspector][SerializeField] Interactable target2;
     Vector3 distancePivot;
     Prompt prompt;
     LightSystem lightSystem;
-    PlayerController playerController;
+    PlayerControl PlayerControl;
     void Awake()
     {
-        TryGetComponent(out playerController);
+        TryGetComponent(out PlayerControl);
         prompt = FindAnyObjectByType<Prompt>();
         lightSystem = FindAnyObjectByType<LightSystem>();
     }
@@ -86,8 +86,8 @@ public class PlayerInteraction : MonoBehaviour
     public bool press2;
     void InputInteraction(InputAction.CallbackContext callback)
     {
-        if (playerController.fsm.currentState == playerController.openInventory) return;
-        if (playerController.fsm.currentState == playerController.die) return;
+        if (PlayerControl.fsm.currentState == PlayerControl.openInventory) return;
+        if (PlayerControl.fsm.currentState == PlayerControl.die) return;
         if (!press1)
         {
             if (target1 != null)
@@ -120,8 +120,8 @@ public class PlayerInteraction : MonoBehaviour
     }
     void InputLantern(InputAction.CallbackContext callback)
     {
-        if (playerController.fsm.currentState == playerController.openInventory) return;
-        if (playerController.fsm.currentState == playerController.die) return;
+        if (PlayerControl.fsm.currentState == PlayerControl.openInventory) return;
+        if (PlayerControl.fsm.currentState == PlayerControl.die) return;
         if (target2 == null) return;
         if (!press2)
         {
@@ -155,9 +155,9 @@ public class PlayerInteraction : MonoBehaviour
         while (!token.IsCancellationRequested)
         {
             await UniTask.Yield(token);
-            if (playerController.fsm.currentState == playerController.openInventory)
+            if (PlayerControl.fsm.currentState == PlayerControl.openInventory)
                 return;
-            if (playerController.fsm.currentState == playerController.die)
+            if (PlayerControl.fsm.currentState == PlayerControl.die)
                 return;
             if (target2 == null)
                 return;
@@ -195,13 +195,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             int rnd = Random.Range(12, 18);
             await UniTask.DelayFrame(rnd, cancellationToken: token);
-            if (playerController.fsm.currentState == playerController.openInventory)
+            if (PlayerControl.fsm.currentState == PlayerControl.openInventory)
             {
                 prompt.Close(0);
                 prompt.Close(1);
                 continue;
             }
-            if (playerController.fsm.currentState == playerController.die)
+            if (PlayerControl.fsm.currentState == PlayerControl.die)
             {
                 prompt.Close(0);
                 prompt.Close(1);

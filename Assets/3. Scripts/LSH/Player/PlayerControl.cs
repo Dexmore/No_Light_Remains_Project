@@ -2,21 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Events;
 using DG.Tweening;
-
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour
+public class PlayerControl : MonoBehaviour
 {
 
     [Header("Player HP")]
     public float maxHealth = 1000;
     public float currentHealth;
 
-    // [Header("Light Resource")]
-    // public int maxLight = 100;
-    // public int currentLight = 50;
-    // public int parryLightGain = 15;
+    [Header("Light Resource")]
+    public float maxLight = 100;
+    public float currentLight;
 
     [Header("Move")]
     public float moveSpeed = 6f;
@@ -45,9 +42,9 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public PlayerParry parry;
     [HideInInspector] public PlayerHit hit;
     [HideInInspector] public PlayerDie die;
-    [HideInInspector] public PlayerJumpAttack jumpAttack;
     [HideInInspector] public PlayerUsePotion usePotion;
     [HideInInspector] public PlayerOpenInventory openInventory;
+    // [HideInInspector] public PlayerJumpAttack jumpAttack;
 
 
     // === Ground 체크 ===
@@ -103,7 +100,7 @@ public class PlayerController : MonoBehaviour
             newData.sceneName = "Stage1";
             newData.lastPosition = Vector2.zero;
             newData.HP = maxHealth;
-            newData.MP = 0;
+            newData.MP = maxLight;
             newData.potionCount = 5;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
@@ -118,6 +115,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             currentHealth = DBManager.I.currentCharData.HP;
+            currentLight = DBManager.I.currentCharData.MP;
             light0.SetActive(DBManager.I.isLanternOn);
             light1.SetActive(DBManager.I.isLanternOn);
         }

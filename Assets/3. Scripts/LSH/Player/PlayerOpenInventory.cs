@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerOpenInventory : IPlayerState
 {
-    private readonly PlayerController ctx;
+    private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerOpenInventory(PlayerController ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerOpenInventory(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private InputAction escAction;
     bool escPressed;
     private InputAction inventoryAction;
