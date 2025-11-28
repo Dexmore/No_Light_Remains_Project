@@ -1,21 +1,24 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-[System.Serializable]
-public class SavePos
-{
-    public string scene;
-    public float x;
-    public float y;
-
-    public Vector2 Position => new Vector2(x, y);
-}
-
-public class SaveManager_LSH : MonoBehaviour
+public static class SaveManager_LSH
 {
     private const string SAVE_KEY = "SAVE";
 
-    public static void Save(string sceneName, Vector2 pos)
+    [System.Serializable]
+    public class SavePos
     {
+        public string scene;
+        public float x;
+        public float y;
+    }
+
+    // 저장
+    public static void Save(Vector2 pos, string sceneName = null)
+    {
+        if (string.IsNullOrEmpty(sceneName))
+            sceneName = SceneManager.GetActiveScene().name;
+
         SavePos data = new SavePos
         {
             scene = sceneName,
@@ -27,18 +30,23 @@ public class SaveManager_LSH : MonoBehaviour
         PlayerPrefs.SetString(SAVE_KEY, json);
         PlayerPrefs.Save();
 
-        Debug.Log("[Save] Saved: " + json);
+        Debug.Log("[Save] " + json);
     }
 
+    // 불러오기
     public static SavePos Load()
     {
         if (!PlayerPrefs.HasKey(SAVE_KEY))
-            return default(SavePos);
+            return null;
 
         string json = PlayerPrefs.GetString(SAVE_KEY);
-        SavePos data = JsonUtility.FromJson<SavePos>(json);
-
+        var data = JsonUtility.FromJson<SavePos>(json);
         Debug.Log("[Save] Loaded: " + json);
         return data;
+    }
+
+    public static bool HasSave()
+    {
+        return PlayerPrefs.HasKey(SAVE_KEY);
     }
 }
