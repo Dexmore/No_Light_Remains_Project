@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 560998385163380795}
   - component: {fileID: 6385803262707985651}
-  - component: {fileID: 2932785032924485551}
   - component: {fileID: 4993106478775514445}
   - component: {fileID: 8925858296391074479}
+  - component: {fileID: 317666645417145328}
   m_Layer: 0
   m_Name: SavePoint
   m_TagString: Untagged
@@ -93,21 +93,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2932785032924485551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2592951076189037902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 421df5e640d0e3a4fa52ed15c1cec995, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Savepoint_LSH
-  animator: {fileID: 4993106478775514445}
-  activateTriggerName: Activate
-  deactivateTriggerName: Deactivate
 --- !u!95 &4993106478775514445
 Animator:
   serializedVersion: 7
@@ -176,3 +161,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.87, y: 1.17}
   m_EdgeRadius: 0
+--- !u!114 &317666645417145328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2592951076189037902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 614839aa6dd4cf54ca5d481661d7966c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SavePoint_LSH
+  animator: {fileID: 0}
+  activateTriggerName: Activate
+  deactivateTriggerName: Deactivate
