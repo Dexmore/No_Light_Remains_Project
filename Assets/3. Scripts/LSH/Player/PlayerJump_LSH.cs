@@ -32,11 +32,12 @@ public class PlayerJump_LSH : IPlayerState_LSH
             if (parryPressed)
                 fsm.ChangeState(ctx.parry);
         }
-        else if(!flag1)
+        else if (!flag1)
         {
             flag1 = true;
             ctx.animator.Play("Player_Jump");
-            ctx.rb.AddForce(Vector2.up * ctx.jumpForce, ForceMode2D.Impulse);
+            AudioManager.I.PlaySFX("Jump");
+            ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.58f, ForceMode2D.Impulse);
         }
         moveActionValue = moveAction.ReadValue<Vector2>();
         moveActionValue.y = 0f;
@@ -45,8 +46,20 @@ public class PlayerJump_LSH : IPlayerState_LSH
     }
     public void UpdatePhysics()
     {
-        // 아래는 점프중 동시에 이동 처리
+        if (Time.time - startTime < 0.2535f)
+        {
+            if (!ctx.Jumped)
+            {
+                if (Time.time - startTime > 0.12f)
+                    ctx.rb.AddForce(Vector2.down * ctx.jumpForce * 0.0221f, ForceMode2D.Impulse);
+                else
+                    ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
+            }
+            else
+                ctx.rb.AddForce(Vector2.up * ctx.jumpForce * 0.0349f, ForceMode2D.Impulse);
+        }
 
+        // 아래는 점프중 이동 처리
         // 1. 캐릭터 좌우 바라보는 방향 변경
         if (moveActionValue.x > 0 && ctx.childTR.right.x < 0)
             ctx.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);

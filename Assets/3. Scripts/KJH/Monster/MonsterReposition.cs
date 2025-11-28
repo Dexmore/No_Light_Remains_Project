@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
 public class MonsterReposition : MonsterState
 {
     public override MonsterControl.State mapping => MonsterControl.State.Reposition;
@@ -21,6 +21,9 @@ public class MonsterReposition : MonsterState
     RaycastHit2D[] grounds = new RaycastHit2D[10];
     public async UniTask Activate(CancellationToken token)
     {
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            anim.Play("Idle");
+        
         if (control.memories.Count == 0)
         {
             await UniTask.Yield(cts.Token);
@@ -171,11 +174,23 @@ public class MonsterReposition : MonsterState
                                 break;
                             }
                         }
+                if (stopWall)
+                {
+                    if (control.isDie) return;
+                    if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                        anim.Play("Idle");
+                    if (Random.value < 5f * Time.deltaTime)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeNextState();
+                        return;
+                    }
+                }
                 if (!stopWall)
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        if(!isTowardPlayer || (isTowardPlayer && !control.isStagger))
+                        if (!isTowardPlayer || (isTowardPlayer && !control.isStagger))
                             rb.AddForce(multiplier * moveHorizontal * (control.data.MoveSpeed + 4.905f) / 1.25f);
                         if (control.isGround)
                         {
@@ -227,12 +242,24 @@ public class MonsterReposition : MonsterState
                     }
                 }
             }
+            if (stopWall)
+            {
+                if (control.isDie) return;
+                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                    anim.Play("Idle");
+                if (Random.value < 5f * Time.deltaTime)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    control.ChangeNextState();
+                    return;
+                }
+            }
             // AddForce방식으로 캐릭터 이동
             if (!stopWall)
                 if (dot < control.data.MoveSpeed)
                 {
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                    if(!isTowardPlayer || (isTowardPlayer && !control.isStagger))
+                    if (!isTowardPlayer || (isTowardPlayer && !control.isStagger))
                         rb.AddForce(multiplier * moveDirection * 2.9f * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     if (control.isGround)
                     {

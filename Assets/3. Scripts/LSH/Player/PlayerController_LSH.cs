@@ -65,7 +65,6 @@ public class PlayerController_LSH : MonoBehaviour
     [ReadOnlyInspector] public bool Parred { get; set; }
     [ReadOnlyInspector] public bool Avoided { get; set; }
     [ReadOnlyInspector] public bool Dead { get; set; }
-
     void Awake()
     {
         TryGetComponent(out rb);
@@ -90,9 +89,12 @@ public class PlayerController_LSH : MonoBehaviour
         usePotion = new PlayerUsePotion_LSH(this, fsm);
         openInventory = new PlayerOpenInventory_LSH(this, fsm);
         InitMatInfo();
+        sfxFootStep = GetComponentInChildren<AudioSource>();
     }
     void Start()
     {
+        GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
+        GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
         CharacterData characterData = DBManager.I.currentCharData;
         if (characterData.sceneName == "" && characterData.HP == 0)
         {
@@ -107,10 +109,14 @@ public class PlayerController_LSH : MonoBehaviour
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             DBManager.I.currentCharData = newData;
+            light0.SetActive(false);
+            light1.SetActive(false);
         }
         else
         {
             currentHealth = DBManager.I.currentCharData.HP;
+            light0.SetActive(DBManager.I.isLanternOn);
+            light1.SetActive(DBManager.I.isLanternOn);
         }
     }
 
@@ -119,19 +125,21 @@ public class PlayerController_LSH : MonoBehaviour
         fsm.ChangeState(idle);
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").performed += DashInput;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").performed += DashInput;
-        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashInputCancel;
-        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashInputCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled += JumpCancel;
         lanternAction = inputActionAsset.FindActionMap("Player").FindAction("Lantern");
         lanternAction.performed += LanternInput;
         GameManager.I.onHit += HitHandler;
-
     }
     void OnDisable()
     {
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").performed -= DashInput;
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").performed -= DashInput;
-        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashInputCancel;
-        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashInputCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled -= DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashCancel;
+        inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled -= JumpCancel;
         lanternAction.performed -= LanternInput;
         GameManager.I.onHit -= HitHandler;
     }
@@ -161,6 +169,9 @@ public class PlayerController_LSH : MonoBehaviour
             if (collisions.ContainsKey(collision.collider))
                 collisions.Remove(collision.collider);
     }
+    Ray2D groundRay = new Ray2D();
+    RaycastHit2D groundRayHit;
+    float groundCheckTime;
     void CheckGroundedPrecise()
     {
         Grounded = false;
@@ -171,6 +182,20 @@ public class PlayerController_LSH : MonoBehaviour
                     Grounded = true;
                     break;
                 }
+        if (!Grounded)
+        {
+            if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
+            {
+                groundCheckTime = Time.time;
+                groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
+                groundRay.direction = Vector2.down;
+                groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
+                if (groundRayHit)
+                {
+                    Grounded = true;
+                }
+            }
+        }
     }
 
     #region Dash
@@ -218,7 +243,7 @@ public class PlayerController_LSH : MonoBehaviour
         }
     }
     [ReadOnlyInspector] public bool isDash;
-    void DashInputCancel(InputAction.CallbackContext callback)
+    void DashCancel(InputAction.CallbackContext callback)
     {
         if (!Grounded) return;
         if (leftDashInputCount == 1)
@@ -228,7 +253,7 @@ public class PlayerController_LSH : MonoBehaviour
     }
     IEnumerator DashRelease()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.18f);
+        yield return YieldInstructionCache.WaitForSeconds(0.2f);
         leftDashInputCount = 0;
         rightDashInputCount = 0;
     }
@@ -238,7 +263,14 @@ public class PlayerController_LSH : MonoBehaviour
         while (Time.time - time < 0.48f)
         {
             yield return null;
-            if (fsm.currentState == dash) break;
+            if (fsm.currentState == dash)
+            {
+                isDash = false;
+                leftDashInputCount = 0;
+                rightDashInputCount = 0;
+                StopCoroutine(nameof(DashRelease));
+                yield break;
+            }
             if (fsm.currentState == hit) break;
             if (fsm.currentState == idle || fsm.currentState == run)
             {
@@ -252,6 +284,11 @@ public class PlayerController_LSH : MonoBehaviour
         rightDashInputCount = 0;
     }
     #endregion
+    [ReadOnlyInspector] public bool Jumped;
+    void JumpCancel(InputAction.CallbackContext callback)
+    {
+        Jumped = false;
+    }
     void HitHandler(HitData hData)
     {
         if (hData.target.Root() != transform) return;
@@ -277,9 +314,16 @@ public class PlayerController_LSH : MonoBehaviour
             currentHealth -= (int)hData.damage;
             currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
             DBManager.I.currentCharData.HP = currentHealth;
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
+            AudioManager.I.PlaySFX("HitLittle", hData.hitPoint, null);
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
-            HitChangeColor(Color.white);
+            HitChangeColor(Color.white, 0);
             return;
         }
         else if (hData.attackType == HitData.AttackType.Default)
@@ -290,16 +334,27 @@ public class PlayerController_LSH : MonoBehaviour
             StartCoroutine(nameof(HitCoolTime2));
             if (Avoided)
             {
-                //Debug.Log("회피 성공");
                 GameManager.I.onAvoid.Invoke(hData.attacker.Root());
+                ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                AudioManager.I.PlaySFX("Woosh1");
                 return;
             }
             if (Parred)
             {
-                AudioManager.I.PlaySFX("Parry");
-                //Debug.Log("패링 성공");
-                GameManager.I.onParry.Invoke(hData.attacker.Root());
-                return;
+                if (!hData.isCannotParry)
+                {
+                    AudioManager.I.PlaySFX("Parry");
+                    ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                    GameManager.I.onParry.Invoke(hData.attacker.Root());
+                    StartCoroutine(nameof(ReleaseParred));
+                    return;
+                }
+                else
+                {
+                    AudioManager.I.PlaySFX("Fail1");
+                    ParticleManager.I.PlayText("Cannot Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                    //Debug.Log("패링 불가 공격");
+                }
             }
             float multiplier = 1f;
             switch (hData.staggerType)
@@ -332,9 +387,14 @@ public class PlayerController_LSH : MonoBehaviour
             DBManager.I.currentCharData.HP = currentHealth;
             if (currentHealth <= 0)
                 fsm.ChangeState(die);
-            ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-            AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
-            HitChangeColor(Color.white);
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
+            AudioManager.I.PlaySFX("Hit8bit2", hData.hitPoint, null);
+            HitChangeColor(Color.white, 1);
             return;
         }
     }
@@ -358,7 +418,7 @@ public class PlayerController_LSH : MonoBehaviour
             matInfos.Add(matInfo);
         }
     }
-    void HitChangeColor(Color color)
+    void HitChangeColor(Color color, int index = 0)
     {
         foreach (var element in matInfos)
         {
@@ -375,11 +435,13 @@ public class PlayerController_LSH : MonoBehaviour
                 newMats[materialIndex].color = currentElement.originalMats[materialIndex].color;
                 newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
                 currentElement.sequences[materialIndex] = DOTween.Sequence();
-                currentElement.sequences[materialIndex].AppendInterval(0.08f);
+                currentElement.sequences[materialIndex].AppendInterval(0.09f);
+                float _dur = 0.21f;
+                if (index == 1) _dur = 0.5f;
                 Tween colorTween = newMats[materialIndex].DOVector(
                     new Vector4(color.r, color.g, color.b, 0f),
                     "_TintColor",
-                    0.22f
+                    _dur
                 ).SetEase(Ease.OutBounce);
                 currentElement.sequences[materialIndex].Append(colorTween);
                 currentElement.sequences[materialIndex].OnComplete(() =>
@@ -401,88 +463,52 @@ public class PlayerController_LSH : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         run.isStagger = false;
-        yield return YieldInstructionCache.WaitForSeconds(0.9f - 0.2f);
+        yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 0.7f));
         isHit1 = false;
     }
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(1.4f);
+        yield return YieldInstructionCache.WaitForSeconds(1.12f);
         isHit2 = false;
     }
-    #region Use Lantern
+    IEnumerator ReleaseParred()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(0.15f);
+        Parred = false;
+    }
+    #region Turn ON/OFF Lantern
     LightSystem lightSystem;
     void LanternInput(InputAction.CallbackContext callback)
     {
+        if (Dead) return;
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+        AudioManager.I.PlaySFX("FlashlightClick");
         if (light0.activeSelf)
         {
             light0.SetActive(false);
             light1.SetActive(false);
+            DBManager.I.isLanternOn = false;
         }
         else
         {
             light0.SetActive(true);
             light1.SetActive(true);
+            DBManager.I.isLanternOn = true;
         }
     }
     #endregion
-    #region Use Potion
-
+    #region FootStep
+    AudioSource sfxFootStep;
+    public void PlayFootStep()
+    {
+        sfxFootStep.Play();
+    }
+    public void StopFootStep()
+    {
+        sfxFootStep.Pause();
+    }
     #endregion
-    #region Open Inventory
-
-    #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -198,6 +198,7 @@ MonoBehaviour:
   jumpForce: 0
   isDie: 0
   isGround: 0
+  isStagger: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -237,10 +238,10 @@ MonoBehaviour:
       coolTime: 1
     - state: 14
       weight: 600
-      coolTime: 6
+      coolTime: 5
     - state: 13
-      weight: 30
-      coolTime: 20
+      weight: 48
+      coolTime: 16
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -249,6 +250,7 @@ MonoBehaviour:
   cannotList: []
   findRadius: 0
   closeRadius: 2.1
+  parryCount: 0
 --- !u!114 &5881627454104273062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,6 +299,14 @@ MonoBehaviour:
     money: 6
     countRange: {x: 2, y: 3}
     probability: 1
+  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+    money: 0
+    countRange: {x: 1, y: 1}
+    probability: 0.7
+  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    money: 0
+    countRange: {x: 1, y: 1}
+    probability: 0.3
 --- !u!114 &3455459431602799887
 MonoBehaviour:
   m_ObjectHideFlags: 0

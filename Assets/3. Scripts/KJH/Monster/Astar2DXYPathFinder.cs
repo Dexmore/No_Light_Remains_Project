@@ -97,8 +97,8 @@ public class Astar2DXYPathFinder : MonoBehaviour
      }
      public async UniTask<Vector2[]> Find(Vector2 targetWorldPos)
      {
-          Dispose();
           cts?.Cancel();
+          Dispose();
           cts = new CancellationTokenSource();
           offeset = 0.1f * height + 0.2f * unit;
           Vector2 nearGround = NearGround(targetWorldPos);
@@ -107,11 +107,33 @@ public class Astar2DXYPathFinder : MonoBehaviour
      JobHandle jobHandle1;
      void Dispose()
      {
+          // 1. 작업이 완료될 때까지 기다립니다. (Job 완료 보장)
           jobHandle1.Complete();
-          if (allNodes.IsCreated) allNodes.Dispose();
-          if (openMinHeap.IsCreated) openMinHeap.Dispose();
-          if (closedSet.IsCreated) closedSet.Dispose();
-          if (resultNA.IsCreated) resultNA.Dispose();
+          // 2. 모든 Native Container에 대해 이중 해제 방지 로직을 적용합니다.
+          if (allNodes.IsCreated)
+          {
+               allNodes.Dispose();
+               allNodes = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
+          }
+          // openMinHeap
+          // NativeMinHeap은 내부적으로 Dispose에 IsCreated 체크가 있지만, 외부에서도 체크합니다.
+          if (openMinHeap.IsCreated)
+          {
+               openMinHeap.Dispose();
+               openMinHeap = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
+          }
+          // closedSet
+          if (closedSet.IsCreated)
+          {
+               closedSet.Dispose();
+               closedSet = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
+          }
+          // resultNA
+          if (resultNA.IsCreated)
+          {
+               resultNA.Dispose();
+               resultNA = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
+          }
      }
      #region 헬퍼 메소드
      // -----------------------------------------------------
@@ -313,7 +335,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
                     /// 박스콜1 --> 타일맵(같은 타일맵 게임오브젝트 1지점) --> 서클콜라이더 --> 타일맵(같은 타일맵 게임오브젝트 2지점) --> 타일맵(같은 타일맵 게임오브젝트 3지점) --> 박스콜2
                     /// 이런순서로 잘 담기게 해야함
                     ///////////////////////
-                    
+
                     float maxDist = unit * astarArraySize.x * 2.0f; // 충분히 큰 최대 거리
                     // 1. 첫 번째 레이를 쏘아 충돌체의 종류를 확인
                     RaycastHit2D firstHit = Physics2D.Raycast(rayOrigin, Vector2.down, maxDist, groundLayer | obstacleLayer);
@@ -342,9 +364,9 @@ public class Astar2DXYPathFinder : MonoBehaviour
                                    }
                                    // 노드 처리 로직 실행 (ProcessAndAssignNode 헬퍼 메서드 사용)
                                    ProcessAndAssignNode(x, layerCount, hit.point.y, targetWorldPos, ref minDistToEnd, ref endNode, ref minDistToStart, ref startNode, halfBox, overlapCollidersBuffer, astarArraySize, allNodes, unit, centerXIndex, characterPosition);
-                                   
+
                                    // 다음 레이 발사 위치 갱신 (콜라이더 내부에서 재발사)
-                                   currentRayStartPos_Loop = hit.point - Vector2.up * 0.2f; 
+                                   currentRayStartPos_Loop = hit.point - Vector2.up * 0.2f;
                                    layerCount++;
                               }
                          }
@@ -352,7 +374,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
                          else
                          {
                               distinctYPoints.Clear(); // Y 좌표 리스트 초기화
-                              
+
                               // RaycastNonAlloc을 사용하여 모든 충돌 지점을 한 번에 가져옴
                               int countR = Physics2D.RaycastNonAlloc(rayOrigin, Vector2.down, rayHitsBuffer, maxDist, groundLayer | obstacleLayer);
 
@@ -362,7 +384,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
                                    // 충돌 지점의 y좌표
                                    float yPos = rayHitsBuffer[j].point.y;
                                    bool isNew = true;
-                                   
+
                                    // 작은 오차 범위(0.01f) 내에서 중복 제거 (float 비교 안전성 확보)
                                    foreach (float existingY in distinctYPoints)
                                    {
@@ -377,10 +399,10 @@ public class Astar2DXYPathFinder : MonoBehaviour
                                         distinctYPoints.Add(yPos);
                                    }
                               }
-                              
+
                               // 3-2. Y 좌표를 높은 순서(천장 -> 바닥)로 정렬
                               distinctYPoints.Sort((a, b) => b.CompareTo(a));
-                              
+
                               // 3-3. 정렬된 고유 Y 좌표로 노드 할당
                               for (int k = 0; k < distinctYPoints.Count && k < astarArraySize.y; k++)
                               {
@@ -396,14 +418,15 @@ public class Astar2DXYPathFinder : MonoBehaviour
                     for (int k = layerCount; k < astarArraySize.y; k++)
                     {
                          int index = x * (astarArraySize.y) + k;
-                         AstarNode node = new AstarNode { 
-                             isValid = false, 
-                             canMove = false, 
-                             xIndex = x, 
-                             yIndex = k, 
-                             index = index, 
-                             yWorldPos = 9999f,
-                             parentIndex = -1
+                         AstarNode node = new AstarNode
+                         {
+                              isValid = false,
+                              canMove = false,
+                              xIndex = x,
+                              yIndex = k,
+                              index = index,
+                              yWorldPos = 9999f,
+                              parentIndex = -1
                          };
                          allNodes[index] = node;
                     }

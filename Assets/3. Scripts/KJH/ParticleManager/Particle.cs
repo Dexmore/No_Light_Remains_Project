@@ -33,15 +33,15 @@ public class Particle : PoolBehaviour
     {
         ps = GetComponentInChildren<ParticleSystem>();
     }
-    public virtual void Play()
+    public void Play()
     {
         ps.Play();
         if (!loop) Play_ut(cts.Token).Forget();
     }
     async UniTask Play_ut(CancellationToken token)
     {
-        await UniTask.Delay(1, ignoreTimeScale: true, cancellationToken:token);
-        await UniTask.Delay((int)(1000f * (ps.main.duration + 0.1f)),ignoreTimeScale: true , cancellationToken:token);
+        await UniTask.Delay(1, ignoreTimeScale: true, cancellationToken: token);
+        await UniTask.Delay((int)(1000f * (ps.main.duration + 0.1f)), ignoreTimeScale: true, cancellationToken: token);
         base.Despawn();
     }
 }

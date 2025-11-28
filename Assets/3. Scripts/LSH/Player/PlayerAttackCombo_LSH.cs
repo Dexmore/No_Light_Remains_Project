@@ -12,6 +12,7 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;
+    bool isSFX;
     public void Enter()
     {
         if (parryAction == null)
@@ -21,6 +22,7 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
         parryPressed = false;
         attacked.Clear();
         ctx.animator.Play("Player_Attack2");
+        isSFX = false;
     }
     public void Exit()
     {
@@ -36,6 +38,17 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
                 fsm.ChangeState(ctx.parry);
             if (!ctx.Grounded)
                 fsm.ChangeState(ctx.idle);
+        }
+        if (_elapsedTime > 0.03f)
+        {
+            if(!isSFX)
+            {
+                isSFX = true;
+                if(Random.value <= 0.7f)
+                    AudioManager.I.PlaySFX("Swoosh3");
+                else
+                    AudioManager.I.PlaySFX("Swoosh2");
+            }
         }
         ///////////////////////////////////////////////////////////
         if (_elapsedTime > comboAvailableTime)
@@ -78,8 +91,9 @@ public class PlayerAttackCombo_LSH : IPlayerState_LSH
                     "AttackCombo",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * 95f,
-                    hitPoint
+                    Random.Range(0.9f, 1.1f) * 80.8f,
+                    hitPoint,
+                    new string[1]{"Hit3"}
                 )
             );
         }

@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Steamworks;
 using NaughtyAttributes;
+
 public class DBManager : SingletonBehaviour<DBManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -15,6 +16,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     CharacterData savedCharData;
     [HideInInspector] public SaveData allSaveDataSteam;
     [HideInInspector] public SaveData allSaveDataLocal;
+    [HideInInspector] public bool isLanternOn;
 
     // Steam API 초기화 성공 여부를 저장하는 플래그
     private bool isSteamInitialized = false;
@@ -28,12 +30,14 @@ public class DBManager : SingletonBehaviour<DBManager>
         UnityEditor.EditorApplication.playModeStateChanged += EditorPlayChanged;
 #endif
     }
+
     void OnDisable()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.playModeStateChanged -= EditorPlayChanged;
 #endif 
     }
+
     IEnumerator Start()
     {
         yield return null;
@@ -42,24 +46,26 @@ public class DBManager : SingletonBehaviour<DBManager>
         LoadSteam();
         LoadLocal();
     }
+
     private void OnApplicationQuit()
     {
-        if (IsSteam())
-        {
-            SteamAPI.Shutdown();
-            //Debug.Log("[DBManager] SteamAPI Shutdown.");
-        }
+        // if (IsSteam())
+        // {
+        //     SteamAPI.Shutdown();
+        //     //Debug.Log("[DBManager] SteamAPI Shutdown.");
+        // }
     }
+
 #if UNITY_EDITOR
     private void EditorPlayChanged(UnityEditor.PlayModeStateChange state)
     {
         if (state == UnityEditor.PlayModeStateChange.ExitingPlayMode)
         {
-            if (IsSteam())
-            {
-                SteamAPI.Shutdown();
-                //Debug.Log("[DBManager] SteamAPI Shutdown.");
-            }
+            // if (IsSteam())
+            // {
+            //     SteamAPI.Shutdown();
+            //     //Debug.Log("[DBManager] SteamAPI Shutdown.");
+            // }
         }
     }
 #endif 
@@ -69,6 +75,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         yield return null;
         SteamAPI.Init();
     }
+    
     public bool IsSteam()
     {
         bool result = false;
@@ -108,17 +115,42 @@ public class DBManager : SingletonBehaviour<DBManager>
     [Button]
     public void Load()
     {
+        // 1. 스팀 슬롯 (0~2)
         if (currentSlotIndex >= 0 && currentSlotIndex <= 2)
         {
-            savedCharData = allSaveDataSteam.characterDatas[currentSlotIndex];
-            currentCharData = savedCharData;
+            // 리스트가 존재하고, 해당 인덱스에 데이터가 있는지 확인 (안전장치)
+            if (allSaveDataSteam.characterDatas != null && allSaveDataSteam.characterDatas.Count > currentSlotIndex)
+            {
+                savedCharData = allSaveDataSteam.characterDatas[currentSlotIndex];
+                currentCharData = savedCharData;
+                Debug.Log($"[DBManager] 스팀 슬롯 {currentSlotIndex} 로드 완료.");
+            }
+            else
+            {
+                Debug.LogWarning($"[DBManager] 스팀 슬롯 {currentSlotIndex}에 데이터가 없습니다. 새 데이터를 시작합니다.");
+                currentCharData = new CharacterData(); // 빈 데이터로 초기화
+            }
         }
+        // 2. 로컬 슬롯 (3~5)
         else if (currentSlotIndex >= 3 && currentSlotIndex <= 5)
         {
-            savedCharData = allSaveDataLocal.characterDatas[currentSlotIndex - 3];
-            currentCharData = savedCharData;
+            int localIndex = currentSlotIndex - 3;
+
+            // 리스트가 존재하고, 해당 인덱스에 데이터가 있는지 확인 (안전장치)
+            if (allSaveDataLocal.characterDatas != null && allSaveDataLocal.characterDatas.Count > localIndex)
+            {
+                savedCharData = allSaveDataLocal.characterDatas[localIndex];
+                currentCharData = savedCharData;
+                Debug.Log($"[DBManager] 로컬 슬롯 {localIndex} 로드 완료.");
+            }
+            else
+            {
+                Debug.LogWarning($"[DBManager] 로컬 슬롯 {localIndex}에 데이터가 없습니다. 새 데이터를 시작합니다.");
+                currentCharData = new CharacterData(); // 빈 데이터로 초기화
+            }
         }
     }
+
     void SaveSteam()
     {
         if (!IsSteam())
@@ -149,6 +181,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             Debug.LogError($"[DBManager] 스팀 저장 중 예외 발생: {e.Message}");
         }
     }
+
     public void LoadSteam()
     {
         if (!IsSteam())
@@ -190,6 +223,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             allSaveDataSteam = new SaveData(); // 문제 발생 시 새 데이터로 초기화
         }
     }
+
     public void SaveLocal()
     {
         while (allSaveDataLocal.characterDatas.Count > 3)
@@ -209,6 +243,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             Debug.LogError($"[DBManager] 로컬 저장 실패: {e.Message}");
         }
     }
+
     public void LoadLocal()
     {
         // 1. 저장 파일이 있는지 확인
@@ -233,11 +268,13 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
 }
+
 [System.Serializable]
 public struct SaveData
 {
     public List<CharacterData> characterDatas;
 }
+
 [System.Serializable]
 public struct CharacterData
 {

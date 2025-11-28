@@ -10,6 +10,8 @@ public class LanternFunctionData : ScriptableObject // [수정] ScriptableObject
     public string functionDescription;
     
     public bool isEquipped;
+
+    public bool isNew;
     
     // (참고: 이 데이터에는 'isNew'가 없었으므로 추가하지 않았습니다.)
 }

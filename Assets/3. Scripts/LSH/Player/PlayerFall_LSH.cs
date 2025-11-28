@@ -11,9 +11,10 @@ public class PlayerFall_LSH : IPlayerState_LSH
     {
         if (moveAction == null)
             moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-
         ctx.animator.Play("Player_Fall");
+        startTime = Time.time;
     }
+    float startTime;
     public void Exit()
     {
 
@@ -28,12 +29,28 @@ public class PlayerFall_LSH : IPlayerState_LSH
                 fsm.ChangeState(ctx.run);
             else
                 fsm.ChangeState(ctx.idle);
+
+            SFX sfx;
+            float vol = Time.time - startTime;
+            if (vol > 0.2f)
+            {
+                vol = Mathf.Clamp01(vol - 0.3f) * 0.4f;
+                sfx = AudioManager.I.PlaySFX("Land");
+                if (sfx != null)
+                    if (sfx.aus != null)
+                        sfx.aus.volume = vol * sfx.aus.volume;
+            }
         }
     }
     public void UpdatePhysics()
     {
-        // 유승훈 기획님 요청으로 Fall상태에서 더 빨리 낙하했으면 좋겠다고 해서 추가
         ctx.rb.AddForceY(-16f);
+        if (Time.time - startTime > 0.4f)
+        {
+            float _time = Time.time - startTime - 0.4f;
+            _time = Mathf.Clamp(_time, 0f, 10f);
+            ctx.rb.AddForce(Vector2.down * _time * 0.44f, ForceMode2D.Impulse);
+        }
 
         // 아래는 낙하중에 동시에 이동 처리
 

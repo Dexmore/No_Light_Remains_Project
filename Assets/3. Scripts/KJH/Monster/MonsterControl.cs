@@ -31,6 +31,7 @@ public class MonsterControl : MonoBehaviour
     Astar2DXYPathFinder astar;
     Rigidbody2D rb;
     [HideInInspector] public AttackRange attackRange;
+    BossHUD bossHUD;
     void Awake()
     {
         SettingFSM();
@@ -40,6 +41,8 @@ public class MonsterControl : MonoBehaviour
         eye = transform.GetChild(0).Find("Eye");
         InitMatInfo();
         TryGetComponent(out monsterHit);
+        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+            bossHUD = FindAnyObjectByType<BossHUD>();
     }
     void Init()
     {
@@ -133,7 +136,7 @@ public class MonsterControl : MonoBehaviour
         if (stateDictionary[newState].coolTime == 0)
         {
             float _coolTime = 0;
-            bool canInjury1 = false;
+            bool canPhase2 = false;
             for (int i = 0; i < patterns.Length; i++)
             {
                 for (int j = 0; j < patterns.Length; j++)
@@ -142,12 +145,12 @@ public class MonsterControl : MonoBehaviour
                     Frequency frequency = patterns[i].frequencies[j];
                     if (frequency.state == newState)
                     {
-                        canInjury1 = true;
+                        canPhase2 = true;
                         _coolTime = frequency.coolTime;
                         break;
                     }
                 }
-                if (canInjury1) break;
+                if (canPhase2) break;
             }
             stateDictionary[newState].coolTime = _coolTime;
         }
@@ -321,8 +324,8 @@ public class MonsterControl : MonoBehaviour
         Peaceful = 1 << 0,
         FindPlayer = 1 << 1,
         ClosePlayer = 1 << 2,
-        Injury1 = 1 << 4,
-        Injury2 = 1 << 5,
+        Phase2 = 1 << 4,
+        Phase3 = 1 << 5,
     }
     [System.Serializable]
     public struct Pattern
@@ -566,6 +569,9 @@ public class MonsterControl : MonoBehaviour
             else
                 collisions[collision.collider] = collision.contacts[0].point;
     }
+    Ray2D groundRay = new Ray2D();
+    RaycastHit2D groundRayHit;
+    float groundCheckTime;
     void OnCollisionExit2D(Collision2D collision)
     {
         if ((collision.collider.gameObject.layer & groundLayer) != 0)
@@ -582,6 +588,20 @@ public class MonsterControl : MonoBehaviour
                     isGround = true;
                     break;
                 }
+        if (!isGround)
+        {
+            if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
+            {
+                groundCheckTime = Time.time;
+                groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
+                groundRay.direction = Vector2.down;
+                groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
+                if (groundRayHit)
+                {
+                    isGround = true;
+                }
+            }
+        }
     }
     #region Sensor
     Collider2D[] nearPlayers = new Collider2D[80];
@@ -598,18 +618,18 @@ public class MonsterControl : MonoBehaviour
         findRadius = 15f * ((width + height) * 0.61f + 0.7f);
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
-        bool canInjury1 = false;
-        bool canInjury2 = false;
+        bool canPhase2 = false;
+        bool canPhase3 = false;
         foreach (var element in patterns)
-            if ((element.condition & Condition.Injury1) != 0)
+            if ((element.condition & Condition.Phase2) != 0)
             {
-                canInjury1 = true;
+                canPhase2 = true;
                 break;
             }
         foreach (var element in patterns)
-            if ((element.condition & Condition.Injury2) != 0)
+            if ((element.condition & Condition.Phase3) != 0)
             {
-                canInjury2 = true;
+                canPhase3 = true;
                 break;
             }
         while (!token.IsCancellationRequested)
@@ -710,6 +730,8 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
+                                    if (bossHUD != null)
+                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -721,6 +743,8 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
+                                    if (bossHUD != null)
+                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -747,28 +771,28 @@ public class MonsterControl : MonoBehaviour
             }
             // Injury
             float ratio = (currHP / maxHP);
-            if (canInjury1)
+            if (canPhase2)
             {
-                if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Injury1))
+                if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Phase2))
                 {
-                    AddCondition(Condition.Injury1);
-                    RemoveCondition(Condition.Injury2);
+                    AddCondition(Condition.Phase2);
+                    RemoveCondition(Condition.Phase3);
                 }
             }
-            if (canInjury2)
+            if (canPhase3)
             {
-                if (ratio <= 0.4f && !HasCondition(Condition.Injury2))
+                if (ratio <= 0.4f && !HasCondition(Condition.Phase3))
                 {
-                    RemoveCondition(Condition.Injury1);
-                    AddCondition(Condition.Injury2);
+                    RemoveCondition(Condition.Phase2);
+                    AddCondition(Condition.Phase3);
                 }
             }
-            if (HasCondition(Condition.Injury1) || HasCondition(Condition.Injury2))
+            if (HasCondition(Condition.Phase2) || HasCondition(Condition.Phase3))
             {
                 if (ratio > 0.7f)
                 {
-                    RemoveCondition(Condition.Injury1);
-                    RemoveCondition(Condition.Injury2);
+                    RemoveCondition(Condition.Phase2);
+                    RemoveCondition(Condition.Phase3);
                 }
             }
         }
@@ -843,8 +867,15 @@ public class MonsterControl : MonoBehaviour
         if (hData.target.Root() != transform) return;
 
         // Effect
-        ParticleManager.I.PlayParticle("Hit2", hData.hitPoint, Quaternion.identity, null);
-        AudioManager.I.PlaySFX("Hit8Bit", hData.hitPoint, null);
+        if (hData.particleNames != null)
+        {
+            int rnd = Random.Range(0, hData.particleNames.Length);
+            string particleName = hData.particleNames[rnd];
+            ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+        }
+        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
+        ParticleManager.I.PlayText(hData.damage.ToString("F1"), hData.hitPoint, ParticleManager.TextType.Damage);
+        AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
 
@@ -886,8 +917,8 @@ public class MonsterControl : MonoBehaviour
             rb.AddForce(staggerForce * Random.Range(0.9f, 1.1f) * staggerFactor1 * staggerFactor2 * staggerFactor3 * dir, ForceMode2D.Impulse);
             ctsStagger?.Cancel();
             ctsStagger = new CancellationTokenSource();
-            var ctsComb = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
-            ReleaseStagger(ctsComb.Token).Forget();
+            var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsStagger.Token);
+            ReleaseStagger(ctsLink.Token).Forget();
         }
 
         // Hit Small
@@ -924,7 +955,11 @@ public class MonsterControl : MonoBehaviour
         // Set HP
         currHP -= hData.damage;
         if (HasCondition(Condition.Peaceful))
+        {
             RemoveCondition(Condition.Peaceful);
+            if (bossHUD != null)
+                bossHUD.SetTarget(this);
+        }
         if (currHP <= 0)
             ChangeState(State.Die);
 
@@ -933,7 +968,7 @@ public class MonsterControl : MonoBehaviour
     async UniTask ReleaseStagger(CancellationToken token)
     {
         isStagger = true;
-        await UniTask.Delay((int)(1000f * Random.Range(0.18f,0.48f)),cancellationToken:token);
+        await UniTask.Delay((int)(1000f * Random.Range(0.18f, 0.48f)), cancellationToken: token);
         isStagger = false;
     }
     public int parryCount = 0;
@@ -946,7 +981,8 @@ public class MonsterControl : MonoBehaviour
         if (state == State.SequenceAttack1) return;
         if (parryCount >= data.ParryCount)
         {
-            Debug.Log("HitKnockDown");
+            if(parryCount > data.ParryCount) parryCount = data.ParryCount;
+            Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
             parryCount = 0;
             monsterHit.type = 2;
             monsterHit.prevState = state;

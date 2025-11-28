@@ -24,10 +24,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
         if (potionAction == null)
             potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         ctx.animator.Play("Player_Run");
+        ctx.PlayFootStep();
     }
     public void Exit()
     {
-
+        ctx.StopFootStep();
     }
     public void UpdateState()
     {
@@ -37,9 +38,11 @@ public class PlayerRun_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.idle);
 
         jumpPressed = jumpAction.IsPressed();
-        if (jumpPressed && ctx.Grounded)
+        if (jumpPressed && !ctx.Jumped && ctx.Grounded)
+        {
+            ctx.Jumped = true;
             fsm.ChangeState(ctx.jump);
-
+        }
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);
@@ -48,8 +51,15 @@ public class PlayerRun_LSH : IPlayerState_LSH
             fsm.ChangeState(ctx.fall);
         
         potionPressed = potionAction.IsPressed();
-        if (potionPressed && ctx.Grounded && (ctx.currentHealth/ctx.maxHealth) < 1f)
-            fsm.ChangeState(ctx.usePotion);
+        if (potionPressed && ctx.Grounded && (ctx.currentHealth / ctx.maxHealth) < 1f)
+        {
+            if (DBManager.I.currentCharData.potionCount > 0
+            || (DBManager.I.currentCharData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            {
+                ctx.usePotion.prevState = ctx.idle;
+                fsm.ChangeState(ctx.usePotion);
+            }
+        }
         
     }
     public void UpdatePhysics()
@@ -92,4 +102,5 @@ public class PlayerRun_LSH : IPlayerState_LSH
             }
     }
     [HideInInspector] public bool isStagger = false;
+    
 }
