@@ -880,7 +880,7 @@ public class MonsterControl : MonoBehaviour
         HitChangeColor(Color.white);
 
         // Stagger
-        if (Random.value <= 0.34f)
+        if (Random.value <= 0.29f)
         {
             float staggerForce = 4.4f;
             float staggerFactor1 = 1f;
@@ -930,15 +930,15 @@ public class MonsterControl : MonoBehaviour
         if (state == State.RangeAttack) pass = false;
         if (state == State.BiteAttack) pass = false;
         if (state == State.MovingAttack) pass = false;
-        if (!pass && Random.value <= 0.67f)
+        if (!pass && Random.value <= 0.78f)
         {
             curHitAmount += hData.damage;
-            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.2f, 0.25f) * Mathf.Clamp(data.HP, 150, 1000);
+            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.11f, 0.26f) * Mathf.Clamp(data.HP, 180, 900);
             if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.6f);
             if (hitCoolTime >= 0.5f) hitCoolTime = Random.Range(0.2f, 1f);
             if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
             {
-                if (Random.value < 0.67f)
+                if (Random.value < 0.78f)
                 {
                     monsterHit.type = 1;
                     monsterHit.prevState = state;
