@@ -24,16 +24,23 @@ public class MonsterHit : MonsterState
         else if (direction.x > 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
-        float duration = 0.53f;
+        float duration = 0.7f;
         if (type == 1)
         {
             if (control.isDie) return;
             anim.Play("HitSmall");
-            duration = 0.53f;
+            float rnd = Random.Range(0f, 0.2f);
+            duration -= rnd;
+            float _startTime = Time.time;
+            await UniTask.Delay((int)(1000 * 0.1f), cancellationToken: token);
             if (Random.value <= 0.5f)
+                rb.AddForce(2.3f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized, ForceMode2D.Impulse);
+            while(!token.IsCancellationRequested && Time.time - _startTime < rnd)
             {
-                rb.AddForce(3f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized, ForceMode2D.Impulse);
+                rb.AddForce(2f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized);
+                await UniTask.Yield(cts.Token);
             }
+
         }
         else if (type == 2)
         {
@@ -44,7 +51,7 @@ public class MonsterHit : MonsterState
             else
                 duration = 6.8f;
             await UniTask.Delay((int)(1000 * 0.15f), cancellationToken: token);
-            rb.AddForce(6.6f * Random.Range(0.9f, 1.1f) * (direction + 0.8f * Vector3.up).normalized, ForceMode2D.Impulse);
+            rb.AddForce(6.7f * Random.Range(0.9f, 1.1f) * (direction + 0.8f * Vector3.up).normalized, ForceMode2D.Impulse);
             await UniTask.Delay((int)(1000 * 0.4f), cancellationToken: token);
             ParticleManager.I.PlayParticle("Stun", transform.position + (control.height + 0.6f) * Vector3.up, Quaternion.identity);
 

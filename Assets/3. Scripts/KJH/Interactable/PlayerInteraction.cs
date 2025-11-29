@@ -101,6 +101,13 @@ public class PlayerInteraction : MonoBehaviour
                     prompt.ClickEffect(0);
                     GetItem_ut(dropItem, cts.Token).Forget();
                 }
+                InteractableObject iobj = target1 as InteractableObject;
+                if(iobj != null)
+                {
+                    AudioManager.I.PlaySFX("UIClick2");
+                    prompt.ClickEffect(0);
+                    RunInteractableObject(iobj, cts.Token).Forget();
+                }
             }
         }
         press1 = true;
@@ -112,6 +119,14 @@ public class PlayerInteraction : MonoBehaviour
         prompt.Close(0);
         await UniTask.Delay(110, cancellationToken: token);
         dropItem.Get();
+        flag1 = false;
+    }
+    async UniTask RunInteractableObject(InteractableObject iobj, CancellationToken token)
+    {
+        await UniTask.Delay(110, cancellationToken: token);
+        prompt.Close(0);
+        await UniTask.Delay(110, cancellationToken: token);
+        iobj.Run();
         flag1 = false;
     }
     void CancelInteraction(InputAction.CallbackContext callback)

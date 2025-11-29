@@ -1,5 +1,5 @@
 using UnityEngine;
-public class DarkPlatform : DarkObject
+public class DarkVanishPlatform : DarkObject
 {
     [SerializeField] GameObject platform;
     protected override void Start()
