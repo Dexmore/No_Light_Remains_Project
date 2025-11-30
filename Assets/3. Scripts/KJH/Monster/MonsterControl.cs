@@ -4,7 +4,6 @@ using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using UnityEngine.Events;
 public class MonsterControl : MonoBehaviour
 {
     public float height = 1.5f;
@@ -43,6 +42,12 @@ public class MonsterControl : MonoBehaviour
         TryGetComponent(out monsterHit);
         if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
             bossHUD = FindAnyObjectByType<BossHUD>();
+        Transform pcc = null;
+        if (pcc = transform.Find("ParryCountCanvas"))
+        {
+            parryCountCanvas = pcc.gameObject;
+            parryCountCanvas.SetActive(false);
+        }
     }
     void Init()
     {
@@ -972,21 +977,52 @@ public class MonsterControl : MonoBehaviour
         isStagger = false;
     }
     public int parryCount = 0;
-    void ParryHandler(Transform target)
+    GameObject parryCountCanvas;
+    Color parryCountColor = new Color(0.984f, 1f, 0.75f, 1f);
+    Transform parryCountWrap;
+    UnityEngine.UI.Image[] parryCountImages;
+    void ParryHandler(HitData hitData)
     {
-        if (target != transform) return;
+        if (hitData.attacker != transform) return;
         if (isDie) return;
         if (state == State.Hit) return;
         parryCount++;
+        if (parryCountCanvas)
+        {
+            parryCountCanvas.SetActive(true);
+            if (parryCount < data.ParryCount)
+            {
+                if (parryCountWrap == null)
+                {
+                    parryCountWrap = parryCountCanvas.transform.Find("Wrap");
+                    parryCountWrap.gameObject.SetActive(true);
+                    parryCountImages = new UnityEngine.UI.Image[parryCountWrap.childCount];
+                    for (int i = 0; i < parryCountImages.Length; i++)
+                    {
+                        parryCountImages[i] = parryCountWrap.GetChild(i).GetComponent<UnityEngine.UI.Image>();
+                        parryCountImages[i].color = Color.black;
+                    }
+                }
+                parryCountImages[parryCount - 1].color = parryCountColor;
+            }
+        }
         if (state == State.SequenceAttack1) return;
         if (parryCount >= data.ParryCount)
         {
-            if(parryCount > data.ParryCount) parryCount = data.ParryCount;
+            if (parryCount > data.ParryCount) parryCount = data.ParryCount;
             Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
             parryCount = 0;
             monsterHit.type = 2;
             monsterHit.prevState = state;
             ChangeState(State.Hit);
+            if (parryCountCanvas)
+            {
+                for (int i = 0; i < parryCountImages.Length; i++)
+                {
+                    parryCountImages[i].color = Color.black;
+                }
+                parryCountCanvas.SetActive(false);
+            }
         }
     }
     class MatInfo

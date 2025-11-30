@@ -341,7 +341,7 @@ public class PlayerControl : MonoBehaviour
             StartCoroutine(nameof(HitCoolTime2));
             if (Avoided)
             {
-                GameManager.I.onAvoid.Invoke(hData.attacker.Root());
+                GameManager.I.onAvoid.Invoke(hData);
                 ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                 AudioManager.I.PlaySFX("Woosh1");
                 return;
@@ -352,7 +352,7 @@ public class PlayerControl : MonoBehaviour
                 {
                     AudioManager.I.PlaySFX("Parry");
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
-                    GameManager.I.onParry.Invoke(hData.attacker.Root());
+                    GameManager.I.onParry.Invoke(hData);
                     StartCoroutine(nameof(ReleaseParred));
                     return;
                 }
