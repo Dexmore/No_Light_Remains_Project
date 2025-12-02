@@ -1,11 +1,20 @@
-using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 public class FollowCamera : MonoBehaviour
 {
     public Transform target;
     public float smoothTime = 0.3f;
     public Vector3 offset;
     private Vector3 velocity = Vector3.zero;
+    Camera vfxCamera;
+    void Start()
+    {
+        var ucd = Camera.main.GetUniversalAdditionalCameraData();
+        ParticleManager.I.transform.Find("VFXCamera").TryGetComponent(out vfxCamera);
+        if(vfxCamera == null) return;
+        if(!ucd.cameraStack.Contains(vfxCamera))
+            ucd.cameraStack.Add(vfxCamera);
+    }
     void FixedUpdate()
     {
         if (target != null)

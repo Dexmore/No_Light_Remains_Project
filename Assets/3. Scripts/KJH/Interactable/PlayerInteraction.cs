@@ -19,9 +19,9 @@ public class PlayerInteraction : MonoBehaviour
     void UniTaskCancel()
     {
         UnInit();
+        cts?.Cancel();
         try
         {
-            cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)
@@ -102,7 +102,7 @@ public class PlayerInteraction : MonoBehaviour
                     GetItem_ut(dropItem, cts.Token).Forget();
                 }
                 InteractableObject iobj = target1 as InteractableObject;
-                if(iobj != null)
+                if (iobj != null)
                 {
                     AudioManager.I.PlaySFX("UIClick2");
                     prompt.ClickEffect(0);

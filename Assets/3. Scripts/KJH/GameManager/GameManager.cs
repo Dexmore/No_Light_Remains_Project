@@ -250,6 +250,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onHit = (x) => { };
     public UnityAction<HitData> onParry = (x) => { };
     public UnityAction<HitData> onAvoid = (x) => { };
+    public UnityAction<HitData> onHitAfter = (x) => { };
     public Material hitTintMat;
     #endregion
     #region HitEffect

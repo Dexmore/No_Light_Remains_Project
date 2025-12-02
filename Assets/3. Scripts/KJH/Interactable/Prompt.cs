@@ -23,9 +23,9 @@ public class Prompt : MonoBehaviour
     protected virtual void OnDestroy() { UniTaskCancel(); }
     void UniTaskCancel()
     {
+        cts?.Cancel();
         try
         {
-            cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)

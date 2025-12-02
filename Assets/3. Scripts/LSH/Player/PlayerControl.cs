@@ -331,6 +331,7 @@ public class PlayerControl : MonoBehaviour
             {
                 fsm.ChangeState(idle);
             }
+            GameManager.I.onHitAfter.Invoke(hData);
             return;
         }
         else if (hData.attackType == HitData.AttackType.Default)
@@ -402,6 +403,7 @@ public class PlayerControl : MonoBehaviour
             }
             AudioManager.I.PlaySFX("Hit8bit2", hData.hitPoint, null);
             HitChangeColor(Color.white, 1);
+            GameManager.I.onHitAfter.Invoke(hData);
             return;
         }
     }
@@ -425,6 +427,7 @@ public class PlayerControl : MonoBehaviour
             matInfos.Add(matInfo);
         }
     }
+    [SerializeField] AnimationCurve hitColorCurve;
     void HitChangeColor(Color color, int index = 0)
     {
         foreach (var element in matInfos)
@@ -443,13 +446,13 @@ public class PlayerControl : MonoBehaviour
                 newMats[materialIndex].SetColor("_TintColor", new Color(color.r, color.g, color.b, 1f));
                 currentElement.sequences[materialIndex] = DOTween.Sequence();
                 currentElement.sequences[materialIndex].AppendInterval(0.09f);
-                float _dur = 0.21f;
-                if (index == 1) _dur = 0.5f;
+                float _dur = 0.3f;
+                if (index == 1) _dur = 0.52f;
                 Tween colorTween = newMats[materialIndex].DOVector(
                     new Vector4(color.r, color.g, color.b, 0f),
                     "_TintColor",
                     _dur
-                ).SetEase(Ease.OutBounce);
+                ).SetEase(hitColorCurve);
                 currentElement.sequences[materialIndex].Append(colorTween);
                 currentElement.sequences[materialIndex].OnComplete(() =>
                 {

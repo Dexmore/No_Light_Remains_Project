@@ -1,55 +1,59 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HUDBinder : MonoBehaviour
 {
-    [Header("References")]
-    public PlayerControl player;          // Player 오브젝트 지정
-    public HealthBar healthBar;         // HUD_RuntimeHooks에 있는 컴포넌트 참조
-    public LighthouseBar lighthouseBar; // 등대게이지 
-    public CurrencyUI currencyUI;       // 보여지고 있는 UI 
-
+    // Player 오브젝트 지정
+    PlayerControl player;          
+    SlicedLiquidBar healthBar;
+    CanvasGroup currencyCG;
+    
     void Awake()
     {
-        if (!player)
-        {
-            player = FindObjectOfType<PlayerControl>();
-        }
-        if (!healthBar)     healthBar     = FindObjectOfType<HealthBar>();
-        if (!lighthouseBar) lighthouseBar = FindObjectOfType<LighthouseBar>();
-        if (!currencyUI)    currencyUI    = FindObjectOfType<CurrencyUI>();
+        if (!player) player = FindFirstObjectByType<PlayerControl>();
+        healthBar = GetComponentInChildren<SlicedLiquidBar>();
+        currencyCG = transform.Find("HUDCanvas/TopRight/Currency").GetComponent<CanvasGroup>();
+        currencyCG.alpha = 0f;
     }
-
     void OnEnable()
     {
-        if (!player) return;
-
-        // player.OnHPChanged     += HandleHP;
-        // player.OnLightChanged  += HandleLight;
-        // player.OnGoldChanged   += HandleGold;
+        GameManager.I.onHitAfter += HandleHit;
     }
     void OnDisable()
     {
-        if (!player) return;
-
-        // player.OnHPChanged     -= HandleHP;
-        // player.OnLightChanged  -= HandleLight;
-        // player.OnGoldChanged   -= HandleGold;
+        GameManager.I.onHitAfter -= HandleHit;
     }
-
-    void Update()
+    void HandleHit(HitData hitData)
     {
-        HandleHP(player.currentHealth, player.maxHealth);
+        if (hitData.target.Root() != player.transform) return;
+        if (player.fsm.currentState == player.die) return;
+
+        healthBar.Value = Mathf.Clamp01(player.currentHealth / player.maxHealth);
+
+        RectTransform rect = healthBar.transform as RectTransform;
+        Vector2 particlePos = Vector2.zero;
+        Vector2 pivot = MethodCollection.Absolute1920x1080Position(rect);
+        float x = pivot.x - 0.5f * rect.sizeDelta.x;
+        float y = pivot.y;
+        float addX = healthBar.xPosRange.x + (healthBar.xPosRange.y - healthBar.xPosRange.x) * healthBar.Value;
+        particlePos = new Vector2(x + addX, y);
+        if (hitData.attackType == HitData.AttackType.Chafe)
+        {
+            var pa = ParticleManager.I.PlayUIParticle("Gush3", particlePos, Quaternion.identity);
+            pa.transform.localScale = 0.5f * Vector3.one;
+        }
+        else
+        {
+            var pa = ParticleManager.I.PlayUIParticle("Gush3", particlePos, Quaternion.identity);
+            pa.transform.localScale = 0.8f * Vector3.one;
+        }
+        var pa2 = ParticleManager.I.PlayUIParticle("Gush", particlePos, Quaternion.identity);
+        pa2.transform.localScale = 0.7f * Vector3.one;
+        var main = pa2.ps.main;
+        main.startColor = new ParticleSystem.MinMaxGradient(new Color(0.59f,0.159f,0.196f,1f), new Color(0.5f,0.05f,0.05f,1f));
+
+
     }
 
-
-    void HandleHP(float cur, float max)
-        => healthBar?.Set01(max > 0 ? cur / max : 0f);
-
-    void HandleLight(float cur, float max)
-        => lighthouseBar?.Set01(max > 0 ? cur / max : 0f);
-
-    void HandleGold(int amount)
-        => currencyUI?.SetAmount(amount);
-    
 
 }

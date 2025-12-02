@@ -40,9 +40,9 @@ public class NumParticle : PoolBehaviour
     void UniTaskCancel()
     {
         // Job 완료 로직 제거: 오직 취소 토큰 관련 로직만 남깁니다.
+        cts?.Cancel();
         try
         {
-            cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)

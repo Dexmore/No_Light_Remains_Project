@@ -84,6 +84,13 @@ public class PlayerAttackCombo : IPlayerState
         {
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            float rnd = Random.Range(0.65f, 1.38f);
+            float damage = 80.8f;
+            if(rnd >= 1.2f)
+            {
+                rnd = Random.Range(0.8f, 1f);
+                damage = 101f;
+            }
             GameManager.I.onHit.Invoke
             (
                 new HitData
@@ -91,7 +98,7 @@ public class PlayerAttackCombo : IPlayerState
                     "AttackCombo",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(0.7f, 1.2f) * 80.8f,
+                    rnd * damage,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )

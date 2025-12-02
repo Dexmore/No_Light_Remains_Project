@@ -26,9 +26,9 @@ public class Astar2DXYPathFinder : MonoBehaviour
      void OnDestroy() { UniTaskCancel(); Dispose(); }
      void UniTaskCancel()
      {
+          cts?.Cancel();
           try
           {
-               cts?.Cancel();
                cts?.Dispose();
           }
           catch (System.Exception e)
@@ -112,26 +112,58 @@ public class Astar2DXYPathFinder : MonoBehaviour
           // 2. 모든 Native Container에 대해 이중 해제 방지 로직을 적용합니다.
           if (allNodes.IsCreated)
           {
-               allNodes.Dispose();
+               try
+               {
+                    allNodes.Dispose();
+
+               }
+               catch
+               {
+
+               }
                allNodes = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
           }
           // openMinHeap
           // NativeMinHeap은 내부적으로 Dispose에 IsCreated 체크가 있지만, 외부에서도 체크합니다.
           if (openMinHeap.IsCreated)
           {
-               openMinHeap.Dispose();
+               try
+               {
+                    openMinHeap.Dispose();
+
+               }
+               catch
+               {
+
+               }
                openMinHeap = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
           }
           // closedSet
           if (closedSet.IsCreated)
           {
-               closedSet.Dispose();
+               try
+               {
+                    closedSet.Dispose();
+
+               }
+               catch
+               {
+
+               }
                closedSet = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
           }
           // resultNA
           if (resultNA.IsCreated)
           {
-               resultNA.Dispose();
+               try
+               {
+                    resultNA.Dispose();
+
+               }
+               catch
+               {
+
+               }
                resultNA = default; // 해제 후 명시적으로 default 값 할당 (안전성 강화)
           }
      }

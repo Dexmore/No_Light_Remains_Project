@@ -30,9 +30,9 @@ public class LightSystem : MonoBehaviour
     void OnDestroy() => UniTaskCancel();
     void UniTaskCancel()
     {
+        cts?.Cancel();
         try
         {
-            cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)
