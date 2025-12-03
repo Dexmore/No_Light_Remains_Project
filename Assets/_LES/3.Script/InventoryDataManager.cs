@@ -13,7 +13,7 @@ public class InventoryDataManager : MonoBehaviour
     [SerializeField] private ItemDatabase itemDatabase;
 
     [Header("플레이어 소유 데이터")]
-    public List<ItemData> PlayerItems = new List<ItemData>();
+    public List<InventoryItem> PlayerItems = new List<InventoryItem>();
     public List<GearData> PlayerGears = new List<GearData>();
     public List<LanternFunctionData> PlayerLanternFunctions = new List<LanternFunctionData>();
     public List<RecordData> PlayerRecords = new List<RecordData>();
@@ -49,7 +49,34 @@ public class InventoryDataManager : MonoBehaviour
     public void AddItem(ItemData itemToAdd)
     {
         if (itemToAdd == null) return;
-        PlayerItems.Add(itemToAdd);
+
+        // 1. 재료(Material) 타입인 경우 -> 중첩 시도
+        if (itemToAdd.type == ItemData.ItemType.Material)
+        {
+            // 이미 가방에 같은 아이템이 있는지 찾음
+            InventoryItem existingItem = PlayerItems.Find(x => x.data == itemToAdd);
+
+            if (existingItem != null)
+            {
+                // 있으면 개수만 증가
+                existingItem.quantity++;
+                Debug.Log($"[Inventory] {itemToAdd.itemName} 수량 증가: {existingItem.quantity}개");
+            }
+            else
+            {
+                // 없으면 새로 추가 (개수 1)
+                PlayerItems.Add(new InventoryItem(itemToAdd, 1));
+                Debug.Log($"[Inventory] {itemToAdd.itemName} 신규 획득");
+            }
+        }
+        // 2. 장비(Equipment) 타입인 경우 -> 무조건 새로 추가 (중첩 X)
+        else
+        {
+            PlayerItems.Add(new InventoryItem(itemToAdd, 1));
+            Debug.Log($"[Inventory] {itemToAdd.itemName} (장비) 획득");
+        }
+
+        // 3. UI 갱신 방송
         OnInventoryChanged?.Invoke();
     }
 
@@ -100,8 +127,20 @@ public class InventoryDataManager : MonoBehaviour
     
     public void RemoveItem(ItemData itemToRemove)
     {
-        if (itemToRemove != null && PlayerItems.Remove(itemToRemove))
+        if (itemToRemove == null) return;
+
+        InventoryItem targetItem = PlayerItems.Find(x => x.data == itemToRemove);
+        
+        if (targetItem != null)
         {
+            if (targetItem.quantity > 1)
+            {
+                targetItem.quantity--; // 1개 감소
+            }
+            else
+            {
+                PlayerItems.Remove(targetItem); // 0개 되면 삭제
+            }
             OnInventoryChanged?.Invoke();
         }
     }
@@ -162,8 +201,8 @@ public class InventoryDataManager : MonoBehaviour
         foreach (var item in PlayerItems)
         {
             CharacterData.ItemData saveData = new CharacterData.ItemData();
-            saveData.Name = item.name; // 파일 이름 사용 (또는 item.itemName)
-            saveData.count = 1; // (중복 가능한 아이템이라면 개수 로직 추가 필요)
+            saveData.Name = item.data.name; // 파일 이름 사용 (또는 item.itemName)
+            saveData.count = item.quantity; // (중복 가능한 아이템이라면 개수 로직 추가 필요)
             charData.itemDatas.Add(saveData);
         }
 
@@ -173,6 +212,7 @@ public class InventoryDataManager : MonoBehaviour
         {
             CharacterData.GearData saveData = new CharacterData.GearData();
             saveData.Name = gear.name;
+            saveData.isEquipped = gear.isEquipped;
             charData.gearDatas.Add(saveData);
         }
 
@@ -182,13 +222,23 @@ public class InventoryDataManager : MonoBehaviour
         {
             CharacterData.LanternData saveData = new CharacterData.LanternData();
             saveData.Name = lantern.name;
+            saveData.isEquipped = lantern.isEquipped;
             charData.lanternDatas.Add(saveData);
         }
 
-        // 6. DBManager에 갱신된 데이터 전달
+        // 6. 기록물 저장
+        charData.recordDatas = new List<CharacterData.RecordData>();
+        foreach (var record in PlayerRecords)
+        {
+            CharacterData.RecordData saveData = new CharacterData.RecordData();
+            saveData.Name = record.name; // 파일 이름 저장
+            charData.recordDatas.Add(saveData);
+        }
+
+        // 7. DBManager에 갱신된 데이터 전달
         DBManager.I.currentCharData = charData;
         
-        // 7. 실제 파일/클라우드 저장 호출
+        // 8. 실제 파일/클라우드 저장 호출
         DBManager.I.Save();
         
         Debug.Log("[InventoryDataManager] DBManager에 데이터 저장 완료.");
@@ -197,61 +247,105 @@ public class InventoryDataManager : MonoBehaviour
     // [불러오기] DBManager의 데이터를 가져와 인벤토리를 복구합니다.
     public void LoadFromDB()
     {
-        if (DBManager.I == null || itemDatabase == null) return;
+        // 1. 필수 요소 체크
+        if (DBManager.I == null || itemDatabase == null) 
+        {
+            Debug.LogWarning("[InventoryDataManager] DBManager 또는 ItemDatabase가 없습니다.");
+            return;
+        }
 
-        // 1. DBManager에서 불러오기 (파일 로드)
+        // 2. DB에서 데이터 로드
         DBManager.I.Load();
         CharacterData charData = DBManager.I.currentCharData;
 
-        // 2. 데이터 초기화
+        // 3. [중요] 기존 인벤토리 데이터 완전 초기화 (비우기)
         PlayerItems.Clear();
         PlayerGears.Clear();
         PlayerLanternFunctions.Clear();
+        PlayerRecords.Clear(); // (기록물도 비우기)
         
-        // 3. 기본 스탯 복구
+        // 4. 기본 스탯 복구
         PlayerMoney = charData.money;
         // MaxGearCost = charData.MaxGearCost; 
 
-        // 4. 아이템 복구 (이름 -> 원본 데이터 찾기)
+        // 5. 아이템 복구
         if (charData.itemDatas != null)
         {
             foreach (var savedItem in charData.itemDatas)
             {
+                // 저장된 이름으로 원본 찾기
                 ItemData originalData = itemDatabase.FindItemByName(savedItem.Name);
                 if (originalData != null)
                 {
-                    // TODO: 개수(count)만큼 추가하는 로직 필요
-                    PlayerItems.Add(originalData);
+                    // InventoryItem 생성하여 추가 (개수 포함)
+                    PlayerItems.Add(new InventoryItem(originalData, savedItem.count));
+                }
+                else
+                {
+                    Debug.LogWarning($"[Load] 아이템 '{savedItem.Name}'을 Database에서 찾을 수 없습니다.");
                 }
             }
         }
 
-        // 5. 기어 복구
+        // 6. 기어 복구
         if (charData.gearDatas != null)
         {
             foreach (var savedGear in charData.gearDatas)
             {
                 GearData originalData = itemDatabase.FindGearByName(savedGear.Name);
-                if (originalData != null) PlayerGears.Add(originalData);
+                if (originalData != null) 
+                {
+                    // 저장된 상태에서는 장착 여부도 저장해야 완벽하지만, 
+                    // 현재 DB 구조에는 이름만 있으므로 기본적으로 '해제' 상태로 로드됩니다.
+                    // (만약 장착 상태도 저장하려면 DBManager의 GearData 구조체에 isEquipped 추가 필요)
+                    originalData.isEquipped = savedGear.isEquipped; // 안전하게 초기화
+                    PlayerGears.Add(originalData);
+                }
             }
         }
 
-        // 6. 랜턴 복구
+        // 7. 랜턴 복구
         if (charData.lanternDatas != null)
         {
             foreach (var savedLantern in charData.lanternDatas)
             {
                 LanternFunctionData originalData = itemDatabase.FindLanternByName(savedLantern.Name);
-                if (originalData != null) PlayerLanternFunctions.Add(originalData);
+                if (originalData != null) 
+                {
+                    originalData.isEquipped = savedLantern.isEquipped; // 초기화
+                    PlayerLanternFunctions.Add(originalData);
+                }
             }
         }
 
-        // 7. UI 갱신 방송
+        if (charData.recordDatas != null)
+        {
+            foreach (var savedRecord in charData.recordDatas)
+            {
+                RecordData originalData = itemDatabase.FindRecordByName(savedRecord.Name);
+                if(originalData != null)
+                {
+                    if(!PlayerRecords.Contains(originalData))
+                    {
+                        PlayerRecords.Add(originalData);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"[Load] 기록물 '{savedRecord.Name}'을 Database에서 찾을 수 없습니다.");
+                }
+            }
+        }
+        
+        // (기록물 복구 로직이 빠져있다면 추가 필요)
+
+        // 8. UI 갱신 방송
         OnInventoryChanged?.Invoke();
         OnGearsChanged?.Invoke();
         OnLanternsChanged?.Invoke();
+        OnRecordsChanged?.Invoke();
         
-        Debug.Log("[InventoryDataManager] DBManager로부터 데이터 로드 완료.");
+        Debug.Log("[InventoryDataManager] 데이터 로드 및 인벤토리 복구 완료.");
     }
 
     private void OnApplicationQuit()
