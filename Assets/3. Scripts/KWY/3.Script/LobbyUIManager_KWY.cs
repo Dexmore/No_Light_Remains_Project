@@ -82,6 +82,19 @@ public class LobbyUIManager_KWY : MonoBehaviour
         if (uiPanelStack.Count > 0)
         {
             GameObject topPanel = uiPanelStack.Peek();
+            if (topPanel == Setting_p)
+            {
+                GameSettingManager_KWY settingManager = Setting_p.GetComponent<GameSettingManager_KWY>();
+                if (settingManager != null)
+                {
+                    bool handledBySettingManager = settingManager.OnEscPressed();
+                    if (handledBySettingManager)
+                    {
+                        return;
+                    }
+                }
+            }
+
             CloseTopPanel();
         }
         else

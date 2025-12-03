@@ -10,15 +10,18 @@ using TMPro;
 
 public class GameSettingManager_KWY : MonoBehaviour
 {
-    
+    [Header("UI Panels")]
+    [SerializeField] private GameObject basicSettingPanel;
+    [SerializeField] private GameObject keySettingPanel;
+
     [Header("Input Actions")]
     [SerializeField] private InputActionAsset inputActions;
 
     [Header("Key Remapping UI")]
-    [SerializeField] private GameObject keyRemappingContainer;
+    [SerializeField] private GameObject keyRemappingContainerLeft;
+    [SerializeField] private GameObject keyRemappingContainerRight;
     [SerializeField] private KeyRemapper_KWY keyRemapperPrefab;
     
-
     [Header("Screen Setting")]
     [SerializeField] private TMP_Dropdown resolutionDropdown;
     [SerializeField] private Toggle fullscreenToggle;
@@ -34,6 +37,7 @@ public class GameSettingManager_KWY : MonoBehaviour
     [SerializeField] private Slider bgmVolume;
     [SerializeField] private Slider sfxVolume;
 
+    private const float MIN_BRIGHTNESS = 0.1f;
     private Resolution[] resolutions;
     private List<KeyRemapper_KWY> keyRemappers = new List<KeyRemapper_KWY>();
 
@@ -42,7 +46,15 @@ public class GameSettingManager_KWY : MonoBehaviour
     {
         LoadKeyBindingOverrides();
     }
-    
+
+    private void OnEnable()
+    {
+        if (basicSettingPanel != null)
+            basicSettingPanel.SetActive(true);
+
+        if (keySettingPanel != null)
+            keySettingPanel.SetActive(false);
+    }
 
     private void Start()
     {
@@ -56,6 +68,63 @@ public class GameSettingManager_KWY : MonoBehaviour
         masterVolume.onValueChanged.AddListener(SetMasterVolume);
         bgmVolume.onValueChanged.AddListener(SetBGMVolume);
         sfxVolume.onValueChanged.AddListener(SetSFXVolume);
+    }
+
+    public bool OnEscPressed()
+    {
+        if (keySettingPanel != null && keySettingPanel.activeSelf)
+        {
+            CancelKeysAndClosePanel();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void OpenKeySettingPanel()
+    {
+        if (basicSettingPanel != null) 
+            basicSettingPanel.SetActive(false);
+
+        if (keySettingPanel != null) 
+            keySettingPanel.SetActive(true);
+    }
+
+    public void ApplyKeysAndClosePanel()
+    {
+        ApplyAndSaveChanges();
+        CloseKeySettingPanel();
+    }
+
+    public void CancelKeysAndClosePanel()
+    {
+        LoadKeyBindingOverrides();
+        foreach (var remapper in keyRemappers)
+        {
+            remapper.UpdateBindingDisplay();
+        }
+
+        CloseKeySettingPanel();
+    }
+
+    public void CloseKeySettingPanel()
+    {
+        if (basicSettingPanel != null) 
+            basicSettingPanel.SetActive(true);
+        
+        if (keySettingPanel != null) 
+            keySettingPanel.SetActive(false);
+    }
+
+    public void OnClickResetKeysOnly()
+    {
+        inputActions.RemoveAllBindingOverrides();
+        GameSettingDataManager_KWY.Instance.setting.keyBindingOverrides = "";
+
+        foreach (var remapper in keyRemappers)
+        {
+            remapper.UpdateBindingDisplay();
+        }
     }
 
     private void SetupResolutions()
@@ -74,76 +143,61 @@ public class GameSettingManager_KWY : MonoBehaviour
         resolutionDropdown.AddOptions(options);
     }
 
-
     private void SetupKeyRemappingUI()
     {
-        foreach (Transform child in keyRemappingContainer.transform)
-        {
-            Destroy(child.gameObject);
-        }
+        foreach (Transform child in keyRemappingContainerLeft.transform) { Destroy(child.gameObject); }
+        foreach (Transform child in keyRemappingContainerRight.transform) { Destroy(child.gameObject); }
         keyRemappers.Clear();
 
-        var actionsToDisplay = new Dictionary<string, string>
+        var actionsLeft = new Dictionary<string, string>
         {
-            { "Move", "이동" }, { "Jump", "점프" }, { "Attack", "공격" },
-            { "LeftDash", "좌측 대시" }, { "RightDash", "우측 대시" }, { "Lantern", "랜턴" },
-            { "LanternSkill", "랜턴 스킬" }, { "Parry", "패링" }, { "Potion", "물약" },
-            { "Interaction", "상호작용" }, { "Inventory", "인벤토리" }
+            { "Move", "이동" },
+            { "Jump", "점프" },
+            { "Attack", "공격" }
+        };
+
+        var actionsRight = new Dictionary<string, string>
+        {
+            { "Lantern", "랜턴" },
+            { "Potion", "물약" },
+            { "Interaction", "상호작용" },
+            { "Inventory", "인벤토리" }
         };
 
         var actionMap = inputActions.FindActionMap("Player");
-        if (actionMap == null)
-        {
-            Debug.LogError("Input Actions에서 'Player' 액션 맵을 찾을 수 없습니다.");
-            return;
-        }
+        if (actionMap == null) { Debug.LogError("Input Actions에서 'Player' 액션 맵을 찾을 수 없습니다."); return; }
 
+        PopulateKeyRemappingPanel(actionMap, actionsLeft, keyRemappingContainerLeft);
+        PopulateKeyRemappingPanel(actionMap, actionsRight, keyRemappingContainerRight);
+    }
+
+    private void PopulateKeyRemappingPanel(InputActionMap actionMap, Dictionary<string, string> actionsToDisplay, GameObject container)
+    {
         foreach (var actionName in actionsToDisplay.Keys)
         {
             var action = actionMap.FindAction(actionName);
-            if (action == null)
-            {
-                Debug.LogWarning($"액션 '{actionName}'을(를) 찾을 수 없습니다.");
-                continue;
-            }
+            if (action == null) { Debug.LogWarning($"액션 '{actionName}'을(를) 찾을 수 없습니다."); continue; }
 
             for (int i = 0; i < action.bindings.Count; i++)
             {
                 var binding = action.bindings[i];
-
-                // [수정] isProcessing -> isProcessor
-                if ((binding.isComposite && !binding.isPartOfComposite) || !string.IsNullOrEmpty(binding.processors))
-                {
-                    continue;
-                }
-
-                if (!binding.path.Contains("<Keyboard>") && !binding.path.Contains("<Mouse>"))
-                {
-                    continue;
-                }
+                if ((binding.isComposite && !binding.isPartOfComposite) || !string.IsNullOrEmpty(binding.processors)) { continue; }
+                if (!binding.path.Contains("<Keyboard>") && !binding.path.Contains("<Mouse>")) { continue; }
 
                 string displayName = actionsToDisplay[actionName];
                 if (binding.isPartOfComposite)
                 {
-                    string bindingName = binding.name.ToUpper() switch
-                    {
-                        "UP" => "위",
-                        "DOWN" => "아래",
-                        "LEFT" => "왼쪽",
-                        "RIGHT" => "오른쪽",
-                        _ => binding.name
-                    };
+                    string bindingName = binding.name.ToUpper() switch { "UP" => "위", "DOWN" => "아래", "LEFT" => "왼쪽", "RIGHT" => "오른쪽", _ => binding.name };
                     displayName += $" ({bindingName})";
                 }
 
-                KeyRemapper_KWY remapper = Instantiate(keyRemapperPrefab, keyRemappingContainer.transform);
+                KeyRemapper_KWY remapper = Instantiate(keyRemapperPrefab, container.transform);
                 remapper.Initialize(action, i, displayName);
                 keyRemappers.Add(remapper);
             }
         }
     }
     
-
     private void LoadSettingsToUI()
     {
         GameSetting_KWY settings = GameSettingDataManager_KWY.Instance.setting;
@@ -163,8 +217,9 @@ public class GameSettingManager_KWY : MonoBehaviour
         }
         resolutionDropdown.RefreshShownValue();
 
-        brightnessSlider.value = settings.brightness;
-        SetBrightness(settings.brightness);
+        float loadedBrightness = Mathf.Max(settings.brightness, MIN_BRIGHTNESS);
+        brightnessSlider.value = loadedBrightness;
+        SetBrightness(loadedBrightness);
 
         masterVolume.value = settings.masterVolume;
         bgmVolume.value = settings.bgmVolume;
@@ -181,7 +236,6 @@ public class GameSettingManager_KWY : MonoBehaviour
         
     }
 
-    
     private void LoadKeyBindingOverrides()
     {
         string overrides = GameSettingDataManager_KWY.Instance.setting.keyBindingOverrides;
