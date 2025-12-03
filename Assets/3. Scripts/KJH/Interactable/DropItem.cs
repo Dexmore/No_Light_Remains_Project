@@ -49,7 +49,7 @@ public class DropItem : Interactable
         }
         AudioManager.I.PlaySFX("GetItem");
         Destroy(gameObject);
-        DBManager.I.currentCharData.money += money;
+        DBManager.I.currData.gold += money;
         if (itemData != null)
         {
             DBManager.I.AddItem(itemData.itemName, 1);

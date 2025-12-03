@@ -9,11 +9,11 @@ public class PlayerControl : MonoBehaviour
 
     [Header("Player HP")]
     public float maxHealth = 1000;
-    public float currentHealth;
+    public float currHealth;
 
     [Header("Light Resource")]
-    public float maxLight = 100;
-    public float currentLight;
+    public float maxBattery = 100;
+    public float currBattery;
 
     [Header("Move")]
     public float moveSpeed = 6f;
@@ -45,6 +45,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerUsePotion usePotion;
     [HideInInspector] public PlayerOpenInventory openInventory;
     // [HideInInspector] public PlayerJumpAttack jumpAttack;
+    [HideInInspector] public HUDBinder hUDBinder;
 
 
     // === Ground 체크 ===
@@ -87,25 +88,28 @@ public class PlayerControl : MonoBehaviour
         openInventory = new PlayerOpenInventory(this, fsm);
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
+        hUDBinder = FindAnyObjectByType<HUDBinder>();
     }
     void Start()
     {
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
-        CharacterData characterData = DBManager.I.currentCharData;
-        if (characterData.sceneName == "" && characterData.HP == 0)
+        CharacterData characterData = DBManager.I.currData;
+        if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
             CharacterData newData = new CharacterData();
-            newData.money = 0;
+            newData.gold = 0;
             newData.sceneName = "Stage1";
-            newData.lastPosition = Vector2.zero;
-            newData.HP = maxHealth;
-            newData.MP = maxLight;
+            newData.lastPos = Vector2.zero;
+            newData.maxHealth = maxHealth;
+            newData.maxBattery = maxBattery;
+            newData.currHealth = currHealth;
+            newData.currBattery = currBattery;
             newData.potionCount = 5;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
-            DBManager.I.currentCharData = newData;
+            DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
             DBManager.I.AddItem("Useful Sword", 1);
@@ -114,10 +118,12 @@ public class PlayerControl : MonoBehaviour
         }
         else
         {
-            currentHealth = DBManager.I.currentCharData.HP;
-            currentLight = DBManager.I.currentCharData.MP;
-            light0.SetActive(DBManager.I.isLanternOn);
-            light1.SetActive(DBManager.I.isLanternOn);
+            maxHealth = DBManager.I.currData.maxHealth;
+            maxBattery = DBManager.I.currData.maxBattery;
+            currHealth = DBManager.I.currData.currHealth;
+            currBattery = DBManager.I.currData.currBattery;
+            light0.SetActive(GameManager.I.isLanternOn);
+            light1.SetActive(GameManager.I.isLanternOn);
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
     }
@@ -314,9 +320,9 @@ public class PlayerControl : MonoBehaviour
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
-            currentHealth -= (int)hData.damage;
-            currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-            DBManager.I.currentCharData.HP = currentHealth;
+            currHealth -= (int)hData.damage;
+            currHealth = Mathf.Clamp(currHealth, 0f, maxHealth);
+            DBManager.I.currData.currHealth = currHealth;
             if (hData.particleNames != null)
             {
                 int rnd = Random.Range(0, hData.particleNames.Length);
@@ -324,7 +330,7 @@ public class PlayerControl : MonoBehaviour
                 ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
             }
             AudioManager.I.PlaySFX("HitLittle", hData.hitPoint, null);
-            if (currentHealth <= 0)
+            if (currHealth <= 0)
                 fsm.ChangeState(die);
             HitChangeColor(Color.white, 0);
             if(fsm.currentState == openInventory)
@@ -390,10 +396,10 @@ public class PlayerControl : MonoBehaviour
                 hit.staggerType = hData.staggerType;
                 fsm.ChangeState(hit);
             }
-            currentHealth -= (int)hData.damage;
-            currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-            DBManager.I.currentCharData.HP = currentHealth;
-            if (currentHealth <= 0)
+            currHealth -= (int)hData.damage;
+            currHealth = Mathf.Clamp(currHealth, 0f, maxHealth);
+            DBManager.I.currData.currHealth = currHealth;
+            if (currHealth <= 0)
                 fsm.ChangeState(die);
             if (hData.particleNames != null)
             {
@@ -498,13 +504,13 @@ public class PlayerControl : MonoBehaviour
         {
             light0.SetActive(false);
             light1.SetActive(false);
-            DBManager.I.isLanternOn = false;
+            GameManager.I.isLanternOn = false;
         }
         else
         {
             light0.SetActive(true);
             light1.SetActive(true);
-            DBManager.I.isLanternOn = true;
+            GameManager.I.isLanternOn = true;
         }
     }
     #endregion

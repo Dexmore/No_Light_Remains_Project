@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using DG.Tweening;
 
-public class UIAppearHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UIHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] CanvasGroup appearGroup;
     Tween currentTween;
@@ -27,7 +27,7 @@ public class UIAppearHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerEx
             isRaycastLoop = true;
             StartCoroutine(nameof(RaycastLoop));
             currentTween?.Kill(true);
-            currentTween = appearGroup.DOFade(1f, 0.4f).SetEase(Ease.OutQuad).OnComplete(() =>
+            currentTween = appearGroup.DOFade(1f, 0.3f).SetEase(Ease.OutQuad).OnComplete(() =>
             {
                 appearGroup.blocksRaycasts = true;
                 appearGroup.interactable = true;
@@ -68,7 +68,7 @@ public class UIAppearHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerEx
             //
             if (!isGroupOver && !isZoneEnter)
             {
-                yield return YieldInstructionCache.WaitForSeconds(0.5f);
+                yield return YieldInstructionCache.WaitForSeconds(0.35f);
                 if (!isGroupOver && !isZoneEnter)
                 {
                     currentTween?.Kill();
@@ -80,7 +80,7 @@ public class UIAppearHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerEx
                             appearGroup.blocksRaycasts = false;
                             appearGroup.interactable = false;
                         })
-                        .Append(appearGroup.DOFade(0f, 1.3f).SetEase(Ease.OutQuad))
+                        .Append(appearGroup.DOFade(0f, 0.8f).SetEase(Ease.OutQuad))
                         .OnKill(() => exitSequence = null);
                     currentTween = exitSequence;
                 }

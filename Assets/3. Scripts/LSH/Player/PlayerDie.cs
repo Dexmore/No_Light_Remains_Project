@@ -15,7 +15,7 @@ public class PlayerDie : IPlayerState
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
         light0.SetActive(false);
         light1.SetActive(false);
-        DBManager.I.isLanternOn = false;
+        GameManager.I.isLanternOn = false;
     }
     public void Exit()
     {

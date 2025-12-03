@@ -1,5 +1,5 @@
 using UnityEngine;
-public class LightCreatePlatform : LightObject
+public class AppearPlatform : LightObject
 {
     [SerializeField] GameObject platform;
     protected override void Start()

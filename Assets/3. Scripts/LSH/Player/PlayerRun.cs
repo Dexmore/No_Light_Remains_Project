@@ -51,10 +51,10 @@ public class PlayerRun : IPlayerState
             fsm.ChangeState(ctx.fall);
         
         potionPressed = potionAction.IsPressed();
-        if (potionPressed && ctx.Grounded && (ctx.currentHealth / ctx.maxHealth) < 1f)
+        if (potionPressed && ctx.Grounded && (ctx.currHealth / ctx.maxHealth) < 1f)
         {
-            if (DBManager.I.currentCharData.potionCount > 0
-            || (DBManager.I.currentCharData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            if (DBManager.I.currData.potionCount > 0
+            || (DBManager.I.currData.potionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
             {
                 ctx.usePotion.prevState = ctx.idle;
                 fsm.ChangeState(ctx.usePotion);

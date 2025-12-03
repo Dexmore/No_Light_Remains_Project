@@ -80,7 +80,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             DOTween.Kill(_clone.txt);
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.5f);
-            float duration = Random.Range(0.55f, 0.75f);
+            float duration = Random.Range(0.62f, 0.75f);
             _clone.txt.DOFade(0f, duration).SetEase(Ease.OutSine);
             return _clone;
         }
@@ -98,8 +98,8 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             DOTween.Kill(_clone.txt);
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.2f);
-            float duration = Random.Range(0.55f, 0.75f);
-            _clone.txt.DOFade(0f, duration - 0.38f).SetEase(Ease.OutQuad);
+            float duration = Random.Range(0.59f, 0.68f);
+            _clone.txt.DOFade(0f, duration - 0.3f).SetEase(Ease.OutQuad);
             return _clone;
         }
         return null;

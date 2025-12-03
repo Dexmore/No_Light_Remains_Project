@@ -3,12 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class SavePoint_LSH : InteractableObject
 {
-    #region 상호작용 오브젝트는 InteractableObject로 상속하고 구현
     protected override void Start()
     {
         base.Start();
     }
-    // OnColisionEnter2D 대신 아래 메서드로 변경했음.
     public override void Run()
     {
         base.Run();
@@ -17,11 +15,8 @@ public class SavePoint_LSH : InteractableObject
         
         string sceneName = SceneManager.GetActiveScene().name;
 
-        //SaveManager_LSH.Save(pos2D, sceneName);
-
-        // DBManager에 관련 기능이 있어서 변경했음.
-        DBManager.I.currentCharData.sceneName = sceneName;
-        DBManager.I.currentCharData.lastPosition = pos2D;
+        DBManager.I.currData.sceneName = sceneName;
+        DBManager.I.currData.lastPos = pos2D;
         DBManager.I.Save();
 
         Debug.Log($"[SavePoint] Saved at {pos2D} in scene {sceneName}");
@@ -40,8 +35,6 @@ public class SavePoint_LSH : InteractableObject
             _activatedOnce = true;
         }
     }
-    #endregion
-    
     [Header("Components")]
     [SerializeField] private Animator animator;
     [Header("Animator Params")]

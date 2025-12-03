@@ -145,7 +145,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
 
         // 3. 데이터 필터링
         List<ItemData> filteredList = new List<ItemData>();
-        List<CharacterData.ItemData> copy = DBManager.I.currentCharData.itemDatas.ToList();
+        List<CharacterData.ItemData> copy = DBManager.I.currData.itemDatas.ToList();
         foreach(var citd in copy)
         {
             int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == citd.Name);
@@ -216,7 +216,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         if (moneyText != null)
         {
             //moneyText.text = InventoryDataManager.Instance.PlayerMoney.ToString("N0");
-            moneyText.text = DBManager.I.currentCharData.money.ToString("N0");
+            moneyText.text = DBManager.I.currData.gold.ToString("N0");
         }
     }
 

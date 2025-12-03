@@ -52,10 +52,12 @@ public class PlayerInteraction : MonoBehaviour
     Prompt prompt;
     LightSystem lightSystem;
     PlayerControl PlayerControl;
+    HUDBinder hUDBinder;
     void Awake()
     {
         TryGetComponent(out PlayerControl);
         prompt = FindAnyObjectByType<Prompt>();
+        hUDBinder = FindAnyObjectByType<HUDBinder>();
         lightSystem = FindAnyObjectByType<LightSystem>();
     }
     void UnInit()
@@ -252,6 +254,7 @@ public class PlayerInteraction : MonoBehaviour
                             if (dropItem.isAuto)
                             {
                                 dropItem.Get();
+                                hUDBinder.Refresh();
                             }
                             break;
                     }
