@@ -6,13 +6,14 @@ using UnityEngine.EventSystems; // ISelectHandler와 IPointerEnterHandler가 모
 // [수정] IPointerEnterHandler 인터페이스를 추가합니다.
 public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 {
-    private ItemData _currentItem;
+    private InventoryItem _currentItem;
     private ItemPanelController _controller;
 
     [Header("슬롯 UI 요소")]
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI itemNameText;
     [SerializeField] private GameObject newIndicator;
+    [SerializeField] private TextMeshProUGUI quantityText;
 
     private Button _button;
 
@@ -23,21 +24,41 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     }
 
     // --- (SetItem, ClearSlot 함수는 기존과 동일합니다) ---
-    public void SetItem(ItemData itemData, ItemPanelController controller)
+    public void SetItem(InventoryItem item, ItemPanelController controller)
     {
-        _currentItem = itemData;
+        _currentItem = item;
         _controller = controller;
 
-        if (_currentItem == null) { ClearSlot(); return; }
+        if (_currentItem == null || _currentItem.data == null)
+        {
+            ClearSlot();
+            return; 
+        }
 
         if (itemIcon != null)
         {
-            itemIcon.sprite = _currentItem.icon;
-            itemIcon.gameObject.SetActive(_currentItem.icon != null);
+            itemIcon.sprite = _currentItem.data.icon;
+            itemIcon.gameObject.SetActive(_currentItem.data.icon != null);
         }
-        itemNameText.text = _currentItem.itemName;
+        itemNameText.text = _currentItem.data.name;
         itemNameText.gameObject.SetActive(true);
-        if (newIndicator != null) newIndicator.SetActive(_currentItem.isNew);
+
+        // [추가] 수량 표시 로직
+        if (quantityText != null)
+        {
+            // 1개보다 많을 때만 "x5" 처럼 표시, 1개면 숨김
+            if (_currentItem.quantity > 1)
+            {
+                quantityText.text = $"x{_currentItem.quantity}";
+                quantityText.gameObject.SetActive(true);
+            }
+            else
+            {
+                quantityText.gameObject.SetActive(false);
+            }
+        }
+
+        if (newIndicator != null) newIndicator.SetActive(_currentItem.data.isNew);
         if (_button != null) _button.interactable = true;
     }
 
@@ -63,7 +84,14 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     /// </summary>
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // 정보 표시 함수를 호출합니다.
+        if (_button != null && _button.interactable)
+        {
+            // [핵심] 마우스를 올리면 이 버튼을 '선택' 상태로 만듭니다.
+            // 이렇게 하면 UIFocusManager가 감지하고 셀렉터를 이쪽으로 이동시킵니다.
+            _button.Select();
+        }
+
+        // 정보 표시
         ShowDetails();
     }
 
@@ -87,8 +115,6 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         }
     }
 
-
-
     /// <summary>
     /// 슬롯이 '클릭'될 때 (Enter/Space/마우스 클릭) 호출됩니다.
     /// </summary>
@@ -97,22 +123,9 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         // 정보 표시는 OnSelect/OnPointerEnter가 처리하므로, 여기서는 'New' 마크 제거만 합니다.
         if (_currentItem != null && _controller != null)
         {
-            if (_currentItem.isNew)
+            if (_currentItem.data.isNew)
             {
-                _currentItem.isNew = false;
-                int find = 0;
-                // find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == _currentItem.itemName);
-                // if(find != -1)
-                // {
-                //     DBManager.I.itemDatabase.allItems[find].isNew = false;
-                // }
-                find = DBManager.I.currData.itemDatas.FindIndex(x => x.Name == _currentItem.itemName);
-                if(find != -1)
-                {
-                    CharacterData.ItemData citd = DBManager.I.currData.itemDatas[find];
-                    citd.isNew = false;
-                    DBManager.I.currData.itemDatas[find] = citd;
-                }
+                _currentItem.data.isNew = false;
                 if (newIndicator != null) newIndicator.SetActive(false);
             }
         }

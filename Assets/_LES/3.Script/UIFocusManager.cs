@@ -1,82 +1,75 @@
 using UnityEngine;
-using UnityEngine.EventSystems; // EventSystem을 사용하기 위해 필수!
+using UnityEngine.EventSystems; 
 
 public class UIFocusManager : MonoBehaviour
 {
     [Header("포커스 프레임 설정")]
-    [Tooltip("Hierarchy에 만든 FocusFrame 오브젝트의 RectTransform을 연결")]
-    [SerializeField]
-    private RectTransform focusFrame;
-
-    [Tooltip("UI의 루트 패널입니다. (예: InventoryPanels)")]
-    [SerializeField]
-    private RectTransform uiRoot;
+    [SerializeField] private RectTransform focusFrame;
+    [SerializeField] private RectTransform uiRoot;
 
     [Header("움직임 설정")]
-    [Tooltip("프레임이 따라가는 속도")]
-    [SerializeField]
-    private float moveSpeed = 20f;
-    
-    [Tooltip("프레임의 크기가 변경되는 속도")]
-    [SerializeField]
-    private float sizeSpeed = 15f;
-    
-    [Tooltip("선택한 대상보다 얼마나 더 크게 표시할지 (패딩)")]
-    [SerializeField]
-    private Vector2 padding = new Vector2(10f, 10f);
+    [SerializeField] private float moveSpeed = 20f;
+    [SerializeField] private float sizeSpeed = 15f;
+    [SerializeField] private Vector2 padding = new Vector2(10f, 10f);
+    [Tooltip("셀렉터가 이 크기보다 작아지지 않도록 합니다.")]
+    [SerializeField] private Vector2 minSize = new Vector2(100f, 100f);
 
-    private RectTransform _currentTarget; // 현재 쫓아갈 대상
+    private RectTransform _currentTarget;
     
     private void Awake()
     {
-        // 시작할 때 프레임을 숨김
-        if (focusFrame != null)
-        {
-            focusFrame.gameObject.SetActive(false);
-        }
+        if (focusFrame != null) focusFrame.gameObject.SetActive(false);
     }
 
-    // Update는 매 프레임마다 호출됩니다.
-    private void Update()
+    // [추가] 매니저가 꺼질 때(인벤토리 닫힐 때) 프레임도 같이 숨김
+    private void OnDisable()
     {
-        // 1. EventSystem이 현재 선택 중인 게임 오브젝트를 가져옴
+        if (focusFrame != null) focusFrame.gameObject.SetActive(false);
+    }
+
+    private void LateUpdate()
+    {
+        // [추가] UI 루트가 꺼져있으면 작동 중지
+        if (uiRoot != null && !uiRoot.gameObject.activeInHierarchy)
+        {
+            if (focusFrame.gameObject.activeSelf) focusFrame.gameObject.SetActive(false);
+            return;
+        }
+
         GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
 
-        // 2. 선택된 오브젝트가 없거나, 우리 UI(uiRoot)의 자식이 아니면
-        if (selectedObj == null || !selectedObj.transform.IsChildOf(uiRoot))
+        // 선택된 오브젝트가 없거나, UI 자식이 아니거나, **비활성화된 상태라면** 타겟 해제
+        if (selectedObj == null || !selectedObj.activeInHierarchy || !selectedObj.transform.IsChildOf(uiRoot))
         {
-            _currentTarget = null; // 대상을 null로 설정 (프레임을 숨김)
+            _currentTarget = null;
         }
         else
         {
-            // 3. 선택된 오브젝트가 있으면 대상을 설정
             _currentTarget = selectedObj.GetComponent<RectTransform>();
         }
 
-        // 4. 대상(Target)이 있을 경우
         if (_currentTarget != null)
         {
-            // 4a. 프레임을 활성화
             focusFrame.gameObject.SetActive(true);
 
-            // 4b. 부드럽게(Lerp) 프레임의 위치를 대상의 위치로 이동
             focusFrame.transform.position = Vector3.Lerp(
                 focusFrame.transform.position, 
                 _currentTarget.transform.position, 
                 Time.unscaledDeltaTime * moveSpeed
             );
 
-            // 4c. 부드럽게(Lerp) 프레임의 크기를 대상의 크기 + 패딩으로 변경
+            Vector2 targetSize = _currentTarget.sizeDelta + padding;
+            targetSize.x = Mathf.Max(targetSize.x, minSize.x);
+            targetSize.y = Mathf.Max(targetSize.y, minSize.y);
+
             focusFrame.sizeDelta = Vector2.Lerp(
                 focusFrame.sizeDelta, 
-                _currentTarget.sizeDelta + padding, 
+                targetSize, 
                 Time.unscaledDeltaTime * sizeSpeed
             );
         }
-        // 5. 대상(Target)이 없을 경우
         else
         {
-            // 5a. 프레임을 비활성화
             focusFrame.gameObject.SetActive(false);
         }
     }

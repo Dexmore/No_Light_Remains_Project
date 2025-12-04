@@ -1331,6 +1331,7 @@ GameObject:
   - component: {fileID: 294745455}
   - component: {fileID: 294745454}
   - component: {fileID: 294745453}
+  - component: {fileID: 294745456}
   m_Layer: 0
   m_Name: TabButton_Records
   m_TagString: Untagged
@@ -1377,7 +1378,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -1440,6 +1441,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 294745451}
   m_CullTransparentMesh: 1
+--- !u!114 &294745456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294745451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &308256149
 GameObject:
   m_ObjectHideFlags: 0
@@ -2351,8 +2364,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3.8017, y: -2.281}
-  m_SizeDelta: {x: 903.0247, y: 747.2725}
+  m_AnchoredPosition: {x: -3.8017, y: -0.00046349}
+  m_SizeDelta: {x: 903.0247, y: 695.28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &397064657
 MonoBehaviour:
@@ -2381,7 +2394,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2614,8 +2627,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7b842a69ff1f2664dab32477e5c3040f, type: 2}
-  m_sharedMaterial: {fileID: 2077733235751138414, guid: 7b842a69ff1f2664dab32477e5c3040f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 597d73fe962152844bcd9b9105117f45, type: 2}
+  m_sharedMaterial: {fileID: 6668121448278709461, guid: 597d73fe962152844bcd9b9105117f45, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3774,10 +3787,16 @@ MonoBehaviour:
   testItemsToAdd:
   - {fileID: 11400000, guid: d4bbcd8597f49924fbc6d2d55df1eb18, type: 2}
   - {fileID: 11400000, guid: 3b431443ba3b1f24497789d005593fa8, type: 2}
+  - {fileID: 11400000, guid: 7f34c76523e4fc141beb7b0a62fcad94, type: 2}
+  - {fileID: 11400000, guid: ef8c07e520b4ccb43b4f521a8a0bc92c, type: 2}
+  - {fileID: 11400000, guid: d1c6602227050c443a03bf0394fffc1f, type: 2}
+  - {fileID: 11400000, guid: 1bf9082756b33da4d92acd8eb687d8fa, type: 2}
   testGearsToAdd:
   - {fileID: 11400000, guid: 2de72cb0b3235aa489794fe53ecc1c72, type: 2}
+  - {fileID: 11400000, guid: 72a18c10cfbc6df40b201de16d2aa16d, type: 2}
   testLanternsToAdd:
   - {fileID: 11400000, guid: 994a793e24d6c8f41b7d3694d26e1e4b, type: 2}
+  - {fileID: 11400000, guid: 0293da368b5d86a4cb17f411c593af2e, type: 2}
   testRecordsToAdd:
   - {fileID: 11400000, guid: d2c104e110f0fd849aa85a413a00b3ff, type: 2}
   testMoneyToAdd: 5000
@@ -4068,6 +4087,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 620674846}
   m_CullTransparentMesh: 1
+--- !u!1001 &636849615
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1005830362557819407, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_Name
+      value: DBManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773447842633925310, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8ea5bf11d6c65a047866054e47766634, type: 3}
 --- !u!1 &647351518
 GameObject:
   m_ObjectHideFlags: 0
@@ -4462,7 +4538,7 @@ MonoBehaviour:
   m_Content: {fileID: 1951723545}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
@@ -4563,6 +4639,7 @@ GameObject:
   - component: {fileID: 740845329}
   - component: {fileID: 740845331}
   - component: {fileID: 740845330}
+  - component: {fileID: 740845332}
   m_Layer: 5
   m_Name: GearSlot_3
   m_TagString: Untagged
@@ -4627,7 +4704,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -4652,6 +4729,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &740845332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740845328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &776611289
 GameObject:
   m_ObjectHideFlags: 0
@@ -4816,6 +4905,7 @@ GameObject:
   - component: {fileID: 820991727}
   - component: {fileID: 820991726}
   - component: {fileID: 820991728}
+  - component: {fileID: 820991729}
   m_Layer: 0
   m_Name: KitTabTexts
   m_TagString: Untagged
@@ -4900,7 +4990,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -4925,6 +5015,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &820991729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820991724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &822107128
 GameObject:
   m_ObjectHideFlags: 0
@@ -4937,6 +5039,7 @@ GameObject:
   - component: {fileID: 822107132}
   - component: {fileID: 822107131}
   - component: {fileID: 822107130}
+  - component: {fileID: 822107133}
   m_Layer: 0
   m_Name: TapControl_R
   m_TagString: Untagged
@@ -4983,7 +5086,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -5046,6 +5149,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 822107128}
   m_CullTransparentMesh: 1
+--- !u!114 &822107133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822107128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &867464218
 GameObject:
   m_ObjectHideFlags: 0
@@ -5456,6 +5571,7 @@ GameObject:
   - component: {fileID: 930936348}
   - component: {fileID: 930936350}
   - component: {fileID: 930936349}
+  - component: {fileID: 930936351}
   m_Layer: 5
   m_Name: GearSlot_1
   m_TagString: Untagged
@@ -5520,7 +5636,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -5545,6 +5661,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &930936351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930936347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &936481749
 GameObject:
   m_ObjectHideFlags: 0
@@ -5969,6 +6097,7 @@ GameObject:
   - component: {fileID: 967580206}
   - component: {fileID: 967580208}
   - component: {fileID: 967580207}
+  - component: {fileID: 967580209}
   m_Layer: 5
   m_Name: GearSlot_10
   m_TagString: Untagged
@@ -6033,7 +6162,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -6058,6 +6187,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &967580209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967580205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &978608146
 GameObject:
   m_ObjectHideFlags: 0
@@ -6067,8 +6208,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 978608147}
-  - component: {fileID: 978608148}
   - component: {fileID: 978608149}
+  - component: {fileID: 978608148}
+  - component: {fileID: 978608150}
   m_Layer: 5
   m_Name: LightInventorySlot_1
   m_TagString: Untagged
@@ -6132,7 +6274,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -6157,6 +6299,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &978608150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978608146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &979849741
 GameObject:
   m_ObjectHideFlags: 0
@@ -6267,6 +6421,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemPanelController
   firstSelectable: {fileID: 820991728}
+  mainTabButton: {fileID: 1415683475}
+  autoScroll: {fileID: 1491772553}
+  scrollRect: {fileID: 1491772550}
   moneyText: {fileID: 620674848}
   equipmentButton: {fileID: 820991728}
   materialButton: {fileID: 1597125782}
@@ -6366,6 +6523,7 @@ GameObject:
   - component: {fileID: 1020649614}
   - component: {fileID: 1020649613}
   - component: {fileID: 1020649612}
+  - component: {fileID: 1020649615}
   m_Layer: 0
   m_Name: TabButton_Gear
   m_TagString: Untagged
@@ -6412,7 +6570,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -6475,6 +6633,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1020649610}
   m_CullTransparentMesh: 1
+--- !u!114 &1020649615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020649610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1029753535
 GameObject:
   m_ObjectHideFlags: 0
@@ -6887,8 +7057,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1071152367}
-  - component: {fileID: 1071152368}
   - component: {fileID: 1071152369}
+  - component: {fileID: 1071152368}
+  - component: {fileID: 1071152370}
   m_Layer: 5
   m_Name: LightInventorySlot_0
   m_TagString: Untagged
@@ -6952,7 +7123,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -6977,6 +7148,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1071152370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1071152366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1072874444
 GameObject:
   m_ObjectHideFlags: 0
@@ -6986,8 +7169,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1072874445}
-  - component: {fileID: 1072874446}
   - component: {fileID: 1072874447}
+  - component: {fileID: 1072874446}
+  - component: {fileID: 1072874448}
   m_Layer: 5
   m_Name: LightInventorySlot_2
   m_TagString: Untagged
@@ -7051,7 +7235,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -7076,6 +7260,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1072874448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072874444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1085435617
 GameObject:
   m_ObjectHideFlags: 0
@@ -7335,10 +7531,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 397064656}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000061035156}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 904, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1113303862
 MonoBehaviour:
@@ -7939,7 +8135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fb9bef486cd12c48b07d3175a297008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecordPanelController
-  recordSlotPrefab: {fileID: 9127675398652418376, guid: 5ca80f363d4c17a4e8494f02a25aa0a8, type: 3}
+  recordSlotPrefab: {fileID: 8097373529725117268, guid: e8273b7ab0a0a9245ad887724fad3789, type: 3}
   contentTransform: {fileID: 1951723545}
   detailTitleText: {fileID: 536322539}
   detailContentText: {fileID: 1889185389}
@@ -8369,6 +8565,7 @@ MonoBehaviour:
   moveSpeed: 20
   sizeSpeed: 15
   padding: {x: 10, y: 10}
+  minSize: {x: 100, y: 100}
 --- !u!1 &1287635545
 GameObject:
   m_ObjectHideFlags: 0
@@ -8767,6 +8964,7 @@ GameObject:
   - component: {fileID: 1321879426}
   - component: {fileID: 1321879428}
   - component: {fileID: 1321879427}
+  - component: {fileID: 1321879429}
   m_Layer: 5
   m_Name: GearSlot_9
   m_TagString: Untagged
@@ -8831,7 +9029,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -8856,6 +9054,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1321879429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321879425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1329012372
 GameObject:
   m_ObjectHideFlags: 0
@@ -9056,6 +9266,7 @@ GameObject:
   - component: {fileID: 1415683477}
   - component: {fileID: 1415683476}
   - component: {fileID: 1415683475}
+  - component: {fileID: 1415683478}
   m_Layer: 0
   m_Name: TabButton_Item
   m_TagString: Untagged
@@ -9102,7 +9313,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -9165,6 +9376,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1415683473}
   m_CullTransparentMesh: 1
+--- !u!114 &1415683478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415683473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1430616929
 GameObject:
   m_ObjectHideFlags: 0
@@ -9795,6 +10018,7 @@ GameObject:
   - component: {fileID: 1457715396}
   - component: {fileID: 1457715398}
   - component: {fileID: 1457715397}
+  - component: {fileID: 1457715399}
   m_Layer: 5
   m_Name: GearSlot_11
   m_TagString: Untagged
@@ -9859,7 +10083,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -9884,6 +10108,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1457715399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457715395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1476706395
 GameObject:
   m_ObjectHideFlags: 0
@@ -9971,6 +10207,7 @@ GameObject:
   - component: {fileID: 1491772552}
   - component: {fileID: 1491772551}
   - component: {fileID: 1491772550}
+  - component: {fileID: 1491772553}
   m_Layer: 0
   m_Name: ItemsList
   m_TagString: Untagged
@@ -9995,8 +10232,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 484.24005, y: 390.23}
-  m_SizeDelta: {x: 938.08, y: 764.1}
+  m_AnchoredPosition: {x: 484.24005, y: 391.726}
+  m_SizeDelta: {x: 938.08, y: 695.2836}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1491772550
 MonoBehaviour:
@@ -10013,11 +10250,11 @@ MonoBehaviour:
   m_Content: {fileID: 1113303861}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 50
+  m_ScrollSensitivity: 5
   m_Viewport: {fileID: 397064656}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -10035,14 +10272,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491772548}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -10066,6 +10303,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491772548}
   m_CullTransparentMesh: 1
+--- !u!114 &1491772553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491772548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ff03cbadda89fa4b86ceff0117cd79c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoScroll
+  smoothTime: 0.05
+  maxSpeed: 10000
+  scrollMargin: 50
 --- !u!1 &1495606934
 GameObject:
   m_ObjectHideFlags: 0
@@ -10268,7 +10520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -10341,6 +10593,7 @@ GameObject:
   - component: {fileID: 1522522475}
   - component: {fileID: 1522522477}
   - component: {fileID: 1522522476}
+  - component: {fileID: 1522522478}
   m_Layer: 5
   m_Name: GearSlot_6
   m_TagString: Untagged
@@ -10405,7 +10658,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -10430,6 +10683,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1522522478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522522474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1563851790
 GameObject:
   m_ObjectHideFlags: 0
@@ -11077,6 +11342,7 @@ GameObject:
   - component: {fileID: 1597125781}
   - component: {fileID: 1597125780}
   - component: {fileID: 1597125782}
+  - component: {fileID: 1597125783}
   m_Layer: 0
   m_Name: CraftingTabTexts
   m_TagString: Untagged
@@ -11161,7 +11427,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -11186,6 +11452,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1597125783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1597125778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1614537531
 GameObject:
   m_ObjectHideFlags: 0
@@ -11272,6 +11550,7 @@ GameObject:
   - component: {fileID: 1627087030}
   - component: {fileID: 1627087032}
   - component: {fileID: 1627087031}
+  - component: {fileID: 1627087033}
   m_Layer: 5
   m_Name: GearSlot_5
   m_TagString: Untagged
@@ -11336,7 +11615,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -11361,6 +11640,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1627087033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627087029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1655307658
 GameObject:
   m_ObjectHideFlags: 0
@@ -12171,6 +12462,7 @@ GameObject:
   - component: {fileID: 1721302775}
   - component: {fileID: 1721302774}
   - component: {fileID: 1721302773}
+  - component: {fileID: 1721302776}
   m_Layer: 0
   m_Name: TapControl_L
   m_TagString: Untagged
@@ -12217,7 +12509,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -12280,6 +12572,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721302771}
   m_CullTransparentMesh: 1
+--- !u!114 &1721302776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721302771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1725806940
 GameObject:
   m_ObjectHideFlags: 0
@@ -12945,6 +13249,7 @@ GameObject:
   - component: {fileID: 1830571581}
   - component: {fileID: 1830571580}
   - component: {fileID: 1830571579}
+  - component: {fileID: 1830571582}
   m_Layer: 0
   m_Name: TabButton_Lantern
   m_TagString: Untagged
@@ -12991,7 +13296,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -13054,6 +13359,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1830571577}
   m_CullTransparentMesh: 1
+--- !u!114 &1830571582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830571577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1842019281
 GameObject:
   m_ObjectHideFlags: 0
@@ -13133,7 +13450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.6666667}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -13941,6 +14258,7 @@ GameObject:
   - component: {fileID: 1991321252}
   - component: {fileID: 1991321254}
   - component: {fileID: 1991321253}
+  - component: {fileID: 1991321255}
   m_Layer: 5
   m_Name: GearSlot_2
   m_TagString: Untagged
@@ -14005,7 +14323,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -14030,6 +14348,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1991321255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991321251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &1992361758
 GameObject:
   m_ObjectHideFlags: 0
@@ -14454,6 +14784,7 @@ GameObject:
   - component: {fileID: 2068632837}
   - component: {fileID: 2068632839}
   - component: {fileID: 2068632838}
+  - component: {fileID: 2068632840}
   m_Layer: 5
   m_Name: GearSlot_8
   m_TagString: Untagged
@@ -14518,7 +14849,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -14543,6 +14874,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2068632840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068632836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &2075328772
 GameObject:
   m_ObjectHideFlags: 0
@@ -14857,6 +15200,7 @@ GameObject:
   - component: {fileID: 2109927118}
   - component: {fileID: 2109927120}
   - component: {fileID: 2109927119}
+  - component: {fileID: 2109927121}
   m_Layer: 5
   m_Name: GearSlot_7
   m_TagString: Untagged
@@ -14921,7 +15265,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -14946,6 +15290,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2109927121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109927117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &2111213782
 GameObject:
   m_ObjectHideFlags: 0
@@ -15032,6 +15388,7 @@ GameObject:
   - component: {fileID: 2114872378}
   - component: {fileID: 2114872380}
   - component: {fileID: 2114872379}
+  - component: {fileID: 2114872381}
   m_Layer: 5
   m_Name: GearSlot_4
   m_TagString: Untagged
@@ -15096,7 +15453,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -15121,6 +15478,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2114872381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114872377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1 &2128206375
 GameObject:
   m_ObjectHideFlags: 0
@@ -15309,6 +15678,7 @@ GameObject:
   - component: {fileID: 4850889827035845220}
   - component: {fileID: 4850889827035845222}
   - component: {fileID: 4850889827035845221}
+  - component: {fileID: 4850889827035845223}
   m_Layer: 5
   m_Name: GearSlot_0
   m_TagString: Untagged
@@ -15449,7 +15819,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7607843, b: 0, a: 1}
@@ -15474,6 +15844,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4850889827035845223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397545368218859648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcd37d1da84f2d4cac4b019c17c39b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverSelect
 --- !u!1001 &5062361153520100168
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15530,6 +15912,10 @@ PrefabInstance:
       propertyPath: PlayerMoney
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8819694025904853452, guid: c8b3adff2574ca443ab4cd451b4f088a, type: 3}
+      propertyPath: itemDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: d6d21b1218fbde247853ff089fd420ab, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15787,3 +16173,4 @@ SceneRoots:
   - {fileID: 578926121}
   - {fileID: 1029753538}
   - {fileID: 5062361153520100168}
+  - {fileID: 636849615}
