@@ -72,8 +72,19 @@ public class InventoryDataManager : MonoBehaviour
         // 2. 장비(Equipment) 타입인 경우 -> 무조건 새로 추가 (중첩 X)
         else
         {
-            PlayerItems.Add(new InventoryItem(itemToAdd, 1));
-            Debug.Log($"[Inventory] {itemToAdd.itemName} (장비) 획득");
+            // 이미 가지고 있는지 확인
+            bool hasItem = PlayerItems.Exists(x => x.data == itemToAdd);
+
+            if (!hasItem)
+            {
+                PlayerItems.Add(new InventoryItem(itemToAdd, 1));
+                Debug.Log($"[Inventory] {itemToAdd.itemName} (장비) 획득");
+            }
+            else
+            {
+                Debug.LogWarning($"[Inventory] 이미 보유 중인 장비입니다: {itemToAdd.itemName}");
+                // (기획에 따라 여기서 '돈'으로 환급해주거나, 그냥 무시하면 됩니다.)
+            }
         }
 
         // 3. UI 갱신 방송
