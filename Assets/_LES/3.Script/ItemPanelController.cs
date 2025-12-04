@@ -146,7 +146,20 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         UpdateSubTabButtons();
         ClearAllSpawnedSlots();
 
-        List<InventoryItem> allItems = InventoryDataManager.Instance.PlayerItems;
+
+        //////////
+        List<InventoryItem> allItems = new List<InventoryItem>();
+        for(int i=0; i<DBManager.I.currData.itemDatas.Count; i++)
+        {
+            CharacterData.ItemData citd = DBManager.I.currData.itemDatas[i];
+            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == citd.Name);
+            if(find == -1) continue;
+            ItemData itd = DBManager.I.itemDatabase.allItems[find];
+            InventoryItem inventoryItem = new InventoryItem(itd, citd.count);
+            allItems.Add(inventoryItem);
+        }
+        //////////
+
         
         List<InventoryItem> filteredList = allItems
             .Where(item => item.data != null && item.data.type == _currentFilter)
@@ -196,7 +209,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     {
         if (moneyText != null)
         {
-            moneyText.text = InventoryDataManager.Instance.PlayerMoney.ToString("N0");
+            moneyText.text = DBManager.I.currData.gold.ToString("N0");
         }
     }
 

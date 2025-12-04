@@ -17,5 +17,5 @@ public class ItemData : ScriptableObject // [수정] ScriptableObject 상속
     [TextArea(3, 10)]
     public string itemDescription; 
     
-    public bool isNew; 
+    public bool isNew;
 }
