@@ -201,10 +201,10 @@ public class InventoryDataManager : MonoBehaviour
 
         // 1. DBManager의 현재 캐릭터 데이터 가져오기 (참조)
         // (주의: 구조체는 값 복사이므로, 새로 만든 뒤 덮어씌워야 할 수도 있습니다.)
-        CharacterData charData = DBManager.I.currentCharData;
+        CharacterData charData = DBManager.I.currData;
 
         // 2. 기본 스탯 저장
-        charData.money = PlayerMoney;
+        charData.gold = PlayerMoney;
         // charData.MaxGearCost = MaxGearCost; (DBManager의 CharacterData에 이 필드가 없다면 추가 필요)
 
         // 3. 아이템 저장 (이름과 개수)
@@ -223,7 +223,7 @@ public class InventoryDataManager : MonoBehaviour
         {
             CharacterData.GearData saveData = new CharacterData.GearData();
             saveData.Name = gear.name;
-            saveData.isEquipped = gear.isEquipped;
+            //saveData.isEquipped = gear.isEquipped;
             charData.gearDatas.Add(saveData);
         }
 
@@ -233,21 +233,21 @@ public class InventoryDataManager : MonoBehaviour
         {
             CharacterData.LanternData saveData = new CharacterData.LanternData();
             saveData.Name = lantern.name;
-            saveData.isEquipped = lantern.isEquipped;
+            //saveData.isEquipped = lantern.isEquipped;
             charData.lanternDatas.Add(saveData);
         }
 
         // 6. 기록물 저장
-        charData.recordDatas = new List<CharacterData.RecordData>();
+        //charData.recordDatas = new List<CharacterData.RecordData>();
         foreach (var record in PlayerRecords)
         {
-            CharacterData.RecordData saveData = new CharacterData.RecordData();
-            saveData.Name = record.name; // 파일 이름 저장
-            charData.recordDatas.Add(saveData);
+            //CharacterData.RecordData saveData = new CharacterData.RecordData();
+            //saveData.Name = record.name; // 파일 이름 저장
+            //charData.recordDatas.Add(saveData);
         }
 
         // 7. DBManager에 갱신된 데이터 전달
-        DBManager.I.currentCharData = charData;
+        DBManager.I.currData = charData;
         
         // 8. 실제 파일/클라우드 저장 호출
         DBManager.I.Save();
@@ -266,8 +266,8 @@ public class InventoryDataManager : MonoBehaviour
         }
 
         // 2. DB에서 데이터 로드
-        DBManager.I.Load();
-        CharacterData charData = DBManager.I.currentCharData;
+        //DBManager.I.Load();
+        CharacterData charData = DBManager.I.currData;
 
         // 3. [중요] 기존 인벤토리 데이터 완전 초기화 (비우기)
         PlayerItems.Clear();
@@ -276,7 +276,7 @@ public class InventoryDataManager : MonoBehaviour
         PlayerRecords.Clear(); // (기록물도 비우기)
         
         // 4. 기본 스탯 복구
-        PlayerMoney = charData.money;
+        PlayerMoney = charData.gold;
         // MaxGearCost = charData.MaxGearCost; 
 
         // 5. 아이템 복구
@@ -309,7 +309,7 @@ public class InventoryDataManager : MonoBehaviour
                     // 저장된 상태에서는 장착 여부도 저장해야 완벽하지만, 
                     // 현재 DB 구조에는 이름만 있으므로 기본적으로 '해제' 상태로 로드됩니다.
                     // (만약 장착 상태도 저장하려면 DBManager의 GearData 구조체에 isEquipped 추가 필요)
-                    originalData.isEquipped = savedGear.isEquipped; // 안전하게 초기화
+                    //originalData.isEquipped = savedGear.isEquipped; // 안전하게 초기화
                     PlayerGears.Add(originalData);
                 }
             }
@@ -323,30 +323,30 @@ public class InventoryDataManager : MonoBehaviour
                 LanternFunctionData originalData = itemDatabase.FindLanternByName(savedLantern.Name);
                 if (originalData != null) 
                 {
-                    originalData.isEquipped = savedLantern.isEquipped; // 초기화
+                    //originalData.isEquipped = savedLantern.isEquipped; // 초기화
                     PlayerLanternFunctions.Add(originalData);
                 }
             }
         }
 
-        if (charData.recordDatas != null)
-        {
-            foreach (var savedRecord in charData.recordDatas)
-            {
-                RecordData originalData = itemDatabase.FindRecordByName(savedRecord.Name);
-                if(originalData != null)
-                {
-                    if(!PlayerRecords.Contains(originalData))
-                    {
-                        PlayerRecords.Add(originalData);
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"[Load] 기록물 '{savedRecord.Name}'을 Database에서 찾을 수 없습니다.");
-                }
-            }
-        }
+        // if (charData.recordDatas != null)
+        // {
+        //     foreach (var savedRecord in charData.recordDatas)
+        //     {
+        //         RecordData originalData = itemDatabase.FindRecordByName(savedRecord.Name);
+        //         if(originalData != null)
+        //         {
+        //             if(!PlayerRecords.Contains(originalData))
+        //             {
+        //                 PlayerRecords.Add(originalData);
+        //             }
+        //         }
+        //         else
+        //         {
+        //             Debug.LogWarning($"[Load] 기록물 '{savedRecord.Name}'을 Database에서 찾을 수 없습니다.");
+        //         }
+        //     }
+        // }
         
         // (기록물 복구 로직이 빠져있다면 추가 필요)
 

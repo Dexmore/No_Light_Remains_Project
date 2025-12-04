@@ -504,7 +504,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (Dead) return;
         AudioManager.I.PlaySFX("FlashlightClick");
-        if (currBattery <= 10)
+        if (currBattery <= 3)
         {
             if(Time.time - batteryTextCooltime > 1.2f)
             {

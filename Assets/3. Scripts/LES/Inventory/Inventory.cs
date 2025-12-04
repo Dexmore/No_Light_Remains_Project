@@ -1,4 +1,6 @@
 using UnityEngine;
+using NaughtyAttributes;
+
 public class Inventory : MonoBehaviour
 {
     private CanvasGroup _canvasGroup;
@@ -11,6 +13,7 @@ public class Inventory : MonoBehaviour
         _canvasGroup.transform.parent.gameObject.SetActive(false);
     }
 
+    [Button]
     //UI를 열 때 호출할 함수 (즉시 활성화)
     public void Open()
     {
@@ -19,6 +22,7 @@ public class Inventory : MonoBehaviour
         _canvasGroup.interactable = true;
     }
 
+    [Button]
     //UI를 닫을 때 호출할 함수 (즉시 비활성화)
     public void Close()
     {

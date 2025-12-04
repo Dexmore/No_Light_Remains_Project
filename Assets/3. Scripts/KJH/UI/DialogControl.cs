@@ -64,9 +64,10 @@ public class DialogControl : MonoBehaviour
 
 
 #if UNITY_EDITOR
+    [Header("Editor Test")]
     public int testIndex;
     [Button]
-    public void TestOpenPopup()
+    public void TestOpen()
     {
         Open(testIndex);
     }
