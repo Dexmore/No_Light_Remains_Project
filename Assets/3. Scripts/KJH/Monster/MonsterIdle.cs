@@ -9,7 +9,7 @@ public class MonsterIdle : MonsterState
     float duration;
     public override async UniTask Enter(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }

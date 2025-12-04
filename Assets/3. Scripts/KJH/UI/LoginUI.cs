@@ -69,10 +69,10 @@ public class LoginUI : MonoBehaviour
     }
     public void ConnectButton()
     {
-        AudioManager.I.PlaySFX("UIClick2");
         if (Time.time - connectCoolTime > 1.2f)
         {
             connectCoolTime = Time.time;
+            AudioManager.I.PlaySFX("UIClick2");
             StopCoroutine(nameof(ConnectButton_co));
             StartCoroutine(nameof(ConnectButton_co));
         }
@@ -86,7 +86,7 @@ public class LoginUI : MonoBehaviour
         DBManager.I.StartSteam();
         yield return YieldInstructionCache.WaitForSeconds(1f);
         float _time = Time.time;
-        while (Time.time - _time < 4f)
+        while (Time.time - _time < 3f)
         {
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
             if (DBManager.I.IsSteam())
@@ -105,10 +105,10 @@ public class LoginUI : MonoBehaviour
     float logoutCoolTime = 0;
     public void LogoutButton()
     {
-        AudioManager.I.PlaySFX("UIClick2");
         if (Time.time - logoutCoolTime > 1.2f)
         {
             logoutCoolTime = Time.time;
+            AudioManager.I.PlaySFX("UIClick2");
             StopCoroutine(nameof(LogoutButton_co));
             StartCoroutine(nameof(LogoutButton_co));
         }

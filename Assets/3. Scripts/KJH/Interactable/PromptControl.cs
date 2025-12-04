@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
-public class Prompt : MonoBehaviour
+public class PromptControl : MonoBehaviour
 {
     #region UniTask Setting
     protected CancellationTokenSource cts;

@@ -90,7 +90,7 @@ public class KeyRemapper_KWY : MonoBehaviour
                 }
                 else
                 {
-                    FindObjectOfType<GameSettingManager_KWY>().OnKeyBindingChanged();
+                    FindObjectOfType<LobbySettingPanel>().OnKeyBindingChanged();
                 }
 
                 operation.Dispose();

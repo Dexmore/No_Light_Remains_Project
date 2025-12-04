@@ -16,7 +16,7 @@ public class MonsterNormalAttack : MonsterState
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         attackedColliders.Clear();
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
@@ -24,7 +24,7 @@ public class MonsterNormalAttack : MonsterState
     {
         if (control.memories.Count == 0)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
@@ -33,7 +33,7 @@ public class MonsterNormalAttack : MonsterState
         float dist = Mathf.Abs(target.position.x - transform.position.x);
         if (dist > 1.1f * range + 2f)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }

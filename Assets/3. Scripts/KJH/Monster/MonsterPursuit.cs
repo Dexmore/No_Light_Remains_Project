@@ -8,7 +8,7 @@ public class MonsterPursuit : MonsterState
     public override MonsterControl.State mapping => MonsterControl.State.Pursuit;
     public override async UniTask Enter(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         isAnimation = false;
         Activate(token).Forget();
     }
@@ -23,13 +23,13 @@ public class MonsterPursuit : MonsterState
 
         if (stopDistance > 0 && control.HasCondition(MonsterControl.Condition.ClosePlayer))
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }
         if (control.memories.Count == 0)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }
@@ -56,10 +56,10 @@ public class MonsterPursuit : MonsterState
                 addPos = Random.Range(0f, 4f)  * (target.position - transform.position).normalized;
             }
         }
-        Vector2[] result = await astar.Find((Vector2)target.position + addPos);
+        Vector2[] result = await astar.Find((Vector2)target.position + addPos, token);
         if (result.Length <= 1)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeNextState();
             //Debug.Log("3");
             return;
@@ -159,7 +159,7 @@ public class MonsterPursuit : MonsterState
         }
         anim.Play("Idle");
         await UniTask.Delay(Random.Range(500, 3000), cancellationToken: token);
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         control.ChangeNextState();
     }
 

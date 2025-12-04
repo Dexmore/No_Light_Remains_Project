@@ -7,8 +7,7 @@ using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using TMPro;
 
-
-public class GameSettingManager_KWY : MonoBehaviour
+public class LobbySettingPanel : MonoBehaviour
 {
     [Header("UI Panels")]
     [SerializeField] private GameObject basicSettingPanel;
@@ -56,18 +55,20 @@ public class GameSettingManager_KWY : MonoBehaviour
             keySettingPanel.SetActive(false);
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return null;
         SetupResolutions();
         SetupKeyRemappingUI();
         LoadSettingsToUI();
-
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
         fullscreenToggle.onValueChanged.AddListener(SetFullscreen);
         brightnessSlider.onValueChanged.AddListener(SetBrightness);
         masterVolume.onValueChanged.AddListener(SetMasterVolume);
         bgmVolume.onValueChanged.AddListener(SetBGMVolume);
         sfxVolume.onValueChanged.AddListener(SetSFXVolume);
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
     }
 
     public bool OnEscPressed()
@@ -119,7 +120,7 @@ public class GameSettingManager_KWY : MonoBehaviour
     public void OnClickResetKeysOnly()
     {
         inputActions.RemoveAllBindingOverrides();
-        GameSettingDataManager_KWY.Instance.setting.keyBindingOverrides = "";
+        SettingManager.Instance.setting.keyBindingOverrides = "";
 
         foreach (var remapper in keyRemappers)
         {
@@ -200,7 +201,7 @@ public class GameSettingManager_KWY : MonoBehaviour
     
     private void LoadSettingsToUI()
     {
-        GameSetting_KWY settings = GameSettingDataManager_KWY.Instance.setting;
+        SettingData settings = SettingManager.Instance.setting;
 
         fullscreenToggle.isOn = settings.fullscreenMode == FullScreenMode.FullScreenWindow;
         Screen.fullScreenMode = settings.fullscreenMode;
@@ -238,7 +239,7 @@ public class GameSettingManager_KWY : MonoBehaviour
 
     private void LoadKeyBindingOverrides()
     {
-        string overrides = GameSettingDataManager_KWY.Instance.setting.keyBindingOverrides;
+        string overrides = SettingManager.Instance.setting.keyBindingOverrides;
         if (!string.IsNullOrEmpty(overrides))
         {
             inputActions.LoadBindingOverridesFromJson(overrides);
@@ -248,21 +249,21 @@ public class GameSettingManager_KWY : MonoBehaviour
     public void OnKeyBindingChanged()
     {
         var overrides = inputActions.SaveBindingOverridesAsJson();
-        GameSettingDataManager_KWY.Instance.setting.keyBindingOverrides = overrides;
+        SettingManager.Instance.setting.keyBindingOverrides = overrides;
     }
     
     public void SetResolution(int resolutionIndex)
     {
         Resolution resolution = resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
-        GameSettingDataManager_KWY.Instance.setting.resolutionIndex = resolutionIndex;
+        SettingManager.Instance.setting.resolutionIndex = resolutionIndex;
     }
 
     public void SetFullscreen(bool isFullscreen)
     {
         FullScreenMode mode = isFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
         Screen.fullScreenMode = mode;
-        GameSettingDataManager_KWY.Instance.setting.fullscreenMode = mode;
+        SettingManager.Instance.setting.fullscreenMode = mode;
     }
 
     public void SetBrightness(float value)
@@ -277,41 +278,41 @@ public class GameSettingManager_KWY : MonoBehaviour
             brightnessText.text = value.ToString("F2");
         }
 
-        GameSettingDataManager_KWY.Instance.setting.brightness = value;
+        SettingManager.Instance.setting.brightness = value;
     }
 
     #region Volume Functions
     public void SetMasterVolume(float value)
     {
         mixer.SetFloat("MasterVolume", Mathf.Log10(value) * 20);
-        GameSettingDataManager_KWY.Instance.setting.masterVolume = value;
+        SettingManager.Instance.setting.masterVolume = value;
     }
 
     public void SetBGMVolume(float value)
     {
         mixer.SetFloat("BGMVolume", Mathf.Log10(value) * 20);
-        GameSettingDataManager_KWY.Instance.setting.bgmVolume = value;
+        SettingManager.Instance.setting.bgmVolume = value;
     }
 
     public void SetSFXVolume(float value)
     {
         mixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20);
-        GameSettingDataManager_KWY.Instance.setting.sfxVolume = value;
+        SettingManager.Instance.setting.sfxVolume = value;
     }
     #endregion
 
     public void OnClickConfirmReset()
     {
         inputActions.RemoveAllBindingOverrides();
-        GameSettingDataManager_KWY.Instance.setting.keyBindingOverrides = "";
+        SettingManager.Instance.setting.keyBindingOverrides = "";
 
-        GameSettingDataManager_KWY.Instance.setting = new GameSetting_KWY();
+        SettingManager.Instance.setting = new SettingData();
         LoadSettingsToUI();
         ApplyAndSaveChanges();
     }
 
     public void ApplyAndSaveChanges()
     {
-        GameSettingDataManager_KWY.Instance.SaveSettings();
+        SettingManager.Instance.SaveSettings();
     }
 }

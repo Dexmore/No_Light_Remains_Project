@@ -1,24 +1,61 @@
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 using UnityEngine;
 using DG.Tweening;
 using NaughtyAttributes;
+
 public class PopupControl : MonoBehaviour
 {
+    [SerializeField] private InputActionReference cancelAction;
     GameObject canvasGo;
     GameObject[] allPopups;
     List<bool> isOpens = new List<bool>();
-    [ReadOnlyInspector][SerializeField] int popCount;
+    [ReadOnlyInspector][SerializeField] int openPopCount;
     void Awake()
     {
         canvasGo = transform.Find("PopupCanvas").gameObject;
+        canvasGo.SetActive(false);
         allPopups = new GameObject[canvasGo.transform.childCount - 1];
         isOpens.Clear();
         for (int i = 0; i < allPopups.Length; i++)
         {
             allPopups[i] = transform.Find("PopupCanvas").GetChild(i + 1).gameObject;
+            allPopups[i].SetActive(false);
             isOpens.Add(false);
         }
-        popCount = 0;
+        openPopCount = 0;
+    }
+    void OnEnable()
+    {
+        cancelAction.action.performed += InputESC;
+        GameManager.I.onHitAfter += HandleHit;
+    }
+    void OnDisable()
+    {
+        cancelAction.action.performed -= InputESC;
+        GameManager.I.onHitAfter -= HandleHit;
+    }
+    void HandleHit(HitData hitData)
+    {
+        if (hitData.target.Root().name != "Player") return;
+        if (allPopups[1].activeSelf)
+        {
+            ClosePop(1);
+        }
+    }
+    float coolTime = 0;
+    void InputESC(InputAction.CallbackContext callbackContext)
+    {
+        if (Time.time - coolTime < 1.2f) return;
+        coolTime = Time.time;
+        for (int i = allPopups.Length - 1; i >= 0; i--)
+        {
+            if (allPopups[i].activeSelf)
+            {
+                ClosePop(i);
+                return;
+            }
+        }
     }
     public void OpenPop(int index)
     {
@@ -30,7 +67,8 @@ public class PopupControl : MonoBehaviour
         allPopups[index].transform.localScale = 0.7f * Vector3.one;
         allPopups[index].transform.DOScale(1f, 0.5f).SetEase(Ease.OutBounce);
         isOpens[index] = true;
-        popCount++;
+        openPopCount++;
+        GameManager.I.isOpenPop = true;
     }
     public void ClosePop(int index)
     {
@@ -43,9 +81,10 @@ public class PopupControl : MonoBehaviour
         if (find == -1)
         {
             canvasGo.SetActive(false);
+            DOVirtual.DelayedCall(0.4f,() => GameManager.I.isOpenPop = false).Play();
         }
-        popCount--;
-        if(index == 0)
+        openPopCount--;
+        if (index == 0)
         {
             DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = true;
         }

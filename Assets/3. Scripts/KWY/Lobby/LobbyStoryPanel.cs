@@ -2,53 +2,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
-public class LobbyControl : MonoBehaviour
+public class LobbyStoryPanel : MonoBehaviour
 {
-    [SerializeField] Transform lobbyUI;
-    GameObject titlePanel;
     GameObject storyPanel;
-    GameObject bossPanel;
-    GameObject settingPanel;
-    GameObject exitPanel;
     PopupControl popupControl;
     void Awake()
     {
-        titlePanel = lobbyUI.Find("Title_Panel").gameObject;
-        storyPanel = lobbyUI.Find("Story_Panel").gameObject;
-        bossPanel = lobbyUI.Find("Boss_Panel").gameObject;
-        settingPanel = lobbyUI.Find("Setting_Panel").gameObject;
-        exitPanel = lobbyUI.Find("Exit_Panel").gameObject;
+        storyPanel = gameObject;
     }
-    void Start()
+
+    void OnEnable()
     {
-        titlePanel.SetActive(true);
-        storyPanel.SetActive(false);
-        bossPanel.SetActive(false);
-        settingPanel.SetActive(false);
-        exitPanel.SetActive(false);
-        GameManager.I.TryGetComponent(out popupControl);
-        DBManager.I.LoadLocal();
-        StartAfter();
-    }
-    async void StartAfter()
-    {
-        await Task.Delay(3500);
-        if (!DBManager.I.IsSteam())
-        {
-            // 스팀 로그인에 실패하였습니다.
-            popupControl.OpenPop(0);
-            DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = false;
-        }
-    }
-    #region Story Panel
-    public void StoryPanelOpen()
-    {
-        AudioManager.I.PlaySFX("UIClick");
-        titlePanel.SetActive(false);
-        storyPanel.SetActive(true);
-        bossPanel.SetActive(false);
-        settingPanel.SetActive(false);
-        exitPanel.SetActive(false);
         RefreshSlots();
     }
     bool isSteamSlot;
@@ -119,10 +83,10 @@ public class LobbyControl : MonoBehaviour
         button.SetActive(true);
         AudioManager.I.PlaySFX("UIClick");
     }
-    public async void StartGame_StoryMode()
+    public async void StartGameButton()
     {
         AudioManager.I.PlaySFX("UIClick");
-        DisableAllButton();
+        DisableButtons();
         await Task.Delay(700);
         if (isSteamSlot)
         {
@@ -137,10 +101,16 @@ public class LobbyControl : MonoBehaviour
         await Task.Delay(100);
         GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
     }
-    public async void StartGame_StoryModeNoData()
+    public async void RemoveCharacterButton()
     {
         AudioManager.I.PlaySFX("UIClick");
-        DisableAllButton();
+        
+    }
+
+    async void StartGame_StoryModeNoData()
+    {
+        AudioManager.I.PlaySFX("UIClick");
+        DisableButtons();
         GameObject button = storyPanel.transform.Find("StartButton").gameObject;
         button.SetActive(false);
         await Task.Delay(1500);
@@ -175,35 +145,7 @@ public class LobbyControl : MonoBehaviour
         await Task.Delay(700);
         GameManager.I.LoadSceneAsync("Stage1", true);
     }
-    #endregion
-    public void BossPanelOpen()
-    {
-        AudioManager.I.PlaySFX("UIClick");
-        titlePanel.SetActive(false);
-        storyPanel.SetActive(false);
-        bossPanel.SetActive(true);
-        settingPanel.SetActive(false);
-        exitPanel.SetActive(false);
-    }
-    public void SettingPanelOpen()
-    {
-        AudioManager.I.PlaySFX("UIClick");
-        titlePanel.SetActive(false);
-        storyPanel.SetActive(false);
-        bossPanel.SetActive(false);
-        settingPanel.SetActive(true);
-        exitPanel.SetActive(false);
-    }
-    public void ExitPanelOpen()
-    {
-        AudioManager.I.PlaySFX("UIClick");
-        titlePanel.SetActive(false);
-        storyPanel.SetActive(false);
-        bossPanel.SetActive(false);
-        settingPanel.SetActive(false);
-        exitPanel.SetActive(true);
-    }
-    void DisableAllButton()
+    void DisableButtons()
     {
 
     }

@@ -95,15 +95,13 @@ public class Astar2DXYPathFinder : MonoBehaviour
           else
                model = transform;
      }
-     public async UniTask<Vector2[]> Find(Vector2 targetWorldPos)
-     {
-          cts?.Cancel();
-          Dispose();
-          cts = new CancellationTokenSource();
-          offeset = 0.1f * height + 0.2f * unit;
-          Vector2 nearGround = NearGround(targetWorldPos);
-          return await Find(nearGround, cts.Token);
-     }
+     // public async UniTask<Vector2[]> Find(Vector2 targetWorldPos, CancellationToken token)
+     // {
+     //      cts?.Cancel();
+     //      Dispose();
+     //      cts = new CancellationTokenSource();
+     //      
+     // }
      JobHandle jobHandle1;
      void Dispose()
      {
@@ -223,9 +221,9 @@ public class Astar2DXYPathFinder : MonoBehaviour
           return pos;
      }
 #if UNITY_EDITOR
-     async UniTask DebugPath(Vector2[] worldPos)
+     async UniTask DebugPath(Vector2[] worldPos, CancellationToken token)
      {
-          await UniTask.Yield(cancellationToken: cts.Token);
+          await UniTask.Yield(cancellationToken: token);
           if (worldPos.Length > 0)
                for (int i = 0; i < worldPos.Length; i++)
                {
@@ -235,7 +233,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
                     else
                          Debug.DrawLine(worldPos[i], worldPos[i - 1], Color.blue, 2f, true);
 
-                    await UniTask.Delay(30, cancellationToken: cts.Token);
+                    await UniTask.Delay(30, cancellationToken: token);
                }
      }
 #endif
@@ -257,7 +255,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
           path.Reverse(); // 시작 노드부터 끝 노드까지 순서대로 정렬
           Vector2[] result = path.ToArray();
 #if UNITY_EDITOR
-          DebugPath(result).Forget();
+          DebugPath(result, cts.Token).Forget();
 #endif
           return result;
      }
@@ -314,6 +312,9 @@ public class Astar2DXYPathFinder : MonoBehaviour
      #endregion
      public async UniTask<Vector2[]> Find(Vector2 targetWorldPos, CancellationToken token)
      {
+          offeset = 0.1f * height + 0.2f * unit;
+          Vector2 nearGround = NearGround(targetWorldPos);
+          targetWorldPos = nearGround;
           Vector2[] result = new Vector2[0];
           // A* 탐색을 위한 NativeArray 초기화 // 인덱스 2D -> 1D 화
           resultNA = new NativeArray<AstarNode>(1, Allocator.TempJob);

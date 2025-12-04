@@ -15,6 +15,7 @@ public class PlayerIdle : IPlayerState
     bool potionPressed;
     private InputAction inventoryAction;
     bool inventoryPressed;
+    private InputAction escAction;
     int flagInt = 0;
     public void Enter()
     {
@@ -28,12 +29,17 @@ public class PlayerIdle : IPlayerState
             potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         if (inventoryAction == null)
             inventoryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Inventory");
+        if (escAction == null)
+            escAction = ctx.inputActionAsset.FindActionMap("UI").FindAction("ESC");
         ctx.animator.Play("Player_Idle");
         flagInt = 0;
+        escAction.performed += InputESC;
+        escAction.canceled += CancelESC;
     }
     public void Exit()
     {
-
+        escAction.performed -= InputESC;
+        escAction.canceled -= CancelESC;
     }
     public void UpdateState()
     {
@@ -65,7 +71,7 @@ public class PlayerIdle : IPlayerState
                 fsm.ChangeState(ctx.usePotion);
             }
         }
-
+        
         inventoryPressed = inventoryAction.IsPressed();
         if(!inventoryPressed && flagInt == 0)
         {
@@ -75,11 +81,25 @@ public class PlayerIdle : IPlayerState
         {
             fsm.ChangeState(ctx.openInventory);
         }
-
-
     }
     public void UpdatePhysics()
     {
 
     }
+    bool isESC;
+    void InputESC(InputAction.CallbackContext callbackContext)
+    {
+        if(!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop)
+        {
+            fsm.ChangeState(ctx.openESCMenu);
+        }
+        isESC = true;
+    }
+    void CancelESC(InputAction.CallbackContext callbackContext)
+    {
+        isESC = false;
+    }
+
+
+
 }

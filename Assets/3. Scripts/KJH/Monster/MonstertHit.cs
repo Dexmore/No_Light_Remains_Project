@@ -9,12 +9,12 @@ public class MonsterHit : MonsterState
     [HideInInspector] public MonsterControl.State prevState;
     public override async UniTask Enter(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Activate(token).Forget();
     }
     public async UniTask Activate(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Transform target = control.memories.First().Key.transform;
         Vector3 direction = transform.position - target.position;
         direction.y = 0;
@@ -38,7 +38,7 @@ public class MonsterHit : MonsterState
             while(!token.IsCancellationRequested && Time.time - _startTime < rnd)
             {
                 rb.AddForce(2f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized);
-                await UniTask.Yield(cts.Token);
+                await UniTask.Yield(token);
             }
 
         }

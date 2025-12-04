@@ -22,7 +22,7 @@ public class MonsterShortAttack : MonsterState
         else
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
@@ -30,7 +30,7 @@ public class MonsterShortAttack : MonsterState
     {
         if (control.memories.Count == 0)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
@@ -100,7 +100,7 @@ public class MonsterShortAttack : MonsterState
             }
             if (range < dist)
             {
-                await UniTask.Yield(cts.Token);
+                await UniTask.Yield(token);
                 control.ChangeNextState();
                 return;
             }

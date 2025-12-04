@@ -44,9 +44,10 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerDie die;
     [HideInInspector] public PlayerUsePotion usePotion;
     [HideInInspector] public PlayerOpenInventory openInventory;
+    [HideInInspector] public PlayerOpenESCMenu openESCMenu;
     // [HideInInspector] public PlayerJumpAttack jumpAttack;
     [HideInInspector] public HUDBinder hUDBinder;
-
+    [HideInInspector] public PopupControl popupControl;
 
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
@@ -86,9 +87,11 @@ public class PlayerControl : MonoBehaviour
         die = new PlayerDie(this, fsm);
         usePotion = new PlayerUsePotion(this, fsm);
         openInventory = new PlayerOpenInventory(this, fsm);
+        openESCMenu = new PlayerOpenESCMenu(this, fsm);
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
+        popupControl = FindAnyObjectByType<PopupControl>();
     }
     void Start()
     {

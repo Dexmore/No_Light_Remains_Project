@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
-
-public class LobbyUIManager_KWY : MonoBehaviour
+public class LobbyControl : MonoBehaviour
 {
     [Header("Input Action")]
     [SerializeField] private InputActionReference cancelAction;
@@ -63,10 +63,33 @@ public class LobbyUIManager_KWY : MonoBehaviour
         OnEsc();
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
-        float b = GameSettingDataManager_KWY.Instance.setting.brightness;
+        allButtons = Title_p.transform.root.GetComponentsInChildren<Button>();
+        for (int i = 0; i < allButtons.Length; i++)
+            allButtons[i].enabled = false;
+        DBManager.I.LoadLocal();
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        Brightness_p = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
+        float b = SettingManager.Instance.setting.brightness;
         Brightness_p.color = new Color(0, 0, 0, 1 - b);
+        yield return YieldInstructionCache.WaitForSeconds(1.5f);
+        InitSteam();
+    }
+
+    Button[] allButtons;
+    PopupControl popupControl;
+    void InitSteam()
+    {
+        if (!DBManager.I.IsSteam())
+        {
+            if (popupControl == null) GameManager.I.TryGetComponent(out popupControl);
+            // 스팀 로그인에 실패하였습니다.
+            popupControl.OpenPop(0);
+            DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = false;
+        }
+        for (int i = 0; i < allButtons.Length; i++)
+            allButtons[i].enabled = true;
     }
 
     private void Update()
@@ -84,7 +107,7 @@ public class LobbyUIManager_KWY : MonoBehaviour
             GameObject topPanel = uiPanelStack.Peek();
             if (topPanel == Setting_p)
             {
-                GameSettingManager_KWY settingManager = Setting_p.GetComponent<GameSettingManager_KWY>();
+                LobbySettingPanel settingManager = Setting_p.GetComponent<LobbySettingPanel>();
                 if (settingManager != null)
                 {
                     bool handledBySettingManager = settingManager.OnEscPressed();
@@ -100,7 +123,9 @@ public class LobbyUIManager_KWY : MonoBehaviour
         else
         {
             if (!Exit_p.activeSelf)
-                OnExit();
+            {
+                //OnExit();
+            }  
             else
                 OnDontExit();
         }
@@ -142,6 +167,7 @@ public class LobbyUIManager_KWY : MonoBehaviour
 
     private void OpenPanel(GameObject panelToOpen)
     {
+        AudioManager.I.PlaySFX("UIClick");
         GameObject panelToHide = (uiPanelStack.Count > 0) ? uiPanelStack.Peek() : Title_p;
         uiPanelStack.Push(panelToOpen);
 

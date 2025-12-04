@@ -49,14 +49,14 @@ public class PlayerInteraction : MonoBehaviour
     [ReadOnlyInspector][SerializeField] Interactable target1;
     [ReadOnlyInspector][SerializeField] Interactable target2;
     Vector3 distancePivot;
-    Prompt prompt;
+    PromptControl prompt;
     LightSystem lightSystem;
     PlayerControl PlayerControl;
     HUDBinder hUDBinder;
     void Awake()
     {
         TryGetComponent(out PlayerControl);
-        prompt = FindAnyObjectByType<Prompt>();
+        prompt = FindAnyObjectByType<PromptControl>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
         lightSystem = FindAnyObjectByType<LightSystem>();
     }
@@ -256,7 +256,6 @@ public class PlayerInteraction : MonoBehaviour
                             {
                                 dropItem.Get();
                                 hUDBinder.Refresh();
-                                hUDBinder.GoldTextScale();
                             }
                             break;
                     }

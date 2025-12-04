@@ -11,13 +11,16 @@ public class GameManager : SingletonBehaviour<GameManager>
     public Language language = Language.English;
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
-    
+    [HideInInspector] public bool isOpenPop;
+    [HideInInspector] public bool isOpenDialog;
 
     void OnEnable()
     {
         InitFade();
         InitLoading();
         //onHit += HitHandler;
+        isOpenPop = false;
+        isOpenDialog = false;
     }
 
     void OnDisable()

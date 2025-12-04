@@ -83,13 +83,6 @@ public class HUDBinder : MonoBehaviour
             RefreshGoldInLoop();
         }
     }
-    Tween tweenGoldTextScale;
-    public void GoldTextScale()
-    {
-        // tweenGoldTextScale?.Kill();
-        // goldText.transform.localScale = new Vector3(1f, 3f, 1f);
-        // tweenGoldTextScale = goldText.transform.DOScaleY(1f, 0.4f).SetEase(Ease.InOutBounce);
-    }
     void RefreshHealthInLoop()
     {
         if (player == null) return;
