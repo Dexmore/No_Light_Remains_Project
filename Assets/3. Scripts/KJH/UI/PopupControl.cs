@@ -90,9 +90,10 @@ public class PopupControl : MonoBehaviour
         }
     }
 #if UNITY_EDITOR
+    [Header("Editor Test")]
     public int testIndex;
     [Button]
-    public void TestOpenPopup()
+    public void TestOpen()
     {
         OpenPop(testIndex);
     }
