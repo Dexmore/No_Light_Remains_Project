@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.EventSystems; 
 
 public class UIFocusManager : MonoBehaviour
 {
@@ -11,8 +11,6 @@ public class UIFocusManager : MonoBehaviour
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float sizeSpeed = 15f;
     [SerializeField] private Vector2 padding = new Vector2(10f, 10f);
-
-    // [추가] 셀렉터의 최소 크기 설정
     [Tooltip("셀렉터가 이 크기보다 작아지지 않도록 합니다.")]
     [SerializeField] private Vector2 minSize = new Vector2(100f, 100f);
 
@@ -23,11 +21,25 @@ public class UIFocusManager : MonoBehaviour
         if (focusFrame != null) focusFrame.gameObject.SetActive(false);
     }
 
+    // [추가] 매니저가 꺼질 때(인벤토리 닫힐 때) 프레임도 같이 숨김
+    private void OnDisable()
+    {
+        if (focusFrame != null) focusFrame.gameObject.SetActive(false);
+    }
+
     private void LateUpdate()
     {
+        // [추가] UI 루트가 꺼져있으면 작동 중지
+        if (uiRoot != null && !uiRoot.gameObject.activeInHierarchy)
+        {
+            if (focusFrame.gameObject.activeSelf) focusFrame.gameObject.SetActive(false);
+            return;
+        }
+
         GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
 
-        if (selectedObj == null || !selectedObj.transform.IsChildOf(uiRoot))
+        // 선택된 오브젝트가 없거나, UI 자식이 아니거나, **비활성화된 상태라면** 타겟 해제
+        if (selectedObj == null || !selectedObj.activeInHierarchy || !selectedObj.transform.IsChildOf(uiRoot))
         {
             _currentTarget = null;
         }
@@ -40,19 +52,16 @@ public class UIFocusManager : MonoBehaviour
         {
             focusFrame.gameObject.SetActive(true);
 
-            // 위치 이동
             focusFrame.transform.position = Vector3.Lerp(
                 focusFrame.transform.position, 
                 _currentTarget.transform.position, 
                 Time.unscaledDeltaTime * moveSpeed
             );
 
-            // [수정] 목표 크기 계산 시 최소 크기(minSize) 적용
             Vector2 targetSize = _currentTarget.sizeDelta + padding;
             targetSize.x = Mathf.Max(targetSize.x, minSize.x);
             targetSize.y = Mathf.Max(targetSize.y, minSize.y);
 
-            // 크기 변경
             focusFrame.sizeDelta = Vector2.Lerp(
                 focusFrame.sizeDelta, 
                 targetSize, 
