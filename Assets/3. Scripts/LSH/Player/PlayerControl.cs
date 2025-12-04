@@ -504,7 +504,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (Dead) return;
         AudioManager.I.PlaySFX("FlashlightClick");
-        if (currBattery <= 0)
+        if (currBattery <= 10)
         {
             if(Time.time - batteryTextCooltime > 1.2f)
             {
@@ -551,9 +551,12 @@ public class PlayerControl : MonoBehaviour
                     GameManager.I.isLanternOn = false;
                 }
             }
-            else
+            else if(currBattery <= 100)
             {
-
+                currBattery += 0.1f * interval;
+                currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                DBManager.I.currData.currBattery = currBattery;
+                hUDBinder.RefreshBattery();
             }
         }
     }

@@ -12,6 +12,8 @@ public class HUDBinder : MonoBehaviour
     TMP_Text goldText;
     float displayGold;
     float targetGold;
+    Image[] potionImages;
+    int displayPotionCount;
     void Awake()
     {
         if (!player) player = FindFirstObjectByType<PlayerControl>();
@@ -23,7 +25,11 @@ public class HUDBinder : MonoBehaviour
         batteryFills = new Image[batteryFillParent.childCount];
         for (int i = 0; i < batteryFills.Length; i++)
             batteryFills[i] = batteryFillParent.GetChild(i).GetComponent<Image>();
-
+        Transform potionParent = transform.Find("HUDCanvas/TopLeft/Bar/Potions");
+        potionImages = new Image[potionParent.childCount];
+        for (int i = 0; i < potionImages.Length; i++)
+            potionImages[i] = potionParent.GetChild(i).GetChild(0).GetComponent<Image>();
+        displayPotionCount = 5;
     }
     void OnEnable()
     {
@@ -81,6 +87,7 @@ public class HUDBinder : MonoBehaviour
             yield return YieldInstructionCache.WaitForSeconds(0.04f);
             RefreshHealthInLoop();
             RefreshGoldInLoop();
+            RefreshPotionInLoop();
         }
     }
     void RefreshHealthInLoop()
@@ -162,7 +169,18 @@ public class HUDBinder : MonoBehaviour
         fadeSeq.Append(goldCanvasGroup.DOFade(0f, 2f));
         goldFadeTween = fadeSeq;
     }
-    //
+    void RefreshPotionInLoop()
+    {
+        if (displayPotionCount == DBManager.I.currData.potionCount) return;
+        displayPotionCount = DBManager.I.currData.potionCount;
+        for (int i = 0; i < potionImages.Length; i++)
+            potionImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < displayPotionCount; i++)
+            potionImages[i].gameObject.SetActive(true);
+
+
+
+    }
 
 
 

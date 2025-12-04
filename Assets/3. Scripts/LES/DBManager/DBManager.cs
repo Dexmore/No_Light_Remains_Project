@@ -72,7 +72,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
     public void StartSteam()
     {
-        if(SteamAPI.Init())
+        if (SteamAPI.Init())
             _isInitialized = true;
         else
             _isInitialized = false;
@@ -217,6 +217,21 @@ public class DBManager : SingletonBehaviour<DBManager>
             allSaveDatasInSteam.characterDatas = new List<CharacterData>();
         }
     }
+    string key = "fjlskj@!321dfjkog#$";
+    // XOR 암호화
+    private byte[] EncryptDecryptXOR(byte[] dataBytes, string key)
+    {
+        byte[] keyBytes = System.Text.Encoding.UTF8.GetBytes(key);
+        int keyLength = keyBytes.Length;
+        // 결과는 입력 데이터와 동일한 길이의 byte 배열
+        byte[] result = new byte[dataBytes.Length];
+        for (int i = 0; i < dataBytes.Length; i++)
+        {
+            // 바이트 단위로 XOR 연산
+            result[i] = (byte)(dataBytes[i] ^ keyBytes[i % keyLength]);
+        }
+        return result;
+    }
     public void SaveLocal()
     {
         while (allSaveDatasInLocal.characterDatas.Count > 3)
@@ -225,6 +240,12 @@ public class DBManager : SingletonBehaviour<DBManager>
         {
             // 1. saveData를 JSON 문자열로 변환 (true: 가독성 좋게 포맷팅)
             string sd = JsonUtility.ToJson(allSaveDatasInLocal, true);
+
+            // 암호화
+            byte[] dataBytes = System.Text.Encoding.UTF8.GetBytes(sd);
+            byte[] obfuscatedBytes = EncryptDecryptXOR(dataBytes, key);
+            sd = System.Convert.ToBase64String(obfuscatedBytes);
+
             // 2. 저장할 디렉토리(폴더)가 없으면 생성
             Directory.CreateDirectory(saveDirectoryPath);
             // 3. 파일 쓰기
@@ -249,6 +270,12 @@ public class DBManager : SingletonBehaviour<DBManager>
         {
             // 2. 파일 읽기
             string sd = File.ReadAllText(saveFilePath);
+
+            // 복호화
+            byte[] obfuscatedBytes = System.Convert.FromBase64String(sd);
+            byte[] dataBytes = EncryptDecryptXOR(obfuscatedBytes, key);
+            sd = System.Text.Encoding.UTF8.GetString(dataBytes);
+
             // 3. JSON 문자열을 saveData 객체로 변환
             allSaveDatasInLocal = JsonUtility.FromJson<SaveData>(sd);
             //Debug.Log($"[DBManager] 로컬 불러오기 성공: {saveFilePath}");
