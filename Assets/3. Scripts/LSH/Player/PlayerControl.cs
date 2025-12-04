@@ -126,6 +126,7 @@ public class PlayerControl : MonoBehaviour
             light1.SetActive(GameManager.I.isLanternOn);
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
+        StartCoroutine(nameof(DecreaseBattery));
     }
 
     void OnEnable()
@@ -156,8 +157,8 @@ public class PlayerControl : MonoBehaviour
     {
         fsm.Update();
         CheckGroundedPrecise();
-    }
 
+    }
     void FixedUpdate()
     {
         fsm.FixedUpdate();
@@ -333,7 +334,7 @@ public class PlayerControl : MonoBehaviour
             if (currHealth <= 0)
                 fsm.ChangeState(die);
             HitChangeColor(Color.white, 0);
-            if(fsm.currentState == openInventory)
+            if (fsm.currentState == openInventory)
             {
                 fsm.ChangeState(idle);
             }
@@ -361,6 +362,7 @@ public class PlayerControl : MonoBehaviour
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData);
                     StartCoroutine(nameof(ReleaseParred));
+                    Parred = false;
                     return;
                 }
                 else
@@ -494,12 +496,22 @@ public class PlayerControl : MonoBehaviour
     }
     #region Turn ON/OFF Lantern
     LightSystem lightSystem;
+    float batteryTextCooltime;
     void LanternInput(InputAction.CallbackContext callback)
     {
         if (Dead) return;
+        AudioManager.I.PlaySFX("FlashlightClick");
+        if (currBattery <= 0)
+        {
+            if(Time.time - batteryTextCooltime > 1.2f)
+            {
+                batteryTextCooltime = Time.time;
+                ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
+            }
+            return;
+        }
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
-        AudioManager.I.PlaySFX("FlashlightClick");
         if (light0.activeSelf)
         {
             light0.SetActive(false);
@@ -511,6 +523,35 @@ public class PlayerControl : MonoBehaviour
             light0.SetActive(true);
             light1.SetActive(true);
             GameManager.I.isLanternOn = true;
+        }
+    }
+    IEnumerator DecreaseBattery()
+    {
+        float interval = 0.08f;
+        while (true)
+        {
+            yield return YieldInstructionCache.WaitForSeconds(interval);
+            if (GameManager.I.isLanternOn)
+            {
+                currBattery -= 1.3f * interval;
+                currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                DBManager.I.currData.currBattery = currBattery;
+                hUDBinder.RefreshBattery();
+                if (currBattery <= 0)
+                {
+                    AudioManager.I.PlaySFX("FlashlightClick");
+                    GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
+                    GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+                    light0.SetActive(false);
+                    light1.SetActive(false);
+                    hUDBinder.RefreshBattery();
+                    GameManager.I.isLanternOn = false;
+                }
+            }
+            else
+            {
+
+            }
         }
     }
     #endregion

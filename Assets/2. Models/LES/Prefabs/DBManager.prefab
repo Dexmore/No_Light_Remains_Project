@@ -46,22 +46,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 334bb3c8fd607204db2bc13e091aa920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DBManager
-  currentSlotIndex: 0
-  currentCharData:
-    money: 0
-    sceneName: 
-    lastPosition: {x: 0, y: 0}
-    HP: 0
-    MP: 0
+  currSlot: 0
+  currData:
+    maxHealth: 0
+    maxBattery: 0
+    currHealth: 0
+    currBattery: 0
+    gold: 0
     potionCount: 0
+    difficulty: 0
+    language: 0
+    sceneName: 
+    lastPos: {x: 0, y: 0}
     itemDatas: []
     gearDatas: []
     lanternDatas: []
-  allSaveDataSteam:
+  allSaveDatasInSteam:
     characterDatas: []
-  allSaveDataLocal:
+  allSaveDatasInLocal:
     characterDatas: []
-  isLanternOn: 0
   itemDatabase: {fileID: 11400000, guid: d6d21b1218fbde247853ff089fd420ab, type: 2}
 --- !u!114 &4905370224149167815
 MonoBehaviour:

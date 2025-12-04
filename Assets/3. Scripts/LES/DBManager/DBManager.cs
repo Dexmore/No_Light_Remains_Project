@@ -72,8 +72,10 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
     public void StartSteam()
     {
-        SteamAPI.Init();
-        _isInitialized = true;
+        if(SteamAPI.Init())
+            _isInitialized = true;
+        else
+            _isInitialized = false;
     }
     public bool IsSteam()
     {

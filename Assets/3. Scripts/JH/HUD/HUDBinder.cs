@@ -19,6 +19,11 @@ public class HUDBinder : MonoBehaviour
         goldCanvasGroup = transform.Find("HUDCanvas/TopRight/Gold").GetComponent<CanvasGroup>();
         goldCanvasGroup.alpha = 0f;
         goldText = goldCanvasGroup.transform.GetComponentInChildren<TMP_Text>();
+        Transform batteryFillParent = transform.Find("HUDCanvas/TopLeft/Bar/BatteryBar/Fill");
+        batteryFills = new Image[batteryFillParent.childCount];
+        for (int i = 0; i < batteryFills.Length; i++)
+            batteryFills[i] = batteryFillParent.GetChild(i).GetComponent<Image>();
+
     }
     void OnEnable()
     {
@@ -30,6 +35,7 @@ public class HUDBinder : MonoBehaviour
     }
     void Start()
     {
+        RefreshBattery();
         displayGold = DBManager.I.currData.gold;
         Refresh(0.5f);
     }
@@ -77,6 +83,13 @@ public class HUDBinder : MonoBehaviour
             RefreshGoldInLoop();
         }
     }
+    Tween tweenGoldTextScale;
+    public void GoldTextScale()
+    {
+        // tweenGoldTextScale?.Kill();
+        // goldText.transform.localScale = new Vector3(1f, 3f, 1f);
+        // tweenGoldTextScale = goldText.transform.DOScaleY(1f, 0.4f).SetEase(Ease.InOutBounce);
+    }
     void RefreshHealthInLoop()
     {
         if (player == null) return;
@@ -87,6 +100,29 @@ public class HUDBinder : MonoBehaviour
         float y = pivot.y;
         float addX = healthBar.xPosRange.x + (healthBar.xPosRange.y - healthBar.xPosRange.x) * healthBar.Value;
         hpBarPos = new Vector2(x + addX, y);
+    }
+    Image[] batteryFills;
+    Color batteryFillColor = new Color(0.57f, 0.69f, 0.82f);
+    public void RefreshBattery()
+    {
+        if (player == null) return;
+        float ratio = Mathf.Clamp01(player.currBattery / player.maxBattery);
+        float countFloat = ratio * batteryFills.Length;
+        int count100Percent = (int)countFloat; //완전히 켜져야 하는 갯수
+        // ex. 예를들어 countFloat가 5.545...f 일시... 
+        // 배터리 틱 5개가 켜지고 제일 바깥쪽 틱은 켜지되 alpha가 0.545..여야함
+        for (int i = 0; i < batteryFills.Length; i++)
+        {
+            // 완전 켜지기
+            if (i < count100Percent)
+                batteryFills[i].color = new Color(batteryFillColor.r, batteryFillColor.g, batteryFillColor.b, 1f);
+            // 적당한 alpha값으로 켜지기
+            else if (i == count100Percent)
+                batteryFills[i].color = new Color(batteryFillColor.r, batteryFillColor.g, batteryFillColor.b, countFloat - count100Percent);
+            // 완전 꺼지기
+            else
+                batteryFills[i].color = new Color(batteryFillColor.r, batteryFillColor.g, batteryFillColor.b, 0f);
+        }
     }
     Tween goldCountingTween;
     Tween goldFadeTween;
@@ -103,15 +139,14 @@ public class HUDBinder : MonoBehaviour
         goldCountingTween?.Kill();
         float diff = Mathf.Abs(targetGold - displayGold);
         float duration = 1f;
-        if (diff > 10000) duration = 3.5f;
-        else if (diff > 1000) duration = 2.5f;
-        else if (diff > 100) duration = 1.8f;
-        else if (diff > 50) duration = 1f;
-        else duration = 0.6f;
-
+        if (diff > 10000) duration = 4.5f;
+        else if (diff > 1000) duration = 3.6f;
+        else if (diff > 100) duration = 3f;
+        else if (diff > 50) duration = 2f;
+        else if (diff > 25) duration = 1.5f;
+        else duration = 1f;
         goldFadeTween?.Kill(true);
         goldFadeTween = goldCanvasGroup.DOFade(1f, 0.2f);
-        
         goldCountingTween = DOTween.To
         (
             () => displayGold,
@@ -125,7 +160,6 @@ public class HUDBinder : MonoBehaviour
             goldText.text = displayGold.ToString("F0");
         })
         .OnComplete(StartFadeOutSequence);
-        
     }
     private void StartFadeOutSequence()
     {

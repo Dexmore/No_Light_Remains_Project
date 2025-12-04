@@ -251,10 +251,12 @@ public class PlayerInteraction : MonoBehaviour
                             break;
                         case Interactable.Type.DropItem:
                             DropItem dropItem = interactable as DropItem;
+                            // 골드인 경우 자동 습득
                             if (dropItem.isAuto)
                             {
                                 dropItem.Get();
                                 hUDBinder.Refresh();
+                                hUDBinder.GoldTextScale();
                             }
                             break;
                     }
