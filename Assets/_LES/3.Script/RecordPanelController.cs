@@ -65,8 +65,19 @@ public class RecordPanelController : MonoBehaviour, ITabContent
 
         ClearAllSpawnedSlots();
         
-        // InventoryDataManager의 데이터를 사용
-        List<RecordData> playerRecords = InventoryDataManager.Instance.PlayerRecords;
+
+        //////////
+        List<RecordData> playerRecords = new List<RecordData>();
+        for(int i=0; i<DBManager.I.currData.recordDatas.Count; i++)
+        {
+            CharacterData.RecordData cd = DBManager.I.currData.recordDatas[i];
+            int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.recordTitle == cd.Name);
+            if(find == -1) continue;
+            RecordData d = DBManager.I.itemDatabase.allRecords[find];
+            playerRecords.Add(d);
+        }
+        //////////
+        Debug.Log(playerRecords.Count);
         
         if (playerRecords.Count == 0)
         {
