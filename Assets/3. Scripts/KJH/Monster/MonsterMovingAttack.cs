@@ -19,7 +19,7 @@ public class MonsterMovingAttack : MonsterState
         TryGetComponent(out monsterShortAttack);
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         attackedColliders.Clear();
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
@@ -27,7 +27,7 @@ public class MonsterMovingAttack : MonsterState
     {
         if (control.memories.Count == 0)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
@@ -168,7 +168,7 @@ public class MonsterMovingAttack : MonsterState
         }
         anim.Play("Idle");
         //await UniTask.Delay((int)(1000f * (duration - (moveTimeRange.y - moveTimeRange.x))), cancellationToken: token);
-        PlayerController_LSH pControl = target.GetComponentInParent<PlayerController_LSH>();
+        PlayerControl pControl = target.GetComponentInParent<PlayerControl>();
         startTime = Time.time;
         bool isPlayerHit = false;
         while (Time.time - startTime < duration - (moveTimeRange.y - moveTimeRange.x))

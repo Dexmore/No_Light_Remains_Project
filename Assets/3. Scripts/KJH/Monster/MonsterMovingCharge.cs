@@ -10,7 +10,7 @@ public class MonsterMovingCharge : MonsterState
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Activate(token).Forget();
         attackedColliders.Clear();
     }

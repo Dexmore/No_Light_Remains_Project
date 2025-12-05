@@ -13,11 +13,11 @@ public class DropItem : Interactable
 
     public LayerMask groundLayer;
     Rigidbody2D rb;
-    PlayerController_LSH player;
+    PlayerControl player;
     void Awake()
     {
         TryGetComponent(out rb);
-        player = FindAnyObjectByType<PlayerController_LSH>();
+        player = FindAnyObjectByType<PlayerControl>();
     }
     void OnEnable()
     {
@@ -49,6 +49,19 @@ public class DropItem : Interactable
         }
         AudioManager.I.PlaySFX("GetItem");
         Destroy(gameObject);
+        DBManager.I.currData.gold += money;
+        if (itemData != null)
+        {
+            DBManager.I.AddItem(itemData.itemName, 1);
+        }
+        else if (gearData != null)
+        {
+
+        }
+        else if (lanternData != null)
+        {
+
+        }
     }
     void OnCollisionEnter2D(Collision2D collision)
     {

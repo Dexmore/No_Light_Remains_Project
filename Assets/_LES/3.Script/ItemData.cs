@@ -9,9 +9,13 @@ public class ItemData : ScriptableObject // [수정] ScriptableObject 상속
     public Sprite icon;
     public enum ItemType { Equipment, Material }
     public ItemType type;
+
+    [Header("중첩 설정")]
+    [Tooltip("이 아이템이 한 슬롯에 최대 몇 개까지 들어가는지")]
+    public int maxStack = 99;
     
     [TextArea(3, 10)]
     public string itemDescription; 
     
-    public bool isNew; 
+    public bool isNew;
 }

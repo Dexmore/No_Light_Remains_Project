@@ -14,9 +14,9 @@ public class Particle : PoolBehaviour
     void OnDestroy() { UniTaskCancel(); }
     void UniTaskCancel()
     {
+        cts?.Cancel();
         try
         {
-            cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)

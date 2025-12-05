@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -50,3 +51,4 @@ public static class SaveManager_LSH
         return PlayerPrefs.HasKey(SAVE_KEY);
     }
 }
+*/

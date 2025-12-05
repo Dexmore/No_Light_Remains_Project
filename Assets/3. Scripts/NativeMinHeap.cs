@@ -22,7 +22,14 @@ public struct NativeMinHeap<T> : IDisposable where T : unmanaged, IHeapItem<T>
     {
         if (items.IsCreated)
         {
-            items.Dispose();
+            try
+            {
+                items.Dispose();
+            }
+            catch
+            {
+                
+            }
             items = default;
         }
     }

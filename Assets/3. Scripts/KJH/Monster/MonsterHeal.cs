@@ -9,7 +9,7 @@ public class MonsterHeal : MonsterState
     public override MonsterControl.State mapping => MonsterControl.State.Heal;
     public override async UniTask Enter(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Activate(token).Forget();
     }
     public override void Exit()

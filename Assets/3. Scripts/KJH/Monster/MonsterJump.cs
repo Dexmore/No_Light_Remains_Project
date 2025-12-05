@@ -7,7 +7,7 @@ public class MonsterJump : MonsterState
     public override async UniTask Enter(CancellationToken token)
     {
         //Debug.Log($"{transform.name} : {control.state}");
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Activate(token).Forget();
     }
     public async UniTask Activate(CancellationToken token)

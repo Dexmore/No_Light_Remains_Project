@@ -1,32 +1,23 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SavePoint_LSH : MonoBehaviour
+public class SavePoint_LSH : InteractableObject
 {
-    [Header("Components")]
-    [SerializeField] private Animator animator;
-
-    [Header("Animator Params")]
-    [SerializeField] private string activateTriggerName = "Activate";
-    [SerializeField] private string deactivateTriggerName = "Deactivate";
-
-    // 마지막으로 활성화된 세이브포인트
-    private static SavePoint_LSH s_current;
-    private bool _activatedOnce = false;
-
-    void Awake()
+    protected override void Start()
     {
-        if (!animator)
-            animator = GetComponentInChildren<Animator>();
+        base.Start();
     }
-
-    private void OnTriggerEnter2D(Collider2D other)
+    public override void Run()
     {
-        if (!other.CompareTag("Player")) return;
+        base.Run();
 
         Vector2 pos2D = transform.position;
+        
         string sceneName = SceneManager.GetActiveScene().name;
-        SaveManager_LSH.Save(pos2D, sceneName);
+
+        DBManager.I.currData.sceneName = sceneName;
+        DBManager.I.currData.lastPos = pos2D;
+        DBManager.I.Save();
 
         Debug.Log($"[SavePoint] Saved at {pos2D} in scene {sceneName}");
 
@@ -44,6 +35,21 @@ public class SavePoint_LSH : MonoBehaviour
             _activatedOnce = true;
         }
     }
+    [Header("Components")]
+    [SerializeField] private Animator animator;
+    [Header("Animator Params")]
+    [SerializeField] private string activateTriggerName = "Activate";
+    [SerializeField] private string deactivateTriggerName = "Deactivate";
+
+    // 마지막으로 활성화된 세이브포인트
+    private static SavePoint_LSH s_current;
+    private bool _activatedOnce = false;
+
+    void Awake()
+    {
+        if (!animator)
+            animator = GetComponentInChildren<Animator>();
+    }
 
     private void PlayActivateOnce() // 활성화될때 애니메이션 재생
     {
@@ -59,4 +65,7 @@ public class SavePoint_LSH : MonoBehaviour
         animator.ResetTrigger(activateTriggerName);
         animator.SetTrigger(deactivateTriggerName);
     }
+
+
+
 }

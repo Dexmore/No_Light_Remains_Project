@@ -4,7 +4,6 @@ using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using UnityEngine.Events;
 public class MonsterControl : MonoBehaviour
 {
     public float height = 1.5f;
@@ -43,6 +42,12 @@ public class MonsterControl : MonoBehaviour
         TryGetComponent(out monsterHit);
         if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
             bossHUD = FindAnyObjectByType<BossHUD>();
+        Transform pcc = null;
+        if (pcc = transform.Find("ParryCountCanvas"))
+        {
+            parryCanvas = pcc.gameObject;
+            parryCanvas.SetActive(false);
+        }
     }
     void Init()
     {
@@ -94,9 +99,9 @@ public class MonsterControl : MonoBehaviour
     void OnDestroy() => UniTaskCancel();
     void UniTaskCancel()
     {
+        cts?.Cancel();
         try
         {
-            cts?.Cancel();
             cts?.Dispose();
         }
         catch (System.Exception e)
@@ -356,9 +361,9 @@ public class MonsterControl : MonoBehaviour
         {
             if (find == -1)
                 return;
+            coolTimeList[find].cts?.Cancel();
             try
             {
-                coolTimeList[find].cts?.Cancel();
                 coolTimeList[find].cts?.Dispose();
             }
             catch
@@ -390,9 +395,9 @@ public class MonsterControl : MonoBehaviour
                 return;
             }
             // 기존에 있는게 있다면 새로 덮어쓰기
+            coolTimeList[find].cts?.Cancel();
             try
             {
-                coolTimeList[find].cts?.Cancel();
                 coolTimeList[find].cts?.Dispose();
             }
             catch
@@ -438,9 +443,9 @@ public class MonsterControl : MonoBehaviour
         {
             if (find == -1)
                 return;
+            coolTimeList[find].cts?.Cancel();
             try
             {
-                coolTimeList[find].cts?.Cancel();
                 coolTimeList[find].cts?.Dispose();
             }
             catch
@@ -468,9 +473,9 @@ public class MonsterControl : MonoBehaviour
                 return;
             }
             // 기존에 있는게 있다면 새로 덮어쓰기
+            coolTimeList[find].cts?.Cancel();
             try
             {
-                coolTimeList[find].cts?.Cancel();
                 coolTimeList[find].cts?.Dispose();
             }
             catch
@@ -880,7 +885,7 @@ public class MonsterControl : MonoBehaviour
         HitChangeColor(Color.white);
 
         // Stagger
-        if (Random.value <= 0.34f)
+        if (Random.value <= 0.35f)
         {
             float staggerForce = 4.4f;
             float staggerFactor1 = 1f;
@@ -930,15 +935,15 @@ public class MonsterControl : MonoBehaviour
         if (state == State.RangeAttack) pass = false;
         if (state == State.BiteAttack) pass = false;
         if (state == State.MovingAttack) pass = false;
-        if (!pass && Random.value <= 0.35)
+        if (!pass && Random.value <= 0.78f)
         {
             curHitAmount += hData.damage;
-            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.2f, 0.25f) * Mathf.Clamp(data.HP, 400, 900);
-            if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.8f);
-            if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
+            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.11f, 0.26f) * Mathf.Clamp(data.HP, 270, 1100);
+            if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.6f);
+            if (hitCoolTime >= 0.5f) hitCoolTime = Random.Range(0.2f, 1f);
             if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
             {
-                if (Random.value < 0.35f)
+                if (Random.value < 0.78f)
                 {
                     monsterHit.type = 1;
                     monsterHit.prevState = state;
@@ -949,7 +954,7 @@ public class MonsterControl : MonoBehaviour
                     if (hitCoolTime >= 0.7f) hitCoolTime = Random.Range(0.2f, 1.5f);
                 }
                 else
-                    curHitAmount = Random.Range(0.2f, 0.7f) * maxHitAmount;
+                    curHitAmount = Random.Range(0.3f, 0.7f) * maxHitAmount;
             }
         }
         // Set HP
@@ -972,17 +977,68 @@ public class MonsterControl : MonoBehaviour
         isStagger = false;
     }
     public int parryCount = 0;
-    void ParryHandler(Transform target)
+    GameObject parryCanvas;
+    CanvasGroup parryCanvasGroup;
+    Color parryCountColor = new Color(0.984f, 1f, 0.75f, 1f);
+    UnityEngine.UI.Image[] parryCountImages;
+    CancellationTokenSource ctsParryHUD;
+    Transform parryHUDWrap;
+    async UniTask ParryHUD(int index, int total, CancellationToken token)
     {
-        if (target != transform) return;
+        await UniTask.Yield(token);
+        parryHUDWrap.gameObject.SetActive(true);
+        float ratio = ((float)(index + 1)) / total;
+        float multiplier = 0.4f * Mathf.Pow(ratio, 1.5f) + 0.3f + 0.02f * index;
+        multiplier = Mathf.Clamp01(multiplier);
+        float startTime = Time.time;
+        //Debug.Log(multiplier);
+        parryCanvasGroup.alpha = multiplier;
+        while (!token.IsCancellationRequested && Time.time - startTime < 0.8f)
+        {
+            await UniTask.Yield(token);
+            float tick = (Time.time - startTime) / 0.8f;
+            parryCanvasGroup.alpha = multiplier * (1f - tick);
+        }
+        parryCanvasGroup.alpha = 0f;
+        if (index + 1 != total) return;
+        for (int i = 0; i < parryCountImages.Length; i++)
+        {
+            parryCountImages[i].color = Color.black;
+        }
+        parryCanvas.SetActive(false);
+    }
+    void ParryHandler(HitData hitData)
+    {
+        if (hitData.attacker != transform) return;
         if (isDie) return;
         if (state == State.Hit) return;
         parryCount++;
+        if (parryCount > data.ParryCount) parryCount = data.ParryCount;
+        if (parryCanvas)
+        {
+            parryCanvas.SetActive(true);
+            if (parryHUDWrap == null)
+            {
+                parryHUDWrap = parryCanvas.transform.Find("Wrap");
+                parryHUDWrap.gameObject.SetActive(true);
+                parryCanvasGroup = parryHUDWrap.GetComponent<CanvasGroup>();
+                parryCountImages = new UnityEngine.UI.Image[parryHUDWrap.childCount];
+                for (int i = 0; i < parryCountImages.Length; i++)
+                {
+                    parryCountImages[i] = parryHUDWrap.GetChild(i).GetComponent<UnityEngine.UI.Image>();
+                    parryCountImages[i].color = Color.black;
+                }
+            }
+            ctsParryHUD?.Cancel();
+            ctsParryHUD = new CancellationTokenSource();
+            CancellationTokenSource ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsParryHUD.Token);
+            parryCountImages[parryCount - 1].color = parryCountColor;
+            ParryHUD(parryCount - 1, data.ParryCount, ctsLink.Token).Forget();
+        }
         if (state == State.SequenceAttack1) return;
         if (parryCount >= data.ParryCount)
         {
-            if(parryCount > data.ParryCount) parryCount = data.ParryCount;
-            Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
+            //Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
             parryCount = 0;
             monsterHit.type = 2;
             monsterHit.prevState = state;

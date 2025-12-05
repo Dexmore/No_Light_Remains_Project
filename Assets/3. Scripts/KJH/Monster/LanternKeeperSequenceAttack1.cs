@@ -23,7 +23,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Activate(token).Forget();
         attackedColliders.Clear();
     }

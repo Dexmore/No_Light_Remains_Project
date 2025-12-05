@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq; // 검색 기능을 위해 필요
+using System.Linq;
 
 [CreateAssetMenu(fileName = "ItemDatabase", menuName = "Project Data/Item Database")]
 public class ItemDatabase : ScriptableObject
@@ -9,26 +9,27 @@ public class ItemDatabase : ScriptableObject
     public List<ItemData> allItems;
     public List<GearData> allGears;
     public List<LanternFunctionData> allLanterns;
-    public List<RecordData> allRecords; // (기록물도 추가)
+    public List<RecordData> allRecords;
 
-    // 이름으로 ItemData 원본을 찾습니다.
+    // [수정] 정확성을 위해 에셋 파일 이름(.name)만으로 검색합니다.
     public ItemData FindItemByName(string name)
     {
-        return allItems.FirstOrDefault(item => item.name == name || item.itemName == name);
+        // 1. 에셋 이름과 정확히 일치하는지 확인
+        return allItems.FirstOrDefault(item => item.name == name);
     }
 
     public GearData FindGearByName(string name)
     {
-        return allGears.FirstOrDefault(gear => gear.name == name || gear.gearName == name);
+        return allGears.FirstOrDefault(gear => gear.name == name);
     }
 
     public LanternFunctionData FindLanternByName(string name)
     {
-        return allLanterns.FirstOrDefault(lantern => lantern.name == name || lantern.functionName == name);
+        return allLanterns.FirstOrDefault(lantern => lantern.name == name);
     }
     
     public RecordData FindRecordByName(string name)
     {
-        return allRecords.FirstOrDefault(record => record.name == name || record.recordTitle == name);
+        return allRecords.FirstOrDefault(record => record.name == name);
     }
 }

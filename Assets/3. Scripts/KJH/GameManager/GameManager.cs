@@ -4,57 +4,30 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
-using Steamworks;
-public struct HitData
-{
-    public string attackName;
-    public Transform attacker;
-    public Transform target;
-    public Vector3 hitPoint;
-    public float damage;
-    public AttackType attackType;
-    public StaggerType staggerType;
-    public bool isCannotParry;
-    public string[] particleNames;
-    public enum AttackType
-    {
-        Default,
-        Chafe,
-    }
-    public enum StaggerType
-    {
-        None,
-        Small,
-        Middle,
-        Large,
-    }
-    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, string[] particleNames, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
-    {
-        this.attackName = attackName;
-        this.attacker = attacker;
-        this.target = target;
-        this.hitPoint = hitPoint;
-        this.damage = damage;
-        this.staggerType = staggerType;
-        this.attackType = attackType;
-        this.isCannotParry = false;
-        this.particleNames = particleNames;
-    }
-}
+
 public class GameManager : SingletonBehaviour<GameManager>
 {
-    
     protected override bool IsDontDestroy() => true;
+    public Language language = Language.English;
+    // 씬 넘어가도 유지시킬 변수들
+    [HideInInspector] public bool isLanternOn;
+    [HideInInspector] public bool isOpenPop;
+    [HideInInspector] public bool isOpenDialog;
+
     void OnEnable()
     {
         InitFade();
         InitLoading();
         //onHit += HitHandler;
+        isOpenPop = false;
+        isOpenDialog = false;
     }
+
     void OnDisable()
     {
         //onHit -= HitHandler;
     }
+
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
     {
@@ -248,8 +221,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     #endregion
     #region Hit
     public UnityAction<HitData> onHit = (x) => { };
-    public UnityAction<Transform> onParry = (x) => { };
-    public UnityAction<Transform> onAvoid = (x) => { };
+    public UnityAction<HitData> onParry = (x) => { };
+    public UnityAction<HitData> onAvoid = (x) => { };
+    public UnityAction<HitData> onHitAfter = (x) => { };
     public Material hitTintMat;
     #endregion
     #region HitEffect
@@ -305,4 +279,56 @@ public class GameManager : SingletonBehaviour<GameManager>
     #endregion
 
 
+
+}
+public struct HitData
+{
+    public string attackName;
+    public Transform attacker;
+    public Transform target;
+    public Vector3 hitPoint;
+    public float damage;
+    public AttackType attackType;
+    public StaggerType staggerType;
+    public bool isCannotParry;
+    public string[] particleNames;
+    public enum AttackType
+    {
+        Default,
+        Chafe,
+    }
+    public enum StaggerType
+    {
+        None,
+        Small,
+        Middle,
+        Large,
+    }
+    public HitData(string attackName, Transform attacker, Transform target, float damage, Vector3 hitPoint, string[] particleNames, StaggerType staggerType = StaggerType.Small, AttackType attackType = AttackType.Default)
+    {
+        this.attackName = attackName;
+        this.attacker = attacker;
+        this.target = target;
+        this.hitPoint = hitPoint;
+        this.damage = damage;
+        this.staggerType = staggerType;
+        this.attackType = attackType;
+        this.isCannotParry = false;
+        this.particleNames = particleNames;
+    }
+}
+
+public enum Language
+{
+    English, // 영어
+    Korean,  // 한국어
+    German,  // 독일어
+    French,  // 프랑스어
+    Spanish, // 스페인어
+    ChineseSimplified, // 중국어(간체)
+    Japanese, // 일본어
+    Russian,  // 러시아어
+    PortugueseBrazil, // 브라질-포르투갈어
+    Arabic, //아랍어
+    Hindi, //인도어
 }

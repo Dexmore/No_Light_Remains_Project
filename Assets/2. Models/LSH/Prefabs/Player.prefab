@@ -376,15 +376,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player_Controller_LSH
   maxHealth: 400
-  currentHealth: 400
+  currHealth: 400
+  maxBattery: 100
+  currBattery: 100
   moveSpeed: 7.6
   airMoveMultiplier: 0.6
-  jumpForce: 18.1
+  jumpForce: 18.32
   inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   rb: {fileID: 0}
   animator: {fileID: 0}
   childTR: {fileID: 0}
   attackRange: {fileID: 0}
+  hUDBinder: {fileID: 0}
+  popupControl: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -392,6 +396,121 @@ MonoBehaviour:
   width: 0
   isDash: 0
   Jumped: 0
+  inventoryUI: {fileID: 0}
+  hitColorCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.13333741
+      value: 0.9904518
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.25685567
+      value: 0.98854834
+      inSlope: -0.043859523
+      outSlope: -0.043859523
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.30693477
+      value: 0.42645115
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.42347774
+      value: 0.9925342
+      inSlope: 0.004777616
+      outSlope: 0.004777616
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.55844533
+      value: 0.9928346
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.6248527
+      value: 0.6642146
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.69763505
+      value: 0.98777926
+      inSlope: 0.0057632937
+      outSlope: 0.0057632937
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.824995
+      value: 0.9880676
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.8750061
+      value: 0.8133633
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9393891
+      value: 0.9853163
+      inSlope: 0.46990195
+      outSlope: 0.46990195
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &3935313567020253974
 MonoBehaviour:
   m_ObjectHideFlags: 0

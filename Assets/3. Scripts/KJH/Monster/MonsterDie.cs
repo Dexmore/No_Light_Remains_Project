@@ -18,7 +18,7 @@ public class MonsterDie : MonsterState
     public override async UniTask Enter(CancellationToken token)
     {
         control.isDie = true;
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         if(transform.Find("Chafe") != null)
             chafe = transform.Find("Chafe").gameObject;
         else
@@ -28,7 +28,7 @@ public class MonsterDie : MonsterState
     }
     public async UniTask Activate(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         anim.Play("Die");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         // 아이템 드롭
@@ -50,9 +50,9 @@ public class MonsterDie : MonsterState
                     rigidbody2D.AddForce(Random.Range(4f, 8.5f) * dir, ForceMode2D.Impulse);
                 }
             }
-            await UniTask.Delay(10, cancellationToken: cts.Token);
+            await UniTask.Delay(10, cancellationToken: token);
         }
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Destroy(gameObject);
     }
     public override void Exit()

@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -71,3 +72,4 @@ public class LoadOnStart_LSH : MonoBehaviour
         Debug.Log("[Load] Player moved to saved point");
     }
 }
+*/

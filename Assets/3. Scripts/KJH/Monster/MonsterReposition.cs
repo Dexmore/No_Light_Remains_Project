@@ -14,7 +14,7 @@ public class MonsterReposition : MonsterState
     }
     public override async UniTask Enter(CancellationToken token)
     {
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         Activate(token).Forget();
     }
     List<Vector2[]> paths = new List<Vector2[]>();
@@ -26,7 +26,7 @@ public class MonsterReposition : MonsterState
         
         if (control.memories.Count == 0)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeState(MonsterControl.State.Idle);
             return;
         }
@@ -68,7 +68,7 @@ public class MonsterReposition : MonsterState
             {
                 if (Random.value <= 0.75f)
                 {
-                    await UniTask.Yield(cts.Token);
+                    await UniTask.Yield(token);
                     control.ChangeNextState();
                     return;
                 }
@@ -104,7 +104,7 @@ public class MonsterReposition : MonsterState
             }
             if (rnd2 >= grounds.Length) continue;
             Vector2 pos2 = grounds[rnd2].point + 0.02f * Vector2.up;
-            paths[i] = await astar.Find(pos2);
+            paths[i] = await astar.Find(pos2, token);
             if (paths[i].Length <= 1) continue;
             float leng = 0f;
             for (int k = 1; k < paths[i].Length; k++)
@@ -121,7 +121,7 @@ public class MonsterReposition : MonsterState
         }
         if (findPath == null)
         {
-            await UniTask.Yield(cts.Token);
+            await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }
@@ -149,7 +149,7 @@ public class MonsterReposition : MonsterState
                 distance = moveHorizontal.magnitude;
                 if (Mathf.Abs(moveHorizontal.x) <= 0.002f)
                 {
-                    await UniTask.Yield(cts.Token);
+                    await UniTask.Yield(token);
                     control.ChangeState(MonsterControl.State.Idle);
                     return;
                 }
@@ -283,7 +283,7 @@ public class MonsterReposition : MonsterState
                     }
                 }
         }
-        await UniTask.Yield(cts.Token);
+        await UniTask.Yield(token);
         await UniTask.Delay((int)(100f), cancellationToken: token);
         control.ChangeNextState();
     }
