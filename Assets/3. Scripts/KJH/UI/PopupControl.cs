@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine.InputSystem;
 using UnityEngine;
+using UnityEditor;
 using DG.Tweening;
 using NaughtyAttributes;
 
@@ -8,19 +10,19 @@ public class PopupControl : MonoBehaviour
 {
     [SerializeField] private InputActionReference cancelAction;
     GameObject canvasGo;
-    GameObject[] allPopups;
+    Transform[] allPopups;
     List<bool> isOpens = new List<bool>();
     [ReadOnlyInspector][SerializeField] int openPopCount;
     void Awake()
     {
         canvasGo = transform.Find("PopupCanvas").gameObject;
         canvasGo.SetActive(false);
-        allPopups = new GameObject[canvasGo.transform.childCount - 1];
+        allPopups = new Transform[canvasGo.transform.childCount - 1];
         isOpens.Clear();
         for (int i = 0; i < allPopups.Length; i++)
         {
-            allPopups[i] = transform.Find("PopupCanvas").GetChild(i + 1).gameObject;
-            allPopups[i].SetActive(false);
+            allPopups[i] = transform.Find("PopupCanvas").GetChild(i + 1);
+            allPopups[i].gameObject.SetActive(false);
             isOpens.Add(false);
         }
         openPopCount = 0;
@@ -38,7 +40,7 @@ public class PopupControl : MonoBehaviour
     void HandleHit(HitData hitData)
     {
         if (hitData.target.Root().name != "Player") return;
-        if (allPopups[1].activeSelf)
+        if (allPopups[1].gameObject.activeSelf)
         {
             ClosePop(1);
         }
@@ -50,7 +52,7 @@ public class PopupControl : MonoBehaviour
         coolTime = Time.time;
         for (int i = allPopups.Length - 1; i >= 0; i--)
         {
-            if (allPopups[i].activeSelf)
+            if (allPopups[i].gameObject.activeSelf)
             {
                 ClosePop(i);
                 return;
@@ -59,9 +61,9 @@ public class PopupControl : MonoBehaviour
     }
     public void OpenPop(int index)
     {
-        if (allPopups[index].activeSelf) return;
+        if (allPopups[index].gameObject.activeSelf) return;
         canvasGo.SetActive(true);
-        allPopups[index].SetActive(true);
+        allPopups[index].gameObject.SetActive(true);
         AudioManager.I.PlaySFX("OpenPopup");
         DOTween.Kill(allPopups[index].transform);
         allPopups[index].transform.localScale = 0.7f * Vector3.one;
@@ -70,18 +72,19 @@ public class PopupControl : MonoBehaviour
         openPopCount++;
         GameManager.I.isOpenPop = true;
     }
-    public void ClosePop(int index)
+    public void ClosePop(int index, bool sfx = true)
     {
-        if (!allPopups[index].activeSelf) return;
+        if (!allPopups[index].gameObject.activeSelf) return;
         DOTween.Kill(allPopups[index].transform);
-        AudioManager.I.PlaySFX("UIClick");
-        allPopups[index].SetActive(false);
+        if (sfx)
+            AudioManager.I.PlaySFX("UIClick");
+        allPopups[index].gameObject.SetActive(false);
         isOpens[index] = false;
         int find = isOpens.FindIndex(x => x == true);
         if (find == -1)
         {
             canvasGo.SetActive(false);
-            DOVirtual.DelayedCall(0.4f,() => GameManager.I.isOpenPop = false).Play();
+            DOVirtual.DelayedCall(0.4f, () => GameManager.I.isOpenPop = false).Play();
         }
         openPopCount--;
         if (index == 0)
@@ -89,6 +92,27 @@ public class PopupControl : MonoBehaviour
             DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = true;
         }
     }
+    public async void GoMainMenu()
+    {
+        AudioManager.I.PlaySFX("UIClick");
+        await Task.Delay(100);
+        ClosePop(1, false);
+        await Task.Delay(500);
+        GameManager.I.LoadSceneAsync("Lobby", false);
+    }
+    public async void QuitGame()
+    {
+        AudioManager.I.PlaySFX("UIClick");
+        await Task.Delay(100);
+        ClosePop(1, false);
+        await Task.Delay(500);
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
+    }
+
 #if UNITY_EDITOR
     [Header("Editor Test")]
     public int testIndex;

@@ -47,7 +47,6 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerOpenESCMenu openESCMenu;
     // [HideInInspector] public PlayerJumpAttack jumpAttack;
     [HideInInspector] public HUDBinder hUDBinder;
-    [HideInInspector] public PopupControl popupControl;
 
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
@@ -91,7 +90,6 @@ public class PlayerControl : MonoBehaviour
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
-        popupControl = FindAnyObjectByType<PopupControl>();
     }
     void Start()
     {
@@ -154,8 +152,9 @@ public class PlayerControl : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled -= JumpCancel;
         lanternAction.performed -= LanternInput;
         GameManager.I.onHit -= HitHandler;
+        fsm.OnDisable();
     }
-
+    
     void Update()
     {
         fsm.Update();
