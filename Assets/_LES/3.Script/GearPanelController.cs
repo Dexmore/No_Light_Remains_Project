@@ -70,8 +70,18 @@ public class GearPanelController : MonoBehaviour, ITabContent
 
         _currentEquippedCost = 0;
 
-        // [수정] InventoryDataManager의 데이터를 사용
-        List<GearData> playerGears = InventoryDataManager.Instance.PlayerGears;
+        //////////
+        List<GearData> playerGears = new List<GearData>();
+        for(int i=0; i<DBManager.I.currData.gearDatas.Count; i++)
+        {
+            CharacterData.GearData cd = DBManager.I.currData.gearDatas[i];
+            int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.recordTitle == cd.Name);
+            if(find == -1) continue;
+            GearData d = DBManager.I.itemDatabase.allGears[find];
+            playerGears.Add(d);
+        }
+        //////////
+        Debug.Log(playerGears.Count);
         
         // 1. 그리드 슬롯 채우기 (활성화/비활성화 결정)
         for (int i = 0; i < gridSlots.Count; i++)

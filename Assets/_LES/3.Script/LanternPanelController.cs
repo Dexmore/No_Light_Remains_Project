@@ -68,8 +68,18 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     {
         if (InventoryDataManager.Instance == null) return; // 매니저가 없으면 중단
         
-        // [수정] InventoryDataManager의 데이터를 사용
-        List<LanternFunctionData> playerFunctions = InventoryDataManager.Instance.PlayerLanternFunctions;
+        //////////
+        List<LanternFunctionData> playerFunctions = new List<LanternFunctionData>();
+        for(int i=0; i<DBManager.I.currData.lanternDatas.Count; i++)
+        {
+            CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
+            int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.functionName == cd.Name);
+            if(find == -1) continue;
+            LanternFunctionData d = DBManager.I.itemDatabase.allLanterns[find];
+            playerFunctions.Add(d);
+        }
+        //////////
+        Debug.Log(playerFunctions.Count);
         
         for (int i = 0; i < functionSlots.Count; i++)
         {

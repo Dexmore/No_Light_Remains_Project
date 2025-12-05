@@ -151,14 +151,15 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         List<InventoryItem> allItems = new List<InventoryItem>();
         for(int i=0; i<DBManager.I.currData.itemDatas.Count; i++)
         {
-            CharacterData.ItemData citd = DBManager.I.currData.itemDatas[i];
-            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == citd.Name);
+            CharacterData.ItemData cd = DBManager.I.currData.itemDatas[i];
+            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == cd.Name);
             if(find == -1) continue;
-            ItemData itd = DBManager.I.itemDatabase.allItems[find];
-            InventoryItem inventoryItem = new InventoryItem(itd, citd.count);
+            ItemData d = DBManager.I.itemDatabase.allItems[find];
+            InventoryItem inventoryItem = new InventoryItem(d, cd.count);
             allItems.Add(inventoryItem);
         }
         //////////
+        Debug.Log(allItems.Count);
 
         
         List<InventoryItem> filteredList = allItems

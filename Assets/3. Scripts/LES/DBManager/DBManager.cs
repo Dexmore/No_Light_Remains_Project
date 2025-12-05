@@ -349,6 +349,7 @@ public struct CharacterData
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;
+    public List<RecordData> recordDatas;
     [System.Serializable]
     public struct ItemData
     {
@@ -363,6 +364,11 @@ public struct CharacterData
     }
     [System.Serializable]
     public struct LanternData
+    {
+        public string Name;
+    }
+    [System.Serializable]
+    public struct RecordData
     {
         public string Name;
     }
