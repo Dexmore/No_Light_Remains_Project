@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine.EventSystems;
-using NaughtyAttributes;
 
 public class GearPanelController : MonoBehaviour, ITabContent
 {
@@ -24,26 +23,10 @@ public class GearPanelController : MonoBehaviour, ITabContent
     [SerializeField] private Selectable mainTabButton;
 
     private int _currentEquippedCost = 0;
-    
-    // [추가] 이벤트 구독
-    private void OnEnable()
-    {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnGearsChanged += RefreshPanel;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnGearsChanged -= RefreshPanel;
-        }
-    }
 
     public void OnShow()
     {
+        
         RefreshPanel(); // 패널 새로고침 (이 안에서 내비게이션도 설정됨)
         
         // 활성화된 첫 번째 슬롯을 찾아 선택
@@ -66,22 +49,22 @@ public class GearPanelController : MonoBehaviour, ITabContent
     
     private void RefreshPanel()
     {
-        if (InventoryDataManager.Instance == null) return;
+        //if (InventoryDataManager.Instance == null) return;
 
         _currentEquippedCost = 0;
-
+        
         //////////
         List<GearData> playerGears = new List<GearData>();
         for(int i=0; i<DBManager.I.currData.gearDatas.Count; i++)
         {
             CharacterData.GearData cd = DBManager.I.currData.gearDatas[i];
-            int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.recordTitle == cd.Name);
+            int find = DBManager.I.itemDatabase.allGears.FindIndex(x => x.name == cd.Name);
             if(find == -1) continue;
             GearData d = DBManager.I.itemDatabase.allGears[find];
             playerGears.Add(d);
         }
         //////////
-        Debug.Log(playerGears.Count);
+        
         
         // 1. 그리드 슬롯 채우기 (활성화/비활성화 결정)
         for (int i = 0; i < gridSlots.Count; i++)
@@ -102,7 +85,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         }
         
         // 2. 코스트 미터 업데이트
-        totalCostMeter.SetMaxCost(InventoryDataManager.Instance.MaxGearCost);
+        totalCostMeter.SetMaxCost(DBManager.I.currData.maxGearCost);
         totalCostMeter.SetCost(_currentEquippedCost);
 
         // 3. [신규] 인덱스 기반의 스마트 내비게이션 설정
@@ -242,7 +225,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         if (!gear.isEquipped)
         {
             int newCost = _currentEquippedCost + gear.cost;
-            if (newCost <= InventoryDataManager.Instance.MaxGearCost)
+            if (newCost <= DBManager.I.currData.maxGearCost)
             {
                 gear.isEquipped = true;
                 _currentEquippedCost = newCost;
@@ -268,30 +251,6 @@ public class GearPanelController : MonoBehaviour, ITabContent
         return gridSlots.FirstOrDefault(slot => slot.MyData == gear);
     }
     #endregion
+
     
-    #region 테스트용 코드
-
-    // [추가] 인스펙터에서 테스트용으로 추가할 기어를 미리 할당
-    [Header("테스트용")]
-    [SerializeField] private GearData testGearToAdd;
-
-    [Button("Test: 기어 추가")]
-    private void TestAddGear()
-    {
-        if (testGearToAdd == null)
-        {
-            Debug.LogWarning("테스트할 기어를 인스펙터 'Test Gear To Add' 필드에 할당해주세요!");
-            return;
-        }
-
-        // 1. 데이터 리스트에 기어를 추가합니다.
-        InventoryDataManager.Instance.AddItem(testGearToAdd);
-
-        // 2. UI를 새로고침합니다.
-        OnShow(); 
-
-        Debug.Log($"{testGearToAdd.gearName} 기어 추가 테스트 완료.");
-    }
-
-    #endregion
 }

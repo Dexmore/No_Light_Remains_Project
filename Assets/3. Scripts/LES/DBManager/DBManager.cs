@@ -287,30 +287,92 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
     public ItemDatabase itemDatabase;
-    public void AddItem(string Name, int count)
+    public void AddItem(string Name, int count = 1)
     {
         if (count == 0) return;
         int find = currData.itemDatas.FindIndex(x => x.Name == Name);
         if (find == -1)
         {
-            CharacterData.ItemData itd = new CharacterData.ItemData();
-            itd.Name = Name;
-            itd.count = count;
-            itd.isNew = true;
-            currData.itemDatas.Add(itd);
+            CharacterData.ItemData newData = new CharacterData.ItemData();
+            newData.Name = Name;
+            newData.count = count;
+            newData.isNew = true;
+            currData.itemDatas.Add(newData);
         }
         else
         {
-            CharacterData.ItemData currItd = currData.itemDatas[find];
-            int _count = currItd.count;
+            CharacterData.ItemData findData = currData.itemDatas[find];
+            int _count = findData.count;
             if (_count + count <= 0)
             {
-                currData.itemDatas.Remove(currItd);
+                currData.itemDatas.Remove(findData);
             }
             else
             {
-                currItd.count = _count + count;
-                currData.itemDatas[find] = currItd;
+                findData.count = _count + count;
+                currData.itemDatas[find] = findData;
+            }
+        }
+    }
+    public void AddGear(string Name, int count = 1)
+    {
+        if (count == 0) return;
+        int find = currData.gearDatas.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            CharacterData.GearData newData = new CharacterData.GearData();
+            newData.Name = Name;
+            newData.isNew = true;
+            newData.isEquipped = false;
+            currData.gearDatas.Add(newData);
+        }
+        else
+        {
+            CharacterData.GearData findData = currData.gearDatas[find];
+            if (count < 0)
+            {
+                currData.gearDatas.Remove(findData);
+            }
+        }
+    }
+    public void AddRecord(string Name, int count = 1)
+    {
+        if (count == 0) return;
+        int find = currData.recordDatas.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            CharacterData.RecordData newData = new CharacterData.RecordData();
+            newData.Name = Name;
+            newData.isNew = true;
+            currData.recordDatas.Add(newData);
+        }
+        else
+        {
+            CharacterData.RecordData findData = currData.recordDatas[find];
+            if (count < 0)
+            {
+                currData.recordDatas.Remove(findData);
+            }
+        }
+    }
+    public void AddLantern(string Name, int count = 1)
+    {
+        if (count == 0) return;
+        int find = currData.itemDatas.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            CharacterData.LanternData newData = new CharacterData.LanternData();
+            newData.Name = Name;
+            newData.isNew = true;
+            newData.isEquipped = false;
+            currData.lanternDatas.Add(newData);
+        }
+        else
+        {
+            CharacterData.LanternData findData = currData.lanternDatas[find];
+            if (count < 0)
+            {
+                currData.lanternDatas.Remove(findData);
             }
         }
     }
@@ -341,6 +403,7 @@ public struct CharacterData
     public float currHealth;
     public float currBattery;
     public int gold;
+    public int maxGearCost;
     public int potionCount;
     public int difficulty;
     public int language;
@@ -361,16 +424,21 @@ public struct CharacterData
     public struct GearData
     {
         public string Name;
+        public bool isNew;
+        public bool isEquipped;
     }
     [System.Serializable]
     public struct LanternData
     {
         public string Name;
+        public bool isNew;
+        public bool isEquipped;
     }
     [System.Serializable]
     public struct RecordData
     {
         public string Name;
+        public bool isNew;
     }
 
     // [System.Serializable]

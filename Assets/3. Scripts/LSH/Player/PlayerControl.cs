@@ -107,15 +107,18 @@ public class PlayerControl : MonoBehaviour
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
             newData.potionCount = 5;
+            newData.maxGearCost = 5;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
-            DBManager.I.AddItem("Useful Sword", 1);
-            DBManager.I.AddItem("Helmet", 1);
-            DBManager.I.AddItem("Leather Armor", 1);
+            // 신규캐릭터 시작 아이템
+            DBManager.I.AddLantern("BasicLantern");
+            DBManager.I.AddItem("UsefulSword");
+            DBManager.I.AddItem("Helmet");
+            DBManager.I.AddItem("LeatherArmor");
         }
         else
         {
@@ -154,7 +157,7 @@ public class PlayerControl : MonoBehaviour
         GameManager.I.onHit -= HitHandler;
         fsm.OnDisable();
     }
-    
+
     void Update()
     {
         fsm.Update();
@@ -505,7 +508,7 @@ public class PlayerControl : MonoBehaviour
         AudioManager.I.PlaySFX("FlashlightClick");
         if (currBattery <= 3)
         {
-            if(Time.time - batteryTextCooltime > 1.2f)
+            if (Time.time - batteryTextCooltime > 1.2f)
             {
                 batteryTextCooltime = Time.time;
                 ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
@@ -550,7 +553,7 @@ public class PlayerControl : MonoBehaviour
                     GameManager.I.isLanternOn = false;
                 }
             }
-            else if(currBattery <= 100)
+            else if (currBattery <= 100)
             {
                 currBattery += 0.1f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);

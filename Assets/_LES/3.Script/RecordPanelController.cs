@@ -24,18 +24,18 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     // [추가] 이벤트 구독
     private void OnEnable()
     {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnRecordsChanged += RefreshPanel;
-        }
+        // if (InventoryDataManager.Instance != null)
+        // {
+        //     InventoryDataManager.Instance.OnRecordsChanged += RefreshPanel;
+        // }
     }
 
     private void OnDisable()
     {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnRecordsChanged -= RefreshPanel;
-        }
+        // if (InventoryDataManager.Instance != null)
+        // {
+        //     InventoryDataManager.Instance.OnRecordsChanged -= RefreshPanel;
+        // }
     }
 
     public void OnShow()
@@ -61,7 +61,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     // 이벤트 방송을 받거나 탭이 열릴 때 호출됩니다.
     private void RefreshPanel()
     {
-        if (InventoryDataManager.Instance == null) return;
+        //if (InventoryDataManager.Instance == null) return;
 
         ClearAllSpawnedSlots();
         
@@ -71,7 +71,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         for(int i=0; i<DBManager.I.currData.recordDatas.Count; i++)
         {
             CharacterData.RecordData cd = DBManager.I.currData.recordDatas[i];
-            int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.recordTitle == cd.Name);
+            int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.name == cd.Name);
             if(find == -1) continue;
             RecordData d = DBManager.I.itemDatabase.allRecords[find];
             playerRecords.Add(d);
@@ -161,23 +161,23 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     }
     #endregion
 
-    #region 테스트용 코드 (NaughtyAttributes)
+    // #region 테스트용 코드 (NaughtyAttributes)
 
-    [Header("테스트용")]
-    [SerializeField] private RecordData testRecordToAdd;
+    // [Header("테스트용")]
+    // [SerializeField] private RecordData testRecordToAdd;
 
-    [Button("Test: 기록물 추가")]
-    private void TestAddRecord()
-    {
-        if (testRecordToAdd == null)
-        {
-            Debug.LogWarning("테스트할 기록물(.asset)을 인스펙터 필드에 할당해주세요!");
-            return;
-        }
+    // [Button("Test: 기록물 추가")]
+    // private void TestAddRecord()
+    // {
+    //     if (testRecordToAdd == null)
+    //     {
+    //         Debug.LogWarning("테스트할 기록물(.asset)을 인스펙터 필드에 할당해주세요!");
+    //         return;
+    //     }
         
-        // 중앙 관리자의 'AddItem' 마스터 메서드를 호출
-        InventoryDataManager.Instance.AddItem(testRecordToAdd);
-    }
+    //     // 중앙 관리자의 'AddItem' 마스터 메서드를 호출
+    //     InventoryDataManager.Instance.AddItem(testRecordToAdd);
+    // }
 
-    #endregion
+    // #endregion
 }

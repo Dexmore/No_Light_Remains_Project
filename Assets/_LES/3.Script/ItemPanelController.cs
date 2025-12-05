@@ -44,11 +44,6 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     {
         equipmentButton?.onClick.AddListener(() => OnFilterChanged(ItemData.ItemType.Equipment));
         materialButton?.onClick.AddListener(() => OnFilterChanged(ItemData.ItemType.Material));
-
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnInventoryChanged += RefreshUIFromEvent;
-        }
         UpdateMoneyText();
     }
 
@@ -56,11 +51,6 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     {
         equipmentButton?.onClick.RemoveAllListeners();
         materialButton?.onClick.RemoveAllListeners();
-
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnInventoryChanged -= RefreshUIFromEvent;
-        }
     }
 
     // [추가] Update 함수 추가 (상단 탭 이동 제어용)
@@ -152,7 +142,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         for(int i=0; i<DBManager.I.currData.itemDatas.Count; i++)
         {
             CharacterData.ItemData cd = DBManager.I.currData.itemDatas[i];
-            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.itemName == cd.Name);
+            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.name == cd.Name);
             if(find == -1) continue;
             ItemData d = DBManager.I.itemDatabase.allItems[find];
             InventoryItem inventoryItem = new InventoryItem(d, cd.count);
@@ -296,22 +286,5 @@ public class ItemPanelController : MonoBehaviour, ITabContent
 
     private Color ExampleColor(bool isActive) => isActive ? subTabActiveColor : subTabIdleColor;
     
-    #region 테스트용 코드
-
-    [Header("테스트용")]
-    [SerializeField] private ItemData testItemToAdd;
-
-    [Button("Test: 아이템 추가 (장비/재료)")]
-    private void TestAddItem()
-    {
-        if (testItemToAdd == null)
-        {
-            Debug.LogWarning("테스트할 아이템을 인스펙터 'Test Item To Add' 필드에 할당해주세요!");
-            return;
-        }
-        
-        InventoryDataManager.Instance.AddItem(testItemToAdd);
-    }
-
-    #endregion
+    
 }

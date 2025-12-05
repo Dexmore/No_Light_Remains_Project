@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 public class LobbyStoryPanel : MonoBehaviour
 {
     GameObject storyPanel;
@@ -86,7 +87,7 @@ public class LobbyStoryPanel : MonoBehaviour
     public async void StartGameButton()
     {
         AudioManager.I.PlaySFX("UIClick");
-        DisableButtons();
+        DisableAllButtons();
         await Task.Delay(700);
         if (isSteamSlot)
         {
@@ -104,13 +105,13 @@ public class LobbyStoryPanel : MonoBehaviour
     public async void RemoveCharacterButton()
     {
         AudioManager.I.PlaySFX("UIClick");
-        
+
     }
 
     async void StartGame_StoryModeNoData()
     {
         AudioManager.I.PlaySFX("UIClick");
-        DisableButtons();
+        DisableAllButtons();
         GameObject button = storyPanel.transform.Find("StartButton").gameObject;
         button.SetActive(false);
         await Task.Delay(1500);
@@ -123,15 +124,18 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.currHealth = 400;
         newData.currBattery = 100;
         newData.potionCount = 5;
+        newData.maxGearCost = 5;
         newData.itemDatas = new List<CharacterData.ItemData>();
         newData.gearDatas = new List<CharacterData.GearData>();
         newData.lanternDatas = new List<CharacterData.LanternData>();
         DBManager.I.currData = newData;
         DBManager.I.currSlot = select;
         // 신규캐릭터 시작 아이템
-        DBManager.I.AddItem("Useful Sword", 1);
-        DBManager.I.AddItem("Helmet", 1);
-        DBManager.I.AddItem("Leather Armor", 1);
+        DBManager.I.AddLantern("BasicLantern");
+        DBManager.I.AddItem("UsefulSword");
+        DBManager.I.AddItem("Helmet");
+        DBManager.I.AddItem("LeatherArmor");
+
         if (isSteamSlot)
         {
             DBManager.I.allSaveDatasInSteam.characterDatas.Add(newData);
@@ -145,9 +149,12 @@ public class LobbyStoryPanel : MonoBehaviour
         await Task.Delay(700);
         GameManager.I.LoadSceneAsync("Stage1", true);
     }
-    void DisableButtons()
+    Button[] buttons;
+    void DisableAllButtons()
     {
-
+        buttons = transform.root.GetComponentsInChildren<Button>();
+        foreach (var btn in buttons)
+            btn.enabled = false;
     }
 
 
