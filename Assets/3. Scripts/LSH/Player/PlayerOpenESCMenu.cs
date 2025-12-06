@@ -11,10 +11,8 @@ public class PlayerOpenESCMenu : IPlayerState
         startTime = Time.time;
         if (popupControl == null)
             popupControl = GameManager.I.transform.GetComponent<PopupControl>();
-        if (popupControl != null)
-        {
-            popupControl.OpenPop(1);
-        }
+        GameManager.I.isOpenPop = true;
+        popupControl.OpenPop(1);
     }
     public void Exit()
     {

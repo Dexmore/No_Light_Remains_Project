@@ -35,11 +35,13 @@ public class PlayerIdle : IPlayerState
         flagInt = 0;
         escAction.performed += InputESC;
         escAction.canceled += CancelESC;
+        isESC = false;
     }
     public void Exit()
     {
         escAction.performed -= InputESC;
         escAction.canceled -= CancelESC;
+        isESC = false;
     }
     public void UpdateState()
     {

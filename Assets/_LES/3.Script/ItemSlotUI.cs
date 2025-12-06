@@ -40,7 +40,7 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             itemIcon.sprite = _currentItem.data.icon;
             itemIcon.gameObject.SetActive(_currentItem.data.icon != null);
         }
-        itemNameText.text = _currentItem.data.name;
+        itemNameText.text = _currentItem.data.itemName;
         itemNameText.gameObject.SetActive(true);
 
         // [추가] 수량 표시 로직

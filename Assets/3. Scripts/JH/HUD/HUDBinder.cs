@@ -41,6 +41,7 @@ public class HUDBinder : MonoBehaviour
     }
     void Start()
     {
+        goldCanvasGroup.alpha = 0f;
         RefreshBattery();
         displayGold = DBManager.I.currData.gold;
         Refresh(0.5f);

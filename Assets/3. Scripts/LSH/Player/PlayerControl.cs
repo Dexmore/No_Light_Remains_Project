@@ -111,6 +111,7 @@ public class PlayerControl : MonoBehaviour
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
+            newData.recordDatas = new List<CharacterData.RecordData>();
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
@@ -545,6 +546,7 @@ public class PlayerControl : MonoBehaviour
                 if (currBattery <= 0)
                 {
                     AudioManager.I.PlaySFX("FlashlightClick");
+                    ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
                     GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
                     GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
                     light0.SetActive(false);

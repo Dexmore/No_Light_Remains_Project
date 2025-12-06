@@ -15,9 +15,9 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     [Header("상세 내용(Detail) UI")]
     [SerializeField] private TextMeshProUGUI detailTitleText;
     [SerializeField] private TextMeshProUGUI detailContentText;
-    
+
     [Header("내비게이션")]
-    [SerializeField] private Selectable mainTabButton; 
+    [SerializeField] private Selectable mainTabButton;
 
     private List<RecordSlotUI> _spawnedSlots = new List<RecordSlotUI>();
 
@@ -41,7 +41,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     public void OnShow()
     {
         RefreshPanel(); // 패널 새로고침
-        
+
         // 한 프레임 기다린 후 첫 슬롯 선택 (포커스 문제 방지)
         StartCoroutine(SelectFirstSlot());
     }
@@ -64,21 +64,21 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         //if (InventoryDataManager.Instance == null) return;
 
         ClearAllSpawnedSlots();
-        
+
 
         //////////
         List<RecordData> playerRecords = new List<RecordData>();
-        for(int i=0; i<DBManager.I.currData.recordDatas.Count; i++)
+        for (int i = 0; i < DBManager.I.currData.recordDatas.Count; i++)
         {
             CharacterData.RecordData cd = DBManager.I.currData.recordDatas[i];
             int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.name == cd.Name);
-            if(find == -1) continue;
+            if (find == -1) continue;
             RecordData d = DBManager.I.itemDatabase.allRecords[find];
             playerRecords.Add(d);
         }
         //////////
-        Debug.Log(playerRecords.Count);
-        
+
+
         if (playerRecords.Count == 0)
         {
             ShowRecordDetails(null);
@@ -93,11 +93,11 @@ public class RecordPanelController : MonoBehaviour, ITabContent
             slotUI.SetData(record, this);
             _spawnedSlots.Add(slotUI);
         }
-        
+
         SetupSlotNavigation();
         ShowRecordDetails(playerRecords[0]);
     }
-    
+
     private IEnumerator SelectFirstSlot()
     {
         yield return new WaitForEndOfFrame();
@@ -136,7 +136,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         }
         _spawnedSlots.Clear();
     }
-    
+
     private void SetupSlotNavigation()
     {
         if (_spawnedSlots.Count == 0)
@@ -174,7 +174,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     //         Debug.LogWarning("테스트할 기록물(.asset)을 인스펙터 필드에 할당해주세요!");
     //         return;
     //     }
-        
+
     //     // 중앙 관리자의 'AddItem' 마스터 메서드를 호출
     //     InventoryDataManager.Instance.AddItem(testRecordToAdd);
     // }

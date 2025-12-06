@@ -61,16 +61,25 @@ public class PopupControl : MonoBehaviour
     }
     public void OpenPop(int index)
     {
+        OpenPop(index, true);
+    }
+    public void OpenPop(int index, bool sfx = true)
+    {
         if (allPopups[index].gameObject.activeSelf) return;
         canvasGo.SetActive(true);
         allPopups[index].gameObject.SetActive(true);
-        AudioManager.I.PlaySFX("OpenPopup");
+        if (sfx)
+            AudioManager.I.PlaySFX("OpenPopup");
         DOTween.Kill(allPopups[index].transform);
         allPopups[index].transform.localScale = 0.7f * Vector3.one;
         allPopups[index].transform.DOScale(1f, 0.5f).SetEase(Ease.OutBounce);
         isOpens[index] = true;
         openPopCount++;
         GameManager.I.isOpenPop = true;
+    }
+    public void ClosePop(int index)
+    {
+        ClosePop(index, true);
     }
     public void ClosePop(int index, bool sfx = true)
     {

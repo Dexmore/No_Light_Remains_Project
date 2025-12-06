@@ -149,8 +149,6 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             allItems.Add(inventoryItem);
         }
         //////////
-        Debug.Log(allItems.Count);
-
         
         List<InventoryItem> filteredList = allItems
             .Where(item => item.data != null && item.data.type == _currentFilter)

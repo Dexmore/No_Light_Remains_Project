@@ -19,8 +19,10 @@ public class DBManager : SingletonBehaviour<DBManager>
     private string saveDirectoryPath => Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
     private string saveFilePath => Path.Combine(saveDirectoryPath, "SaveData");
     private string steamSaveFileName => Path.GetFileName(saveFilePath);
-    public UnityAction onLogout = () => { };
-    public UnityAction onReLogin = () => { };
+    public UnityAction onLogOut = () => { };
+    public UnityAction onReLogIn = () => { };
+    public UnityAction onSteamFail = () => { };
+    public UnityAction onSteamResume = () => { };
     public void Save()
     {
         if (currSlot >= 0 && currSlot <= 2)
@@ -102,15 +104,24 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         while (true)
         {
-            bool prevStepIsSteam = IsSteam();
-            yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.3f, 1.2f));
-            if (!prevStepIsSteam && IsSteam())
+            bool prevBool1 = IsSteam();
+            bool prevBool2 = IsSteamInit();
+            yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 1.2f));
+            if(prevBool1 && !IsSteam())
             {
-                onReLogin.Invoke();
+                onSteamFail.Invoke();
             }
-            else if (prevStepIsSteam && !IsSteam())
+            else if(!prevBool1 && IsSteam())
             {
-                onLogout.Invoke();
+                onSteamResume.Invoke();
+            }
+            if(prevBool2 && !IsSteamInit())
+            {
+                onLogOut.Invoke();
+            }
+            else if(!prevBool2 && IsSteamInit())
+            {
+                onReLogIn.Invoke();
             }
         }
     }

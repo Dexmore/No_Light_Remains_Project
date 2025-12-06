@@ -80,7 +80,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             playerFunctions.Add(d);
         }
         //////////
-        Debug.Log(playerFunctions.Count);
+        
 
         for (int i = 0; i < functionSlots.Count; i++)
         {
