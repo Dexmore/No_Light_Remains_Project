@@ -129,12 +129,12 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                 if (newIndicator != null) newIndicator.SetActive(false);
 
                 /////
-                int find = DBManager.I.currData.itemDatas.FindIndex(x => x.Name == _currentItem.data.itemName);
+                int find = DBManager.I.currData.itemDatas.FindIndex(x => x.Name == _currentItem.data.name);
                 if(find != -1)
                 {
-                    CharacterData.ItemData citd = DBManager.I.currData.itemDatas[find];
-                    citd.isNew = false;
-                    DBManager.I.currData.itemDatas[find] = citd;
+                    CharacterData.ItemData cd = DBManager.I.currData.itemDatas[find];
+                    cd.isNew = false;
+                    DBManager.I.currData.itemDatas[find] = cd;
                 }
                 /////
 

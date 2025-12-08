@@ -86,6 +86,17 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             {
                 _myData.isNew = false;
                 if (newIndicator != null) newIndicator.SetActive(false);
+
+                /////
+                int find = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == _myData.name);
+                if(find != -1)
+                {
+                    CharacterData.GearData cd = DBManager.I.currData.gearDatas[find];
+                    cd.isNew = false;
+                    DBManager.I.currData.gearDatas[find] = cd;
+                }
+                /////
+                
             }
             
             _controller.ToggleEquipGear(_myData);

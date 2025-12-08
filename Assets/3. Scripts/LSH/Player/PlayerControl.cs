@@ -107,7 +107,7 @@ public class PlayerControl : MonoBehaviour
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
             newData.potionCount = 5;
-            newData.maxGearCost = 5;
+            newData.maxGearCost = 6;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();

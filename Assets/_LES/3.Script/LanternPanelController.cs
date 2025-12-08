@@ -76,7 +76,10 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
             int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
             if (find == -1) continue;
-            LanternFunctionData d = DBManager.I.itemDatabase.allLanterns[find];
+            LanternFunctionData d = Instantiate(DBManager.I.itemDatabase.allLanterns[find]);
+            d.name = DBManager.I.itemDatabase.allLanterns[find].name;
+            d.isEquipped = cd.isEquipped;
+            d.isNew = cd.isNew;
             playerFunctions.Add(d);
         }
         //////////

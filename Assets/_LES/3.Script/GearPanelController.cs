@@ -60,7 +60,10 @@ public class GearPanelController : MonoBehaviour, ITabContent
             CharacterData.GearData cd = DBManager.I.currData.gearDatas[i];
             int find = DBManager.I.itemDatabase.allGears.FindIndex(x => x.name == cd.Name);
             if(find == -1) continue;
-            GearData d = DBManager.I.itemDatabase.allGears[find];
+            GearData d = Instantiate(DBManager.I.itemDatabase.allGears[find]);
+            d.name = DBManager.I.itemDatabase.allGears[find].name;
+            d.isNew = cd.isNew;
+            d.isEquipped = cd.isEquipped;
             playerGears.Add(d);
         }
         //////////

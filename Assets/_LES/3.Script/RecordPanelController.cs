@@ -73,7 +73,9 @@ public class RecordPanelController : MonoBehaviour, ITabContent
             CharacterData.RecordData cd = DBManager.I.currData.recordDatas[i];
             int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.name == cd.Name);
             if (find == -1) continue;
-            RecordData d = DBManager.I.itemDatabase.allRecords[find];
+            RecordData d = Instantiate(DBManager.I.itemDatabase.allRecords[find]);
+            d.name = DBManager.I.itemDatabase.allRecords[find].name;
+            d.isNew = cd.isNew;
             playerRecords.Add(d);
         }
         //////////

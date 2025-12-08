@@ -12,7 +12,6 @@ public class DBManager : SingletonBehaviour<DBManager>
     // 0,1,2 -> Steam Slot 
     // 3,4,5 -> Local Slot
     public int currSlot = 0;
-    public CharacterData currData;
     CharacterData savedData;
     public SaveData allSaveDatasInSteam;
     public SaveData allSaveDatasInLocal;
@@ -23,6 +22,10 @@ public class DBManager : SingletonBehaviour<DBManager>
     public UnityAction onReLogIn = () => { };
     public UnityAction onSteamFail = () => { };
     public UnityAction onSteamResume = () => { };
+    public ItemDatabase itemDatabase;
+    [Space(60)]
+    [Header("-----현재 플레이중인 캐릭터-----")]
+    public CharacterData currData;
     public void Save()
     {
         if (currSlot >= 0 && currSlot <= 2)
@@ -107,19 +110,19 @@ public class DBManager : SingletonBehaviour<DBManager>
             bool prevBool1 = IsSteam();
             bool prevBool2 = IsSteamInit();
             yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 1.2f));
-            if(prevBool1 && !IsSteam())
+            if (prevBool1 && !IsSteam())
             {
                 onSteamFail.Invoke();
             }
-            else if(!prevBool1 && IsSteam())
+            else if (!prevBool1 && IsSteam())
             {
                 onSteamResume.Invoke();
             }
-            if(prevBool2 && !IsSteamInit())
+            if (prevBool2 && !IsSteamInit())
             {
                 onLogOut.Invoke();
             }
-            else if(!prevBool2 && IsSteamInit())
+            else if (!prevBool2 && IsSteamInit())
             {
                 onReLogIn.Invoke();
             }
@@ -297,7 +300,6 @@ public class DBManager : SingletonBehaviour<DBManager>
             allSaveDatasInLocal = new SaveData(); // 문제 발생 시 새 데이터로 초기화
         }
     }
-    public ItemDatabase itemDatabase;
     public void AddItem(string Name, int count = 1)
     {
         if (count == 0) return;
@@ -388,7 +390,36 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
 #if UNITY_EDITOR
-    [Button]
+    [Space(60)]
+    [Header("-----아이템 습득 테스트용-----")]
+    public int testGold;
+    public InventoryItem[] testItemDatas;
+    public GearData[] testGearDatas;
+    public LanternFunctionData[] testLanternDatas;
+    public RecordData[] testRecordDatas;
+    
+    [Button("아이템 습득 테스트")]
+    public void TestAddItem()
+    {
+        currData.gold += testGold;
+        for(int i=0; i<testItemDatas.Length; i++)
+        {
+            AddItem(testItemDatas[i].data.name, testItemDatas[i].quantity);
+        }
+        for(int i=0; i<testGearDatas.Length; i++)
+        {
+            AddGear(testGearDatas[i].name);
+        }
+        for(int i=0; i<testLanternDatas.Length; i++)
+        {
+            AddLantern(testLanternDatas[i].name);
+        }
+        for(int i=0; i<testRecordDatas.Length; i++)
+        {
+            AddRecord(testRecordDatas[i].name);
+        }
+    }
+    [Button("내 계정의 모든 세이브 삭제 (주의)")]
     public void DeleteAllSaveData()
     {
         allSaveDatasInLocal = new SaveData();
@@ -398,6 +429,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         SaveSteam();
         SaveLocal();
     }
+
 #endif
 
 }

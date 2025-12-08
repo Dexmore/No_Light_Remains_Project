@@ -277,7 +277,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.currHealth = 400;
         newData.currBattery = 100;
         newData.potionCount = 5;
-        newData.maxGearCost = 5;
+        newData.maxGearCost = 6;
         newData.itemDatas = new List<CharacterData.ItemData>();
         newData.gearDatas = new List<CharacterData.GearData>();
         newData.lanternDatas = new List<CharacterData.LanternData>();

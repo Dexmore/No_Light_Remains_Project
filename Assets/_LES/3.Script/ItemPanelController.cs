@@ -144,7 +144,9 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             CharacterData.ItemData cd = DBManager.I.currData.itemDatas[i];
             int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.name == cd.Name);
             if(find == -1) continue;
-            ItemData d = DBManager.I.itemDatabase.allItems[find];
+            ItemData d = Instantiate(DBManager.I.itemDatabase.allItems[find]);
+            d.name = DBManager.I.itemDatabase.allItems[find].name;
+            d.isNew = cd.isNew;
             InventoryItem inventoryItem = new InventoryItem(d, cd.count);
             allItems.Add(inventoryItem);
         }
