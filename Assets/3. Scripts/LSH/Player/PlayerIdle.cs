@@ -73,13 +73,13 @@ public class PlayerIdle : IPlayerState
                 fsm.ChangeState(ctx.usePotion);
             }
         }
-        
+
         inventoryPressed = inventoryAction.IsPressed();
-        if(!inventoryPressed && flagInt == 0)
+        if (!inventoryPressed && flagInt == 0)
         {
             flagInt = 1;
         }
-        else if(inventoryPressed && flagInt == 1 && ctx.Grounded)
+        else if (inventoryPressed && flagInt == 1 && ctx.Grounded)
         {
             fsm.ChangeState(ctx.openInventory);
         }
@@ -89,11 +89,16 @@ public class PlayerIdle : IPlayerState
 
     }
     bool isESC;
+    PopupControl popupControl;
     void InputESC(InputAction.CallbackContext callbackContext)
     {
-        if(!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop)
+        if (!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop)
         {
-            fsm.ChangeState(ctx.openESCMenu);
+            if (popupControl == null)
+                popupControl = GameManager.I.transform.GetComponent<PopupControl>();
+            fsm.ChangeState(ctx.openUIMenu);
+            GameManager.I.isOpenPop = true;
+            popupControl.OpenPop(1);
         }
         isESC = true;
     }

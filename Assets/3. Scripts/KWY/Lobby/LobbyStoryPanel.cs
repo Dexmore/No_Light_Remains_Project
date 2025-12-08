@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
-
 public class LobbyStoryPanel : MonoBehaviour
 {
     PopupControl popupControl;
@@ -22,17 +21,21 @@ public class LobbyStoryPanel : MonoBehaviour
         RefreshSlots();
         DBManager.I.onLogOut += HandlerChangeLogin;
         DBManager.I.onReLogIn += HandlerChangeLogin;
+        Opening();
+        select = -1;
+        isaDisable = false;
     }
     void OnDisable()
     {
         DBManager.I.onLogOut -= HandlerChangeLogin;
         DBManager.I.onReLogIn -= HandlerChangeLogin;
+        isaDisable = true;
     }
     async void HandlerChangeLogin()
     {
         if (DBManager.I.IsSteamInit())
         {
-            await Task.Delay(2200);
+            await Task.Delay(2000);
             popupControl.ClosePop(0, false);
             popupControl.OpenPop(2);
         }
@@ -43,14 +46,43 @@ public class LobbyStoryPanel : MonoBehaviour
         }
         RefreshSlots();
     }
+    async void Opening()
+    {
+        transform.Find("Wrap").gameObject.SetActive(false);
+        transform.Find("Opening").gameObject.SetActive(true);
+        RectTransform rt = transform.Find("Opening/BG1").GetComponent<RectTransform>();
+        DOTween.Kill(rt);
+        rt.anchoredPosition = new Vector2(0, -100);
+        rt.DOAnchorPos(new Vector2(0, 800), 1.9f).SetEase(Ease.InSine);
+        Image image = rt.GetComponent<Image>();
+        DOTween.Kill(image);
+        image.color = new Color(1f, 1f, 1f, 1f);
+        image.DOFade(0f, 2f);
+        await Task.Delay(1500);
+        transform.Find("Wrap").gameObject.SetActive(true);
+        CanvasGroup canvasGroup = transform.Find("Wrap").GetComponent<CanvasGroup>();
+        DOTween.Kill(canvasGroup);
+        canvasGroup.alpha = 0f;
+        canvasGroup.DOFade(1f, 1.9f).SetEase(Ease.InSine);
+        rt = transform.Find("Wrap/BG2").GetComponent<RectTransform>();
+        DOTween.Kill(rt);
+        rt.anchoredPosition = new Vector2(0, -130);
+        rt.DOAnchorPos(new Vector2(0, 40), 1.8f);
+        SometimesGlitchTextLoop();
+        await Task.Delay(1000);
+    }
     Transform[] slots;
     bool isSteamSlot;
     GameObject leftMonitor;
-    Color color1 = new Color(0.9f, 0.9f, 0.9f, 0.9f);
+    Color color1 = new Color(1f, 1f, 1f, 0.85f);
     Color color2 = new Color(0.617f, 0.861f, 1f, 1f);
     void RefreshSlots()
     {
+        select = -1;
         leftMonitor.SetActive(false);
+        slots[0].Find("Slot/SelectButton").gameObject.SetActive(true);
+        slots[1].Find("Slot/SelectButton").gameObject.SetActive(true);
+        slots[2].Find("Slot/SelectButton").gameObject.SetActive(true);
         if (DBManager.I.IsSteamInit() && DBManager.I.IsSteam())
         {
             isSteamSlot = true;
@@ -61,7 +93,15 @@ public class LobbyStoryPanel : MonoBehaviour
                     slots[i].Find("Empty").gameObject.SetActive(false);
                     slots[i].Find("Slot").gameObject.SetActive(true);
                     slots[i].Find("Frame").GetComponent<Image>().color = color1;
-
+                    // 텍스트 내용 갱신
+                    Transform wrap = slots[i].Find("Slot");
+                    CharacterData data = DBManager.I.allSaveDatasInSteam.characterDatas[i];
+                    wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Player{i + 1}";
+                    wrap.Find("LevelText(1)").GetComponent<TMP_Text>().text = $"{data.level}";
+                    wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
+                    //wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"{data.lastTime.Split("-")[0]}";
+                    wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"";
+                    wrap.Find("GoldText(1)").GetComponent<TMP_Text>().text = $"{data.gold}";
                 }
                 else
                 {
@@ -81,7 +121,14 @@ public class LobbyStoryPanel : MonoBehaviour
                     slots[i].Find("Empty").gameObject.SetActive(false);
                     slots[i].Find("Slot").gameObject.SetActive(true);
                     slots[i].Find("Frame").GetComponent<Image>().color = color1;
-
+                    // 텍스트 내용 갱신
+                    Transform wrap = slots[i].Find("Slot");
+                    CharacterData data = DBManager.I.allSaveDatasInLocal.characterDatas[i];
+                    wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Offline Player{i + 1}";
+                    wrap.Find("LevelText(1)").GetComponent<TMP_Text>().text = $"{data.level}";
+                    wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
+                    wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"{data.lastTime.Split("-")[0]}";
+                    wrap.Find("GoldText(1)").GetComponent<TMP_Text>().text = $"{data.gold}";
                 }
                 else
                 {
@@ -97,7 +144,7 @@ public class LobbyStoryPanel : MonoBehaviour
     public async void NewGameButton(int index)
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
-        select = -1;
+        select = index;
         leftMonitor.SetActive(false);
         slots[0].Find("Slot/SelectButton").gameObject.SetActive(true);
         slots[1].Find("Slot/SelectButton").gameObject.SetActive(true);
@@ -106,7 +153,7 @@ public class LobbyStoryPanel : MonoBehaviour
         ColorRecoverSlot(1);
         ColorRecoverSlot(2);
         ColorChangeSlot(index);
-        await Task.Delay(80);
+        await Task.Delay(50);
         popupControl.OpenPop(3, false);
     }
     public void SelectButton(int index)
@@ -140,6 +187,33 @@ public class LobbyStoryPanel : MonoBehaviour
         rtFrame.DOSizeDelta(size, 0.55f).SetEase(Ease.InBack);
         imgFrame.color = new Color(imgFrame.color.r, imgFrame.color.g, imgFrame.color.b, 0f);
         imgFrame.DOFade(1f, 4f);
+        CanvasGroup canvasGroup = leftMonitor.transform.Find("Wrap").GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0f;
+        DOTween.Kill(canvasGroup);
+        canvasGroup.DOFade(1f, 3.5f).SetEase(Ease.InSine);
+        // 텍스트 내용 갱신
+        Transform wrap = leftMonitor.transform.Find("Wrap");
+        CharacterData data;
+        if (isSteamSlot)
+            data = DBManager.I.allSaveDatasInSteam.characterDatas[select];
+        else
+            data = DBManager.I.allSaveDatasInLocal.characterDatas[select - 3];
+        wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
+        string diffText = "";
+        switch (data.difficulty)
+        {
+            case 0:
+                diffText = "쉬움";
+                break;
+            case 1:
+                diffText = "보통";
+                break;
+            case 2:
+                diffText = "어려움";
+                break;
+        }
+        wrap.Find("DifficultyText(1)").GetComponent<TMP_Text>().text = $"{diffText}";
+
     }
     void ColorChangeSlot(int index)
     {
@@ -149,7 +223,7 @@ public class LobbyStoryPanel : MonoBehaviour
         Image imgFrame = slots[index].Find("Frame").GetComponent<Image>();
         DOTween.Kill(imgFrame);
         imgFrame.color = color1;
-        imgFrame.DOColor(color2, 0.5f).SetEase(Ease.OutQuad);
+        imgFrame.DOColor(color2, 0.2f);
     }
     void ColorRecoverSlot(int index)
     {
@@ -157,169 +231,137 @@ public class LobbyStoryPanel : MonoBehaviour
         slots[index].transform.DOScale(1f, 0.2f).SetEase(Ease.OutQuad);
         Image imgFrame = slots[index].Find("Frame").GetComponent<Image>();
         DOTween.Kill(imgFrame);
-        imgFrame.DOColor(color1, 0.3f).SetEase(Ease.OutQuad);
+        imgFrame.DOColor(color1, 0.2f);
+    }
+    /////////////////
+    Button[] buttons;
+    void DisableAllButtons()
+    {
+        buttons = transform.root.GetComponentsInChildren<Button>();
+        foreach (var btn in buttons)
+            btn.enabled = false;
+    }
+    public async void StartButton()
+    {
+        AudioManager.I.PlaySFX("SciFiConfirm");
+        DisableAllButtons();
+        await Task.Delay(200);
+        if (isSteamSlot)
+        {
+            DBManager.I.currData = DBManager.I.allSaveDatasInSteam.characterDatas[select];
+            DBManager.I.currSlot = select;
+        }
+        else
+        {
+            DBManager.I.currData = DBManager.I.allSaveDatasInLocal.characterDatas[select];
+            DBManager.I.currSlot = select + 3;
+        }
+        await Task.Delay(200);
+        GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
+    }
+    [HideInInspector] public int diff;
+    public async void StartNewGameButton()
+    {
+        AudioManager.I.PlaySFX("SciFiConfirm");
+        DisableAllButtons();
+        popupControl.ClosePop(3, false);
+        await Task.Delay(200);
+        CharacterData newData = new CharacterData();
+        newData.gold = 0;
+        newData.level = 1;
+        newData.difficulty = diff;
+        newData.sceneName = "Stage1";
+        newData.lastPos = Vector2.zero;
+        newData.maxHealth = 400;
+        newData.maxBattery = 100;
+        newData.currHealth = 400;
+        newData.currBattery = 100;
+        newData.potionCount = 5;
+        newData.maxGearCost = 5;
+        newData.itemDatas = new List<CharacterData.ItemData>();
+        newData.gearDatas = new List<CharacterData.GearData>();
+        newData.lanternDatas = new List<CharacterData.LanternData>();
+        newData.recordDatas = new List<CharacterData.RecordData>();
+        DBManager.I.currData = newData;
+        // 신규캐릭터 시작 아이템
+        DBManager.I.AddLantern("BasicLantern");
+        DBManager.I.AddItem("UsefulSword");
+        DBManager.I.AddItem("Helmet");
+        DBManager.I.AddItem("LeatherArmor");
+        if (isSteamSlot)
+        {
+            DBManager.I.currSlot = select;
+            DBManager.I.allSaveDatasInSteam.characterDatas.Add(newData);
+        }
+        else
+        {
+            DBManager.I.currSlot = select + 3;
+            DBManager.I.allSaveDatasInLocal.characterDatas.Add(newData);
+        }
+        DBManager.I.Save();
+        await Task.Delay(200);
+        GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
+    }
+    public async void StartGameButton()
+    {
+        AudioManager.I.PlaySFX("SciFiConfirm");
+        DisableAllButtons();
+        popupControl.ClosePop(3, false);
+        await Task.Delay(200);
+        CharacterData newData;
+        DBManager.I.currSlot = select;
+        if (isSteamSlot)
+        {
+            newData = DBManager.I.allSaveDatasInSteam.characterDatas[select];
+        }
+        else
+        {
+            newData = DBManager.I.allSaveDatasInLocal.characterDatas[select - 3];
+        }
+        await Task.Delay(200);
+        GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
+    }
+    public async void DeleteButton()
+    {
+        AudioManager.I.PlaySFX("UIClick");
+    }
+    TMP_Text[] texts1;
+    Text[] texts2;
+    bool isaDisable;
+    async void SometimesGlitchTextLoop()
+    {
+        await Task.Delay(2200);
+        if (texts1 == null) texts1 = transform.GetComponentsInChildren<TMP_Text>();
+        if (texts2 == null) texts2 = transform.GetComponentsInChildren<Text>();
+        while (true)
+        {
+            await Task.Delay(50);
+            if (Random.value < 0.3f)
+            {
+                int rnd = Random.Range(0, texts1.Length + texts2.Length);
+                if (Random.value < 0.43f)
+                    AudioManager.I.PlaySFX("Glitch1");
+                if (rnd >= texts1.Length)
+                {
+                    Text text2 = texts2[rnd - texts1.Length];
+                    if (!text2.gameObject.activeInHierarchy) continue;
+                    GameManager.I.GlitchText(text2, 0.2f);
+                }
+                else
+                {
+                    TMP_Text text1 = texts1[rnd];
+                    if (!text1.gameObject.activeInHierarchy) continue;
+                    GameManager.I.GlitchText(text1, 0.2f);
+                }
+            }
+            await Task.Delay(Random.Range(200, 800));
+            if(isaDisable) return;
+        }
     }
 
 
 
 
-
-
-
-
-
-    // GameObject storyPanel;
-    // 
-    // void Awake()
-    // {
-    //     storyPanel = gameObject;
-    // }
-
-    // void OnEnable()
-    // {
-    //     RefreshSlots();
-    // }
-    // bool isSteamSlot;
-    // public void RefreshSlots()
-    // {
-    //     Transform saveSlots = storyPanel.transform.Find("SaveSlots");
-    //     if (DBManager.I.IsSteamInit())
-    //     {
-    //         for (int i = 0; i < 3; i++)
-    //         {
-    //             if (i < DBManager.I.allSaveDatasInSteam.characterDatas.Count)
-    //             {
-    //                 saveSlots.GetChild(i).Find("NoData").gameObject.SetActive(false);
-    //                 Transform dataPanel = saveSlots.GetChild(i).Find("Data_Panel");
-    //                 dataPanel.gameObject.SetActive(true);
-    //                 TMP_Text[] tMP_Texts = dataPanel.GetComponentsInChildren<TMP_Text>();
-    //                 CharacterData characterData = DBManager.I.allSaveDatasInSteam.characterDatas[i];
-    //                 tMP_Texts[0].text = $"위치 : {characterData.sceneName}";
-    //                 tMP_Texts[1].text = $"재화 : {characterData.gold} 원";
-    //                 tMP_Texts[2].text = $"기어 : {characterData.gearDatas.Count} 개";
-    //             }
-    //             else
-    //             {
-    //                 saveSlots.GetChild(i).Find("Data_Panel").gameObject.SetActive(false);
-    //                 saveSlots.GetChild(i).Find("NoData").gameObject.SetActive(true);
-    //             }
-    //         }
-    //         isSteamSlot = true;
-    //     }
-    //     else
-    //     {
-    //         DBManager.I.currSlot = 3;
-    //         for (int i = 0; i < 3; i++)
-    //         {
-    //             if (i < DBManager.I.allSaveDatasInLocal.characterDatas.Count)
-    //             {
-    //                 saveSlots.GetChild(i).Find("NoData").gameObject.SetActive(false);
-    //                 Transform dataPanel = saveSlots.GetChild(i).Find("Data_Panel");
-    //                 dataPanel.gameObject.SetActive(true);
-    //                 TMP_Text[] tMP_Texts = dataPanel.GetComponentsInChildren<TMP_Text>();
-    //                 CharacterData characterData = DBManager.I.allSaveDatasInLocal.characterDatas[i];
-    //                 tMP_Texts[0].text = $"위치 : {characterData.sceneName}";
-    //                 tMP_Texts[1].text = $"재화 : {characterData.gold} 원";
-    //                 tMP_Texts[2].text = $"기어 : {characterData.gearDatas.Count} 개";
-    //             }
-    //             else
-    //             {
-    //                 saveSlots.GetChild(i).Find("Data_Panel").gameObject.SetActive(false);
-    //                 saveSlots.GetChild(i).Find("NoData").gameObject.SetActive(true);
-    //             }
-    //         }
-    //         isSteamSlot = false;
-    //     }
-    // }
-    // int select = -1;
-    // public void StoryModeButton(int index)
-    // {
-    //     int addIndex = 0;
-    //     if (!isSteamSlot) addIndex = 3;
-    //     select = index + addIndex;
-    //     Transform saveSlots = storyPanel.transform.Find("SaveSlots");
-    //     if (saveSlots.GetChild(index).Find("NoData").gameObject.activeSelf)
-    //     {
-    //         StartGame_StoryModeNoData();
-    //         return;
-    //     }
-    //     GameObject button = storyPanel.transform.Find("StartButton").gameObject;
-    //     button.SetActive(true);
-    //     AudioManager.I.PlaySFX("UIClick");
-    // }
-    // public async void StartGameButton()
-    // {
-    //     AudioManager.I.PlaySFX("UIClick");
-    //     DisableAllButtons();
-    //     await Task.Delay(700);
-    //     if (isSteamSlot)
-    //     {
-    //         DBManager.I.currData = DBManager.I.allSaveDatasInSteam.characterDatas[select];
-    //         DBManager.I.currSlot = select;
-    //     }
-    //     else
-    //     {
-    //         DBManager.I.currData = DBManager.I.allSaveDatasInLocal.characterDatas[select - 3];
-    //         DBManager.I.currSlot = select;
-    //     }
-    //     await Task.Delay(100);
-    //     GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
-    // }
-    // public async void RemoveCharacterButton()
-    // {
-    //     AudioManager.I.PlaySFX("UIClick");
-
-    // }
-
-    // async void StartGame_StoryModeNoData()
-    // {
-    //     AudioManager.I.PlaySFX("UIClick");
-    //     DisableAllButtons();
-    //     GameObject button = storyPanel.transform.Find("StartButton").gameObject;
-    //     button.SetActive(false);
-    //     await Task.Delay(1500);
-    //     CharacterData newData = new CharacterData();
-    //     newData.gold = 0;
-    //     newData.sceneName = "Stage1";
-    //     newData.lastPos = Vector2.zero;
-    //     newData.maxHealth = 400;
-    //     newData.maxBattery = 100;
-    //     newData.currHealth = 400;
-    //     newData.currBattery = 100;
-    //     newData.potionCount = 5;
-    //     newData.maxGearCost = 5;
-    //     newData.itemDatas = new List<CharacterData.ItemData>();
-    //     newData.gearDatas = new List<CharacterData.GearData>();
-    //     newData.lanternDatas = new List<CharacterData.LanternData>();
-    //     newData.recordDatas = new List<CharacterData.RecordData>();
-    //     DBManager.I.currData = newData;
-    //     DBManager.I.currSlot = select;
-    //     // 신규캐릭터 시작 아이템
-    //     DBManager.I.AddLantern("BasicLantern");
-    //     DBManager.I.AddItem("UsefulSword");
-    //     DBManager.I.AddItem("Helmet");
-    //     DBManager.I.AddItem("LeatherArmor");
-
-    //     if (isSteamSlot)
-    //     {
-    //         DBManager.I.allSaveDatasInSteam.characterDatas.Add(newData);
-    //     }
-    //     else
-    //     {
-    //         DBManager.I.allSaveDatasInLocal.characterDatas.Add(newData);
-    //     }
-    //     await Task.Delay(5);
-    //     DBManager.I.Save();
-    //     await Task.Delay(700);
-    //     GameManager.I.LoadSceneAsync("Stage1", true);
-    // }
-    // Button[] buttons;
-    // void DisableAllButtons()
-    // {
-    //     buttons = transform.root.GetComponentsInChildren<Button>();
-    //     foreach (var btn in buttons)
-    //         btn.enabled = false;
-    // }
 
 
 

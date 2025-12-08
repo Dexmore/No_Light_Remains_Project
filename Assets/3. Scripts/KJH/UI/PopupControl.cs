@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using DG.Tweening;
 using NaughtyAttributes;
+using TMPro;
 
 public class PopupControl : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class PopupControl : MonoBehaviour
     Transform[] allPopups;
     List<bool> isOpens = new List<bool>();
     [ReadOnlyInspector][SerializeField] int openPopCount;
+    PlayerControl playerControl;
     void Awake()
     {
         canvasGo = transform.Find("PopupCanvas").gameObject;
@@ -31,6 +33,8 @@ public class PopupControl : MonoBehaviour
     {
         cancelAction.action.performed += InputESC;
         GameManager.I.onHitAfter += HandleHit;
+        if (playerControl == null)
+            playerControl = FindAnyObjectByType<PlayerControl>();
     }
     void OnDisable()
     {
@@ -66,6 +70,9 @@ public class PopupControl : MonoBehaviour
     public void OpenPop(int index, bool sfx = true)
     {
         if (allPopups[index].gameObject.activeSelf) return;
+        if (playerControl)
+            if (playerControl.fsm.currentState != playerControl.openUIMenu)
+                playerControl.fsm.ChangeState(playerControl.openUIMenu);
         canvasGo.SetActive(true);
         allPopups[index].gameObject.SetActive(true);
         if (sfx)
@@ -76,6 +83,14 @@ public class PopupControl : MonoBehaviour
         isOpens[index] = true;
         openPopCount++;
         GameManager.I.isOpenPop = true;
+        if (index == 3)
+        {
+            TMP_Text tMP_Text = allPopups[index].transform.Find("Difficulty/Text").GetComponent<TMP_Text>();
+            pop3Diff = 1;
+            tMP_Text.text = $"보통";
+            if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
+            lobbyStoryPanel.diff = 1;
+        }
     }
     public void ClosePop(int index)
     {
@@ -121,6 +136,74 @@ public class PopupControl : MonoBehaviour
         Application.Quit();
 #endif
     }
+    int pop3Diff = 1;
+    LobbyStoryPanel lobbyStoryPanel;
+    public void Pop3Left()
+    {
+        if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
+        AudioManager.I.PlaySFX("UIClick");
+        TMP_Text tMP_Text = allPopups[3].transform.Find("Difficulty/Text").GetComponent<TMP_Text>();
+        pop3Diff--;
+        if (pop3Diff < 0) pop3Diff = 0;
+        lobbyStoryPanel.diff = pop3Diff;
+        switch (pop3Diff)
+        {
+            case 0:
+                tMP_Text.text = $"쉬움";
+                break;
+            case 1:
+                tMP_Text.text = $"보통";
+                break;
+            case 2:
+                tMP_Text.text = $"어려움";
+                break;
+        }
+    }
+    public void Pop3Right()
+    {
+        if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
+        AudioManager.I.PlaySFX("UIClick");
+        TMP_Text tMP_Text = allPopups[3].transform.Find("Difficulty/Text").GetComponent<TMP_Text>();
+        pop3Diff++;
+        if (pop3Diff > 2) pop3Diff = 2;
+        lobbyStoryPanel.diff = pop3Diff;
+        switch (pop3Diff)
+        {
+            case 0:
+                tMP_Text.text = $"쉬움";
+                break;
+            case 1:
+                tMP_Text.text = $"보통";
+                break;
+            case 2:
+                tMP_Text.text = $"어려움";
+                break;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if UNITY_EDITOR
     [Header("Editor Test")]
@@ -131,6 +214,8 @@ public class PopupControl : MonoBehaviour
         OpenPop(testIndex);
     }
 #endif
+
+
 
 
 

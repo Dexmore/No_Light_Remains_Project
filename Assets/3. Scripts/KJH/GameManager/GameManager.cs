@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Text;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
@@ -277,8 +278,79 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     }
     #endregion
+    #region Glitch Effect
+    private const int glitchDelayMs = 25;
+    private readonly string[] glitchChars = { "#", "$", "%", "@", "^", "&", "*", "!", "?", "█", "■", "░", "~", "_", "=" };
+    public async void GlitchText(UnityEngine.UI.Text Text, float glitchDuration = 0.4f)
+    {
+        if (Text == null) return;
+        string originalText = Text.text;
+        int totalIterations = (int)(glitchDuration * 1000f / glitchDelayMs);
+        for (int i = 0; i < totalIterations; i++)
+        {
+            await Task.Delay(glitchDelayMs);
+            // 글리치 문자열 생성 (태그가 출력되지 않도록 보장)
+            Text.text = GenerateGlitchString(originalText, Text.color);
+        }
+        // 효과 완료 후 원본 텍스트로 복구
+        Text.text = originalText;
+    }
+    public async void GlitchText(TMPro.TMP_Text tMP_Text, float glitchDuration = 0.4f)
+    {
+        if (tMP_Text == null) return;
+        string originalText = tMP_Text.text;
+        int totalIterations = (int)(glitchDuration * 1000f / glitchDelayMs);
+        for (int i = 0; i < totalIterations; i++)
+        {
+            await Task.Delay(glitchDelayMs);
+            // 글리치 문자열 생성 (태그가 출력되지 않도록 보장)
+            tMP_Text.text = GenerateGlitchString(originalText, tMP_Text.color);
+        }
+        // 효과 완료 후 원본 텍스트로 복구
+        tMP_Text.text = originalText;
+    }
+    private string GenerateGlitchString(string original, Color originalColor)
+    {
+        if (string.IsNullOrEmpty(original))
+        {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(original.Length * 3);
+        string[] InsertChars = new string[] { "*", "░", "█" };
+        for (int i = 0; i < original.Length; i++)
+        {
+            char originalChar = original[i];
+            if (Random.value < 0.1f)
+            {
+                int insertCount = Random.Range(1, 4);
+                for (int k = 0; k < insertCount; k++)
+                {
+                    sb.Append(InsertChars[Random.Range(0, InsertChars.Length)]);
+                }
+            }
+            if (Random.value < 0.6f)
+            {
+                if (Random.value < 0.3f)
+                {
+                    sb.Append(glitchChars[Random.Range(0, glitchChars.Length)]);
+                }
+                else
+                {
+                    Color randomColor = 0.6f * originalColor + 0.4f * new Color(Random.value, Random.value, Random.value);
+                    string colorHex = ColorUtility.ToHtmlStringRGB(randomColor);
+                    sb.Append($"<color=#{colorHex}>{originalChar}</color>");
+                }
+            }
+            else
+            {
+                sb.Append(originalChar);
+            }
+        }
+        return sb.ToString();
+    }
+    #endregion
 
-
+    
 
 }
 public struct HitData

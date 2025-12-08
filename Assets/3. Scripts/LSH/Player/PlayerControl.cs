@@ -44,7 +44,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerDie die;
     [HideInInspector] public PlayerUsePotion usePotion;
     [HideInInspector] public PlayerOpenInventory openInventory;
-    [HideInInspector] public PlayerOpenESCMenu openESCMenu;
+    [HideInInspector] public PlayerOpenUIMenu openUIMenu;
     // [HideInInspector] public PlayerJumpAttack jumpAttack;
     [HideInInspector] public HUDBinder hUDBinder;
 
@@ -86,7 +86,7 @@ public class PlayerControl : MonoBehaviour
         die = new PlayerDie(this, fsm);
         usePotion = new PlayerUsePotion(this, fsm);
         openInventory = new PlayerOpenInventory(this, fsm);
-        openESCMenu = new PlayerOpenESCMenu(this, fsm);
+        openUIMenu = new PlayerOpenUIMenu(this, fsm);
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
@@ -507,15 +507,6 @@ public class PlayerControl : MonoBehaviour
     {
         if (Dead) return;
         AudioManager.I.PlaySFX("FlashlightClick");
-        if (currBattery <= 3)
-        {
-            if (Time.time - batteryTextCooltime > 1.2f)
-            {
-                batteryTextCooltime = Time.time;
-                ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
-            }
-            return;
-        }
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
         if (light0.activeSelf)
@@ -526,6 +517,15 @@ public class PlayerControl : MonoBehaviour
         }
         else
         {
+            if (currBattery <= 3)
+            {
+                if (Time.time - batteryTextCooltime > 1.2f)
+                {
+                    batteryTextCooltime = Time.time;
+                    ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
+                }
+                return;
+            }
             light0.SetActive(true);
             light1.SetActive(true);
             GameManager.I.isLanternOn = true;

@@ -419,6 +419,8 @@ public struct CharacterData
     public int difficulty;
     public int language;
     public string sceneName;
+    public int level;
+    public string lastTime;
     public Vector2 lastPos;
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;
