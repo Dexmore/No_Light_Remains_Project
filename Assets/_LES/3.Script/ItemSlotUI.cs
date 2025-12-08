@@ -40,7 +40,7 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             itemIcon.sprite = _currentItem.data.icon;
             itemIcon.gameObject.SetActive(_currentItem.data.icon != null);
         }
-        itemNameText.text = _currentItem.data.name;
+        itemNameText.text = _currentItem.data.itemName;
         itemNameText.gameObject.SetActive(true);
 
         // [추가] 수량 표시 로직
@@ -129,12 +129,12 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                 if (newIndicator != null) newIndicator.SetActive(false);
 
                 /////
-                int find = DBManager.I.currData.itemDatas.FindIndex(x => x.Name == _currentItem.data.itemName);
+                int find = DBManager.I.currData.itemDatas.FindIndex(x => x.Name == _currentItem.data.name);
                 if(find != -1)
                 {
-                    CharacterData.ItemData citd = DBManager.I.currData.itemDatas[find];
-                    citd.isNew = false;
-                    DBManager.I.currData.itemDatas[find] = citd;
+                    CharacterData.ItemData cd = DBManager.I.currData.itemDatas[find];
+                    cd.isNew = false;
+                    DBManager.I.currData.itemDatas[find] = cd;
                 }
                 /////
 

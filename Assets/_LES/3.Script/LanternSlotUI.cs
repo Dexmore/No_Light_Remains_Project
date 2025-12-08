@@ -17,14 +17,14 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     private LanternPanelController _controller;
     private Button _button;
     private Color _originalIconColor;
-    
+
     public LanternFunctionData MyData { get { return _myData; } }
 
     private void Awake()
     {
         _button = GetComponent<Button>();
         if (functionIcon != null) _originalIconColor = functionIcon.color;
-        
+
         // Button의 onClick이 엔터 키와 클릭을 모두 처리함
         _button?.onClick.AddListener(HandleInteraction);
     }
@@ -48,7 +48,7 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         if (_button != null) _button.interactable = false;
         if (newIndicator != null) newIndicator.SetActive(false);
     }
-    
+
     public void UpdateEquipVisual()
     {
         if (_myData == null || functionIcon == null) return;
@@ -71,20 +71,30 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             _controller.ShowFunctionDetails(_myData);
         }
     }
-    
+
     // [삭제] OnSubmit 함수 전체 삭제
     // public void OnSubmit(BaseEventData eventData) { ... }
 
     private void HandleInteraction()
     {
         if (_myData == null || _controller == null) return;
-        
+
         if (_myData.isNew)
         {
             _myData.isNew = false;
             if (newIndicator != null) newIndicator.SetActive(false);
+
+            /////
+            int find = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == _myData.name);
+            if (find != -1)
+            {
+                CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[find];
+                cd.isNew = false;
+                DBManager.I.currData.lanternDatas[find] = cd;
+            }
+            /////
         }
-        
+
         _controller.ToggleEquipFunction(_myData);
     }
 }

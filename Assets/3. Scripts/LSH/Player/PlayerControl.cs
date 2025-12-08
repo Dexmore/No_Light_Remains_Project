@@ -44,10 +44,9 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerDie die;
     [HideInInspector] public PlayerUsePotion usePotion;
     [HideInInspector] public PlayerOpenInventory openInventory;
-    [HideInInspector] public PlayerOpenESCMenu openESCMenu;
+    [HideInInspector] public PlayerOpenUIMenu openUIMenu;
     // [HideInInspector] public PlayerJumpAttack jumpAttack;
     [HideInInspector] public HUDBinder hUDBinder;
-    [HideInInspector] public PopupControl popupControl;
 
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
@@ -87,11 +86,10 @@ public class PlayerControl : MonoBehaviour
         die = new PlayerDie(this, fsm);
         usePotion = new PlayerUsePotion(this, fsm);
         openInventory = new PlayerOpenInventory(this, fsm);
-        openESCMenu = new PlayerOpenESCMenu(this, fsm);
+        openUIMenu = new PlayerOpenUIMenu(this, fsm);
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
-        popupControl = FindAnyObjectByType<PopupControl>();
     }
     void Start()
     {
@@ -109,15 +107,19 @@ public class PlayerControl : MonoBehaviour
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
             newData.potionCount = 5;
+            newData.maxGearCost = 6;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
+            newData.recordDatas = new List<CharacterData.RecordData>();
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
-            DBManager.I.AddItem("Useful Sword", 1);
-            DBManager.I.AddItem("Helmet", 1);
-            DBManager.I.AddItem("Leather Armor", 1);
+            // 신규캐릭터 시작 아이템
+            DBManager.I.AddLantern("BasicLantern");
+            DBManager.I.AddItem("UsefulSword");
+            DBManager.I.AddItem("Helmet");
+            DBManager.I.AddItem("LeatherArmor");
         }
         else
         {
@@ -154,6 +156,7 @@ public class PlayerControl : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled -= JumpCancel;
         lanternAction.performed -= LanternInput;
         GameManager.I.onHit -= HitHandler;
+        fsm.OnDisable();
     }
 
     void Update()
@@ -504,15 +507,6 @@ public class PlayerControl : MonoBehaviour
     {
         if (Dead) return;
         AudioManager.I.PlaySFX("FlashlightClick");
-        if (currBattery <= 3)
-        {
-            if(Time.time - batteryTextCooltime > 1.2f)
-            {
-                batteryTextCooltime = Time.time;
-                ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
-            }
-            return;
-        }
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
         GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
         if (light0.activeSelf)
@@ -523,6 +517,15 @@ public class PlayerControl : MonoBehaviour
         }
         else
         {
+            if (currBattery <= 3)
+            {
+                if (Time.time - batteryTextCooltime > 1.2f)
+                {
+                    batteryTextCooltime = Time.time;
+                    ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
+                }
+                return;
+            }
             light0.SetActive(true);
             light1.SetActive(true);
             GameManager.I.isLanternOn = true;
@@ -543,6 +546,7 @@ public class PlayerControl : MonoBehaviour
                 if (currBattery <= 0)
                 {
                     AudioManager.I.PlaySFX("FlashlightClick");
+                    ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
                     GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
                     GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
                     light0.SetActive(false);
@@ -551,7 +555,7 @@ public class PlayerControl : MonoBehaviour
                     GameManager.I.isLanternOn = false;
                 }
             }
-            else if(currBattery <= 100)
+            else if (currBattery <= 100)
             {
                 currBattery += 0.1f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);

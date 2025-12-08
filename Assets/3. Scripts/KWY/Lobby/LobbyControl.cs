@@ -60,6 +60,7 @@ public class LobbyControl : MonoBehaviour
 
     private void OnCancelPerformed(InputAction.CallbackContext context)
     {
+        if(GameManager.I.isOpenPop) return;
         OnEsc();
     }
 
@@ -117,15 +118,12 @@ public class LobbyControl : MonoBehaviour
                     }
                 }
             }
-
+            AudioManager.I.PlaySFX("Tick1");
             CloseTopPanel();
         }
         else
         {
-            if (!Exit_p.activeSelf)
-            {
-                //OnExit();
-            }  
+            if (!Exit_p.activeSelf) { }
             else
                 OnDontExit();
         }

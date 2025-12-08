@@ -8,6 +8,7 @@ public class DropItem : Interactable
     public ItemData itemData;
     public GearData gearData;
     public LanternFunctionData lanternData;
+    public RecordData recordData;
     public int money;
     bool isRun = false;
 
@@ -52,15 +53,19 @@ public class DropItem : Interactable
         DBManager.I.currData.gold += money;
         if (itemData != null)
         {
-            DBManager.I.AddItem(itemData.itemName, 1);
+            DBManager.I.AddItem(itemData.name);
         }
         else if (gearData != null)
         {
-
+            DBManager.I.AddGear(gearData.name);
         }
         else if (lanternData != null)
         {
-
+            DBManager.I.AddLantern(lanternData.name);
+        }
+        else if (recordData != null)
+        {
+            DBManager.I.AddRecord(recordData.name);
         }
     }
     void OnCollisionEnter2D(Collision2D collision)

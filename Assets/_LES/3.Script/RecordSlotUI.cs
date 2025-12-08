@@ -88,6 +88,17 @@ public class RecordSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                 {
                     newIndicator.SetActive(false);
                 }
+
+                /////
+                int find = DBManager.I.currData.recordDatas.FindIndex(x => x.Name == _currentRecord.name);
+                if (find != -1)
+                {
+                    CharacterData.RecordData cd = DBManager.I.currData.recordDatas[find];
+                    cd.isNew = false;
+                    DBManager.I.currData.recordDatas[find] = cd;
+                }
+                /////
+                
             }
         }
     }
