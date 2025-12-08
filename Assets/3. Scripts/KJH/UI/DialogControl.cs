@@ -55,13 +55,13 @@ public class DialogControl : MonoBehaviour
             case DialogState.TypingSlow:
                 // 1단계: 느린 타이핑 중 -> 빠른 타이핑으로 전환
                 currentState = DialogState.TypingFast;
-                AudioManager.I.PlaySFX("Tick1");
+                AudioManager.I.PlaySFX("UIClick");
                 break;
 
             case DialogState.TypingFast:
                 // 2단계: 빠른 타이핑 중 -> 텍스트 완성
                 SkipTyping();
-                AudioManager.I.PlaySFX("Tick1");
+                AudioManager.I.PlaySFX("UIClick");
                 break;
 
             case DialogState.TypingComplete:
@@ -87,7 +87,6 @@ public class DialogControl : MonoBehaviour
         // 타이핑 시작
         string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
         StartTyping(nextText);
-        AudioManager.I.PlaySFX("Tick1");
         RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
         DOTween.Kill(canvasObject.transform.GetChild(0));
         DOTween.Kill(rt);
@@ -163,7 +162,9 @@ public class DialogControl : MonoBehaviour
             // 상태에 따른 속도 결정
             float currentSpeed = (currentState == DialogState.TypingFast) ? fastTypingSpeed : slowTypingSpeed;
             contentText.maxVisibleCharacters = i + 1;
-            if (currentState == DialogState.TypingSlow)
+            if (currentState == DialogState.TypingSlow && i % 2 == 0)
+                AudioManager.I.PlaySFX("Tick1");
+            else if (currentState == DialogState.TypingFast && i % 5 == 0)
                 AudioManager.I.PlaySFX("Tick1");
             yield return new WaitForSeconds(currentSpeed);
         }
