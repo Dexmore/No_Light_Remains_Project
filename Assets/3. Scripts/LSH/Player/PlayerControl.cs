@@ -44,7 +44,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerDie die;
     [HideInInspector] public PlayerUsePotion usePotion;
     [HideInInspector] public PlayerOpenInventory openInventory;
-    [HideInInspector] public PlayerOpenUIMenu openUIMenu;
+    [HideInInspector] public PlayerStop stop;
     // [HideInInspector] public PlayerJumpAttack jumpAttack;
     [HideInInspector] public HUDBinder hUDBinder;
 
@@ -86,7 +86,7 @@ public class PlayerControl : MonoBehaviour
         die = new PlayerDie(this, fsm);
         usePotion = new PlayerUsePotion(this, fsm);
         openInventory = new PlayerOpenInventory(this, fsm);
-        openUIMenu = new PlayerOpenUIMenu(this, fsm);
+        stop = new PlayerStop(this, fsm);
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
@@ -408,7 +408,10 @@ public class PlayerControl : MonoBehaviour
             currHealth = Mathf.Clamp(currHealth, 0f, maxHealth);
             DBManager.I.currData.currHealth = currHealth;
             if (currHealth <= 0)
+            {
                 fsm.ChangeState(die);
+                GameManager.I.onDie.Invoke(hData);
+            }
             if (hData.particleNames != null)
             {
                 int rnd = Random.Range(0, hData.particleNames.Length);

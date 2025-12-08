@@ -71,8 +71,8 @@ public class PopupControl : MonoBehaviour
     {
         if (allPopups[index].gameObject.activeSelf) return;
         if (playerControl)
-            if (playerControl.fsm.currentState != playerControl.openUIMenu)
-                playerControl.fsm.ChangeState(playerControl.openUIMenu);
+            if (playerControl.fsm.currentState != playerControl.stop)
+                playerControl.fsm.ChangeState(playerControl.stop);
         canvasGo.SetActive(true);
         allPopups[index].gameObject.SetActive(true);
         if (sfx)

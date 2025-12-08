@@ -454,6 +454,7 @@ public struct CharacterData
     public int level;
     public string lastTime;
     public Vector2 lastPos;
+    public int progress1;
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;
