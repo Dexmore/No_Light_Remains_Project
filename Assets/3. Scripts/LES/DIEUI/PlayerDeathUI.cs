@@ -1,45 +1,54 @@
 using UnityEngine;
+using UnityEngine.UI; // 이미지 제어용
+using DG.Tweening;    // 애니메이션용 (개발자님 프로젝트에 이미 있음)
 
 public class PlayerDeathUI : MonoBehaviour
 {
-    [Header("UI Object to Show")]
-    [Tooltip("플레이어 사망 시 띄울 UI 패널이나 텍스트 오브젝트를 여기에 연결하세요.")]
-    public GameObject deathScreenUI; 
+    [Header("Target Image")]
+    [Tooltip("쉐이더가 적용된 'DeathImage'를 연결하세요.")]
+    public Image deathImage; 
 
-    [SerializeField] private PlayerControl playerControl;
-    private bool isDeadProcessed = false; // 중복 실행 방지용 플래그
+    private PlayerControl playerControl;
+    private bool isDeadProcessed = false;
+    private Material uiMat; // 복제된 재질을 저장할 변수
 
     void Start()
     {
-        // 씬에 있는 플레이어를 자동으로 찾습니다.
         playerControl = FindAnyObjectByType<PlayerControl>();
-
-        if (playerControl == null)
+        
+        if(deathImage != null)
         {
-            Debug.LogError("PlayerControl 스크립트를 가진 오브젝트를 찾을 수 없습니다!");
+            // 중요: 원본 재질을 건드리지 않기 위해 인스턴스를 가져옵니다.
+            uiMat = deathImage.material;
+            // 게임 시작 시 완전히 투명하게(1) 숨겨둡니다.
+            uiMat.SetFloat("_DissolveAmount", 1f);
         }
     }
 
     void Update()
     {
-        // 플레이어를 찾지 못했거나, 이미 죽음 처리가 되었다면 실행하지 않음
         if (playerControl == null || isDeadProcessed) return;
 
-        // 플레이어의 현재 FSM 상태가 'PlayerDie' 상태인지 감지
-        // 공유해주신 PlayerControl.cs에 die 변수가 public으로 선언되어 있어 접근 가능합니다.
         if (playerControl.fsm.currentState == playerControl.die)
         {
-            ShowDieUI();
-            isDeadProcessed = true; // 이후 중복 호출 차단
+            ShowDieEffect();
+            isDeadProcessed = true;
         }
     }
 
-    void ShowDieUI()
+    void ShowDieEffect()
     {
-        if (deathScreenUI != null)
+        if (deathImage != null)
         {
-            deathScreenUI.SetActive(true);
-            Debug.Log("플레이어 사망 확인: UI 활성화");
+            // 1. 오브젝트 활성화
+            deathImage.gameObject.SetActive(true);
+
+            // 2. Dissolve Amount를 1(투명)에서 0(보임)으로 2초 동안 변경
+            // "_DissolveAmount"는 쉐이더 코드에 있는 변수 이름입니다.
+            uiMat.DOFloat(0f, "_DissolveAmount", 2.5f)
+                 .SetEase(Ease.OutQuad); // 부드러운 속도
+            
+            Debug.Log("불타는 효과 시작!");
         }
     }
 }

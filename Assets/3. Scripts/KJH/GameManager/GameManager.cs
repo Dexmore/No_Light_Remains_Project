@@ -23,7 +23,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onAvoid = (x) => { };
     public UnityAction<HitData> onHitAfter = (x) => { };
     public UnityAction<HitData> onDie = (x) => { };
-    public UnityAction<int, Vector2> onSimpleTriggerEnter = (x, y) => { };
+    public UnityAction<int, SimpleTrigger> onSimpleTriggerEnter = (x, y) => { };
+    public UnityAction<int, SimpleTrigger> onSimpleTriggerExit = (x, y) => { };
 
 
     void OnEnable()

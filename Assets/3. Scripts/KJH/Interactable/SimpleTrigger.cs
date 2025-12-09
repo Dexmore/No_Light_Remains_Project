@@ -5,7 +5,11 @@ public class SimpleTrigger : MonoBehaviour
     [SerializeField] LayerMask targetLayerMask;
     void OnTriggerEnter2D(Collider2D collision)
     {
-        GameManager.I.onSimpleTriggerEnter.Invoke(index, (Vector2)transform.position);
+        GameManager.I.onSimpleTriggerEnter.Invoke(index, this);
+    }
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        GameManager.I.onSimpleTriggerExit.Invoke(index, this);
     }
 
 }
