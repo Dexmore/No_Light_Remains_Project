@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_DeathDissolve
-  m_Shader: {fileID: 4800000, guid: e260cfa7296ee7642b167f1eb5be5023, type: 3}
+  m_Shader: {fileID: 4800000, guid: 951f2953c319b274ca80d819548437fc, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -27,6 +27,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -35,15 +39,30 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: b1ad6a561c051e04b9092908fe9a5062, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BurnSize: 0.05
+    - _ColorMask: 15
+    - _DissolveAmount: 1
     - _EnableExternalAlpha: 0
+    - _ReadMask: 255
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _UseUIAlphaClip: 0
+    - _WriteMask: 255
     - _ZWrite: 0
     m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BurnColor: {r: 1, g: 0.39999998, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
