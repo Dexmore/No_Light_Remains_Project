@@ -106,7 +106,8 @@ public class PlayerDeathUI : MonoBehaviour
         }
 
         // 6. 현재 씬 재시작
-        string currentSceneName = SceneManager.GetActiveScene().name;
+        string currentSceneName = DBManager.I.currData.sceneName;
+        //GameManager.I.set (DBManager.i.currData.lastPos;) (추가)
         SceneManager.LoadScene(currentSceneName);
     }
 }
