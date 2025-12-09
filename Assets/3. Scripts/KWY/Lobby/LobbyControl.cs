@@ -60,7 +60,7 @@ public class LobbyControl : MonoBehaviour
 
     private void OnCancelPerformed(InputAction.CallbackContext context)
     {
-        if(GameManager.I.isOpenPop) return;
+        if (GameManager.I.isOpenPop) return;
         OnEsc();
     }
 
@@ -84,10 +84,14 @@ public class LobbyControl : MonoBehaviour
     {
         if (!DBManager.I.IsSteam())
         {
-            if (popupControl == null) GameManager.I.TryGetComponent(out popupControl);
-            // 스팀 로그인에 실패하였습니다.
-            popupControl.OpenPop(0);
-            DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = false;
+            if (!GameManager.I.isShowPop0)
+            {
+                GameManager.I.isShowPop0 = true;
+                if (popupControl == null) GameManager.I.TryGetComponent(out popupControl);
+                // 스팀 로그인에 실패하였습니다.
+                popupControl.OpenPop(0);
+                DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = false;
+            }
         }
         for (int i = 0; i < allButtons.Length; i++)
             allButtons[i].enabled = true;
