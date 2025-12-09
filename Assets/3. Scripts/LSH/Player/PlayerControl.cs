@@ -100,7 +100,7 @@ public class PlayerControl : MonoBehaviour
         {
             CharacterData newData = new CharacterData();
             newData.gold = 0;
-            newData.sceneName = "Stage1";
+            newData.sceneName = "Stage0";
             newData.lastPos = Vector2.zero;
             newData.maxHealth = maxHealth;
             newData.maxBattery = maxBattery;

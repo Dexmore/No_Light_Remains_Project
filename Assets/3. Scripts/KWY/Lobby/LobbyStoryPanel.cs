@@ -270,7 +270,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.gold = 0;
         newData.level = 1;
         newData.difficulty = diff;
-        newData.sceneName = "Stage1";
+        newData.sceneName = "Stage0";
         newData.lastPos = Vector2.zero;
         newData.maxHealth = 400;
         newData.maxBattery = 100;
