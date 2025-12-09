@@ -73,7 +73,6 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
         }
-        // 시간 초과
     }
     public void StartSteam()
     {

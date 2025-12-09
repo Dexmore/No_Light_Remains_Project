@@ -180,6 +180,12 @@ public class PopupControl : MonoBehaviour
                 break;
         }
     }
+    public void Pop3Start()
+    {
+        if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
+        //AudioManager.I.PlaySFX("UIClick");
+        lobbyStoryPanel.StartNewGameButton();
+    }
 
 
 
