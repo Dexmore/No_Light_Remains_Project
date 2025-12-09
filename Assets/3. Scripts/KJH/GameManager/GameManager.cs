@@ -10,10 +10,22 @@ public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
     public Language language = Language.English;
+
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
     [HideInInspector] public bool isOpenPop;
     [HideInInspector] public bool isOpenDialog;
+    [HideInInspector] public bool isSceneWaiting;
+
+    // 게임의 중요 이벤트들
+    public UnityAction<HitData> onHit = (x) => { };
+    public UnityAction<HitData> onParry = (x) => { };
+    public UnityAction<HitData> onAvoid = (x) => { };
+    public UnityAction<HitData> onHitAfter = (x) => { };
+    public UnityAction<HitData> onDie = (x) => { };
+    public UnityAction<int, SimpleTrigger> onSimpleTriggerEnter = (x, y) => { };
+    public UnityAction<int, SimpleTrigger> onSimpleTriggerExit = (x, y) => { };
+
 
     void OnEnable()
     {
@@ -32,6 +44,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
     {
+        isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(1f);
         await Task.Delay(1500);
@@ -54,9 +67,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         await Task.Delay(800);
         FadeIn(0.6f);
+        await Task.Delay(1500);
+        isSceneWaiting = false;
     }
     public async void LoadSceneAsync(string name, bool loadingScreen = false)
     {
+        isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(1f);
         await Task.Delay(1500);
@@ -79,6 +95,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         await Task.Delay(800);
         FadeIn(0.6f);
+        await Task.Delay(1500);
+        isSceneWaiting = false;
     }
     #endregion
     #region Fade
@@ -221,10 +239,6 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #endregion
     #region Hit
-    public UnityAction<HitData> onHit = (x) => { };
-    public UnityAction<HitData> onParry = (x) => { };
-    public UnityAction<HitData> onAvoid = (x) => { };
-    public UnityAction<HitData> onHitAfter = (x) => { };
     public Material hitTintMat;
     #endregion
     #region HitEffect
@@ -350,7 +364,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
     #endregion
 
-    
+
 
 }
 public struct HitData

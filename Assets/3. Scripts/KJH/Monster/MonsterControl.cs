@@ -970,8 +970,10 @@ public class MonsterControl : MonoBehaviour
                 bossHUD.SetTarget(this);
         }
         if (currHP <= 0)
+        {
             ChangeState(State.Die);
-
+            GameManager.I.onDie.Invoke(hData);
+        }
     }
     CancellationTokenSource ctsStagger = new CancellationTokenSource();
     async UniTask ReleaseStagger(CancellationToken token)

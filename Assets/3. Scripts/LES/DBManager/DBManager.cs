@@ -73,7 +73,6 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
         }
-        // 시간 초과
     }
     public void StartSteam()
     {
@@ -454,6 +453,7 @@ public struct CharacterData
     public int level;
     public string lastTime;
     public Vector2 lastPos;
+    public int progress1;
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;

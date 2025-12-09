@@ -96,7 +96,7 @@ public class PlayerIdle : IPlayerState
         {
             if (popupControl == null)
                 popupControl = GameManager.I.transform.GetComponent<PopupControl>();
-            fsm.ChangeState(ctx.openUIMenu);
+            fsm.ChangeState(ctx.stop);
             GameManager.I.isOpenPop = true;
             popupControl.OpenPop(1);
         }

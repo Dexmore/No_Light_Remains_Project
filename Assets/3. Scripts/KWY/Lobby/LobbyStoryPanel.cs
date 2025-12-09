@@ -140,7 +140,7 @@ public class LobbyStoryPanel : MonoBehaviour
 
         }
     }
-    int select = -1;
+    [SerializeField] int select = -1;
     public async void NewGameButton(int index)
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
@@ -197,7 +197,7 @@ public class LobbyStoryPanel : MonoBehaviour
         if (isSteamSlot)
             data = DBManager.I.allSaveDatasInSteam.characterDatas[select];
         else
-            data = DBManager.I.allSaveDatasInLocal.characterDatas[select - 3];
+            data = DBManager.I.allSaveDatasInLocal.characterDatas[select];
         wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
         string diffText = "";
         switch (data.difficulty)
@@ -345,13 +345,15 @@ public class LobbyStoryPanel : MonoBehaviour
                 {
                     Text text2 = texts2[rnd - texts1.Length];
                     if (!text2.gameObject.activeInHierarchy) continue;
-                    GameManager.I.GlitchText(text2, 0.2f);
+                    if(text2.transform.name == "EmptyText") continue;
+                    GameManager.I.GlitchText(text2, 0.16f);
                 }
                 else
                 {
                     TMP_Text text1 = texts1[rnd];
                     if (!text1.gameObject.activeInHierarchy) continue;
-                    GameManager.I.GlitchText(text1, 0.2f);
+                    if(text1.transform.name == "EmptyText") continue;
+                    GameManager.I.GlitchText(text1, 0.16f);
                 }
             }
             await Task.Delay(Random.Range(200, 800));

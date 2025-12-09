@@ -36,7 +36,7 @@ public class CursorManager_LSH : MonoBehaviour
     private Vector2 GetCenterHotspot(Texture2D tex)
     {
         if (tex == null) return Vector2.zero;
-        return new Vector2(tex.width * 0.5f, tex.height * 0.5f);
+        return new Vector2(tex.width * 0.25f, tex.height * 0.2f);
     }
 
     public void SetNormal()

@@ -71,8 +71,8 @@ public class PopupControl : MonoBehaviour
     {
         if (allPopups[index].gameObject.activeSelf) return;
         if (playerControl)
-            if (playerControl.fsm.currentState != playerControl.openUIMenu)
-                playerControl.fsm.ChangeState(playerControl.openUIMenu);
+            if (playerControl.fsm.currentState != playerControl.stop)
+                playerControl.fsm.ChangeState(playerControl.stop);
         canvasGo.SetActive(true);
         allPopups[index].gameObject.SetActive(true);
         if (sfx)
@@ -179,6 +179,12 @@ public class PopupControl : MonoBehaviour
                 tMP_Text.text = $"어려움";
                 break;
         }
+    }
+    public void Pop3Start()
+    {
+        if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
+        //AudioManager.I.PlaySFX("UIClick");
+        lobbyStoryPanel.StartNewGameButton();
     }
 
 
