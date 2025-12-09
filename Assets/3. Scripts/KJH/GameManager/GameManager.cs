@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
-
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -16,6 +15,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public bool isOpenPop;
     [HideInInspector] public bool isOpenDialog;
     [HideInInspector] public bool isSceneWaiting;
+    [HideInInspector] public bool isShowPop0;
 
     // 게임의 중요 이벤트들
     public UnityAction<HitData> onHit = (x) => { };
@@ -26,21 +26,17 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<int, SimpleTrigger> onSimpleTriggerEnter = (x, y) => { };
     public UnityAction<int, SimpleTrigger> onSimpleTriggerExit = (x, y) => { };
 
-
     void OnEnable()
     {
         InitFade();
         InitLoading();
-        //onHit += HitHandler;
         isOpenPop = false;
         isOpenDialog = false;
     }
-
     void OnDisable()
     {
-        //onHit -= HitHandler;
-    }
 
+    }
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
     {
@@ -364,6 +360,35 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
     #endregion
 
+    public async void SetPlayerPosition(Vector2 vector2)
+    {
+        PlayerControl playerControl = null;
+        FollowCamera followCamera = null;
+        await Task.Delay(200);
+        while (isSceneWaiting)
+        {
+            await Task.Delay(200);
+            if (playerControl == null)
+                playerControl = FindAnyObjectByType<PlayerControl>();
+            if (followCamera == null)
+                followCamera = FindAnyObjectByType<FollowCamera>();
+        }
+        await Task.Delay(200);
+        float _time = Time.time;
+        while (Time.time - _time < 2f)
+        {
+            await Task.Delay(200);
+            if (playerControl == null)
+                playerControl = FindAnyObjectByType<PlayerControl>();
+            if (followCamera == null)
+                followCamera = FindAnyObjectByType<FollowCamera>();
+            if (playerControl != null && followCamera != null) break;
+        }
+        if (playerControl != null)
+            playerControl.transform.position = vector2;
+        if (followCamera != null)
+            followCamera.transform.position = vector2;
+    }
 
 
 }
