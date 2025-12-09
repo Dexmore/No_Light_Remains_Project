@@ -140,7 +140,7 @@ public class LobbyStoryPanel : MonoBehaviour
 
         }
     }
-    int select = -1;
+    [SerializeField] int select = -1;
     public async void NewGameButton(int index)
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
@@ -197,7 +197,7 @@ public class LobbyStoryPanel : MonoBehaviour
         if (isSteamSlot)
             data = DBManager.I.allSaveDatasInSteam.characterDatas[select];
         else
-            data = DBManager.I.allSaveDatasInLocal.characterDatas[select - 3];
+            data = DBManager.I.allSaveDatasInLocal.characterDatas[select];
         wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
         string diffText = "";
         switch (data.difficulty)
