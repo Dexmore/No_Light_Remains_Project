@@ -100,7 +100,7 @@ public class PlayerControl : MonoBehaviour
         {
             CharacterData newData = new CharacterData();
             newData.gold = 0;
-            newData.sceneName = "Stage1";
+            newData.sceneName = "Stage0";
             newData.lastPos = Vector2.zero;
             newData.maxHealth = maxHealth;
             newData.maxBattery = maxBattery;
@@ -560,6 +560,7 @@ public class PlayerControl : MonoBehaviour
             }
             else if (currBattery <= 100)
             {
+                if(fsm.currentState == die) continue;
                 currBattery += 0.1f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                 DBManager.I.currData.currBattery = currBattery;

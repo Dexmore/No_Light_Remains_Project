@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.InputSystem;
-public class Stage1Control : MonoBehaviour
+public class Stage0Control : MonoBehaviour
 {
     [SerializeField] InputActionAsset inputActionAsset;
     DialogControl dialogControl;
@@ -12,7 +12,7 @@ public class Stage1Control : MonoBehaviour
         dialogControl = FindAnyObjectByType<DialogControl>();
         playerControl = FindAnyObjectByType<PlayerControl>();
     }
-    void OnEnable()
+    void Init()
     {
         GameManager.I.onSimpleTriggerEnter += HandlerSimpleTriggerEnter;
         GameManager.I.onSimpleTriggerExit += HandlerSimpleTriggerExit;
@@ -26,6 +26,7 @@ public class Stage1Control : MonoBehaviour
     {
         playerControl.fsm.ChangeState(playerControl.stop);
         yield return YieldInstructionCache.WaitForSeconds(0.1f);
+        Init();
         if (DBManager.I.currData.progress1 == 0)
         {
             while (GameManager.I.isSceneWaiting)
@@ -41,39 +42,38 @@ public class Stage1Control : MonoBehaviour
     }
     void HandlerSimpleTriggerEnter(int index, SimpleTrigger trigger)
     {
-        switch(index)
+        switch (index)
         {
             case 0:
             case 1:
             case 3:
-            trigger.transform.GetChild(0).gameObject.SetActive(true);
-            CanvasGroup cg = trigger.GetComponentInChildren<CanvasGroup>();
-            DOTween.Kill(cg);
-            cg.alpha = 0f;
-            cg.DOFade(1f, 1.5f).SetEase(Ease.InSine);
-            break;
+                trigger.transform.GetChild(0).gameObject.SetActive(true);
+                CanvasGroup cg = trigger.GetComponentInChildren<CanvasGroup>();
+                DOTween.Kill(cg);
+                cg.alpha = 0f;
+                cg.DOFade(1f, 0.5f).SetEase(Ease.OutQuad);
+                break;
         }
         if (index == 2)
         {
-            dialogControl.Open(1);
+            if (DBManager.I.currData.progress1 == 0)
+            {
+                DBManager.I.currData.progress1 = 1;
+                dialogControl.Open(1);
+            }
         }
-
     }
     void HandlerSimpleTriggerExit(int index, SimpleTrigger trigger)
     {
-        switch(index)
+        switch (index)
         {
             case 0:
             case 1:
             case 3:
-            CanvasGroup cg = trigger.GetComponentInChildren<CanvasGroup>();
-            DOTween.Kill(cg);
-            cg.DOFade(0f, 1.5f).SetEase(Ease.InSine).OnComplete(() => trigger.transform.GetChild(0).gameObject.SetActive(false));
-            break;
-        }
-        if (index == 2)
-        {
-            dialogControl.Open(1);
+                CanvasGroup cg = trigger.GetComponentInChildren<CanvasGroup>();
+                DOTween.Kill(cg);
+                cg.DOFade(0f, 1.3f).SetEase(Ease.InSine).OnComplete(() => trigger.transform.GetChild(0).gameObject.SetActive(false));
+                break;
         }
     }
 
