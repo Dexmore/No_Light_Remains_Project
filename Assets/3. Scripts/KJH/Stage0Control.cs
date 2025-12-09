@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.InputSystem;
-public class Stage1Control : MonoBehaviour
+public class Stage0Control : MonoBehaviour
 {
     [SerializeField] InputActionAsset inputActionAsset;
     DialogControl dialogControl;

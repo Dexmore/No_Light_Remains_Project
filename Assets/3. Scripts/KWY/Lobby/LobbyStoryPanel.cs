@@ -88,7 +88,8 @@ public class LobbyStoryPanel : MonoBehaviour
             isSteamSlot = true;
             for (int i = 0; i < 3; i++)
             {
-                if (i < DBManager.I.allSaveDatasInSteam.characterDatas.Count)
+                if (i < DBManager.I.allSaveDatasInSteam.characterDatas.Count
+                && DBManager.I.allSaveDatasInSteam.characterDatas[i].maxHealth > 0)
                 {
                     slots[i].Find("Empty").gameObject.SetActive(false);
                     slots[i].Find("Slot").gameObject.SetActive(true);
@@ -116,7 +117,8 @@ public class LobbyStoryPanel : MonoBehaviour
             isSteamSlot = false;
             for (int i = 0; i < 3; i++)
             {
-                if (i < DBManager.I.allSaveDatasInLocal.characterDatas.Count)
+                if (i < DBManager.I.allSaveDatasInLocal.characterDatas.Count
+                && DBManager.I.allSaveDatasInLocal.characterDatas[i].maxHealth > 0)
                 {
                     slots[i].Find("Empty").gameObject.SetActive(false);
                     slots[i].Find("Slot").gameObject.SetActive(true);
@@ -257,6 +259,7 @@ public class LobbyStoryPanel : MonoBehaviour
             DBManager.I.currSlot = select + 3;
         }
         await Task.Delay(200);
+        GameManager.I.SetPlayerPosition(DBManager.I.currData.lastPos);
         GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
     }
     [HideInInspector] public int diff;
@@ -288,36 +291,42 @@ public class LobbyStoryPanel : MonoBehaviour
         DBManager.I.AddItem("UsefulSword");
         DBManager.I.AddItem("Helmet");
         DBManager.I.AddItem("LeatherArmor");
+
         if (isSteamSlot)
         {
             DBManager.I.currSlot = select;
+            int addEmptyCount = select - DBManager.I.allSaveDatasInSteam.characterDatas.Count;
+            if (addEmptyCount > 0)
+            {
+                CharacterData emptyData = new CharacterData();
+                emptyData.maxHealth = 0;
+                emptyData.itemDatas = new List<CharacterData.ItemData>();
+                emptyData.gearDatas = new List<CharacterData.GearData>();
+                emptyData.lanternDatas = new List<CharacterData.LanternData>();
+                emptyData.recordDatas = new List<CharacterData.RecordData>();
+                for (int i = 0; i < addEmptyCount; i++)
+                    DBManager.I.allSaveDatasInSteam.characterDatas.Add(emptyData);
+            }
             DBManager.I.allSaveDatasInSteam.characterDatas.Add(newData);
         }
         else
         {
             DBManager.I.currSlot = select + 3;
+            int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.characterDatas.Count;
+            if (addEmptyCount > 0)
+            {
+                CharacterData emptyData = new CharacterData();
+                emptyData.maxHealth = 0;
+                emptyData.itemDatas = new List<CharacterData.ItemData>();
+                emptyData.gearDatas = new List<CharacterData.GearData>();
+                emptyData.lanternDatas = new List<CharacterData.LanternData>();
+                emptyData.recordDatas = new List<CharacterData.RecordData>();
+                for (int i = 0; i < addEmptyCount; i++)
+                    DBManager.I.allSaveDatasInLocal.characterDatas.Add(emptyData);
+            }
             DBManager.I.allSaveDatasInLocal.characterDatas.Add(newData);
         }
         DBManager.I.Save();
-        await Task.Delay(200);
-        GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
-    }
-    public async void StartGameButton()
-    {
-        AudioManager.I.PlaySFX("SciFiConfirm");
-        DisableAllButtons();
-        popupControl.ClosePop(3, false);
-        await Task.Delay(200);
-        CharacterData newData;
-        DBManager.I.currSlot = select;
-        if (isSteamSlot)
-        {
-            newData = DBManager.I.allSaveDatasInSteam.characterDatas[select];
-        }
-        else
-        {
-            newData = DBManager.I.allSaveDatasInLocal.characterDatas[select - 3];
-        }
         await Task.Delay(200);
         GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
     }
@@ -331,8 +340,8 @@ public class LobbyStoryPanel : MonoBehaviour
     async void SometimesGlitchTextLoop()
     {
         await Task.Delay(2200);
-        if (texts1 == null) texts1 = transform.GetComponentsInChildren<TMP_Text>();
-        if (texts2 == null) texts2 = transform.GetComponentsInChildren<Text>();
+        texts1 = transform.GetComponentsInChildren<TMP_Text>();
+        texts2 = transform.GetComponentsInChildren<Text>();
         while (true)
         {
             await Task.Delay(50);
@@ -343,21 +352,25 @@ public class LobbyStoryPanel : MonoBehaviour
                     AudioManager.I.PlaySFX("Glitch1");
                 if (rnd >= texts1.Length)
                 {
+                    if(texts2.Length <= rnd - texts1.Length) continue;
                     Text text2 = texts2[rnd - texts1.Length];
+                    if (text2 == null) continue;
                     if (!text2.gameObject.activeInHierarchy) continue;
-                    if(text2.transform.name == "EmptyText") continue;
+                    if (text2.transform.name == "EmptyText") continue;
                     GameManager.I.GlitchText(text2, 0.16f);
                 }
                 else
                 {
+                    if(texts1.Length <= rnd) continue;
                     TMP_Text text1 = texts1[rnd];
+                    if (text1 == null) continue;
                     if (!text1.gameObject.activeInHierarchy) continue;
-                    if(text1.transform.name == "EmptyText") continue;
+                    if (text1.transform.name == "EmptyText") continue;
                     GameManager.I.GlitchText(text1, 0.16f);
                 }
             }
             await Task.Delay(Random.Range(200, 800));
-            if(isaDisable) return;
+            if (isaDisable) return;
         }
     }
 

@@ -560,6 +560,7 @@ public class PlayerControl : MonoBehaviour
             }
             else if (currBattery <= 100)
             {
+                if(fsm.currentState == die) continue;
                 currBattery += 0.1f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                 DBManager.I.currData.currBattery = currBattery;
