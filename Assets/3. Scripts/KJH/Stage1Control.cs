@@ -50,14 +50,17 @@ public class Stage1Control : MonoBehaviour
             CanvasGroup cg = trigger.GetComponentInChildren<CanvasGroup>();
             DOTween.Kill(cg);
             cg.alpha = 0f;
-            cg.DOFade(1f, 1.5f).SetEase(Ease.InSine);
+            cg.DOFade(1f, 0.5f).SetEase(Ease.OutQuad);
             break;
         }
         if (index == 2)
         {
-            dialogControl.Open(1);
+            if(DBManager.I.currData.progress1 == 0)
+            {
+                DBManager.I.currData.progress1 = 1;
+                dialogControl.Open(1);
+            }
         }
-
     }
     void HandlerSimpleTriggerExit(int index, SimpleTrigger trigger)
     {
@@ -68,12 +71,8 @@ public class Stage1Control : MonoBehaviour
             case 3:
             CanvasGroup cg = trigger.GetComponentInChildren<CanvasGroup>();
             DOTween.Kill(cg);
-            cg.DOFade(0f, 1.5f).SetEase(Ease.InSine).OnComplete(() => trigger.transform.GetChild(0).gameObject.SetActive(false));
+            cg.DOFade(0f, 1.3f).SetEase(Ease.InSine).OnComplete(() => trigger.transform.GetChild(0).gameObject.SetActive(false));
             break;
-        }
-        if (index == 2)
-        {
-            dialogControl.Open(1);
         }
     }
 
