@@ -48,6 +48,9 @@ MonoBehaviour:
   deathScreenUI: {fileID: 4812778488380738628}
   deathImage: {fileID: 2965689430236026405}
   fadePanel: {fileID: 7808400162981382635}
+  dissolveDuration: 2
+  displayDuration: 3
+  fadeDuration: 1
   playerControl: {fileID: 0}
 --- !u!1001 &2233448843968652981
 PrefabInstance:
@@ -62,6 +65,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4023670708941582480, guid: 397aedca74089ab41bbcc39f5a8048dc, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 444012043, guid: 8f63d475771259d43b6a18ee665dce99, type: 3}
+    - target: {fileID: 4023670708941582480, guid: 397aedca74089ab41bbcc39f5a8048dc, type: 3}
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
@@ -72,6 +79,10 @@ PrefabInstance:
     - target: {fileID: 6644112830646807281, guid: 397aedca74089ab41bbcc39f5a8048dc, type: 3}
       propertyPath: m_Name
       value: DIECanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6644112830646807281, guid: 397aedca74089ab41bbcc39f5a8048dc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8260674222315646814, guid: 397aedca74089ab41bbcc39f5a8048dc, type: 3}
       propertyPath: m_Color.a
