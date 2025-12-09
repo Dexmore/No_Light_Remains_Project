@@ -364,20 +364,20 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         PlayerControl playerControl = null;
         FollowCamera followCamera = null;
-        await Task.Delay(200);
+        await Task.Delay(100);
         while (isSceneWaiting)
         {
-            await Task.Delay(200);
+            await Task.Delay(100);
             if (playerControl == null)
                 playerControl = FindAnyObjectByType<PlayerControl>();
             if (followCamera == null)
                 followCamera = FindAnyObjectByType<FollowCamera>();
         }
-        await Task.Delay(200);
+        await Task.Delay(100);
         float _time = Time.time;
         while (Time.time - _time < 2f)
         {
-            await Task.Delay(200);
+            await Task.Delay(100);
             if (playerControl == null)
                 playerControl = FindAnyObjectByType<PlayerControl>();
             if (followCamera == null)
