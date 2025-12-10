@@ -50,7 +50,11 @@ public class HUDBinder : MonoBehaviour
     {
         if (hitData.target.Root() != player.transform) return;
         if (player == null) return;
-        if (player.fsm.currentState == player.die) return;
+        if (player.fsm.currentState == player.die && player.currHealth <= 0)
+        {
+            healthBar.Value = 0f;
+            return;
+        }
         healthBar.Value = Mathf.Clamp01(player.currHealth / player.maxHealth);
         RectTransform rect = healthBar.transform as RectTransform;
         Vector2 pivot = MethodCollection.Absolute1920x1080Position(rect);

@@ -41,11 +41,13 @@ public class PlayerUsePotion : IPlayerState
         sfxFlag1 = false;
         sfxFlag2 = false;
         aniFlag1 = false;
+        upa?.Despawn();
     }
     SFX sfx;
     bool sfxFlag1 = false;
     bool sfxFlag2 = false;
     bool aniFlag1 = false;
+    UIParticle upa;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
@@ -66,6 +68,7 @@ public class PlayerUsePotion : IPlayerState
                 sfxFlag2 = true;
                 DBManager.I.currData.potionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
+                upa = ParticleManager.I.PlayUIParticle("PotionAtt", ctx.transform.position, Quaternion.identity);
             }
             ctx.currHealth += (1f / (duration - 1.2f)) * ctx.maxHealth * Time.deltaTime;
             ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, ctx.maxHealth);

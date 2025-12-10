@@ -8,6 +8,7 @@ public class PlayerDie : IPlayerState
     LightSystem lightSystem;
     public void Enter()
     {
+        ctx.Dead = true;
         lightSystem = ctx.GetComponentInChildren<LightSystem>(true);
         ctx.animator.Play("Player_Die");
         GameObject light0 = lightSystem.transform.GetChild(0).gameObject;

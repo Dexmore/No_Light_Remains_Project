@@ -367,8 +367,11 @@ public class PlayerControl : MonoBehaviour
                     AudioManager.I.PlaySFX("Parry");
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData);
+                    ParticleManager.I.PlayUIParticle("BatteryAtt", hData.hitPoint, Quaternion.identity);
+                    currBattery += 20f;
+                    currBattery = Mathf.Clamp(currBattery,0,maxBattery);
+                    hUDBinder.RefreshBattery();
                     StartCoroutine(nameof(ReleaseParred));
-                    Parred = false;
                     return;
                 }
                 else
@@ -500,7 +503,7 @@ public class PlayerControl : MonoBehaviour
     }
     IEnumerator ReleaseParred()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.15f);
+        yield return YieldInstructionCache.WaitForSeconds(0.13f);
         Parred = false;
     }
     #region Turn ON/OFF Lantern
@@ -542,7 +545,7 @@ public class PlayerControl : MonoBehaviour
             yield return YieldInstructionCache.WaitForSeconds(interval);
             if (GameManager.I.isLanternOn)
             {
-                currBattery -= 1.3f * interval;
+                currBattery -= 2.5f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                 DBManager.I.currData.currBattery = currBattery;
                 hUDBinder.RefreshBattery();
@@ -560,7 +563,7 @@ public class PlayerControl : MonoBehaviour
             }
             else if (currBattery <= 100)
             {
-                if(fsm.currentState == die) continue;
+                if (fsm.currentState == die) continue;
                 currBattery += 0.1f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                 DBManager.I.currData.currBattery = currBattery;

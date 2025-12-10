@@ -339,7 +339,7 @@ public class LobbyStoryPanel : MonoBehaviour
     bool isaDisable;
     async void SometimesGlitchTextLoop()
     {
-        await Task.Delay(2200);
+        await Task.Delay(1700);
         texts1 = transform.GetComponentsInChildren<TMP_Text>();
         texts2 = transform.GetComponentsInChildren<Text>();
         while (true)
@@ -348,25 +348,27 @@ public class LobbyStoryPanel : MonoBehaviour
             if (Random.value < 0.3f)
             {
                 int rnd = Random.Range(0, texts1.Length + texts2.Length);
-                if (Random.value < 0.43f)
-                    AudioManager.I.PlaySFX("Glitch1");
                 if (rnd >= texts1.Length)
                 {
-                    if(texts2.Length <= rnd - texts1.Length) continue;
+                    if (texts2.Length <= rnd - texts1.Length) continue;
                     Text text2 = texts2[rnd - texts1.Length];
                     if (text2 == null) continue;
                     if (!text2.gameObject.activeInHierarchy) continue;
                     if (text2.transform.name == "EmptyText") continue;
                     GameManager.I.GlitchText(text2, 0.16f);
+                    if (Random.value < 0.73f)
+                        AudioManager.I.PlaySFX("Glitch1");
                 }
                 else
                 {
-                    if(texts1.Length <= rnd) continue;
+                    if (texts1.Length <= rnd) continue;
                     TMP_Text text1 = texts1[rnd];
                     if (text1 == null) continue;
                     if (!text1.gameObject.activeInHierarchy) continue;
                     if (text1.transform.name == "EmptyText") continue;
                     GameManager.I.GlitchText(text1, 0.16f);
+                    if (Random.value < 0.73f)
+                        AudioManager.I.PlaySFX("Glitch1");
                 }
             }
             await Task.Delay(Random.Range(200, 800));

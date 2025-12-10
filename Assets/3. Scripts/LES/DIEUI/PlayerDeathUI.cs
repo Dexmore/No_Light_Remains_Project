@@ -38,7 +38,16 @@ public class PlayerDeathUI : MonoBehaviour
 
     void ShowDieEffect()
     {
+<<<<<<< Updated upstream
         if (deathImage != null)
+=======
+        yield return new WaitForSeconds(2.5f);
+        // 1. UI 캔버스 켜기
+        if (deathScreenUI != null) deathScreenUI.SetActive(true);
+
+        // 2. 불타는 연출 시작 (글자 나타나기)
+        if (deathImage != null && uiMat != null)
+>>>>>>> Stashed changes
         {
             // 1. 오브젝트 활성화
             deathImage.gameObject.SetActive(true);

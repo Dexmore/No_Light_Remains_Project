@@ -364,25 +364,40 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         PlayerControl playerControl = null;
         FollowCamera followCamera = null;
+<<<<<<< Updated upstream
         await Task.Delay(200);
         while (isSceneWaiting)
         {
             await Task.Delay(200);
+=======
+        await Task.Delay(50);
+        while (isSceneWaiting)
+        {
+            await Task.Delay(50);
+>>>>>>> Stashed changes
             if (playerControl == null)
                 playerControl = FindAnyObjectByType<PlayerControl>();
             if (followCamera == null)
                 followCamera = FindAnyObjectByType<FollowCamera>();
         }
+<<<<<<< Updated upstream
         await Task.Delay(200);
         float _time = Time.time;
         while (Time.time - _time < 2f)
         {
             await Task.Delay(200);
+=======
+        await Task.Delay(50);
+        float _time = Time.time;
+        while (Time.time - _time < 2f)
+        {
+>>>>>>> Stashed changes
             if (playerControl == null)
                 playerControl = FindAnyObjectByType<PlayerControl>();
             if (followCamera == null)
                 followCamera = FindAnyObjectByType<FollowCamera>();
             if (playerControl != null && followCamera != null) break;
+            await Task.Delay(50);
         }
         if (playerControl != null)
             playerControl.transform.position = vector2;

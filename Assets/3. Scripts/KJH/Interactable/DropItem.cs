@@ -9,7 +9,7 @@ public class DropItem : Interactable
     public GearData gearData;
     public LanternFunctionData lanternData;
     public RecordData recordData;
-    public int money;
+    public int gold;
     bool isRun = false;
 
     public LayerMask groundLayer;
@@ -48,9 +48,10 @@ public class DropItem : Interactable
             if ((transform.position - player.transform.position).magnitude < 0.7f) break;
             await Task.Delay((int)(1000f * Time.deltaTime));
         }
+        if (gold > 0)
+            ParticleManager.I.PlayUIParticle("GoldAtt", transform.position, Quaternion.identity);
         AudioManager.I.PlaySFX("GetItem");
-        Destroy(gameObject);
-        DBManager.I.currData.gold += money;
+        DBManager.I.currData.gold += gold;
         if (itemData != null)
         {
             DBManager.I.AddItem(itemData.name);
@@ -67,6 +68,8 @@ public class DropItem : Interactable
         {
             DBManager.I.AddRecord(recordData.name);
         }
+        await Task.Delay(10);
+        Destroy(gameObject);
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
