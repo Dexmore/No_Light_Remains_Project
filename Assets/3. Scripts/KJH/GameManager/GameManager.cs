@@ -407,6 +407,8 @@ public struct HitData
     {
         Default,
         Chafe,
+        Bullet,
+        Trap,
     }
     public enum StaggerType
     {

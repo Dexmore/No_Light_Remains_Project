@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3385316326813266016}
   - component: {fileID: 1577927632758761604}
   m_Layer: 1
-  m_Name: GoldAtt
+  m_Name: AttGold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112,7 +112,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -175,7 +175,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 13.5
+      scalar: 13
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -229,7 +229,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.764151, g: 0.7179685, b: 0.025231415, a: 0.043137256}
+      maxColor: {r: 0.764151, g: 0.7179685, b: 0.025231415, a: 0.05882353}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -293,7 +293,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.03
+      scalar: 0.04
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -610,7 +610,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 10
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -4927,3 +4927,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42fabf56b309eb6429fb908082816f66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ParticleAttractor
+  targetVector: {x: 0, y: 0, z: 0}
+  targetTransform: {fileID: 0}
+  attractionStrength: 0.45

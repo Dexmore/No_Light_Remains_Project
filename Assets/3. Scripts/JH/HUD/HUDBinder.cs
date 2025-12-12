@@ -8,23 +8,31 @@ public class HUDBinder : MonoBehaviour
     // Player 오브젝트 지정
     PlayerControl player;
     SlicedLiquidBar healthBar;
+    [HideInInspector] public RectTransform healthRT;
+    [HideInInspector] public RectTransform goldRT;
+    [HideInInspector] public RectTransform batteryRT;
     CanvasGroup goldCanvasGroup;
     TMP_Text goldText;
     float displayGold;
     float targetGold;
     Image[] potionImages;
     int displayPotionCount;
+    Canvas canvas;
     void Awake()
     {
+        canvas = GetComponentInChildren<Canvas>();
         if (!player) player = FindFirstObjectByType<PlayerControl>();
         healthBar = GetComponentInChildren<SlicedLiquidBar>();
+        healthRT = healthBar.transform.parent as RectTransform;
         goldCanvasGroup = transform.Find("HUDCanvas/TopRight/Gold").GetComponent<CanvasGroup>();
+        goldRT = goldCanvasGroup.transform as RectTransform;
         goldCanvasGroup.alpha = 0f;
         goldText = goldCanvasGroup.transform.GetComponentInChildren<TMP_Text>();
-        Transform batteryFillParent = transform.Find("HUDCanvas/TopLeft/Bar/BatteryBar/Fill");
-        batteryFills = new Image[batteryFillParent.childCount];
+        batteryRT = transform.Find("HUDCanvas/TopLeft/Bar/BatteryBar") as RectTransform;
+        Transform batteryTR = transform.Find("HUDCanvas/TopLeft/Bar/BatteryBar/Fill");
+        batteryFills = new Image[batteryTR.childCount];
         for (int i = 0; i < batteryFills.Length; i++)
-            batteryFills[i] = batteryFillParent.GetChild(i).GetComponent<Image>();
+            batteryFills[i] = batteryTR.GetChild(i).GetComponent<Image>();
         Transform potionParent = transform.Find("HUDCanvas/TopLeft/Bar/Potions");
         potionImages = new Image[potionParent.childCount];
         for (int i = 0; i < potionImages.Length; i++)
@@ -39,12 +47,28 @@ public class HUDBinder : MonoBehaviour
     {
         GameManager.I.onHitAfter -= HandleHit;
     }
-    void Start()
+    IEnumerator Start()
     {
         goldCanvasGroup.alpha = 0f;
         RefreshBattery();
         displayGold = DBManager.I.currData.gold;
         Refresh(0.5f);
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        yield return null;
+        yield return null;
+        Camera camera = Camera.main;
+        if (camera != null)
+        {
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = camera;
+        }
+        else
+        {
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 2;
+        }
+            
+
     }
     void HandleHit(HitData hitData)
     {
@@ -61,24 +85,26 @@ public class HUDBinder : MonoBehaviour
         float x = pivot.x - 0.5f * rect.sizeDelta.x;
         float y = pivot.y;
         float addX = healthBar.xPosRange.x + (healthBar.xPosRange.y - healthBar.xPosRange.x) * healthBar.Value;
-        hpBarPos = new Vector2(x + addX, y);
+        healthBarHandlePos = new Vector2(x + addX, y);
         if (hitData.attackType == HitData.AttackType.Chafe)
         {
-            var pa = ParticleManager.I.PlayUIParticle("Gush3", hpBarPos, Quaternion.identity);
+            var pa = ParticleManager.I.PlayUIParticle("Gush3", healthBarHandlePos, Quaternion.identity);
             pa.transform.localScale = 0.5f * Vector3.one;
         }
         else
         {
-            var pa = ParticleManager.I.PlayUIParticle("Gush3", hpBarPos, Quaternion.identity);
+            var pa = ParticleManager.I.PlayUIParticle("Gush3", healthBarHandlePos, Quaternion.identity);
             pa.transform.localScale = 0.8f * Vector3.one;
         }
-        var pa2 = ParticleManager.I.PlayUIParticle("Gush", hpBarPos, Quaternion.identity);
+        var pa2 = ParticleManager.I.PlayUIParticle("Gush", healthBarHandlePos, Quaternion.identity);
         pa2.transform.localScale = 0.7f * Vector3.one;
         var main = pa2.ps.main;
         main.startColor = new ParticleSystem.MinMaxGradient(new Color(0.59f, 0.159f, 0.196f, 1f), new Color(0.5f, 0.05f, 0.05f, 1f));
     }
     //
-    [SerializeField] public Vector2 hpBarPos;
+    [HideInInspector] public Vector2 healthBarHandlePos;
+    [HideInInspector] public Vector2 batteryBarHandlePos;
+    [SerializeField] Vector2 batteryPosXRange;
     public void Refresh(float time = 6f)
     {
         StopCoroutine(nameof(Refresh_co));
@@ -104,7 +130,7 @@ public class HUDBinder : MonoBehaviour
         float x = pivot.x - 0.5f * rect.sizeDelta.x;
         float y = pivot.y;
         float addX = healthBar.xPosRange.x + (healthBar.xPosRange.y - healthBar.xPosRange.x) * healthBar.Value;
-        hpBarPos = new Vector2(x + addX, y);
+        healthBarHandlePos = new Vector2(x + addX, y);
     }
     Image[] batteryFills;
     Color batteryFillColor = new Color(0.57f, 0.69f, 0.82f);
@@ -128,6 +154,12 @@ public class HUDBinder : MonoBehaviour
             else
                 batteryFills[i].color = new Color(batteryFillColor.r, batteryFillColor.g, batteryFillColor.b, 0f);
         }
+        RectTransform rect = batteryRT;
+        Vector2 pivot = MethodCollection.Absolute1920x1080Position(rect);
+        float x = pivot.x - 0.5f * rect.sizeDelta.x;
+        float y = pivot.y;
+        float addX = batteryPosXRange.x + (batteryPosXRange.y - batteryPosXRange.x) * healthBar.Value;
+        batteryBarHandlePos = new Vector2(x + addX, y);
     }
     Tween goldCountingTween;
     Tween goldFadeTween;

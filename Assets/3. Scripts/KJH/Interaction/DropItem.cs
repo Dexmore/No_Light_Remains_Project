@@ -34,6 +34,7 @@ public class DropItem : Interactable
         isRun = true;
         Rooting();
     }
+    Camera _mainCamera;
     async void Rooting()
     {
         float startTime = Time.time;
@@ -49,7 +50,13 @@ public class DropItem : Interactable
             await Task.Delay((int)(1000f * Time.deltaTime));
         }
         if (gold > 0)
-            ParticleManager.I.PlayUIParticle("GoldAtt", transform.position, Quaternion.identity);
+        {
+            UIParticle upa = ParticleManager.I.PlayUIParticle("AttGold", transform.position, Quaternion.identity);
+            AttractParticle ap = upa.GetComponent<AttractParticle>();
+            if (_mainCamera == null) _mainCamera = Camera.main;
+            Vector3 pos = ParticleManager.I.vfxCamera.ViewportToWorldPoint(new Vector3(0.92f, 0.88f, 0f));
+                ap.targetVector = pos;
+        }
         AudioManager.I.PlaySFX("GetItem");
         DBManager.I.currData.gold += gold;
         if (itemData != null)

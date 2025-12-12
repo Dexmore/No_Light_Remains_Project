@@ -884,7 +884,7 @@ public class MonsterControl : MonoBehaviour
         }
         ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
         ParticleManager.I.PlayText(hData.damage.ToString("F1"), hData.hitPoint, ParticleManager.TextType.Damage);
-        AudioManager.I.PlaySFX("Hit8bit", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
+        AudioManager.I.PlaySFX("Hit8bit1", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
         GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
 
@@ -1018,6 +1018,10 @@ public class MonsterControl : MonoBehaviour
         if (hitData.attacker != transform) return;
         if (isDie) return;
         if (state == State.Hit) return;
+        if (hitData.attackType == HitData.AttackType.Chafe
+        || hitData.attackType == HitData.AttackType.Bullet
+        || hitData.attackType == HitData.AttackType.Trap)
+            return;
         parryCount++;
         if (parryCount > data.ParryCount) parryCount = data.ParryCount;
         if (parryCanvas)

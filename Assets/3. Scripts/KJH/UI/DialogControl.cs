@@ -55,13 +55,11 @@ public class DialogControl : MonoBehaviour
             case DialogState.TypingSlow:
                 // 1단계: 느린 타이핑 중 -> 빠른 타이핑으로 전환
                 currentState = DialogState.TypingFast;
-                AudioManager.I.PlaySFX("UIClick");
                 break;
 
             case DialogState.TypingFast:
                 // 2단계: 빠른 타이핑 중 -> 텍스트 완성
                 SkipTyping();
-                AudioManager.I.PlaySFX("UIClick");
                 break;
 
             case DialogState.TypingComplete:
@@ -72,7 +70,7 @@ public class DialogControl : MonoBehaviour
                 }
                 else
                 {
-                    AudioManager.I.PlaySFX("UIClick");
+                    AudioManager.I.PlaySFX("UIClick2");
                     NextPage(); // 다음 페이지: 타이핑 재시작 (TypingSlow 상태로 자동 전환)
                 }
                 break;

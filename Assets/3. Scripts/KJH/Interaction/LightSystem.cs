@@ -2,7 +2,7 @@ using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Rendering.Universal;
-public class LightSystem : MonoBehaviour
+public class PlayerLight : MonoBehaviour
 {
     public bool isFreeformLight;
     public float radius;

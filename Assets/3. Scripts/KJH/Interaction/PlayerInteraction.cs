@@ -50,7 +50,7 @@ public class PlayerInteraction : MonoBehaviour
     [ReadOnlyInspector][SerializeField] Interactable target2;
     Vector3 distancePivot;
     PromptControl prompt;
-    LightSystem lightSystem;
+    PlayerLight PlayerLight;
     PlayerControl PlayerControl;
     HUDBinder hUDBinder;
     void Awake()
@@ -58,7 +58,7 @@ public class PlayerInteraction : MonoBehaviour
         TryGetComponent(out PlayerControl);
         prompt = FindAnyObjectByType<PromptControl>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
-        lightSystem = FindAnyObjectByType<LightSystem>();
+        PlayerLight = FindAnyObjectByType<PlayerLight>();
     }
     void UnInit()
     {
@@ -207,7 +207,7 @@ public class PlayerInteraction : MonoBehaviour
     async UniTask Sensor(CancellationToken token)
     {
         await UniTask.Yield(token);
-        GameObject fLight = lightSystem.transform.GetChild(1).gameObject;
+        GameObject fLight = PlayerLight.transform.GetChild(1).gameObject;
         while (!token.IsCancellationRequested)
         {
             int rnd = Random.Range(12, 18);

@@ -48,6 +48,7 @@ public class PlayerUsePotion : IPlayerState
     bool sfxFlag2 = false;
     bool aniFlag1 = false;
     UIParticle upa;
+    Camera _mainCamera;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
@@ -68,7 +69,11 @@ public class PlayerUsePotion : IPlayerState
                 sfxFlag2 = true;
                 DBManager.I.currData.potionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
-                upa = ParticleManager.I.PlayUIParticle("PotionAtt", ctx.transform.position, Quaternion.identity);
+                upa = ParticleManager.I.PlayUIParticle("AttPotion", ctx.transform.position, Quaternion.identity);
+                AttractParticle ap = upa.GetComponent<AttractParticle>();
+                if (_mainCamera == null) _mainCamera = Camera.main;
+                Vector3 pos = ParticleManager.I.vfxCamera.ViewportToWorldPoint(new Vector3(0.18f, 0.86f, 0f));
+                ap.targetVector = pos;
             }
             ctx.currHealth += (1f / (duration - 1.2f)) * ctx.maxHealth * Time.deltaTime;
             ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, ctx.maxHealth);

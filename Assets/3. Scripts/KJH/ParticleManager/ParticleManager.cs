@@ -8,10 +8,12 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
     [SerializeField] List<Particle> particleList = new List<Particle>();
     [SerializeField] List<UIParticle> uiParticleList = new List<UIParticle>();
     Transform canvas;
+    [HideInInspector] public Camera vfxCamera;
     protected override void Awake()
     {
         base.Awake();
         canvas = transform.GetChild(0);
+        vfxCamera = GetComponentInChildren<Camera>();
     }
     public Particle PlayParticle(string Name, Vector3 pos, Quaternion rot, Transform parent = null)
     {
