@@ -112,6 +112,8 @@ public class PlayerControl : MonoBehaviour
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             newData.recordDatas = new List<CharacterData.RecordData>();
+            newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            newData.lastPos = transform.position;
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);

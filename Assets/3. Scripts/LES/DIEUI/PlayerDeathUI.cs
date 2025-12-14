@@ -75,6 +75,8 @@ public class PlayerDeathUI : MonoBehaviour
     // [핵심 로직] 시간 설정을 반영한 시퀀스
     IEnumerator ProcessDeathSequence()
     {
+        yield return new WaitForSeconds(2.5f);
+        
         // 1. UI 캔버스 켜기
         if (deathScreenUI != null) deathScreenUI.SetActive(true);
 

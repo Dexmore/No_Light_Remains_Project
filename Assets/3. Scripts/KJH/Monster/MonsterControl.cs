@@ -8,7 +8,7 @@ public class MonsterControl : MonoBehaviour
 {
     public float height = 1.5f;
     public float width = 0.7f;
-    public float jumpForce = 9f;
+    public float jumpLength = 9f;
     [ReadOnlyInspector] public bool isDie;
     [ReadOnlyInspector] public bool isGround;
     [HideInInspector] public bool isStagger;
@@ -63,15 +63,15 @@ public class MonsterControl : MonoBehaviour
             astar.height = height;
             astar.width = width;
             astar.unit = Mathf.Clamp(width * 0.33f, 0.5f, 3f);
-            if (jumpForce > 0)
+            if (jumpLength > 0)
             {
                 astar.canJump = true;
-                astar.jumpForce = jumpForce;
+                astar.jumpLength = jumpLength;
             }
             else
             {
                 astar.canJump = false;
-                astar.jumpForce = 0f;
+                astar.jumpLength = 0f;
             }
         }
         // 게임 시작시 스테이트를 Idle로
@@ -624,7 +624,7 @@ public class MonsterControl : MonoBehaviour
     async UniTask Sensor(CancellationToken token)
     {
         await UniTask.Yield(token);
-        findRadius = 15f * ((width + height) * 0.61f + 0.7f);
+        findRadius = 9f * ((width + height) * 0.58f + 0.55f);
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         bool canPhase2 = false;

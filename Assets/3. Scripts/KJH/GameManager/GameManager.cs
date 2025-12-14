@@ -42,8 +42,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         isSceneWaiting = true;
         loadingSlider.value = 0f;
-        FadeOut(1f);
-        await Task.Delay(1500);
+        FadeOut(0.8f);
+        await Task.Delay(1300);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
         if (loadingScreen)
         {
@@ -61,17 +61,17 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(800);
-        FadeIn(0.6f);
-        await Task.Delay(1500);
+        await Task.Delay(600);
+        FadeIn(0.5f);
+        await Task.Delay(1300);
         isSceneWaiting = false;
     }
     public async void LoadSceneAsync(string name, bool loadingScreen = false)
     {
         isSceneWaiting = true;
         loadingSlider.value = 0f;
-        FadeOut(1f);
-        await Task.Delay(1500);
+        FadeOut(0.8f);
+        await Task.Delay(1300);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
         if (loadingScreen)
         {
@@ -89,9 +89,9 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(800);
-        FadeIn(0.6f);
-        await Task.Delay(1500);
+        await Task.Delay(600);
+        FadeIn(0.5f);
+        await Task.Delay(1300);
         isSceneWaiting = false;
     }
     #endregion

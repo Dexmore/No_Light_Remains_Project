@@ -72,7 +72,7 @@ public class PlayerUsePotion : IPlayerState
                 upa = ParticleManager.I.PlayUIParticle("AttPotion", ctx.transform.position, Quaternion.identity);
                 AttractParticle ap = upa.GetComponent<AttractParticle>();
                 if (_mainCamera == null) _mainCamera = Camera.main;
-                Vector3 pos = ParticleManager.I.vfxCamera.ViewportToWorldPoint(new Vector3(0.18f, 0.86f, 0f));
+                Vector3 pos = ParticleManager.I.vfxCamera.ViewportToWorldPoint(new Vector3(0.21f, 0.895f, 0f));
                 ap.targetVector = pos;
             }
             ctx.currHealth += (1f / (duration - 1.2f)) * ctx.maxHealth * Time.deltaTime;
