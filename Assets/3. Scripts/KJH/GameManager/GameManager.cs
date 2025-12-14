@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
+using TMPro;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -180,6 +181,24 @@ public class GameManager : SingletonBehaviour<GameManager>
         sequenceFade?.Append(tween);
     }
     #endregion
+
+    [Header("Loading Tip")]
+    [SerializeField] private TMP_Text loadingTipText;     // ✅ TMP 텍스트 1개만 연결
+    [TextArea(2, 3)]
+    [SerializeField] private string[] loadingTips;        // ✅ 팁 2~3개 넣기
+    [SerializeField] private float tipChangeInterval = 3f;
+
+    private bool isLoadingActive;
+    private int tipIndex;
+
+    [Header("Loading BGM (Random)")]
+    [SerializeField] private string[] loadingBgmNames = { "dark run1", "dark dance1" };
+    [SerializeField] private bool stopLoadingBgmOnEnd = true;
+
+     [Header("Loading Timing")]
+    [SerializeField] private float minLoadingScreenTime = 6f; // ✅ 최소 6초 유지
+
+
     #region Loading Page
     GameObject loadingScreen;
     Image loadingDim;
@@ -194,43 +213,108 @@ public class GameManager : SingletonBehaviour<GameManager>
         loadingSlider = transform.Find("LoadingScreen/Slider").GetComponent<Slider>();
     }
     async void StartLoading()
+{
+    isLoadingDone = false;
+    loadingProgress = 0f;
+    isLoadingActive = true;
+
+    // ✅ 로딩 시작 시간
+    float startTime = Time.realtimeSinceStartup;
+
+    /* =========================
+     * 로딩 BGM 랜덤 재생
+     * ========================= */
+    if (loadingBgmNames != null && loadingBgmNames.Length > 0)
     {
-        isLoadingDone = false;
-        loadingProgress = 0f;
-        loadingScreen.SetActive(true);
-        loadingDim.gameObject.SetActive(true);
-        loadingDim.color = new Color(0f, 0f, 0f, 1f);
-        loadingTween?.Kill();
-        loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine);
-        float elapsedTime = 0f;
-        // 가짜 로딩
-        while (true)
+        string pick = loadingBgmNames[Random.Range(0, loadingBgmNames.Length)];
+        foreach (var am in FindObjectsOfType<AudioManager>(true))
+            am.PlayBGM(pick, 0f);
+    }
+
+    /* =========================
+     * 로딩 팁 시작
+     * ========================= */
+    if (loadingTipText != null && loadingTips != null && loadingTips.Length > 0)
+    {
+        tipIndex = Random.Range(0, loadingTips.Length);
+        loadingTipText.text = loadingTips[tipIndex];
+        _ = TipLoop();
+    }
+
+    /* =========================
+     * 3️⃣ 로딩 화면 표시
+     * ========================= */
+    loadingScreen.SetActive(true);
+    loadingDim.gameObject.SetActive(true);
+    loadingDim.color = new Color(0f, 0f, 0f, 1f);
+
+    loadingTween?.Kill();
+    loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine);
+
+    /* =========================
+     * 가짜 로딩 (3초)
+     * ========================= */
+    float elapsed = 0f;
+    while (elapsed < 3f)
+    {
+        await Task.Delay(10);
+        elapsed += 0.01f;
+        loadingSlider.value = 0.4f * (elapsed / 3f);
+    }
+
+    /* =========================
+     * 실제 씬 로딩
+     * ========================= */
+    while (loadingProgress < 1f)
+    {
+        await Task.Delay(10);
+        loadingSlider.value = 0.4f + 0.6f * loadingProgress;
+    }
+
+    /* =========================
+     * 최소 6초 유지
+     * ========================= */
+    float total = Time.realtimeSinceStartup - startTime;
+    if (total < 6f)
+    {
+        await Task.Delay(Mathf.RoundToInt((6f - total) * 1000f));
+    }
+
+    /* =========================
+     * 로딩 종료 페이드
+     * ========================= */
+    loadingTween?.Kill();
+    loadingTween = loadingDim.DOFade(1f, 1.2f)
+        .SetEase(Ease.InSine)
+        .OnComplete(() =>
         {
-            await Task.Delay(10);
-            elapsedTime += 0.01f;
-            loadingSlider.value = 0.4f * (elapsedTime / 3f);
-            if (elapsedTime > 3f)
-            {
-                break;
-            }
-        }
-        // 진짜 씬 로딩
-        while (true)
-        {
-            await Task.Delay(10);
-            loadingSlider.value = 0.4f + 0.6f * loadingProgress;
-            if (loadingProgress == 1f)
-            {
-                break;
-            }
-        }
-        loadingTween?.Kill();
-        loadingTween = loadingDim.DOFade(1f, 1.2f).SetEase(Ease.InSine).OnComplete(() =>
-        {
+            isLoadingActive = false;
+
+            // ✅ 로딩 BGM 확실히 종료 (중복 AudioManager 대응)
+            foreach (var am in FindObjectsOfType<AudioManager>(true))
+                am.StopBGM();
+
             loadingScreen.SetActive(false);
             loadingDim.gameObject.SetActive(false);
+
+            isLoadingDone = true;
+
+            float endTime = Time.realtimeSinceStartup - startTime;
+            Debug.Log($"[Loading] Total Time = {endTime:F2}s");
         });
-        isLoadingDone = true;
+}
+    private async Task TipLoop()
+    {
+        while (isLoadingActive)
+        {
+            await Task.Delay(Mathf.RoundToInt(tipChangeInterval * 1000f));
+            if (!isLoadingActive) break;
+
+            if (loadingTipText == null || loadingTips == null || loadingTips.Length == 0) continue;
+
+            tipIndex = (tipIndex + 1) % loadingTips.Length;
+            loadingTipText.text = loadingTips[tipIndex];
+        }
     }
 
     #endregion

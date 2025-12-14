@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 public class AudioManager : SingletonBehaviour<AudioManager>
 {
+    public static AudioManager Instance;
     protected override bool IsDontDestroy() => true;
     [SerializeField] List<AudioClip> bgmList = new List<AudioClip>();
     [SerializeField] List<AudioClip> sfxList = new List<AudioClip>();
@@ -20,6 +21,15 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         transform.GetChild(0).TryGetComponent(out ausBGM0);
         transform.GetChild(1).TryGetComponent(out ausBGM1);
         ausAmbience = transform.Find("Ambience").GetComponent<AudioSource>();
+        
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
     public void PlayBGM(string Name, float crossFadeTime = 0f)
     {
@@ -127,5 +137,23 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         PlayerPrefs.SetFloat("volumeSFX", volumeSFX);
         PlayerPrefs.Save();
     }
+
+    public void StopBGM()
+    {
+        StopCoroutine("PlayBGM_co");
+
+        // AudioManager 아래 모든 AudioSource를 전부 정지
+        
+        var sources = GetComponentsInChildren<AudioSource>(true);
+        foreach (var s in sources)
+        {
+            s.Stop();
+            s.clip = null;
+        }
+
+        // 볼륨 초기화
+        if (ausBGM0 != null) ausBGM0.volume = volumeBGM;
+        if (ausBGM1 != null) ausBGM1.volume = 0f;
+}
 
 }
