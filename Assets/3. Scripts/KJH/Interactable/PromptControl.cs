@@ -88,10 +88,18 @@ public class PromptControl : MonoBehaviour
             Open_ut(1, ctsLink.Token).Forget();
         }
     }
-    public void Close(int index)
+    public void Close(int index, bool force = false)
     {
         if (index == 0)
         {
+            if (force)
+            {
+                ctsClose1?.Cancel();
+                ctsTracking1?.Cancel();
+                target1 = null;
+                itrctCanvas.gameObject.SetActive(false);
+                isClosing1 = false;
+            }
             if (!itrctCanvas.gameObject.activeSelf) return;
             if (isClosing1) return;
             isClosing1 = true;
@@ -102,6 +110,13 @@ public class PromptControl : MonoBehaviour
         }
         else if (index == 1)
         {
+            if (force)
+            {
+                ctsClose2?.Cancel();
+                ctsTracking2?.Cancel();
+                lanternCanvas.gameObject.SetActive(false);
+                isClosing2 = false;
+            }
             if (!lanternCanvas.gameObject.activeSelf) return;
             if (isClosing2) return;
             isClosing2 = true;

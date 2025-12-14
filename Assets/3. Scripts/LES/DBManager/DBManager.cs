@@ -12,15 +12,20 @@ public class DBManager : SingletonBehaviour<DBManager>
     // 0,1,2 -> Steam Slot 
     // 3,4,5 -> Local Slot
     public int currSlot = 0;
-    public CharacterData currData;
     CharacterData savedData;
     public SaveData allSaveDatasInSteam;
     public SaveData allSaveDatasInLocal;
     private string saveDirectoryPath => Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
     private string saveFilePath => Path.Combine(saveDirectoryPath, "SaveData");
     private string steamSaveFileName => Path.GetFileName(saveFilePath);
-    public UnityAction onLogout = () => { };
-    public UnityAction onReLogin = () => { };
+    public UnityAction onLogOut = () => { };
+    public UnityAction onReLogIn = () => { };
+    public UnityAction onSteamFail = () => { };
+    public UnityAction onSteamResume = () => { };
+    public ItemDatabase itemDatabase;
+    [Space(60)]
+    [Header("-----현재 플레이중인 캐릭터-----")]
+    public CharacterData currData;
     public void Save()
     {
         if (currSlot >= 0 && currSlot <= 2)
@@ -68,7 +73,6 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
         }
-        // 시간 초과
     }
     public void StartSteam()
     {
@@ -102,15 +106,24 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         while (true)
         {
-            bool prevStepIsSteam = IsSteam();
-            yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.3f, 1.2f));
-            if (!prevStepIsSteam && IsSteam())
+            bool prevBool1 = IsSteam();
+            bool prevBool2 = IsSteamInit();
+            yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 1.2f));
+            if (prevBool1 && !IsSteam())
             {
-                onReLogin.Invoke();
+                onSteamFail.Invoke();
             }
-            else if (prevStepIsSteam && !IsSteam())
+            else if (!prevBool1 && IsSteam())
             {
-                onLogout.Invoke();
+                onSteamResume.Invoke();
+            }
+            if (prevBool2 && !IsSteamInit())
+            {
+                onLogOut.Invoke();
+            }
+            else if (!prevBool2 && IsSteamInit())
+            {
+                onReLogIn.Invoke();
             }
         }
     }
@@ -286,36 +299,126 @@ public class DBManager : SingletonBehaviour<DBManager>
             allSaveDatasInLocal = new SaveData(); // 문제 발생 시 새 데이터로 초기화
         }
     }
-    public ItemDatabase itemDatabase;
-    public void AddItem(string Name, int count)
+    public void AddItem(string Name, int count = 1)
     {
         if (count == 0) return;
         int find = currData.itemDatas.FindIndex(x => x.Name == Name);
         if (find == -1)
         {
-            CharacterData.ItemData itd = new CharacterData.ItemData();
-            itd.Name = Name;
-            itd.count = count;
-            itd.isNew = true;
-            currData.itemDatas.Add(itd);
+            CharacterData.ItemData newData = new CharacterData.ItemData();
+            newData.Name = Name;
+            newData.count = count;
+            newData.isNew = true;
+            currData.itemDatas.Add(newData);
         }
         else
         {
-            CharacterData.ItemData currItd = currData.itemDatas[find];
-            int _count = currItd.count;
+            CharacterData.ItemData findData = currData.itemDatas[find];
+            int _count = findData.count;
             if (_count + count <= 0)
             {
-                currData.itemDatas.Remove(currItd);
+                currData.itemDatas.Remove(findData);
             }
             else
             {
-                currItd.count = _count + count;
-                currData.itemDatas[find] = currItd;
+                findData.count = _count + count;
+                currData.itemDatas[find] = findData;
+            }
+        }
+    }
+    public void AddGear(string Name, int count = 1)
+    {
+        if (count == 0) return;
+        int find = currData.gearDatas.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            CharacterData.GearData newData = new CharacterData.GearData();
+            newData.Name = Name;
+            newData.isNew = true;
+            newData.isEquipped = false;
+            currData.gearDatas.Add(newData);
+        }
+        else
+        {
+            CharacterData.GearData findData = currData.gearDatas[find];
+            if (count < 0)
+            {
+                currData.gearDatas.Remove(findData);
+            }
+        }
+    }
+    public void AddRecord(string Name, int count = 1)
+    {
+        if (count == 0) return;
+        int find = currData.recordDatas.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            CharacterData.RecordData newData = new CharacterData.RecordData();
+            newData.Name = Name;
+            newData.isNew = true;
+            currData.recordDatas.Add(newData);
+        }
+        else
+        {
+            CharacterData.RecordData findData = currData.recordDatas[find];
+            if (count < 0)
+            {
+                currData.recordDatas.Remove(findData);
+            }
+        }
+    }
+    public void AddLantern(string Name, int count = 1)
+    {
+        if (count == 0) return;
+        int find = currData.itemDatas.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            CharacterData.LanternData newData = new CharacterData.LanternData();
+            newData.Name = Name;
+            newData.isNew = true;
+            newData.isEquipped = false;
+            currData.lanternDatas.Add(newData);
+        }
+        else
+        {
+            CharacterData.LanternData findData = currData.lanternDatas[find];
+            if (count < 0)
+            {
+                currData.lanternDatas.Remove(findData);
             }
         }
     }
 #if UNITY_EDITOR
-    [Button]
+    [Space(60)]
+    [Header("-----아이템 습득 테스트용-----")]
+    public int testGold;
+    public InventoryItem[] testItemDatas;
+    public GearData[] testGearDatas;
+    public LanternFunctionData[] testLanternDatas;
+    public RecordData[] testRecordDatas;
+    
+    [Button("아이템 습득 테스트")]
+    public void TestAddItem()
+    {
+        currData.gold += testGold;
+        for(int i=0; i<testItemDatas.Length; i++)
+        {
+            AddItem(testItemDatas[i].data.name, testItemDatas[i].quantity);
+        }
+        for(int i=0; i<testGearDatas.Length; i++)
+        {
+            AddGear(testGearDatas[i].name);
+        }
+        for(int i=0; i<testLanternDatas.Length; i++)
+        {
+            AddLantern(testLanternDatas[i].name);
+        }
+        for(int i=0; i<testRecordDatas.Length; i++)
+        {
+            AddRecord(testRecordDatas[i].name);
+        }
+    }
+    [Button("내 계정의 모든 세이브 삭제 (주의)")]
     public void DeleteAllSaveData()
     {
         allSaveDatasInLocal = new SaveData();
@@ -325,6 +428,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         SaveSteam();
         SaveLocal();
     }
+
 #endif
 
 }
@@ -341,14 +445,19 @@ public struct CharacterData
     public float currHealth;
     public float currBattery;
     public int gold;
+    public int maxGearCost;
     public int potionCount;
     public int difficulty;
     public int language;
     public string sceneName;
+    public int level;
+    public string lastTime;
     public Vector2 lastPos;
+    public int progress1;
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;
+    public List<RecordData> recordDatas;
     [System.Serializable]
     public struct ItemData
     {
@@ -360,11 +469,21 @@ public struct CharacterData
     public struct GearData
     {
         public string Name;
+        public bool isNew;
+        public bool isEquipped;
     }
     [System.Serializable]
     public struct LanternData
     {
         public string Name;
+        public bool isNew;
+        public bool isEquipped;
+    }
+    [System.Serializable]
+    public struct RecordData
+    {
+        public string Name;
+        public bool isNew;
     }
 
     // [System.Serializable]

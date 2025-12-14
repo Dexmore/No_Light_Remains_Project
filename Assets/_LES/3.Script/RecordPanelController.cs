@@ -15,33 +15,33 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     [Header("상세 내용(Detail) UI")]
     [SerializeField] private TextMeshProUGUI detailTitleText;
     [SerializeField] private TextMeshProUGUI detailContentText;
-    
+
     [Header("내비게이션")]
-    [SerializeField] private Selectable mainTabButton; 
+    [SerializeField] private Selectable mainTabButton;
 
     private List<RecordSlotUI> _spawnedSlots = new List<RecordSlotUI>();
 
     // [추가] 이벤트 구독
     private void OnEnable()
     {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnRecordsChanged += RefreshPanel;
-        }
+        // if (InventoryDataManager.Instance != null)
+        // {
+        //     InventoryDataManager.Instance.OnRecordsChanged += RefreshPanel;
+        // }
     }
 
     private void OnDisable()
     {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnRecordsChanged -= RefreshPanel;
-        }
+        // if (InventoryDataManager.Instance != null)
+        // {
+        //     InventoryDataManager.Instance.OnRecordsChanged -= RefreshPanel;
+        // }
     }
 
     public void OnShow()
     {
         RefreshPanel(); // 패널 새로고침
-        
+
         // 한 프레임 기다린 후 첫 슬롯 선택 (포커스 문제 방지)
         StartCoroutine(SelectFirstSlot());
     }
@@ -61,13 +61,26 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     // 이벤트 방송을 받거나 탭이 열릴 때 호출됩니다.
     private void RefreshPanel()
     {
-        if (InventoryDataManager.Instance == null) return;
+        //if (InventoryDataManager.Instance == null) return;
 
         ClearAllSpawnedSlots();
-        
-        // InventoryDataManager의 데이터를 사용
-        List<RecordData> playerRecords = InventoryDataManager.Instance.PlayerRecords;
-        
+
+
+        //////////
+        List<RecordData> playerRecords = new List<RecordData>();
+        for (int i = 0; i < DBManager.I.currData.recordDatas.Count; i++)
+        {
+            CharacterData.RecordData cd = DBManager.I.currData.recordDatas[i];
+            int find = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.name == cd.Name);
+            if (find == -1) continue;
+            RecordData d = Instantiate(DBManager.I.itemDatabase.allRecords[find]);
+            d.name = DBManager.I.itemDatabase.allRecords[find].name;
+            d.isNew = cd.isNew;
+            playerRecords.Add(d);
+        }
+        //////////
+
+
         if (playerRecords.Count == 0)
         {
             ShowRecordDetails(null);
@@ -82,11 +95,11 @@ public class RecordPanelController : MonoBehaviour, ITabContent
             slotUI.SetData(record, this);
             _spawnedSlots.Add(slotUI);
         }
-        
+
         SetupSlotNavigation();
         ShowRecordDetails(playerRecords[0]);
     }
-    
+
     private IEnumerator SelectFirstSlot()
     {
         yield return new WaitForEndOfFrame();
@@ -125,7 +138,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         }
         _spawnedSlots.Clear();
     }
-    
+
     private void SetupSlotNavigation()
     {
         if (_spawnedSlots.Count == 0)
@@ -150,23 +163,23 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     }
     #endregion
 
-    #region 테스트용 코드 (NaughtyAttributes)
+    // #region 테스트용 코드 (NaughtyAttributes)
 
-    [Header("테스트용")]
-    [SerializeField] private RecordData testRecordToAdd;
+    // [Header("테스트용")]
+    // [SerializeField] private RecordData testRecordToAdd;
 
-    [Button("Test: 기록물 추가")]
-    private void TestAddRecord()
-    {
-        if (testRecordToAdd == null)
-        {
-            Debug.LogWarning("테스트할 기록물(.asset)을 인스펙터 필드에 할당해주세요!");
-            return;
-        }
-        
-        // 중앙 관리자의 'AddItem' 마스터 메서드를 호출
-        InventoryDataManager.Instance.AddItem(testRecordToAdd);
-    }
+    // [Button("Test: 기록물 추가")]
+    // private void TestAddRecord()
+    // {
+    //     if (testRecordToAdd == null)
+    //     {
+    //         Debug.LogWarning("테스트할 기록물(.asset)을 인스펙터 필드에 할당해주세요!");
+    //         return;
+    //     }
 
-    #endregion
+    //     // 중앙 관리자의 'AddItem' 마스터 메서드를 호출
+    //     InventoryDataManager.Instance.AddItem(testRecordToAdd);
+    // }
+
+    // #endregion
 }

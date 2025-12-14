@@ -94,6 +94,10 @@ public class MonsterControl : MonoBehaviour
     {
         GameManager.I.onHit -= HitHandler;
         GameManager.I.onParry -= ParryHandler;
+        MonsterState[] abilities = GetComponents<MonsterState>();
+        for (int j = 0; j < System.Enum.GetValues(typeof(State)).Length; j++)
+            for (int i = 0; i < abilities.Length; i++)
+                abilities[i].Exit();
         UniTaskCancel();
     }
     void OnDestroy() => UniTaskCancel();
@@ -966,8 +970,10 @@ public class MonsterControl : MonoBehaviour
                 bossHUD.SetTarget(this);
         }
         if (currHP <= 0)
+        {
             ChangeState(State.Die);
-
+            GameManager.I.onDie.Invoke(hData);
+        }
     }
     CancellationTokenSource ctsStagger = new CancellationTokenSource();
     async UniTask ReleaseStagger(CancellationToken token)

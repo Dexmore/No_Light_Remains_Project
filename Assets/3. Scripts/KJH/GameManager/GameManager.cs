@@ -1,36 +1,46 @@
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Text;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
-
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
     public Language language = Language.English;
+
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
     [HideInInspector] public bool isOpenPop;
     [HideInInspector] public bool isOpenDialog;
+    [HideInInspector] public bool isSceneWaiting;
+    [HideInInspector] public bool isShowPop0;
+
+    // 게임의 중요 이벤트들
+    public UnityAction<HitData> onHit = (x) => { };
+    public UnityAction<HitData> onParry = (x) => { };
+    public UnityAction<HitData> onAvoid = (x) => { };
+    public UnityAction<HitData> onHitAfter = (x) => { };
+    public UnityAction<HitData> onDie = (x) => { };
+    public UnityAction<int, SimpleTrigger> onSimpleTriggerEnter = (x, y) => { };
+    public UnityAction<int, SimpleTrigger> onSimpleTriggerExit = (x, y) => { };
 
     void OnEnable()
     {
         InitFade();
         InitLoading();
-        //onHit += HitHandler;
         isOpenPop = false;
         isOpenDialog = false;
     }
-
     void OnDisable()
     {
-        //onHit -= HitHandler;
-    }
 
+    }
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
     {
+        isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(1f);
         await Task.Delay(1500);
@@ -53,9 +63,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         await Task.Delay(800);
         FadeIn(0.6f);
+        await Task.Delay(1500);
+        isSceneWaiting = false;
     }
     public async void LoadSceneAsync(string name, bool loadingScreen = false)
     {
+        isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(1f);
         await Task.Delay(1500);
@@ -78,6 +91,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         await Task.Delay(800);
         FadeIn(0.6f);
+        await Task.Delay(1500);
+        isSceneWaiting = false;
     }
     #endregion
     #region Fade
@@ -220,10 +235,6 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #endregion
     #region Hit
-    public UnityAction<HitData> onHit = (x) => { };
-    public UnityAction<HitData> onParry = (x) => { };
-    public UnityAction<HitData> onAvoid = (x) => { };
-    public UnityAction<HitData> onHitAfter = (x) => { };
     public Material hitTintMat;
     #endregion
     #region HitEffect
@@ -277,7 +288,107 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     }
     #endregion
+    #region Glitch Effect
+    private const int glitchDelayMs = 25;
+    private readonly string[] glitchChars = { "#", "$", "%", "@", "^", "&", "*", "!", "?", "█", "■", "░", "~", "_", "=" };
+    public async void GlitchText(UnityEngine.UI.Text Text, float glitchDuration = 0.4f)
+    {
+        if (Text == null) return;
+        string originalText = Text.text;
+        int totalIterations = (int)(glitchDuration * 1000f / glitchDelayMs);
+        for (int i = 0; i < totalIterations; i++)
+        {
+            await Task.Delay(glitchDelayMs);
+            // 글리치 문자열 생성 (태그가 출력되지 않도록 보장)
+            Text.text = GenerateGlitchString(originalText, Text.color);
+        }
+        // 효과 완료 후 원본 텍스트로 복구
+        Text.text = originalText;
+    }
+    public async void GlitchText(TMPro.TMP_Text tMP_Text, float glitchDuration = 0.4f)
+    {
+        if (tMP_Text == null) return;
+        string originalText = tMP_Text.text;
+        int totalIterations = (int)(glitchDuration * 1000f / glitchDelayMs);
+        for (int i = 0; i < totalIterations; i++)
+        {
+            await Task.Delay(glitchDelayMs);
+            // 글리치 문자열 생성 (태그가 출력되지 않도록 보장)
+            tMP_Text.text = GenerateGlitchString(originalText, tMP_Text.color);
+        }
+        // 효과 완료 후 원본 텍스트로 복구
+        tMP_Text.text = originalText;
+    }
+    private string GenerateGlitchString(string original, Color originalColor)
+    {
+        if (string.IsNullOrEmpty(original))
+        {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(original.Length * 3);
+        string[] InsertChars = new string[] { "*", "░", "█" };
+        for (int i = 0; i < original.Length; i++)
+        {
+            char originalChar = original[i];
+            if (Random.value < 0.1f)
+            {
+                int insertCount = Random.Range(1, 4);
+                for (int k = 0; k < insertCount; k++)
+                {
+                    sb.Append(InsertChars[Random.Range(0, InsertChars.Length)]);
+                }
+            }
+            if (Random.value < 0.6f)
+            {
+                if (Random.value < 0.3f)
+                {
+                    sb.Append(glitchChars[Random.Range(0, glitchChars.Length)]);
+                }
+                else
+                {
+                    Color randomColor = 0.6f * originalColor + 0.4f * new Color(Random.value, Random.value, Random.value);
+                    string colorHex = ColorUtility.ToHtmlStringRGB(randomColor);
+                    sb.Append($"<color=#{colorHex}>{originalChar}</color>");
+                }
+            }
+            else
+            {
+                sb.Append(originalChar);
+            }
+        }
+        return sb.ToString();
+    }
+    #endregion
 
+    public async void SetPlayerPosition(Vector2 vector2)
+    {
+        PlayerControl playerControl = null;
+        FollowCamera followCamera = null;
+        await Task.Delay(100);
+        while (isSceneWaiting)
+        {
+            await Task.Delay(100);
+            if (playerControl == null)
+                playerControl = FindAnyObjectByType<PlayerControl>();
+            if (followCamera == null)
+                followCamera = FindAnyObjectByType<FollowCamera>();
+        }
+        await Task.Delay(100);
+        float _time = Time.time;
+        while (Time.time - _time < 2f)
+        {
+            await Task.Delay(100);
+            if (playerControl == null)
+                playerControl = FindAnyObjectByType<PlayerControl>();
+            if (followCamera == null)
+                followCamera = FindAnyObjectByType<FollowCamera>();
+            if (playerControl != null && followCamera != null) break;
+        }
+        if (playerControl != null)
+            playerControl.transform.position = vector2;
+        if (followCamera != null)
+            followCamera.transform.position = vector2;
+    }
 
 
 }

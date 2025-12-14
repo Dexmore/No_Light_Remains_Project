@@ -349,16 +349,29 @@ public class PlayerInteraction : MonoBehaviour
                     prompt.Close(1);
                 }
             }
-            else if (target1 != null)
+
+            else if (sensorDatas.Count == 0)
             {
-                target1 = null;
-                prompt.Close(0);
+                if (target1 != null)
+                {
+                    prompt.Close(0);
+                    target1 = null;
+                }
+                if (target2 != null)
+                {
+                    prompt.Close(1);
+                    target2 = null;
+                }
+                if (prompt.itrctCanvas.gameObject.activeInHierarchy)
+                {
+                    prompt.Close(0, true);
+                }
+                if (prompt.lanternCanvas.gameObject.activeInHierarchy)
+                {
+                    prompt.Close(1, true);
+                }
             }
-            else if (target2 != null)
-            {
-                target2 = null;
-                prompt.Close(1);
-            }
+            //Debug.Log(prompt);
         }
     }
 }

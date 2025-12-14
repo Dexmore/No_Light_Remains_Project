@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Steamworks;
+using DG.Tweening;
 public class LoginUI : MonoBehaviour
 {
     [ReadOnlyInspector] public string userName;
@@ -82,6 +83,13 @@ public class LoginUI : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         buttonConnect.SetActive(false);
+        Image waiting = userNameTxt.transform.Find("Waiting").GetComponent<Image>();
+        waiting.gameObject.SetActive(true);
+        DOTween.Kill(waiting);
+        DOTween.Kill(waiting.transform);
+        waiting.color = new Color(1f, 1f, 1f, 0f);
+        waiting.DOFade(1f, 0.8f);
+        waiting.transform.DOLocalRotate(-360f * Vector3.forward, 2.5f, RotateMode.LocalAxisAdd).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
         // 기다리는 연출 (Circle wating)
         DBManager.I.StartSteam();
         yield return YieldInstructionCache.WaitForSeconds(1f);
@@ -96,10 +104,16 @@ public class LoginUI : MonoBehaviour
                 DBManager.I.LoadLocal();
                 yield return YieldInstructionCache.WaitForSeconds(0.2f);
                 RefreshUserInfoInUI();
+                DOTween.Kill(waiting);
+                DOTween.Kill(waiting.transform);
+                waiting.gameObject.SetActive(false);
                 yield break;
             }
         }
         // 시간초과
+        DOTween.Kill(waiting);
+        DOTween.Kill(waiting.transform);
+        waiting.gameObject.SetActive(false);
         buttonConnect.SetActive(true);
     }
     float logoutCoolTime = 0;

@@ -5,13 +5,14 @@ using System.Linq;
 using TMPro;
 using UnityEngine.EventSystems;
 using NaughtyAttributes;
+using Unity.Collections;
 
 public class LanternPanelController : MonoBehaviour, ITabContent
 {
     [Header("슬롯 설정 (파란색)")]
     [Tooltip("3개의 LanternSlotUI를 순서대로 등록")]
     [SerializeField] private List<LanternSlotUI> functionSlots; // 1번 요청
-    
+
     [Header("장착부 (왼쪽 위 빨간색)")]
     [SerializeField] private Image equippedFunctionImage; // 2번 요청
 
@@ -26,18 +27,18 @@ public class LanternPanelController : MonoBehaviour, ITabContent
 
     private void OnEnable()
     {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnLanternsChanged += RefreshPanel;
-        }
+        // if (InventoryDataManager.Instance != null)
+        // {
+        //     InventoryDataManager.Instance.OnLanternsChanged += RefreshPanel;
+        // }
     }
 
     private void OnDisable()
     {
-        if (InventoryDataManager.Instance != null)
-        {
-            InventoryDataManager.Instance.OnLanternsChanged -= RefreshPanel;
-        }
+        // if (InventoryDataManager.Instance != null)
+        // {
+        //     InventoryDataManager.Instance.OnLanternsChanged -= RefreshPanel;
+        // }
     }
 
     public void OnShow()
@@ -66,11 +67,24 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     /// </summary>
     private void RefreshPanel()
     {
-        if (InventoryDataManager.Instance == null) return; // 매니저가 없으면 중단
+        //if (InventoryDataManager.Instance == null) return; // 매니저가 없으면 중단
+
+        //////////
+        List<LanternFunctionData> playerFunctions = new List<LanternFunctionData>();
+        for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
+        {
+            CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
+            int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
+            if (find == -1) continue;
+            LanternFunctionData d = Instantiate(DBManager.I.itemDatabase.allLanterns[find]);
+            d.name = DBManager.I.itemDatabase.allLanterns[find].name;
+            d.isEquipped = cd.isEquipped;
+            d.isNew = cd.isNew;
+            playerFunctions.Add(d);
+        }
+        //////////
         
-        // [수정] InventoryDataManager의 데이터를 사용
-        List<LanternFunctionData> playerFunctions = InventoryDataManager.Instance.PlayerLanternFunctions;
-        
+
         for (int i = 0; i < functionSlots.Count; i++)
         {
             if (i < playerFunctions.Count && playerFunctions[i] != null && !string.IsNullOrEmpty(playerFunctions[i].functionName))
@@ -82,7 +96,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
                 functionSlots[i].ClearSlot();
             }
         }
-        
+
         UpdateMainEquippedImage();
         SetupNavigation();
 
@@ -117,11 +131,18 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         bool wasEquipped = dataToToggle.isEquipped;
 
         // [수정] InventoryDataManager의 데이터를 사용
-        foreach (var funcData in InventoryDataManager.Instance.PlayerLanternFunctions)
+
+
+
+        for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
-            if (funcData != null) funcData.isEquipped = false;
+            CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
+            cd.isEquipped = false;
+            DBManager.I.currData.lanternDatas[i] = cd;
         }
-        
+
+
+
         if (!wasEquipped)
         {
             dataToToggle.isEquipped = true;
@@ -140,7 +161,11 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     /// </summary>
     private void UpdateMainEquippedImage()
     {
-        LanternFunctionData equippedFunction = InventoryDataManager.Instance.PlayerLanternFunctions.FirstOrDefault(f => f.isEquipped);
+        //LanternFunctionData equippedFunction = InventoryDataManager.Instance.PlayerLanternFunctions.FirstOrDefault(f => f.isEquipped);
+        CharacterData.LanternData cd = DBManager.I.currData.lanternDatas.FirstOrDefault(f => f.isEquipped);
+        int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.functionName == cd.Name);
+        if(find == -1) return;
+        LanternFunctionData equippedFunction = DBManager.I.itemDatabase.allLanterns[find];
 
         if (equippedFunction != null)
         {
@@ -188,30 +213,6 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             currentButton.navigation = nav;
         }
     }
-    
-    #region 테스트용 코드
 
-    // [추가] 인스펙터에서 테스트용으로 추가할 랜턴 기능을 미리 할당
-    [Header("테스트용")]
-    [SerializeField] private LanternFunctionData testLanternFunctionToAdd;
 
-    [Button("Test: 랜턴 기능 추가")]
-    private void TestAddLanternFunction()
-    {
-        if (testLanternFunctionToAdd == null)
-        {
-            Debug.LogWarning("테스트할 랜턴 기능을 인스펙터 필드에 할당해주세요!");
-            return;
-        }
-
-        // 1. 데이터 리스트에 기능을 추가합니다.
-        InventoryDataManager.Instance.AddItem(testLanternFunctionToAdd);
-
-        // 2. UI를 새로고침합니다.
-        OnShow(); 
-
-        Debug.Log($"{testLanternFunctionToAdd.functionName} 랜턴 기능 추가 테스트 완료.");
-    }
-
-    #endregion
 }
