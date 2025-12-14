@@ -1,16 +1,16 @@
 using UnityEngine;
-public class DisappearPlatform : DarkObject
+public class LightAppearPlatform : LightObject
 {
     [SerializeField] GameObject platform;
     protected override void Start()
     {
         base.Start();
-        platform?.SetActive(true);
+        platform?.SetActive(false);
     }
     public override void Run()
     {
         base.Run();
-        platform?.SetActive(false);
+        platform?.SetActive(true);
     }
     
 
