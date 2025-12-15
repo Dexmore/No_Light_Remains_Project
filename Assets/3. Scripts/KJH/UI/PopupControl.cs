@@ -186,6 +186,11 @@ public class PopupControl : MonoBehaviour
         //AudioManager.I.PlaySFX("UIClick");
         lobbyStoryPanel.StartNewGameButton();
     }
+    public void Pop4Button()
+    {
+        if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
+        lobbyStoryPanel.Pop4DeleteButton();
+    }
 
 
 

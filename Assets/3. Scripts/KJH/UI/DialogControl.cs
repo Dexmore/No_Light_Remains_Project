@@ -55,13 +55,11 @@ public class DialogControl : MonoBehaviour
             case DialogState.TypingSlow:
                 // 1단계: 느린 타이핑 중 -> 빠른 타이핑으로 전환
                 currentState = DialogState.TypingFast;
-                AudioManager.I.PlaySFX("UIClick");
                 break;
 
             case DialogState.TypingFast:
                 // 2단계: 빠른 타이핑 중 -> 텍스트 완성
                 SkipTyping();
-                AudioManager.I.PlaySFX("UIClick");
                 break;
 
             case DialogState.TypingComplete:
@@ -72,7 +70,7 @@ public class DialogControl : MonoBehaviour
                 }
                 else
                 {
-                    AudioManager.I.PlaySFX("UIClick");
+                    AudioManager.I.PlaySFX("UIClick2");
                     NextPage(); // 다음 페이지: 타이핑 재시작 (TypingSlow 상태로 자동 전환)
                 }
                 break;
@@ -202,7 +200,7 @@ public class DialogControl : MonoBehaviour
         //1
         new string[]
         {
-            "막대한 빛 에너지 '일리오스'를 일부 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 특별하고 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 실내등에 '일리오스'를 주입해보자."
+            "막대한 빛 에너지 '일리오스'를 특정 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 등에 '일리오스'를 주입해보자."
         },
         //2
         new string[]

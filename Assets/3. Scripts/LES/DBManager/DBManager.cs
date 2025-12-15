@@ -15,7 +15,31 @@ public class DBManager : SingletonBehaviour<DBManager>
     CharacterData savedData;
     public SaveData allSaveDatasInSteam;
     public SaveData allSaveDatasInLocal;
-    private string saveDirectoryPath => Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
+    private string saveDirectoryPath
+    {
+        get
+        {
+            // 1. Windows 환경 처리 (#if UNITY_STANDALONE_WIN)
+            // UNITY_STANDALONE_WIN이 명시적으로 Windows 빌드를 의미하지만,
+            // STANDALONE_WIN/OSX가 아닌 환경(Android/iOS/WebGL 등)을 포괄하는 else 블록을 사용해 구분합니다.
+#if UNITY_STANDALONE_WIN // Windows 환경 (사용자님의 기존 경로 유지)
+            // 예: C:\Users\<User>\Documents\My Games\REKINDLE
+            string windowsPath = Path.Combine(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
+                "My Games",
+                "REKINDLE"
+            );
+            return windowsPath;
+
+            // 2. 기타 플랫폼 처리 (Mac, Android, iOS 등)
+#else
+        // Windows 외 모든 플랫폼은 유니티 표준 경로인 Application.persistentDataPath를 사용
+        // 예: Mac -> ~/Library/Application Support/...
+        // 예: Android -> /storage/...
+        return Path.Combine(Application.persistentDataPath, "REKINDLE_SaveData");
+#endif
+        }
+    }
     private string saveFilePath => Path.Combine(saveDirectoryPath, "SaveData");
     private string steamSaveFileName => Path.GetFileName(saveFilePath);
     public UnityAction onLogOut = () => { };
@@ -396,24 +420,24 @@ public class DBManager : SingletonBehaviour<DBManager>
     public GearData[] testGearDatas;
     public LanternFunctionData[] testLanternDatas;
     public RecordData[] testRecordDatas;
-    
+
     [Button("아이템 습득 테스트")]
     public void TestAddItem()
     {
         currData.gold += testGold;
-        for(int i=0; i<testItemDatas.Length; i++)
+        for (int i = 0; i < testItemDatas.Length; i++)
         {
             AddItem(testItemDatas[i].data.name, testItemDatas[i].quantity);
         }
-        for(int i=0; i<testGearDatas.Length; i++)
+        for (int i = 0; i < testGearDatas.Length; i++)
         {
             AddGear(testGearDatas[i].name);
         }
-        for(int i=0; i<testLanternDatas.Length; i++)
+        for (int i = 0; i < testLanternDatas.Length; i++)
         {
             AddLantern(testLanternDatas[i].name);
         }
-        for(int i=0; i<testRecordDatas.Length; i++)
+        for (int i = 0; i < testRecordDatas.Length; i++)
         {
             AddRecord(testRecordDatas[i].name);
         }

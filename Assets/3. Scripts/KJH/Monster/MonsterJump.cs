@@ -13,8 +13,14 @@ public class MonsterJump : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         if (control.isDie) return;
+        if(!control.isGround)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         anim.Play("Idle");
-        rb.AddForce(Vector2.up * control.jumpForce * 50f);
+        rb.AddForce(Vector2.up * (control.jumpLength + 1.85f) * 175f);
         float startTime = Time.time;
         await UniTask.Delay(1000, cancellationToken: token);
         await UniTask.WaitUntil(() => control.isGround, cancellationToken: token);

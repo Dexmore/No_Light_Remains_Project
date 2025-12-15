@@ -5,9 +5,20 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Jobs;
 using Unity.Collections;
-using Random = Unity.Mathematics.Random;
 public class NumParticle : PoolBehaviour
 {
+    ParticleSystem ps;
+
+    void Awake()
+    {
+        ps = GetComponentInChildren<ParticleSystem>();
+        // _maxParticles = ps.main.maxParticles;
+        // // Persistent allocator로 NativeArray를 미리 할당
+        // _particles = new NativeArray<ParticleSystem.Particle>(_maxParticles, Allocator.Persistent);
+        // _random = new Random((uint)System.DateTime.Now.Millisecond + 1);
+    }
+
+
     #region UniTask Setting
     CancellationTokenSource cts;
 
@@ -89,16 +100,9 @@ public class NumParticle : PoolBehaviour
 
     
 
-    ParticleSystem ps;
+    
 
-    void Awake()
-    {
-        ps = GetComponentInChildren<ParticleSystem>();
-        // _maxParticles = ps.main.maxParticles;
-        // // Persistent allocator로 NativeArray를 미리 할당
-        // _particles = new NativeArray<ParticleSystem.Particle>(_maxParticles, Allocator.Persistent);
-        // _random = new Random((uint)System.DateTime.Now.Millisecond + 1);
-    }
+    
 
     public void Play()
     {
