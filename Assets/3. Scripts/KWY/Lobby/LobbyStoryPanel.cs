@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using System.Linq;
 public class LobbyStoryPanel : MonoBehaviour
 {
     PopupControl popupControl;
@@ -333,13 +334,52 @@ public class LobbyStoryPanel : MonoBehaviour
     public async void DeleteButton()
     {
         AudioManager.I.PlaySFX("UIClick");
+        popupControl.OpenPop(4);
+    }
+    public async void Pop4DeleteButton()
+    {
+        AudioManager.I.PlaySFX("SciFiConfirm");
+        popupControl.ClosePop(4, false);
+        //Debug.Log(select);
+        await Task.Delay(10);
+        DBManager.I.currData = new CharacterData();
+        if(isSteamSlot)
+        {
+            SaveData copy = DBManager.I.allSaveDatasInSteam;
+            SaveData newSaveData = new SaveData();
+            newSaveData.characterDatas = new List<CharacterData>();
+            for(int i=0; i<copy.characterDatas.Count; i++)
+            {
+                newSaveData.characterDatas.Add(copy.characterDatas[i]);
+            }
+            newSaveData.characterDatas[select] = new CharacterData();
+            DBManager.I.allSaveDatasInSteam = newSaveData;
+            //Debug.Log(DBManager.I.allSaveDatasInSteam.characterDatas[select].maxHealth);
+        }
+        else
+        {
+            SaveData copy = DBManager.I.allSaveDatasInLocal;
+            SaveData newSaveData = new SaveData();
+            newSaveData.characterDatas = new List<CharacterData>();
+            for(int i=0; i<copy.characterDatas.Count; i++)
+            {
+                newSaveData.characterDatas.Add(copy.characterDatas[i]);
+            }
+            newSaveData.characterDatas[select] = new CharacterData();
+            DBManager.I.allSaveDatasInLocal = newSaveData;
+            //Debug.Log(DBManager.I.allSaveDatasInLocal.characterDatas[select].maxHealth);
+        }
+        await Task.Delay(10);
+        DBManager.I.Save();
+        await Task.Delay(10);
+        RefreshSlots();
     }
     TMP_Text[] texts1;
     Text[] texts2;
     bool isaDisable;
     async void SometimesGlitchTextLoop()
     {
-        await Task.Delay(2200);
+        await Task.Delay(1700);
         texts1 = transform.GetComponentsInChildren<TMP_Text>();
         texts2 = transform.GetComponentsInChildren<Text>();
         while (true)
@@ -348,25 +388,27 @@ public class LobbyStoryPanel : MonoBehaviour
             if (Random.value < 0.3f)
             {
                 int rnd = Random.Range(0, texts1.Length + texts2.Length);
-                if (Random.value < 0.43f)
-                    AudioManager.I.PlaySFX("Glitch1");
                 if (rnd >= texts1.Length)
                 {
-                    if(texts2.Length <= rnd - texts1.Length) continue;
+                    if (texts2.Length <= rnd - texts1.Length) continue;
                     Text text2 = texts2[rnd - texts1.Length];
                     if (text2 == null) continue;
                     if (!text2.gameObject.activeInHierarchy) continue;
                     if (text2.transform.name == "EmptyText") continue;
                     GameManager.I.GlitchText(text2, 0.16f);
+                    if (Random.value < 0.73f)
+                        AudioManager.I.PlaySFX("Glitch1");
                 }
                 else
                 {
-                    if(texts1.Length <= rnd) continue;
+                    if (texts1.Length <= rnd) continue;
                     TMP_Text text1 = texts1[rnd];
                     if (text1 == null) continue;
                     if (!text1.gameObject.activeInHierarchy) continue;
                     if (text1.transform.name == "EmptyText") continue;
                     GameManager.I.GlitchText(text1, 0.16f);
+                    if (Random.value < 0.73f)
+                        AudioManager.I.PlaySFX("Glitch1");
                 }
             }
             await Task.Delay(Random.Range(200, 800));

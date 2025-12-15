@@ -24,6 +24,7 @@ public class Stage0Control : MonoBehaviour
     }
     IEnumerator Start()
     {
+        yield return null;
         playerControl.fsm.ChangeState(playerControl.stop);
         yield return YieldInstructionCache.WaitForSeconds(0.1f);
         Init();
@@ -32,13 +33,11 @@ public class Stage0Control : MonoBehaviour
             while (GameManager.I.isSceneWaiting)
             {
 
-                yield return YieldInstructionCache.WaitForSeconds(0.5f);
+                yield return YieldInstructionCache.WaitForSeconds(0.3f);
             }
-            yield return YieldInstructionCache.WaitForSeconds(0.8f);
+            yield return YieldInstructionCache.WaitForSeconds(0.3f);
             dialogControl.Open(0);
         }
-
-
     }
     void HandlerSimpleTriggerEnter(int index, SimpleTrigger trigger)
     {

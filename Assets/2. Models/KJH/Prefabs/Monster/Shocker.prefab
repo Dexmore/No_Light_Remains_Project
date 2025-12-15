@@ -608,7 +608,7 @@ MonoBehaviour:
   unit: 0
   offeset: 0
   canJump: 0
-  jumpForce: 0
+  jumpLength: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -631,7 +631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
   height: 2.5
   width: 1.2
-  jumpForce: 0
+  jumpLength: 0.5
   isDie: 0
   isGround: 0
   isStagger: 0
@@ -729,11 +729,11 @@ MonoBehaviour:
   duration: 1.2
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    money: 50
+    gold: 10
     countRange: {x: 3, y: 4}
     probability: 0.95
   - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
-    money: 5
+    gold: 0
     countRange: {x: 1, y: 1}
     probability: 0.7
 --- !u!114 &4554582582220120778
@@ -749,7 +749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterWander
   coolTime: 0
-  durationRange: {x: 2, y: 5}
+  durationRange: {x: 1.5, y: 4}
 --- !u!114 &7499197372901428476
 MonoBehaviour:
   m_ObjectHideFlags: 0

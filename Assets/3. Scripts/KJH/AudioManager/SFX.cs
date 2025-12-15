@@ -44,7 +44,7 @@ public class SFX : PoolBehaviour
         if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
         if (!aus.enabled) aus.enabled = true;
         await UniTask.Delay(2, ignoreTimeScale: true, cancellationToken: token);
-        aus.pitch = Random.Range(0.985f, 1.015f);
+        aus.pitch = Random.Range(0.988f, 1.01f);
         aus.Play();
         await UniTask.Delay((int)(1000f * (time + 0.2f)), ignoreTimeScale: true, cancellationToken: token);
         base.Despawn();

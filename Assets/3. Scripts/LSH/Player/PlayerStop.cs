@@ -8,8 +8,8 @@ public class PlayerStop : IPlayerState
     public void Enter()
     {
         startTime = Time.time;
-        if (!ctx.animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Idle") && ctx.Grounded)
-            ctx.animator.Play("Player_Idle");
+        ctx.animator.Play("Player_Idle");
+            
     }
     public void Exit()
     {

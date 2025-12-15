@@ -14,7 +14,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
      public float unit;
      public float offeset;
      public bool canJump;
-     public float jumpForce;
+     public float jumpLength;
      #region UniTask Setting
      public CancellationTokenSource cts;
      void OnEnable()
@@ -530,11 +530,14 @@ public class Astar2DXYPathFinder : MonoBehaviour
                unit = unit,
                characterHeight = height,
                characterDiameter = width,
-               characterJumpMaxHeight = math.max(0.0175f * (jumpForce) * (jumpForce) + 0.0075f * (jumpForce) - 0.025f, 0.5f * height),
-               characterDownMax = 8f,
+               characterJumpMaxHeight = math.max(jumpLength, 0.8f * height),
+               characterDownMax = 1.5f * height + unit + 0.5f,
                characterPosition = characterPosition,
                modelForward = new float2(model.forward.x, model.forward.z),
                centerXIndex = centerXIndex,
+               canJump = canJump,
+               jumpLength = jumpLength,
+               randomSeed = (uint)Time.frameCount,
           };
           jobHandle1 = job.Schedule();
           await UniTask.WaitUntil(() => jobHandle1.IsCompleted);
@@ -574,6 +577,10 @@ public struct AstarJob : IJob
      [ReadOnly] public float2 characterPosition;
      [ReadOnly] public float2 modelForward;
      [ReadOnly] public int centerXIndex;
+     [ReadOnly] public bool canJump;
+     [ReadOnly] public float jumpLength;
+     [ReadOnly] public uint randomSeed;
+     private Unity.Mathematics.Random random;
      #region 헬퍼 메소드
      int GetCost(AstarNode nodeA, AstarNode nodeB)
      {
@@ -597,6 +604,7 @@ public struct AstarJob : IJob
      #endregion
      public void Execute()
      {
+          random = new Unity.Mathematics.Random(randomSeed);
           AstarNode currNode;
           const int MAX_STEP = 500000;
           int step = 0;
@@ -618,10 +626,53 @@ public struct AstarJob : IJob
                     result[0] = currNode;
                     return;
                }
+               // 현재노드의 모든 이웃노드 탐색해서 openSet에 넣기
 
-               //현재노드의 모든 이웃노드 탐색해서 openSet에 넣기
-               for (int x = -1; x <= 1; x++)
+
+
+
+               //      // 예를들어 jumpLength 가 3이고 // unit 이 0.6 이라면. 
+               //      // 기본적인 -1,1 인접칸을 오픈셋에 넣는 기존 Astar에서 더 추가적으로
+               //      // 좌우로 -5~5 유닛(int)(jumpLength / unit)까지도 점프뛰어야 하는 상황이 있을수있다.
+               //      int sideJumpMaxIndex = (int)(jumpLength / unit);
+               //      // 하지만 모든 사이트 포인트를 다 경로후보인 openSet에 넣기에는 알고리즘이 실행 횟수가 너무 많아진다.
+               //      // 따라서 어느정도의 취사선택 로직을 만들어야 하는데.
+               //      // 가령 (int)(jumpLength / unit)가 5인 경우. x=-1,0,1 에서 추가적으로 2개까지만 더 넣을것인데.
+               //      // 원래대로라면 x=-5,-4,-3,-2,2,3,4,5 8개가 오픈셋에 들어가야하나. 이중에서 좌우 하나씩 랜덤으로
+               //      // x= -4, 2 이렇게만 아래 for문에서 더 추가되게 할것이다.
+               //      // for (int x = -4,-1,0,1,2;) 이런식으로
+               NativeList<int> xDeltas = new NativeList<int>(10, Allocator.Temp);
+               // 1. 기본 인접 노드 (x = -1, 0, 1)
+               xDeltas.Add(-1);
+               xDeltas.Add(0);
+               xDeltas.Add(1);
+               if (canJump)
                {
+                    int sideJumpMaxIndex = (int)((jumpLength + 0.8f * unit + 0.1f) / unit);
+                    if (sideJumpMaxIndex >= 2)
+                    {
+                         xDeltas.Add(sideJumpMaxIndex);
+                         xDeltas.Add(-sideJumpMaxIndex);
+                         // 만약 sideJumpMaxIndex가 4 이상일 때, 중간 지점 2개 (예: -3, 3)를 추가하는 로직이 필요하다면:
+                         if (sideJumpMaxIndex >= 4)
+                         {
+                              int middleJumpIndexR = random.NextInt(3, sideJumpMaxIndex - 1);
+                              int middleJumpIndexL = -random.NextInt(3, sideJumpMaxIndex - 1);
+                              xDeltas.Add(middleJumpIndexR);
+                              xDeltas.Add(middleJumpIndexL);
+                         }
+                    }
+               }
+
+               for (int n = 0; n < xDeltas.Length; n++)
+               {
+                    int x = xDeltas[n];
+                    int jumpCost = 0;
+                    if (n >= 3)
+                    {
+                         jumpCost = math.abs(x) * 200;
+                    }
+
                     // '이 이웃 노드'의 X 좌표
                     int neighborX = currNode.xIndex + x;
 
@@ -679,7 +730,7 @@ public struct AstarJob : IJob
                                    continue;
                               }
                               // '현재 노드'에서 '이 이웃 노드'로 가는 새로운 G 값 계산
-                              int cost = currNode.G + GetCost(currNode, neighbor);
+                              int cost = currNode.G + GetCost(currNode, neighbor) + jumpCost;
                               // 플레이어 근처이면서 & 모델의 방향과 많이 꺽인 노드라면 방향전환 비용 증가.
                               // 캐릭터 근처 노드인지 판단하는 정도
                               float2 world = NodeToWorld(currNode);
@@ -728,6 +779,7 @@ public struct AstarJob : IJob
                               // ------------ 이웃 노드 처리 끝 ------------
                          }
                     }
+
                     // X축 변화가 있을 때: 좌우 이동 시, 이웃 X열의 모든 Y층을 확인
                     else // x == -1 or x == 1
                     {
