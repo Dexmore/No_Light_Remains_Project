@@ -370,10 +370,10 @@ public class PlayerControl : MonoBehaviour
                     AudioManager.I.PlaySFX("Parry");
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData);
-                    UIParticle upa = ParticleManager.I.PlayUIParticle("AttBattery", hData.hitPoint, Quaternion.identity);
-                    AttractParticle ap = upa.GetComponent<AttractParticle>();
                     if (_mainCamera == null) _mainCamera = Camera.main;
-                    Vector3 pos = ParticleManager.I.vfxCamera.ViewportToWorldPoint(new Vector3(0.05f, 0.85f, 0f));
+                    UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
+                    AttractParticle ap = upa.GetComponent<AttractParticle>();
+                    Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
                     ap.targetVector = pos;
                     currBattery += 20f;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);

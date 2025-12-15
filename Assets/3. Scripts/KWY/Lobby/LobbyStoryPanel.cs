@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using System.Linq;
 public class LobbyStoryPanel : MonoBehaviour
 {
     PopupControl popupControl;
@@ -333,6 +334,45 @@ public class LobbyStoryPanel : MonoBehaviour
     public async void DeleteButton()
     {
         AudioManager.I.PlaySFX("UIClick");
+        popupControl.OpenPop(4);
+    }
+    public async void Pop4DeleteButton()
+    {
+        AudioManager.I.PlaySFX("SciFiConfirm");
+        popupControl.ClosePop(4, false);
+        //Debug.Log(select);
+        await Task.Delay(10);
+        DBManager.I.currData = new CharacterData();
+        if(isSteamSlot)
+        {
+            SaveData copy = DBManager.I.allSaveDatasInSteam;
+            SaveData newSaveData = new SaveData();
+            newSaveData.characterDatas = new List<CharacterData>();
+            for(int i=0; i<copy.characterDatas.Count; i++)
+            {
+                newSaveData.characterDatas.Add(copy.characterDatas[i]);
+            }
+            newSaveData.characterDatas[select] = new CharacterData();
+            DBManager.I.allSaveDatasInSteam = newSaveData;
+            //Debug.Log(DBManager.I.allSaveDatasInSteam.characterDatas[select].maxHealth);
+        }
+        else
+        {
+            SaveData copy = DBManager.I.allSaveDatasInLocal;
+            SaveData newSaveData = new SaveData();
+            newSaveData.characterDatas = new List<CharacterData>();
+            for(int i=0; i<copy.characterDatas.Count; i++)
+            {
+                newSaveData.characterDatas.Add(copy.characterDatas[i]);
+            }
+            newSaveData.characterDatas[select] = new CharacterData();
+            DBManager.I.allSaveDatasInLocal = newSaveData;
+            //Debug.Log(DBManager.I.allSaveDatasInLocal.characterDatas[select].maxHealth);
+        }
+        await Task.Delay(10);
+        DBManager.I.Save();
+        await Task.Delay(10);
+        RefreshSlots();
     }
     TMP_Text[] texts1;
     Text[] texts2;

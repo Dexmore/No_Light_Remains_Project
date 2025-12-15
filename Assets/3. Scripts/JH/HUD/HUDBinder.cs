@@ -7,7 +7,7 @@ public class HUDBinder : MonoBehaviour
 {
     // Player 오브젝트 지정
     PlayerControl player;
-    SlicedLiquidBar healthBar;
+    SlicedLiquidBar healthBarFill;
     [HideInInspector] public RectTransform healthRT;
     [HideInInspector] public RectTransform goldRT;
     [HideInInspector] public RectTransform batteryRT;
@@ -22,8 +22,8 @@ public class HUDBinder : MonoBehaviour
     {
         canvas = GetComponentInChildren<Canvas>();
         if (!player) player = FindFirstObjectByType<PlayerControl>();
-        healthBar = GetComponentInChildren<SlicedLiquidBar>();
-        healthRT = healthBar.transform.parent as RectTransform;
+        healthBarFill = GetComponentInChildren<SlicedLiquidBar>();
+        healthRT = healthBarFill.transform.parent as RectTransform;
         goldCanvasGroup = transform.Find("HUDCanvas/TopRight/Gold").GetComponent<CanvasGroup>();
         goldRT = goldCanvasGroup.transform as RectTransform;
         goldCanvasGroup.alpha = 0f;
@@ -76,27 +76,27 @@ public class HUDBinder : MonoBehaviour
         if (player == null) return;
         if (player.fsm.currentState == player.die && player.currHealth <= 0)
         {
-            healthBar.Value = 0f;
+            healthBarFill.Value = 0f;
             return;
         }
-        healthBar.Value = Mathf.Clamp01(player.currHealth / player.maxHealth);
-        RectTransform rect = healthBar.transform as RectTransform;
-        Vector2 pivot = MethodCollection.Absolute1920x1080Position(rect);
+        healthBarFill.Value = Mathf.Clamp01(player.currHealth / player.maxHealth);
+        RectTransform rect = healthBarFill.transform as RectTransform;
+        Vector2 pivot = MethodCollection.RectTo1920x1080Position(rect);
         float x = pivot.x - 0.5f * rect.sizeDelta.x;
         float y = pivot.y;
-        float addX = healthBar.xPosRange.x + (healthBar.xPosRange.y - healthBar.xPosRange.x) * healthBar.Value;
+        float addX = healthBarFill.xPosRange.x + (healthBarFill.xPosRange.y - healthBarFill.xPosRange.x) * healthBarFill.Value;
         healthBarHandlePos = new Vector2(x + addX, y);
         if (hitData.attackType == HitData.AttackType.Chafe)
         {
-            var pa = ParticleManager.I.PlayUIParticle("Gush3", healthBarHandlePos, Quaternion.identity);
+            var pa = ParticleManager.I.PlayUIParticle("UIGush3", healthBarHandlePos, Quaternion.identity);
             pa.transform.localScale = 0.5f * Vector3.one;
         }
         else
         {
-            var pa = ParticleManager.I.PlayUIParticle("Gush3", healthBarHandlePos, Quaternion.identity);
+            var pa = ParticleManager.I.PlayUIParticle("UIGush3", healthBarHandlePos, Quaternion.identity);
             pa.transform.localScale = 0.8f * Vector3.one;
         }
-        var pa2 = ParticleManager.I.PlayUIParticle("Gush", healthBarHandlePos, Quaternion.identity);
+        var pa2 = ParticleManager.I.PlayUIParticle("UIGush", healthBarHandlePos, Quaternion.identity);
         pa2.transform.localScale = 0.7f * Vector3.one;
         var main = pa2.ps.main;
         main.startColor = new ParticleSystem.MinMaxGradient(new Color(0.59f, 0.159f, 0.196f, 1f), new Color(0.5f, 0.05f, 0.05f, 1f));
@@ -124,12 +124,12 @@ public class HUDBinder : MonoBehaviour
     void RefreshHealthInLoop()
     {
         if (player == null) return;
-        healthBar.Value = Mathf.Clamp01(player.currHealth / player.maxHealth);
-        RectTransform rect = healthBar.transform as RectTransform;
-        Vector2 pivot = MethodCollection.Absolute1920x1080Position(rect);
+        healthBarFill.Value = Mathf.Clamp01(player.currHealth / player.maxHealth);
+        RectTransform rect = healthBarFill.transform as RectTransform;
+        Vector2 pivot = MethodCollection.RectTo1920x1080Position(rect);
         float x = pivot.x - 0.5f * rect.sizeDelta.x;
         float y = pivot.y;
-        float addX = healthBar.xPosRange.x + (healthBar.xPosRange.y - healthBar.xPosRange.x) * healthBar.Value;
+        float addX = healthBarFill.xPosRange.x + (healthBarFill.xPosRange.y - healthBarFill.xPosRange.x) * healthBarFill.Value;
         healthBarHandlePos = new Vector2(x + addX, y);
     }
     Image[] batteryFills;
@@ -155,10 +155,10 @@ public class HUDBinder : MonoBehaviour
                 batteryFills[i].color = new Color(batteryFillColor.r, batteryFillColor.g, batteryFillColor.b, 0f);
         }
         RectTransform rect = batteryRT;
-        Vector2 pivot = MethodCollection.Absolute1920x1080Position(rect);
+        Vector2 pivot = MethodCollection.RectTo1920x1080Position(rect);
         float x = pivot.x - 0.5f * rect.sizeDelta.x;
         float y = pivot.y;
-        float addX = batteryPosXRange.x + (batteryPosXRange.y - batteryPosXRange.x) * healthBar.Value;
+        float addX = batteryPosXRange.x + (batteryPosXRange.y - batteryPosXRange.x) * healthBarFill.Value;
         batteryBarHandlePos = new Vector2(x + addX, y);
     }
     Tween goldCountingTween;

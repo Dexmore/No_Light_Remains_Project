@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 public static class MethodCollection
 {
     public static Vector3 zeroVector = Vector3.zero;
@@ -213,18 +214,77 @@ public static class MethodCollection
         return Vector3.Distance(closestPoint1, closestPoint2);
     }
     // [5. 캔버스 우하단 기준 절대좌표]
-    public static Vector2 Absolute1920x1080Position(RectTransform targetRect)
+    public static Vector2 RectTo1920x1080Position(RectTransform targetRect)
     {
-        // 1. 해당 캔버스를 가져옵니다.
+        // 1. 기존 코드 (현재 화면 픽셀 좌표 획득)
         Canvas canvas = targetRect.GetComponentInParent<Canvas>();
         if (canvas == null) return Vector2.zero;
-        // 2. 캔버스 렌더 모드에 따라 사용할 카메라를 결정합니다.
         Camera canvasCamera = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
-        // 3. RectTransform의 position (월드 좌표)를 스크린 픽셀 좌표로 변환합니다.
-        // 이 좌표는 캔버스의 왼쪽 하단 (0, 0)을 기준으로 합니다.
-        Vector2 absolutePosition = RectTransformUtility.WorldToScreenPoint(canvasCamera, targetRect.position);
-        absolutePosition = new Vector2(absolutePosition.x / canvas.transform.localScale.x, absolutePosition.y / canvas.transform.localScale.y);
-        return absolutePosition;
+        Vector2 currentScreenPosition = RectTransformUtility.WorldToScreenPoint(canvasCamera, targetRect.position);
+        // 2. Canvas Scaler의 스케일 팩터 계산
+        CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+        if (scaler == null || scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize)
+        {
+            // Canvas Scaler가 없거나 ScaleWithScreenSize 모드가 아니면 현재 픽셀 좌표를 그대로 반환합니다.
+            return currentScreenPosition;
+        }
+        // Canvas Scaler의 Match 값 (0: Width, 1: Height, 0.5: Middle)
+        float match = scaler.matchWidthOrHeight;
+        // Width 기준 스케일 팩터 (1920 / 현재 화면 너비)
+        float scaleFactorWidth = 1920f / Screen.width;
+        // Height 기준 스케일 팩터 (1080 / 현재 화면 높이)
+        float scaleFactorHeight = 1080f / Screen.height;
+        // 최종 스케일 팩터 계산 (Match 값을 사용하여 가중 평균)
+        float scaleFactor = Mathf.Lerp(scaleFactorWidth, scaleFactorHeight, match);
+        // 3. 1920x1080 기준으로 보정된 좌표 계산
+        Vector2 fixedPosition = currentScreenPosition * scaleFactor;
+        return fixedPosition;
+    }
+    public static Vector2 WorldTo1920x1080Position(Vector3 worldPosition, Camera targetCamera)
+    {
+        // 고정 목표 해상도
+        const float FIXED_WIDTH = 1920f;
+        const float FIXED_HEIGHT = 1080f;
+        
+        // 1. WorldToScreenPoint를 사용하여 월드 좌표를 현재 화면 픽셀 좌표로 변환
+        // 반환되는 screenPoint는 현재 해상도의 픽셀 좌표입니다.
+        // X: 0 ~ Screen.width, Y: 0 ~ Screen.height
+        Vector3 screenPoint = targetCamera.WorldToScreenPoint(worldPosition);
+
+        // Z 값이 음수이면 오브젝트가 카메라 뒤에 있다는 의미입니다.
+        if (screenPoint.z < 0)
+        {
+            // 카메라 뒤에 있는 경우, 계산을 생략하고 Vector2.zero나 특별한 값 반환
+            // 여기서는 Vector2.zero를 반환하도록 합니다.
+            return Vector2.zero; 
+        }
+
+        // 2. 현재 화면의 해상도를 가져옵니다.
+        float currentWidth = Screen.width;
+        float currentHeight = Screen.height;
+
+        // 3. 현재 해상도와 고정 해상도(1920x1080) 간의 비율을 계산합니다.
+        // 우리는 현재 픽셀 좌표(screenPoint)를 '역으로' 스케일링해야 합니다.
+        
+        // Width 비율: 현재 픽셀 좌표가 (1920/Screen.width) 비율만큼 커지거나 작아져야 합니다.
+        float ratioX = FIXED_WIDTH / currentWidth;
+        
+        // Height 비율: 현재 픽셀 좌표가 (1080/Screen.height) 비율만큼 커지거나 작아져야 합니다.
+        float ratioY = FIXED_HEIGHT / currentHeight;
+
+        // 4. (중요) 화면 비율 보정 방식을 결정합니다. (캔버스 스케일러의 Match Mode와 유사)
+        // 여기서는 간단하게 X축 비율만 사용하거나 Y축 비율만 사용할 수도 있지만,
+        // 일반적으로 게임에서는 비율이 깨지는 것을 방지하기 위해 둘 중 하나를 기준으로 합니다.
+        
+        // 예시: Width 기준으로 스케일링 (1920x1080 기준 픽셀 좌표를 얻는 일반적인 방법)
+        // 1080p 해상도에서 640x480으로 플레이할 때, UI는 보통 작은 화면에 맞게 비율 조정됩니다.
+        // 이 예시에서는 X와 Y를 각각의 비율로 보정하여 1920x1080 화면에 '있는' 픽셀 좌표로 만듭니다.
+        
+        float fixedX = screenPoint.x * ratioX;
+        float fixedY = screenPoint.y * ratioY;
+
+        // 5. 고정된 픽셀 좌표 반환
+        return new Vector2(fixedX, fixedY);
     }
 
 

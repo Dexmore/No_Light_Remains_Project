@@ -608,7 +608,7 @@ MonoBehaviour:
   unit: 0
   offeset: 0
   canJump: 0
-  jumpForce: 0
+  jumpLength: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
@@ -631,7 +631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
   height: 2.5
   width: 1.2
-  jumpForce: 0
+  jumpLength: 0.5
   isDie: 0
   isGround: 0
   isStagger: 0
@@ -749,7 +749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DefaultMonsterWander
   coolTime: 0
-  durationRange: {x: 2, y: 5}
+  durationRange: {x: 1.5, y: 4}
 --- !u!114 &7499197372901428476
 MonoBehaviour:
   m_ObjectHideFlags: 0

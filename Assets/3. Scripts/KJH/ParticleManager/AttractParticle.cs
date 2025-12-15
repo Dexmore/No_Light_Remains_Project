@@ -4,8 +4,10 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Jobs;
 using Unity.Collections;
+
 public class AttractParticle : MonoBehaviour
 {
+    public float speedMultiplier = 1f; 
     #region UniTask Setting
     private CancellationTokenSource cts;
     void OnEnable()
@@ -104,7 +106,8 @@ public class AttractParticle : MonoBehaviour
             _attractionStrength = this.attractionStrength,
             _maxSpeed = _ps.main.startSpeedMultiplier + 5f,
             _minSpeed = 5f,
-            _maxAttractDistance = 10f
+            _maxAttractDistance = 10f,
+            _speedMultiplier = speedMultiplier,
         };
         _jobHandle = job.Schedule(liveParticleCount, 32);
         // LateUpdate가 끝난 후 렌더링 전에 Job이 완료되도록 강제 대기합니다.
@@ -122,12 +125,12 @@ public struct AttractParticleJob : IJobParallelFor
 {
     [ReadOnly] public NativeArray<float3> _naPatPositions; 
     public NativeArray<float3> _naPatVelocities; 
-    
     [ReadOnly] public float3 _target;
     [ReadOnly] public float _attractionStrength; // 방향을 꺾는 힘 (기존 로직 유지)
     [ReadOnly] public float _maxSpeed;           
     [ReadOnly] public float _minSpeed;
     [ReadOnly] public float _maxAttractDistance; // 이 거리 밖에서는 maxSpeed를 유지합니다.
+    [ReadOnly] public float _speedMultiplier;
     public void Execute(int index)
     {
         float3 currentVelocity = _naPatVelocities[index];
@@ -143,6 +146,6 @@ public struct AttractParticleJob : IJobParallelFor
         // math.saturate는 0 미만은 0, 1 초과는 1로 클램프합니다.
         float distanceFactor = math.saturate(distance / _maxAttractDistance);
         float targetSpeed = math.lerp(_minSpeed, _maxSpeed, distanceFactor);
-        _naPatVelocities[index] = newDirection * targetSpeed;
+        _naPatVelocities[index] = _speedMultiplier * newDirection * targetSpeed;
     }
 }

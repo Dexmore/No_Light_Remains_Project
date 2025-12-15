@@ -115,6 +115,26 @@ public class MonsterWander : MonsterState
                 }
             }
             else tempCount = 0;
+
+            // !! 전투 + Find 상태일시 탈출 !!
+            if (!control.HasCondition(MonsterControl.Condition.Peaceful))
+            {
+                if (control.HasCondition(MonsterControl.Condition.FindPlayer))
+                    if (Random.value < 0.005f)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeNextState();
+                        return;
+                    }
+                    else if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
+                        if (Random.value < 0.05f)
+                        {
+                            await UniTask.Delay(5, cancellationToken: token);
+                            control.ChangeNextState();
+                            return;
+                        }
+            }
+
             // AddForce방식으로 캐릭터 이동
             if (!stopWall)
                 if (dot < control.data.MoveSpeed)
@@ -189,6 +209,7 @@ public class MonsterWander : MonsterState
             control.ChangeNextState();
             return;
         }
+        float startTime0 = Time.time;
 
         // 경로를 따라 이동
         for (int i = 1; i < findPath.Length; i++)
@@ -199,6 +220,14 @@ public class MonsterWander : MonsterState
             float length = moveDirection.magnitude;
             float xLength = Mathf.Abs(moveDirection.x);
             float yLength = Mathf.Abs(moveDirection.y);
+
+            // 3. Astar상 땅 수직 아래로 파고들거나 하늘로 치솟는 경로가 나오는 경우
+            if (xLength <= 0.5f * astar.unit && yLength > 2.5f * astar.unit)
+            {
+                await UniTask.Delay(5, cancellationToken: token);
+                control.ChangeNextState();
+                return;
+            }
 
             // 캐릭터 좌우 방향 설정
             if (moveDirection.x > 0 && model.right.x < 0)
@@ -274,24 +303,52 @@ public class MonsterWander : MonsterState
                 }
             }
 
-            // 3. Astar상 땅 수직 아래로 파고드는 경로가 나오는 경우
-            if (false)
+            // !! 전투 + 가까움 상태일시 탈출 !!
+            if (!control.HasCondition(MonsterControl.Condition.Peaceful))
             {
-                // 원래는 밑점프 기능도 생각은 있는데. 구현은 나중에하고
-                // 일단은 행동 탈출 쪽으로
+                if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
+                {
+                    if (Random.value < 0.7f)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeNextState();
+                        return;
+                    }
+                }
+                else if (control.HasCondition(MonsterControl.Condition.FindPlayer))
+                {
+                    if (Random.value < 0.4f)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeNextState();
+                        return;
+                    }
+                }
+                else if (Random.value < 0.15f)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    control.ChangeNextState();
+                    return;
+                }
             }
-
 
             // 4. 일반적인 고르게 이어진 길
             float startTime = Time.time;
             float expectTime = (length / control.MoveSpeed) * 1.5f;
-            while (Time.time - startTime < expectTime && !token.IsCancellationRequested)
+            while (Time.time - startTime < expectTime && Time.time - startTime0 < duration && !token.IsCancellationRequested)
             {
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
                 moveDirection = targetPos - ((Vector2)transform.position + astar.offeset * Vector2.up);
-                moveDirection.y *= 0.4f;
+                moveDirection.y *= 0.1f;
                 moveDirection.y = Mathf.Clamp(moveDirection.y, 0f, control.height);
                 if (moveDirection.sqrMagnitude < 0.08f * 0.08f) break;
+
+                if (!control.isGround)
+                {
+                    await UniTask.Yield(token);
+                    control.ChangeNextState();
+                    return;
+                }
 
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
@@ -338,15 +395,7 @@ public class MonsterWander : MonsterState
                         }
                     }
                 }
-
-
             }
-
-
-
-
-
-
         }
 
         // 이동 끝

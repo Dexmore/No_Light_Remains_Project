@@ -116,7 +116,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.5
+      scalar: 0.4
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
@@ -223,7 +223,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 0.37191978, b: 0.18396229, a: 1}
-      maxColor: {r: 0.6698113, g: 0.14217694, b: 0.14217694, a: 0.078431375}
+      maxColor: {r: 0.6698113, g: 0.14217694, b: 0.14217694, a: 0.2}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4909,7 +4909,7 @@ ParticleSystemRenderer:
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: -1
-  m_SortingFudge: -1
+  m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
   m_RenderAlignment: 0
@@ -5049,8 +5049,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.7
-      minScalar: 0.5
+      scalar: 0.6
+      minScalar: 0.4
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -5156,7 +5156,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.6698113, g: 0.14217694, b: 0.14217694, a: 0.078431375}
+      maxColor: {r: 0.6698113, g: 0.14217694, b: 0.14217694, a: 0.2}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9769,7 +9769,7 @@ ParticleSystemRenderer:
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
-  m_SortMode: 1
+  m_SortMode: 0
   m_MinParticleSize: 0
   m_MaxParticleSize: 5
   m_CameraVelocityScale: 0
@@ -9827,8 +9827,8 @@ Transform:
   m_GameObject: {fileID: 8367052679202843012}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.03, y: 0.6733, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 49243990802568366}
@@ -9843,7 +9843,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8367052679202843012}
   serializedVersion: 8
-  lengthInSec: 1
+  lengthInSec: 1.6
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0

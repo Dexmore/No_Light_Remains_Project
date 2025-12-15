@@ -46,16 +46,17 @@ public class Bullet : PoolBehaviour
     void Damage(Collider2D coll)
     {
         Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
-        HitData hitData = new HitData
-        (
-            $"{owner.name}-{bulletName}",
-            transform,
-            coll.transform,
-            Random.Range(0.9f, 1.1f) * damage,
-            hitPoint,
-            new string[1] { "Hit2" },
-            staggerType
-        );
+        HitData hitData = new HitData();
+        if (owner != null)
+            hitData.attackName = $"{owner.name}-{bulletName}";
+        else
+            hitData.attackName = $"Null-{bulletName}";
+        hitData.attacker = transform;
+        hitData.target = coll.transform;
+        hitData.damage = Random.Range(0.9f, 1.1f) * damage;
+        hitData.hitPoint = hitPoint;
+        hitData.particleNames = new string[1] { "Hit2" };
+        hitData.staggerType = staggerType;
         hitData.attackType = HitData.AttackType.Bullet;
         GameManager.I.onHit.Invoke(hitData);
         Despawn();
