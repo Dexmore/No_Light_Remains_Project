@@ -25,6 +25,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onDie = (x) => { };
     public UnityAction<int, SimpleTrigger> onSimpleTriggerEnter = (x, y) => { };
     public UnityAction<int, SimpleTrigger> onSimpleTriggerExit = (x, y) => { };
+    public UnityAction onSceneChanged = () => { };
 
     void OnEnable()
     {
@@ -93,6 +94,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         FadeIn(0.5f);
         await Task.Delay(1300);
         isSceneWaiting = false;
+        onSceneChanged.Invoke();
     }
     #endregion
     #region Fade

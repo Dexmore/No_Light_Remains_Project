@@ -14,7 +14,20 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         canvas = GetComponentInChildren<Canvas>();
         canvasTr = transform.GetChild(0);
     }
+    void OnEnable()
+    {
+        GameManager.I.onSceneChanged += SceneChangeHandler;
+    }
+    void OnDisable()
+    {
+        GameManager.I.onSceneChanged -= SceneChangeHandler;
+    }
     void Start()
+    {
+        canvas.renderMode = RenderMode.ScreenSpaceCamera; 
+        canvas.worldCamera = Camera.main;
+    }
+    void SceneChangeHandler()
     {
         canvas.renderMode = RenderMode.ScreenSpaceCamera; 
         canvas.worldCamera = Camera.main;
