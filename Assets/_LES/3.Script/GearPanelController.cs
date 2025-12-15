@@ -225,6 +225,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
     
     public void ToggleEquipGear(GearData gear)
     {
+        // 1. UI 상에서의 데이터 변경 (기존 로직)
         if (!gear.isEquipped)
         {
             int newCost = _currentEquippedCost + gear.cost;
@@ -244,7 +245,21 @@ public class GearPanelController : MonoBehaviour, ITabContent
             gear.isEquipped = false;
             _currentEquippedCost -= gear.cost;
         }
-        
+
+        // 2. [추가] DBManager에 실제 장착 상태 저장 (동기화)
+        // 팀원 코드는 여기서 끝났기 때문에, 실제 DB 값이 안 바뀌는 문제가 있었습니다.
+        int findIndex = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == gear.name);
+        if (findIndex != -1)
+        {
+            CharacterData.GearData dbGear = DBManager.I.currData.gearDatas[findIndex];
+            dbGear.isEquipped = gear.isEquipped; // 상태 동기화
+            DBManager.I.currData.gearDatas[findIndex] = dbGear; // 구조체 다시 덮어쓰기
+            
+            // (선택 사항) 즉시 저장하려면 아래 주석 해제
+            // DBManager.I.Save(); 
+        }
+
+        // 3. UI 갱신
         totalCostMeter.SetCost(_currentEquippedCost);
         FindSlotForData(gear)?.UpdateEquipVisual();
     }

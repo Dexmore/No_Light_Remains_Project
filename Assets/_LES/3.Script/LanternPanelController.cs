@@ -130,27 +130,47 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     {
         bool wasEquipped = dataToToggle.isEquipped;
 
-        // [수정] InventoryDataManager의 데이터를 사용
-
-
-
+        // 1. [DB 동기화] 모든 랜턴 장착 해제 (중복 장착 방지)
         for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
             CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
-            cd.isEquipped = false;
+            cd.isEquipped = false; // 일단 다 끕니다.
             DBManager.I.currData.lanternDatas[i] = cd;
         }
 
-
-
+        // 2. [DB 동기화] 선택한 랜턴이 원래 꺼져있었다면 -> 켭니다.
         if (!wasEquipped)
         {
+            // UI 데이터 갱신
             dataToToggle.isEquipped = true;
+
+            // 실제 DB 데이터 찾아서 갱신
+            int findIndex = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == dataToToggle.name);
+            if (findIndex != -1)
+            {
+                CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[findIndex];
+                cd.isEquipped = true; // 장착!
+                DBManager.I.currData.lanternDatas[findIndex] = cd;
+            }
+        }
+        else
+        {
+            // 원래 켜져있던 걸 눌렀으면 꺼진 상태 유지 (Toggle Off)
+            dataToToggle.isEquipped = false;
         }
 
+        // 3. UI 시각적 갱신
+        // (RefreshPanel을 다시 부르면 비효율적이므로 슬롯들만 업데이트)
         foreach (var slot in functionSlots)
         {
-            slot.UpdateEquipVisual();
+            // 슬롯이 가진 데이터가 '방금 누른 그 놈'이면 상태 반영, 아니면 false(위에서 다 껐으므로)
+            if (slot.MyData != null)
+            {
+                // UI용 데이터도 다 꺼버림 (중복 방지 시각화)
+                if (slot.MyData != dataToToggle) slot.MyData.isEquipped = false;
+                
+                slot.UpdateEquipVisual();
+            }
         }
 
         UpdateMainEquippedImage();
@@ -161,21 +181,42 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     /// </summary>
     private void UpdateMainEquippedImage()
     {
-        //LanternFunctionData equippedFunction = InventoryDataManager.Instance.PlayerLanternFunctions.FirstOrDefault(f => f.isEquipped);
+        // 1. DB에서 현재 장착 중인(isEquipped == true) 랜턴 데이터를 찾습니다.
         CharacterData.LanternData cd = DBManager.I.currData.lanternDatas.FirstOrDefault(f => f.isEquipped);
-        int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.functionName == cd.Name);
-        if(find == -1) return;
-        LanternFunctionData equippedFunction = DBManager.I.itemDatabase.allLanterns[find];
 
-        if (equippedFunction != null)
+        // 2. 장착된 데이터가 없다면 (이름이 비어있다면) -> 이미지를 끄고 종료
+        if (string.IsNullOrEmpty(cd.Name))
         {
-            equippedFunctionImage.sprite = equippedFunction.functionIcon;
-            equippedFunctionImage.gameObject.SetActive(true);
+            if (equippedFunctionImage != null)
+            {
+                equippedFunctionImage.sprite = null;
+                equippedFunctionImage.gameObject.SetActive(false);
+            }
+            return;
+        }
+
+        // 3. 아이템 데이터베이스에서 원본 데이터(.asset)를 찾습니다.
+        // [수정] functionName이 아니라 .name(파일 이름)으로 찾아야 정확합니다.
+        int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
+        
+        if(find != -1)
+        {
+            // 4. 찾았으면 이미지 교체 및 활성화
+            LanternFunctionData equippedFunction = DBManager.I.itemDatabase.allLanterns[find];
+            if (equippedFunctionImage != null)
+            {
+                equippedFunctionImage.sprite = equippedFunction.functionIcon;
+                equippedFunctionImage.gameObject.SetActive(true);
+            }
         }
         else
         {
-            equippedFunctionImage.sprite = null;
-            equippedFunctionImage.gameObject.SetActive(false);
+            // 5. DB에는 있는데 에셋을 못 찾은 경우 (에러 방지용으로 끄기)
+            if (equippedFunctionImage != null)
+            {
+                equippedFunctionImage.sprite = null;
+                equippedFunctionImage.gameObject.SetActive(false);
+            }
         }
     }
 
