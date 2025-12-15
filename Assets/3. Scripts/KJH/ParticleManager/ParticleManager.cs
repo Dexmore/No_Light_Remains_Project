@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-
 using UnityEngine;
 using DG.Tweening;
 public class ParticleManager : SingletonBehaviour<ParticleManager>
@@ -7,11 +6,31 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
     protected override bool IsDontDestroy() => true;
     [SerializeField] List<Particle> particleList = new List<Particle>();
     [SerializeField] List<UIParticle> uiParticleList = new List<UIParticle>();
-    Transform canvas;
+    Canvas canvas;
+    Transform canvasTr;
     protected override void Awake()
     {
         base.Awake();
-        canvas = transform.GetChild(0);
+        canvas = GetComponentInChildren<Canvas>();
+        canvasTr = transform.GetChild(0);
+    }
+    void OnEnable()
+    {
+        GameManager.I.onSceneChanged += SceneChangeHandler;
+    }
+    void OnDisable()
+    {
+        GameManager.I.onSceneChanged -= SceneChangeHandler;
+    }
+    void Start()
+    {
+        canvas.renderMode = RenderMode.ScreenSpaceCamera; 
+        canvas.worldCamera = Camera.main;
+    }
+    void SceneChangeHandler()
+    {
+        canvas.renderMode = RenderMode.ScreenSpaceCamera; 
+        canvas.worldCamera = Camera.main;
     }
     public Particle PlayParticle(string Name, Vector3 pos, Quaternion rot, Transform parent = null)
     {
@@ -48,14 +67,14 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         }
         if (find == -1) return null;
         PoolBehaviour pb = uiParticleList[find];
-        PoolBehaviour clone = PoolManager.I?.Spawn(pb, Vector2.zero, Quaternion.identity, canvas);
+        PoolBehaviour clone = PoolManager.I?.Spawn(pb, Vector2.zero, Quaternion.identity, canvasTr);
         UIParticle _clone = clone as UIParticle;
         _clone.transform.localPosition = Vector3.zero;
         _clone.transform.localScale = Vector3.one;
         RectTransform rect = _clone.transform as RectTransform;
         rect.anchoredPosition = screenPosition_on_1920x1080;
         _clone.transform.rotation = rot;
-        _clone.transform.SetParent(canvas);
+        _clone.transform.SetParent(canvasTr);
         _clone.Play();
         return _clone;
     }
@@ -72,7 +91,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
     {
         if (type == TextType.PlayerNotice)
         {
-            TextEffect _clone = PoolManager.I?.Spawn(playerNoticeText, pos, Quaternion.identity, canvas) as TextEffect;
+            TextEffect _clone = PoolManager.I?.Spawn(playerNoticeText, pos, Quaternion.identity, canvasTr) as TextEffect;
             _clone.txt.text = text;
             _clone.transform.position = pos + 0.2f * Vector3.up;
             _clone.transform.SetParent(transform);
@@ -86,7 +105,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         }
         else if (type == TextType.Damage)
         {
-            TextEffect _clone = PoolManager.I?.Spawn(damageText, pos, Quaternion.identity, canvas) as TextEffect;
+            TextEffect _clone = PoolManager.I?.Spawn(damageText, pos, Quaternion.identity, canvasTr) as TextEffect;
             string reText = text;
             string[] split = reText.Split(".");
             reText = $"{split[0]}<size=25>.</size>{split[1]}";

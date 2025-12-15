@@ -5,13 +5,14 @@ public class PlayerDie : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerDie(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    LightSystem lightSystem;
+    PlayerLight PlayerLight;
     public void Enter()
     {
-        lightSystem = ctx.GetComponentInChildren<LightSystem>(true);
+        ctx.Dead = true;
+        PlayerLight = ctx.GetComponentInChildren<PlayerLight>(true);
         ctx.animator.Play("Player_Die");
-        GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
-        GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+        GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
+        GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
         light0.SetActive(false);
         light1.SetActive(false);
         GameManager.I.isLanternOn = false;

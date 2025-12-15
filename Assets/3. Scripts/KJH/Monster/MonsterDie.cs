@@ -10,7 +10,7 @@ public class MonsterDie : MonsterState
     public struct DropTable
     {
         public DropItem dropItem;
-        public int money;
+        public int gold;
         public Vector2Int countRange;
         [Range(0f, 1f)] public float probability;
     }
@@ -40,7 +40,7 @@ public class MonsterDie : MonsterState
             for (int k = 0; k < count; k++)
             {
                 DropItem dropItem = Instantiate(element.dropItem);
-                dropItem.money = element.money;
+                dropItem.gold = element.gold;
                 dropItem.transform.position = transform.position;
                 Rigidbody2D rigidbody2D = dropItem.GetComponentInChildren<Rigidbody2D>();
                 if (rigidbody2D != null)

@@ -72,7 +72,7 @@ public class PlayerControl : MonoBehaviour
         attackRange = GetComponentInChildren<AttackRange>(true);
         height = capsuleCollider2D.size.y;
         width = capsuleCollider2D.size.x;
-        lightSystem = GetComponentInChildren<LightSystem>(true);
+        PlayerLight = GetComponentInChildren<PlayerLight>(true);
         fsm = new PlayerStateMachine();
         idle = new PlayerIdle(this, fsm);
         run = new PlayerRun(this, fsm);
@@ -93,8 +93,8 @@ public class PlayerControl : MonoBehaviour
     }
     void Start()
     {
-        GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
-        GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+        GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
+        GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
         CharacterData characterData = DBManager.I.currData;
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
@@ -112,6 +112,8 @@ public class PlayerControl : MonoBehaviour
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             newData.recordDatas = new List<CharacterData.RecordData>();
+            newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            newData.lastPos = transform.position;
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
@@ -304,6 +306,7 @@ public class PlayerControl : MonoBehaviour
     {
         Jumped = false;
     }
+    Camera _mainCamera;
     [HideInInspector] public Inventory inventoryUI;
     void HitHandler(HitData hData)
     {
@@ -347,7 +350,7 @@ public class PlayerControl : MonoBehaviour
             GameManager.I.onHitAfter.Invoke(hData);
             return;
         }
-        else if (hData.attackType == HitData.AttackType.Default)
+        else if (hData.attackType != HitData.AttackType.Chafe)
         {
             if (isHit2) return;
             isHit2 = true;
@@ -367,8 +370,15 @@ public class PlayerControl : MonoBehaviour
                     AudioManager.I.PlaySFX("Parry");
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData);
+                    if (_mainCamera == null) _mainCamera = Camera.main;
+                    UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
+                    AttractParticle ap = upa.GetComponent<AttractParticle>();
+                    Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
+                    ap.targetVector = pos;
+                    currBattery += 20f;
+                    currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
+                    hUDBinder.RefreshBattery();
                     StartCoroutine(nameof(ReleaseParred));
-                    Parred = false;
                     return;
                 }
                 else
@@ -500,18 +510,18 @@ public class PlayerControl : MonoBehaviour
     }
     IEnumerator ReleaseParred()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.15f);
+        yield return YieldInstructionCache.WaitForSeconds(0.13f);
         Parred = false;
     }
     #region Turn ON/OFF Lantern
-    LightSystem lightSystem;
+    PlayerLight PlayerLight;
     float batteryTextCooltime;
     void LanternInput(InputAction.CallbackContext callback)
     {
         if (Dead) return;
         AudioManager.I.PlaySFX("FlashlightClick");
-        GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
-        GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+        GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
+        GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
         if (light0.activeSelf)
         {
             light0.SetActive(false);
@@ -542,7 +552,7 @@ public class PlayerControl : MonoBehaviour
             yield return YieldInstructionCache.WaitForSeconds(interval);
             if (GameManager.I.isLanternOn)
             {
-                currBattery -= 1.3f * interval;
+                currBattery -= 2.5f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                 DBManager.I.currData.currBattery = currBattery;
                 hUDBinder.RefreshBattery();
@@ -550,8 +560,8 @@ public class PlayerControl : MonoBehaviour
                 {
                     AudioManager.I.PlaySFX("FlashlightClick");
                     ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
-                    GameObject light0 = lightSystem.transform.GetChild(0).gameObject;
-                    GameObject light1 = lightSystem.transform.GetChild(1).gameObject;
+                    GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
+                    GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
                     light0.SetActive(false);
                     light1.SetActive(false);
                     hUDBinder.RefreshBattery();
@@ -560,7 +570,7 @@ public class PlayerControl : MonoBehaviour
             }
             else if (currBattery <= 100)
             {
-                if(fsm.currentState == die) continue;
+                if (fsm.currentState == die) continue;
                 currBattery += 0.1f * interval;
                 currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                 DBManager.I.currData.currBattery = currBattery;

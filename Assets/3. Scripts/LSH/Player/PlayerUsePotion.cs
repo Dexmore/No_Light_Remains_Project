@@ -28,6 +28,7 @@ public class PlayerUsePotion : IPlayerState
         ctx.animator.Play("Player_Idle");
         sfxFlag1 = false;
         sfxFlag2 = false;
+        sfxFlag3 = false;
         aniFlag1 = false;
     }
     public void Exit()
@@ -40,12 +41,17 @@ public class PlayerUsePotion : IPlayerState
             }
         sfxFlag1 = false;
         sfxFlag2 = false;
+        sfxFlag3 = false;
         aniFlag1 = false;
+        upa?.Despawn();
     }
     SFX sfx;
     bool sfxFlag1 = false;
     bool sfxFlag2 = false;
+    bool sfxFlag3 = false;
     bool aniFlag1 = false;
+    UIParticle upa;
+    Camera _mainCamera;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
@@ -66,10 +72,21 @@ public class PlayerUsePotion : IPlayerState
                 sfxFlag2 = true;
                 DBManager.I.currData.potionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
+                if (_mainCamera == null) _mainCamera = Camera.main;
+                UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttPotion", MethodCollection.WorldTo1920x1080Position(ctx.transform.position, _mainCamera), Quaternion.identity);
+                AttractParticle ap = upa.GetComponent<AttractParticle>();
+                Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.21f, 0.895f, 0f));
+                ap.targetVector = pos;
             }
             ctx.currHealth += (1f / (duration - 1.2f)) * ctx.maxHealth * Time.deltaTime;
             ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, ctx.maxHealth);
             DBManager.I.currData.currHealth = ctx.currHealth;
+        }
+        if (_elapsedTime > 1.32f && !sfxFlag3)
+        {
+            sfxFlag3 = true;
+            AudioManager.I.PlaySFX("Heal");
+            ParticleManager.I.PlayParticle("PotionEffect", ctx.transform.position + 0.8f * Vector3.up, Quaternion.identity);
         }
         if (_elapsedTime > duration)
         {

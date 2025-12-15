@@ -8,13 +8,13 @@ public class PlayerDeathUI : MonoBehaviour
 {
     [Header("UI Objects")]
     [Tooltip("전체 UI 캔버스 (DIECanvas)")]
-    public GameObject deathScreenUI; 
+    public GameObject deathScreenUI;
 
     [Tooltip("쉐이더가 적용된 'DeathImage' (YOU DIED 이미지)")]
-    public Image deathImage; 
-    
+    public Image deathImage;
+
     [Tooltip("화면을 암전시킬 'FadePanel' (검은색 패널)")]
-    public Image fadePanel; 
+    public Image fadePanel;
 
     [Header("Timing Settings (조절 가능)")]
     [Tooltip("글자가 불타며 나타나는 시간 (기본 2초)")]
@@ -44,19 +44,19 @@ public class PlayerDeathUI : MonoBehaviour
             deathScreenUI.SetActive(false);
 
         // 3. 죽음 이미지 쉐이더 초기화 (투명하게 숨김)
-        if(deathImage != null)
+        if (deathImage != null)
         {
             uiMat = deathImage.material;
             // 1 = 완전 투명, 0 = 완전 보임
-            if(uiMat.HasProperty("_DissolveAmount"))
-                uiMat.SetFloat("_DissolveAmount", 1f); 
+            if (uiMat.HasProperty("_DissolveAmount"))
+                uiMat.SetFloat("_DissolveAmount", 1f);
         }
 
         // 4. 페이드 패널 초기화 (투명하게)
         if (fadePanel != null)
         {
             fadePanel.gameObject.SetActive(true);
-            fadePanel.color = new Color(0, 0, 0, 0); 
+            fadePanel.color = new Color(0, 0, 0, 0);
         }
     }
 
@@ -75,6 +75,8 @@ public class PlayerDeathUI : MonoBehaviour
     // [핵심 로직] 시간 설정을 반영한 시퀀스
     IEnumerator ProcessDeathSequence()
     {
+        yield return new WaitForSeconds(2.5f);
+        
         // 1. UI 캔버스 켜기
         if (deathScreenUI != null) deathScreenUI.SetActive(true);
 
@@ -108,6 +110,6 @@ public class PlayerDeathUI : MonoBehaviour
         // 6. 현재 씬 재시작
         string currentSceneName = DBManager.I.currData.sceneName;
         GameManager.I.SetPlayerPosition(DBManager.I.currData.lastPos);
-        SceneManager.LoadScene(currentSceneName);
+        GameManager.I.LoadSceneAsync(currentSceneName, false);
     }
 }
