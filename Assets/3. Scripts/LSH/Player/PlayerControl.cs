@@ -95,6 +95,7 @@ public class PlayerControl : MonoBehaviour
     {
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
+        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
         CharacterData characterData = DBManager.I.currData;
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
@@ -117,6 +118,7 @@ public class PlayerControl : MonoBehaviour
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
+            light3.SetActive(true);
             // 신규캐릭터 시작 아이템
             DBManager.I.AddLantern("BasicLantern");
             DBManager.I.AddItem("UsefulSword");
@@ -131,6 +133,7 @@ public class PlayerControl : MonoBehaviour
             currBattery = DBManager.I.currData.currBattery;
             light0.SetActive(GameManager.I.isLanternOn);
             light1.SetActive(GameManager.I.isLanternOn);
+            light3.SetActive(!GameManager.I.isLanternOn);
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
@@ -414,7 +417,17 @@ public class PlayerControl : MonoBehaviour
                 hit.staggerType = hData.staggerType;
                 fsm.ChangeState(hit);
             }
-            currHealth -= (int)hData.damage;
+            float diffMultiplier = 1f;
+            switch (DBManager.I.currData.difficulty)
+            {
+                case 0:
+                    diffMultiplier = 0.7f;
+                    break;
+                case 2:
+                    diffMultiplier = 1.33f;
+                    break;
+            }
+            currHealth -= (int)(hData.damage * diffMultiplier);
             currHealth = Mathf.Clamp(currHealth, 0f, maxHealth);
             DBManager.I.currData.currHealth = currHealth;
             if (currHealth <= 0)
@@ -522,10 +535,12 @@ public class PlayerControl : MonoBehaviour
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
+        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
         if (light0.activeSelf)
         {
             light0.SetActive(false);
             light1.SetActive(false);
+            light3.SetActive(true);
             GameManager.I.isLanternOn = false;
         }
         else
@@ -541,40 +556,58 @@ public class PlayerControl : MonoBehaviour
             }
             light0.SetActive(true);
             light1.SetActive(true);
+            light3.SetActive(true);
             GameManager.I.isLanternOn = true;
         }
     }
+    [HideInInspector] public bool isNearSavePoint;
     IEnumerator DecreaseBattery()
     {
         float interval = 0.08f;
         while (true)
         {
             yield return YieldInstructionCache.WaitForSeconds(interval);
-            if (GameManager.I.isLanternOn)
+            if (isNearSavePoint)
             {
-                currBattery -= 2.5f * interval;
-                currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
-                DBManager.I.currData.currBattery = currBattery;
-                hUDBinder.RefreshBattery();
-                if (currBattery <= 0)
+                if (currBattery <= 100)
                 {
-                    AudioManager.I.PlaySFX("FlashlightClick");
-                    ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
-                    GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
-                    GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-                    light0.SetActive(false);
-                    light1.SetActive(false);
+                    if (fsm.currentState == die) continue;
+                    currBattery += 6f * interval;
+                    currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                    DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
-                    GameManager.I.isLanternOn = false;
                 }
             }
-            else if (currBattery <= 100)
+            else
             {
-                if (fsm.currentState == die) continue;
-                currBattery += 0.1f * interval;
-                currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
-                DBManager.I.currData.currBattery = currBattery;
-                hUDBinder.RefreshBattery();
+                if (GameManager.I.isLanternOn)
+                {
+                    currBattery -= 2.5f * interval;
+                    currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                    DBManager.I.currData.currBattery = currBattery;
+                    hUDBinder.RefreshBattery();
+                    if (currBattery <= 0)
+                    {
+                        AudioManager.I.PlaySFX("FlashlightClick");
+                        ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
+                        GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
+                        GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
+                        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+                        light0.SetActive(false);
+                        light1.SetActive(false);
+                        light3.SetActive(true);
+                        hUDBinder.RefreshBattery();
+                        GameManager.I.isLanternOn = false;
+                    }
+                }
+                else if (currBattery <= 100)
+                {
+                    if (fsm.currentState == die) continue;
+                    currBattery += 0.1f * interval;
+                    currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                    DBManager.I.currData.currBattery = currBattery;
+                    hUDBinder.RefreshBattery();
+                }
             }
         }
     }

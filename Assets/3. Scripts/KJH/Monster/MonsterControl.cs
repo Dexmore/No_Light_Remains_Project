@@ -13,7 +13,7 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public bool isGround;
     [HideInInspector] public bool isStagger;
     public LayerMask groundLayer;
-    public float currHP;
+    public float currHealth;
     [Range(0f, 1f)] public float aggressive = 0.2f;
 
     [Header("SO")]
@@ -56,8 +56,18 @@ public class MonsterControl : MonoBehaviour
         Type = data.Type;
         MoveSpeed = data.MoveSpeed;
         Attack = data.Attack;
-        maxHP = data.HP;
-        currHP = maxHP;
+        float diffMultiplier = 1f;
+        switch (DBManager.I.currData.difficulty)
+        {
+            case 0:
+                diffMultiplier = 0.7f;
+                break;
+            case 2:
+                diffMultiplier = 1.33f;
+                break;
+        }
+        maxHP = data.HP * diffMultiplier;
+        currHealth = maxHP;
         if (astar)
         {
             astar.height = height;
@@ -779,7 +789,7 @@ public class MonsterControl : MonoBehaviour
                 }
             }
             // Injury
-            float ratio = (currHP / maxHP);
+            float ratio = (currHealth / maxHP);
             if (canPhase2)
             {
                 if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Phase2))
@@ -962,14 +972,14 @@ public class MonsterControl : MonoBehaviour
             }
         }
         // Set HP
-        currHP -= hData.damage;
+        currHealth -= hData.damage;
         if (HasCondition(Condition.Peaceful))
         {
             RemoveCondition(Condition.Peaceful);
             if (bossHUD != null)
                 bossHUD.SetTarget(this);
         }
-        if (currHP <= 0)
+        if (currHealth <= 0)
         {
             ChangeState(State.Die);
             GameManager.I.onDie.Invoke(hData);

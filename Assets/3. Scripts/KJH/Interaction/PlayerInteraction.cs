@@ -45,17 +45,15 @@ public class PlayerInteraction : MonoBehaviour
         public Interactable interactable;
     }
     Transform camTR;
-    PlayerControl control;
+    PlayerControl playerControl;
     [ReadOnlyInspector][SerializeField] Interactable target1;
     [ReadOnlyInspector][SerializeField] Interactable target2;
     Vector3 distancePivot;
     PromptControl prompt;
     PlayerLight PlayerLight;
-    PlayerControl PlayerControl;
     HUDBinder hUDBinder;
     void Awake()
     {
-        TryGetComponent(out PlayerControl);
         prompt = FindAnyObjectByType<PromptControl>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
         PlayerLight = FindAnyObjectByType<PlayerLight>();
@@ -74,7 +72,7 @@ public class PlayerInteraction : MonoBehaviour
         interactionAction = inputActionAsset.FindActionMap("Player").FindAction("Interaction");
         lanternAction = inputActionAsset.FindActionMap("Player").FindAction("LanternInteraction");
         camTR = FindAnyObjectByType<FollowCamera>(FindObjectsInactive.Include).transform.GetChild(0);
-        TryGetComponent(out control);
+        TryGetComponent(out playerControl);
         Sensor(cts.Token).Forget();
         target1 = null;
         target2 = null;
@@ -88,8 +86,8 @@ public class PlayerInteraction : MonoBehaviour
     public bool press2;
     void InputInteraction(InputAction.CallbackContext callback)
     {
-        if (PlayerControl.fsm.currentState == PlayerControl.openInventory) return;
-        if (PlayerControl.fsm.currentState == PlayerControl.die) return;
+        if (playerControl.fsm.currentState == playerControl.openInventory) return;
+        if (playerControl.fsm.currentState == playerControl.die) return;
         if (!press1)
         {
             if (target1 != null)
@@ -137,8 +135,8 @@ public class PlayerInteraction : MonoBehaviour
     }
     void InputLantern(InputAction.CallbackContext callback)
     {
-        if (PlayerControl.fsm.currentState == PlayerControl.openInventory) return;
-        if (PlayerControl.fsm.currentState == PlayerControl.die) return;
+        if (playerControl.fsm.currentState == playerControl.openInventory) return;
+        if (playerControl.fsm.currentState == playerControl.die) return;
         if (target2 == null) return;
         if (!press2)
         {
@@ -172,9 +170,9 @@ public class PlayerInteraction : MonoBehaviour
         while (!token.IsCancellationRequested)
         {
             await UniTask.Yield(token);
-            if (PlayerControl.fsm.currentState == PlayerControl.openInventory)
+            if (playerControl.fsm.currentState == playerControl.openInventory)
                 return;
-            if (PlayerControl.fsm.currentState == PlayerControl.die)
+            if (playerControl.fsm.currentState == playerControl.die)
                 return;
             if (target2 == null)
                 return;
@@ -212,22 +210,23 @@ public class PlayerInteraction : MonoBehaviour
         {
             int rnd = Random.Range(12, 18);
             await UniTask.DelayFrame(rnd, cancellationToken: token);
-            if (PlayerControl.fsm.currentState == PlayerControl.openInventory)
+            if (playerControl.fsm.currentState == playerControl.openInventory)
             {
                 prompt.Close(0);
                 prompt.Close(1);
                 continue;
             }
-            if (PlayerControl.fsm.currentState == PlayerControl.die)
+            if (playerControl.fsm.currentState == playerControl.die)
             {
                 prompt.Close(0);
                 prompt.Close(1);
                 continue;
             }
-            distancePivot = transform.position + (0.4f * control.height * Vector3.up) + (0.4f * interactDistance * (camTR.position - transform.position).normalized);
+            distancePivot = transform.position + (0.4f * playerControl.height * Vector3.up) + (0.4f * interactDistance * (camTR.position - transform.position).normalized);
             colliders = Physics2D.OverlapCircleAll(transform.position, interactDistance, interactLayer);
             sensorDatas.Clear();
             // Auto Interaction
+            playerControl.isNearSavePoint = false;
             for (int i = 0; i < colliders.Length; i++)
             {
                 int find = sensorDatas.FindIndex(x => x.collider == colliders[i]);
@@ -235,6 +234,11 @@ public class PlayerInteraction : MonoBehaviour
                 Transform root = colliders[i].transform.Root();
                 if (root.TryGetComponent(out Interactable interactable))
                 {
+                    SavePoint_LSH savePoint_LSH = interactable as SavePoint_LSH;
+                    if(savePoint_LSH != null)
+                    {
+                        playerControl.isNearSavePoint = true;
+                    }
                     if (!interactable.isReady) continue;
                     SensorData data = new SensorData();
                     data.collider = colliders[i];

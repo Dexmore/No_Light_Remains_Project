@@ -154,7 +154,7 @@ Transform:
   m_GameObject: {fileID: 5742965260752883404}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.26532, y: 1.55727, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -175,4 +175,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCamera
   target: {fileID: 0}
   smoothTime: 0.3
+  xBound: {x: -999, y: 999}
+  yBound: {x: -999, y: 999}
   offset: {x: 0, y: 3.8, z: -10}

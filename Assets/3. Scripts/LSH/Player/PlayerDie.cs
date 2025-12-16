@@ -13,8 +13,10 @@ public class PlayerDie : IPlayerState
         ctx.animator.Play("Player_Die");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
+        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
         light0.SetActive(false);
         light1.SetActive(false);
+        light3.SetActive(true);
         GameManager.I.isLanternOn = false;
     }
     public void Exit()
