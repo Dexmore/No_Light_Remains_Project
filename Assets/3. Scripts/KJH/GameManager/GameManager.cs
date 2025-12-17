@@ -8,7 +8,10 @@ using DG.Tweening;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
-    public Language language = Language.English;
+
+    [Header("로딩시 문구 & 이미지 아래에서 랜덤으로 하나 출력")]
+    public Sprite[] loadingSprites;
+    public string[] loadingTexts;
 
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
@@ -237,6 +240,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #endregion
     #region Hit
+    [Space(50)]
     public Material hitTintMat;
     #endregion
     #region HitEffect
@@ -433,17 +437,17 @@ public struct HitData
     }
 }
 
-public enum Language
-{
-    English, // 영어
-    Korean,  // 한국어
-    German,  // 독일어
-    French,  // 프랑스어
-    Spanish, // 스페인어
-    ChineseSimplified, // 중국어(간체)
-    Japanese, // 일본어
-    Russian,  // 러시아어
-    PortugueseBrazil, // 브라질-포르투갈어
-    Arabic, //아랍어
-    Hindi, //인도어
-}
+// public enum Language
+// {
+//     English, // 영어
+//     Korean,  // 한국어
+//     German,  // 독일어
+//     French,  // 프랑스어
+//     Spanish, // 스페인어
+//     ChineseSimplified, // 중국어(간체)
+//     Japanese, // 일본어
+//     Russian,  // 러시아어
+//     PortugueseBrazil, // 브라질-포르투갈어
+//     Arabic, //아랍어
+//     Hindi, //인도어
+// }
