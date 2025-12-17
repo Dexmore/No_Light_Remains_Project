@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
+using TMPro;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -192,8 +193,12 @@ public class GameManager : SingletonBehaviour<GameManager>
     float loadingProgress;
     Tween loadingTween;
     bool isLoadingDone;
+    TMP_Text loadingText;
+    Image loadingImage;
     void InitLoading()
     {
+        loadingText = transform.Find("LoadingScreen/Text").GetComponent<TMP_Text>();
+        loadingImage = transform.Find("LoadingScreen/Background").GetComponent<Image>();
         loadingScreen = transform.Find("LoadingScreen").gameObject;
         loadingDim = transform.Find("LoadingScreen/Dim").GetComponent<Image>();
         loadingSlider = transform.Find("LoadingScreen/Slider").GetComponent<Slider>();
@@ -208,6 +213,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         loadingTween?.Kill();
         loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine);
         float elapsedTime = 0f;
+        int randomInt = Random.Range(0,loadingSprites.Length);
+        loadingImage.sprite = loadingSprites[randomInt];
+        randomInt = Random.Range(0,loadingTexts.Length);
+        loadingText.text = loadingTexts[randomInt];
         // 가짜 로딩
         while (true)
         {

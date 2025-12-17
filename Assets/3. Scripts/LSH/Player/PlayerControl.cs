@@ -108,7 +108,7 @@ public class PlayerControl : MonoBehaviour
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
             newData.potionCount = 5;
-            newData.maxGearCost = 6;
+            newData.maxGearCost = 3;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
@@ -121,9 +121,10 @@ public class PlayerControl : MonoBehaviour
             light3.SetActive(true);
             // 신규캐릭터 시작 아이템
             DBManager.I.AddLantern("BasicLantern");
-            DBManager.I.AddItem("UsefulSword");
-            DBManager.I.AddItem("Helmet");
-            DBManager.I.AddItem("LeatherArmor");
+            int find = DBManager.I.currData.lanternDatas.FindIndex(x=> x.Name == "BasicLantern");
+            CharacterData.LanternData lanternData = DBManager.I.currData.lanternDatas[find];
+            lanternData.isEquipped = true;
+            DBManager.I.currData.lanternDatas[find] = lanternData;
         }
         else
         {
