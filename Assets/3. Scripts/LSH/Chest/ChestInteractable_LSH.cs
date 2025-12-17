@@ -12,27 +12,28 @@ public class ChestInteractable_LSH : Interactable
     [Header("Drop Table")]
     [SerializeField] private DropTable_DB_LSH dropTable;
 
-    [Header("Reward Map (Prefab -> DB info)")]
-    [SerializeField] private DropRewardMap_DB_LSH rewardMap;
-
-    [Header("Animator Trigger Name")]
-    [SerializeField] private string openTrigger = "Open";
-
-    [Header("Debug")]
-    [SerializeField] private bool debugLog = true;
+    [Header("Settings")]
+    [SerializeField] private string openTriggerName = "Open";
 
     private bool opened = false;
 
-    void Awake()
+    private void Awake()
     {
         if (!animator) animator = GetComponentInChildren<Animator>();
+        if (!animator) Debug.LogError("[Chest] Animator not found!");
+
+        // 상자는 트리거여야 함
         var col = GetComponent<Collider2D>();
         if (col) col.isTrigger = true;
+
+        if (!dropTable) Debug.LogWarning("[Chest] DropTable not assigned!");
+
+        isReady = true;
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (opened || !isReady) return;
+        if (!isReady || opened) return;
         if (!other.CompareTag("Player")) return;
 
         OpenChest();
@@ -43,73 +44,24 @@ public class ChestInteractable_LSH : Interactable
         opened = true;
         isReady = false;
 
+        // 애니메이션 트리거
         if (animator)
         {
-            animator.ResetTrigger(openTrigger);
-            animator.SetTrigger(openTrigger);
+            animator.ResetTrigger(openTriggerName);
+            animator.SetTrigger(openTriggerName);
         }
 
-        GiveRewards();
+        GiveReward();
     }
 
-    private void GiveRewards()
+    private void GiveReward()
     {
-        if (dropTable == null)
+        if (!dropTable)
         {
             Debug.LogError("[Chest] dropTable not assigned!");
             return;
         }
-        if (rewardMap == null)
-        {
-            Debug.LogError("[Chest] rewardMap not assigned!");
-            return;
-        }
-        if (DBManager.I == null)
-        {
-            Debug.LogError("[Chest] DBManager.I not found!");
-            return;
-        }
 
-        var results = dropTable.Roll();
-
-        foreach (var (entry, count) in results)
-        {
-            if (entry == null || entry.dropItemPrefab == null) continue;
-
-            if (!rewardMap.TryGet(entry.dropItemPrefab, out var map))
-            {
-                Debug.LogError($"[Chest] RewardMap에 프리팹 매핑이 없음: {entry.dropItemPrefab.name}");
-                continue;
-            }
-
-            switch (map.type)
-            {
-                case DropRewardMap_DB_LSH.RewardType.Item:
-                    DBManager.I.AddItem(map.dbName, count);
-                    if (debugLog) Debug.Log($"[Chest] Item added: {map.dbName} x{count}");
-                    break;
-
-                case DropRewardMap_DB_LSH.RewardType.Gear:
-                    // 기어는 보통 개수 개념이 없으니 count 무시 (원하면 반복 AddGear)
-                    DBManager.I.AddGear(map.dbName);
-                    if (debugLog) Debug.Log($"[Chest] Gear added: {map.dbName}");
-                    break;
-
-                case DropRewardMap_DB_LSH.RewardType.Lantern:
-                    DBManager.I.AddLantern(map.dbName);
-                    if (debugLog) Debug.Log($"[Chest] Lantern added: {map.dbName}");
-                    break;
-
-                case DropRewardMap_DB_LSH.RewardType.Record:
-                    DBManager.I.AddRecord(map.dbName);
-                    if (debugLog) Debug.Log($"[Chest] Record added: {map.dbName}");
-                    break;
-
-                case DropRewardMap_DB_LSH.RewardType.Gold:
-                    DBManager.I.currData.gold += map.goldPer1 * count;
-                    if (debugLog) Debug.Log($"[Chest] Gold added: {map.goldPer1 * count}");
-                    break;
-            }
-        }
+        dropTable.GiveToDB();
     }
 }
