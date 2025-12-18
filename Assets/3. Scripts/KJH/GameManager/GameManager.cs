@@ -5,10 +5,14 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
+using TMPro;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
-    public Language language = Language.English;
+
+    [Header("로딩시 문구 & 이미지 아래에서 랜덤으로 하나 출력")]
+    public Sprite[] loadingSprites;
+    public string[] loadingTexts;
 
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
@@ -189,8 +193,12 @@ public class GameManager : SingletonBehaviour<GameManager>
     float loadingProgress;
     Tween loadingTween;
     bool isLoadingDone;
+    TMP_Text loadingText;
+    Image loadingImage;
     void InitLoading()
     {
+        loadingText = transform.Find("LoadingScreen/Text").GetComponent<TMP_Text>();
+        loadingImage = transform.Find("LoadingScreen/Background").GetComponent<Image>();
         loadingScreen = transform.Find("LoadingScreen").gameObject;
         loadingDim = transform.Find("LoadingScreen/Dim").GetComponent<Image>();
         loadingSlider = transform.Find("LoadingScreen/Slider").GetComponent<Slider>();
@@ -205,6 +213,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         loadingTween?.Kill();
         loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine);
         float elapsedTime = 0f;
+        int randomInt = Random.Range(0,loadingSprites.Length);
+        loadingImage.sprite = loadingSprites[randomInt];
+        randomInt = Random.Range(0,loadingTexts.Length);
+        loadingText.text = loadingTexts[randomInt];
         // 가짜 로딩
         while (true)
         {
@@ -237,6 +249,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #endregion
     #region Hit
+    [Space(50)]
     public Material hitTintMat;
     #endregion
     #region HitEffect
@@ -433,17 +446,17 @@ public struct HitData
     }
 }
 
-public enum Language
-{
-    English, // 영어
-    Korean,  // 한국어
-    German,  // 독일어
-    French,  // 프랑스어
-    Spanish, // 스페인어
-    ChineseSimplified, // 중국어(간체)
-    Japanese, // 일본어
-    Russian,  // 러시아어
-    PortugueseBrazil, // 브라질-포르투갈어
-    Arabic, //아랍어
-    Hindi, //인도어
-}
+// public enum Language
+// {
+//     English, // 영어
+//     Korean,  // 한국어
+//     German,  // 독일어
+//     French,  // 프랑스어
+//     Spanish, // 스페인어
+//     ChineseSimplified, // 중국어(간체)
+//     Japanese, // 일본어
+//     Russian,  // 러시아어
+//     PortugueseBrazil, // 브라질-포르투갈어
+//     Arabic, //아랍어
+//     Hindi, //인도어
+// }

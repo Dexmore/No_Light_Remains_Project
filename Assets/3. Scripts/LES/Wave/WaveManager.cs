@@ -64,6 +64,13 @@ public class WaveManager : MonoBehaviour
 
         isBattleStarted = true;
         StartCoroutine(ExecuteWaves());
+
+        DoorType1 doorType1 = FindAnyObjectByType<DoorType1>();
+        if(doorType1)
+        {
+            doorType1.Close();
+        }
+
     }
 
     IEnumerator ExecuteWaves()
@@ -115,6 +122,12 @@ public class WaveManager : MonoBehaviour
         }
 
         Debug.Log("🎉 STAGE CLEARED 🎉");
+        DoorType2 doorType2 = FindAnyObjectByType<DoorType2>();
+        if(doorType2)
+        {
+            doorType2.Open();
+        }
+
         // TODO: Clear UI Logic
     }
 

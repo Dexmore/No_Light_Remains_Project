@@ -26,11 +26,11 @@ public class IntroManager : MonoBehaviour
             {
                 // 색상의 Alpha(투명도) 값을 0으로 설정하여 숨깁니다.
                 Color initialColor = textComponent.color;
-                initialColor.a = 0f; 
+                initialColor.a = 0f;
                 textComponent.color = initialColor;
             }
         }
-        
+
         // 인트로 프로세스 시작
         StartCoroutine(IntroProcess());
     }
@@ -53,9 +53,13 @@ public class IntroManager : MonoBehaviour
 
         // 3. 모든 텍스트가 다 표시된 후, 다음 씬으로 넘어가기 전 마지막 대기
         yield return new WaitForSeconds(finalWaitTime);
-
+        
         // 4. 씬 전환
-        SceneManager.LoadScene(nextSceneName);
+        DBManager.I.currData.sceneName = nextSceneName;
+        yield return null;
+        DBManager.I.Save();
+        yield return null;
+        GameManager.I.LoadSceneAsync(nextSceneName, true);
     }
 
     // 특정 TextMeshPro 컴포넌트의 투명도를 변경하는 Coroutine

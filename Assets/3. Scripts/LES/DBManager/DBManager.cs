@@ -52,9 +52,17 @@ public class DBManager : SingletonBehaviour<DBManager>
     public CharacterData currData;
     public void Save()
     {
+        CharacterData dataToSave = currData;
+        dataToSave.maxHealth = RoundToOneDecimal(dataToSave.maxHealth);
+        dataToSave.maxBattery = RoundToOneDecimal(dataToSave.maxBattery);
+        dataToSave.currHealth = RoundToOneDecimal(dataToSave.currHealth);
+        dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
+        dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
+        dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
+        savedData = dataToSave;
+
         if (currSlot >= 0 && currSlot <= 2)
         {
-            savedData = currData;
             if (allSaveDatasInSteam.characterDatas == null)
             {
                 allSaveDatasInSteam.characterDatas = new List<CharacterData>();
@@ -72,7 +80,6 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
         else if (currSlot >= 3 && currSlot <= 5)
         {
-            savedData = currData;
             allSaveDatasInLocal.characterDatas[currSlot - 3] = savedData;
             SaveLocal();
         }
@@ -182,7 +189,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
 #endif
-    void SaveSteam()
+    public void SaveSteam()
     {
         if (!IsSteam())
         {
@@ -455,6 +462,12 @@ public class DBManager : SingletonBehaviour<DBManager>
 
 #endif
 
+
+    private float RoundToOneDecimal(float value)
+    {
+        return Mathf.Round(value * 10f) * 0.1f;
+    }
+
 }
 [System.Serializable]
 public struct SaveData
@@ -475,9 +488,9 @@ public struct CharacterData
     public int language;
     public string sceneName;
     public int level;
+    public int death;
     public string lastTime;
     public Vector2 lastPos;
-    public int progress1;
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;
@@ -509,16 +522,6 @@ public struct CharacterData
         public string Name;
         public bool isNew;
     }
-
-    // [System.Serializable]
-    // public struct SpawnData
-    // {
-    //     public string sceneName;
-    //     public string monsterName;
-    //     public Vector2 lastPos;
-    //     public bool isDie;
-    //     public float currHealth;
-    // }
 
 
 

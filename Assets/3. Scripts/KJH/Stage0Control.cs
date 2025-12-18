@@ -28,16 +28,16 @@ public class Stage0Control : MonoBehaviour
         playerControl.fsm.ChangeState(playerControl.stop);
         yield return YieldInstructionCache.WaitForSeconds(0.1f);
         Init();
-        if (DBManager.I.currData.progress1 == 0)
-        {
-            while (GameManager.I.isSceneWaiting)
-            {
+        // if (DBManager.I.currData.progress1 == 0)
+        // {
+        //     while (GameManager.I.isSceneWaiting)
+        //     {
 
-                yield return YieldInstructionCache.WaitForSeconds(0.3f);
-            }
-            yield return YieldInstructionCache.WaitForSeconds(0.3f);
-            dialogControl.Open(0);
-        }
+        //         yield return YieldInstructionCache.WaitForSeconds(0.3f);
+        //     }
+        //     yield return YieldInstructionCache.WaitForSeconds(0.3f);
+        //     dialogControl.Open(0);
+        // }
     }
     void HandlerSimpleTriggerEnter(int index, SimpleTrigger trigger)
     {
@@ -53,14 +53,14 @@ public class Stage0Control : MonoBehaviour
                 cg.DOFade(1f, 0.5f).SetEase(Ease.OutQuad);
                 break;
         }
-        if (index == 2)
-        {
-            if (DBManager.I.currData.progress1 == 0)
-            {
-                DBManager.I.currData.progress1 = 1;
-                dialogControl.Open(1);
-            }
-        }
+        // if (index == 2)
+        // {
+        //     if (DBManager.I.currData.progress1 == 0)
+        //     {
+        //         DBManager.I.currData.progress1 = 1;
+        //         dialogControl.Open(1);
+        //     }
+        // }
     }
     void HandlerSimpleTriggerExit(int index, SimpleTrigger trigger)
     {

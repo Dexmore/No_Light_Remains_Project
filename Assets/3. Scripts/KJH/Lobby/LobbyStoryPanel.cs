@@ -59,6 +59,7 @@ public class LobbyStoryPanel : MonoBehaviour
         DOTween.Kill(image);
         image.color = new Color(1f, 1f, 1f, 1f);
         image.DOFade(0f, 2f);
+        DBManager.I.currData = new CharacterData();
         await Task.Delay(1500);
         transform.Find("Wrap").gameObject.SetActive(true);
         CanvasGroup canvasGroup = transform.Find("Wrap").GetComponent<CanvasGroup>();
@@ -99,7 +100,7 @@ public class LobbyStoryPanel : MonoBehaviour
                     Transform wrap = slots[i].Find("Slot");
                     CharacterData data = DBManager.I.allSaveDatasInSteam.characterDatas[i];
                     wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Player{i + 1}";
-                    wrap.Find("LevelText(1)").GetComponent<TMP_Text>().text = $"{data.level}";
+                    wrap.Find("DeathText(1)").GetComponent<TMP_Text>().text = $"{data.death}";
                     wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
                     //wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"{data.lastTime.Split("-")[0]}";
                     wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"";
@@ -128,7 +129,7 @@ public class LobbyStoryPanel : MonoBehaviour
                     Transform wrap = slots[i].Find("Slot");
                     CharacterData data = DBManager.I.allSaveDatasInLocal.characterDatas[i];
                     wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Offline Player{i + 1}";
-                    wrap.Find("LevelText(1)").GetComponent<TMP_Text>().text = $"{data.level}";
+                    wrap.Find("DeathText(1)").GetComponent<TMP_Text>().text = $"{data.death}";
                     wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
                     wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"{data.lastTime.Split("-")[0]}";
                     wrap.Find("GoldText(1)").GetComponent<TMP_Text>().text = $"{data.gold}";
@@ -272,16 +273,16 @@ public class LobbyStoryPanel : MonoBehaviour
         await Task.Delay(200);
         CharacterData newData = new CharacterData();
         newData.gold = 0;
-        newData.level = 1;
+        newData.death = 1;
         newData.difficulty = diff;
-        newData.sceneName = "Stage0";
+        newData.sceneName = "Cinematic";
         newData.lastPos = Vector2.zero;
         newData.maxHealth = 400;
         newData.maxBattery = 100;
         newData.currHealth = 400;
         newData.currBattery = 100;
         newData.potionCount = 5;
-        newData.maxGearCost = 6;
+        newData.maxGearCost = 3;
         newData.itemDatas = new List<CharacterData.ItemData>();
         newData.gearDatas = new List<CharacterData.GearData>();
         newData.lanternDatas = new List<CharacterData.LanternData>();
@@ -289,9 +290,11 @@ public class LobbyStoryPanel : MonoBehaviour
         DBManager.I.currData = newData;
         // 신규캐릭터 시작 아이템
         DBManager.I.AddLantern("BasicLantern");
-        DBManager.I.AddItem("UsefulSword");
-        DBManager.I.AddItem("Helmet");
-        DBManager.I.AddItem("LeatherArmor");
+        int find = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == "BasicLantern");
+        CharacterData.LanternData lanternData = DBManager.I.currData.lanternDatas[find];
+        lanternData.isEquipped = true;
+        DBManager.I.currData.lanternDatas[find] = lanternData;
+
 
         if (isSteamSlot)
         {
@@ -329,7 +332,7 @@ public class LobbyStoryPanel : MonoBehaviour
         }
         DBManager.I.Save();
         await Task.Delay(200);
-        GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
+        GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, false);
     }
     public async void DeleteButton()
     {
@@ -340,38 +343,53 @@ public class LobbyStoryPanel : MonoBehaviour
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
         popupControl.ClosePop(4, false);
-        //Debug.Log(select);
-        await Task.Delay(10);
-        DBManager.I.currData = new CharacterData();
-        if(isSteamSlot)
+        if (isSteamSlot)
         {
-            SaveData copy = DBManager.I.allSaveDatasInSteam;
+            SaveData copy = new SaveData();
+            copy.characterDatas = DBManager.I.allSaveDatasInSteam.characterDatas.ToList();
             SaveData newSaveData = new SaveData();
             newSaveData.characterDatas = new List<CharacterData>();
-            for(int i=0; i<copy.characterDatas.Count; i++)
+            for (int i = 0; i < copy.characterDatas.Count; i++)
             {
                 newSaveData.characterDatas.Add(copy.characterDatas[i]);
             }
+            await Task.Delay(50);
             newSaveData.characterDatas[select] = new CharacterData();
-            DBManager.I.allSaveDatasInSteam = newSaveData;
-            //Debug.Log(DBManager.I.allSaveDatasInSteam.characterDatas[select].maxHealth);
+            await Task.Delay(50);
+            DBManager.I.allSaveDatasInSteam = new SaveData();
+            DBManager.I.allSaveDatasInSteam.characterDatas = newSaveData.characterDatas.ToList();
+            await Task.Delay(50);
+            for (int i = 0; i < DBManager.I.allSaveDatasInSteam.characterDatas.Count; i++)
+            {
+                Debug.Log(DBManager.I.allSaveDatasInSteam.characterDatas[i].maxHealth);
+            }
+            await Task.Delay(50);
+            DBManager.I.SaveSteam();
         }
         else
         {
-            SaveData copy = DBManager.I.allSaveDatasInLocal;
+            SaveData copy = new SaveData();
+            copy.characterDatas = DBManager.I.allSaveDatasInLocal.characterDatas.ToList();
             SaveData newSaveData = new SaveData();
             newSaveData.characterDatas = new List<CharacterData>();
-            for(int i=0; i<copy.characterDatas.Count; i++)
+            for (int i = 0; i < copy.characterDatas.Count; i++)
             {
                 newSaveData.characterDatas.Add(copy.characterDatas[i]);
             }
+            await Task.Delay(50);
             newSaveData.characterDatas[select] = new CharacterData();
-            DBManager.I.allSaveDatasInLocal = newSaveData;
-            //Debug.Log(DBManager.I.allSaveDatasInLocal.characterDatas[select].maxHealth);
+            await Task.Delay(50);
+            DBManager.I.allSaveDatasInLocal = new SaveData();
+            DBManager.I.allSaveDatasInLocal.characterDatas = newSaveData.characterDatas.ToList();
+            await Task.Delay(50);
+            for (int i = 0; i < DBManager.I.allSaveDatasInLocal.characterDatas.Count; i++)
+            {
+                Debug.Log(DBManager.I.allSaveDatasInLocal.characterDatas[i].maxHealth);
+            }
+            await Task.Delay(50);
+            DBManager.I.SaveLocal();
         }
-        await Task.Delay(10);
-        DBManager.I.Save();
-        await Task.Delay(10);
+        await Task.Delay(50);
         RefreshSlots();
     }
     TMP_Text[] texts1;
