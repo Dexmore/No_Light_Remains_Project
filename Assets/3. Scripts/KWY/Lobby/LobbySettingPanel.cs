@@ -43,6 +43,7 @@ public class LobbySettingPanel : MonoBehaviour
         localeDropdown.onValueChanged.AddListener(SetLocale);
         // resolutionDropdown.onValueChanged.AddListener(SetResolution);
         // fullscreenToggle.onValueChanged.AddListener(SetFullscreen);
+        StartCoroutine(nameof(Init));
     }
     void OnDisable()
     {
@@ -52,13 +53,10 @@ public class LobbySettingPanel : MonoBehaviour
         brightnessSlider.onValueChanged.RemoveListener(SetBrightness);
         localeDropdown.onValueChanged.RemoveListener(SetLocale);
     }
-    private IEnumerator Start()
+    private IEnumerator Init()
     {
         yield return null;
-        // SetupResolutions();
-        // SetupKeyRemappingUI();
         LoadSettingsToUI();
-
         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         if (brightnessPanel == null)
             brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
@@ -180,17 +178,16 @@ public class LobbySettingPanel : MonoBehaviour
         try
         {
             isLocalDropdownActive = true;
-
             // 로컬라이제이션 시스템 초기화 대기
             // OperationHandle을 Task로 변환하여 await 합니다.
             await LocalizationSettings.InitializationOperation.Task;
-
             // 유효한 인덱스인지 확인 (방어적 프로그래밍)
             var locales = LocalizationSettings.AvailableLocales.Locales;
             if (localeID >= 0 && localeID < locales.Count)
             {
                 LocalizationSettings.SelectedLocale = locales[localeID];
             }
+            SettingManager.Instance.setting.locale = localeID;
         }
         finally
         {
@@ -254,12 +251,20 @@ public class LobbySettingPanel : MonoBehaviour
     }
     void ResetButtonsColor()
     {
-        for (int i = 0; i < keymapButtons.Length; i++)
+        if (keymapButtons == null || keymapButtons.Length == 0)
         {
-            Image image = keymapButtons[i].GetComponent<Image>();
-            image.color = buttonColor;
+            keymapButtons = transform.Find("ScrollView/Viewport/Content").Find("Keymap").GetComponentsInChildren<Button>(true);
+        }
+        if (keymapButtons != null && keymapButtons.Length > 0)
+        {
+            for (int i = 0; i < keymapButtons.Length; i++)
+            {
+                Image image = keymapButtons[i].GetComponent<Image>();
+                image.color = buttonColor;
+            }
         }
     }
+
 
 
 

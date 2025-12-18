@@ -189,7 +189,7 @@ public class PromptControl : MonoBehaviour
             TrackingTarget2(token).Forget();
             wrap = lanternCanvas.GetChild(0);
             lanternCanvas.TryGetComponent(out lr);
-            wrap.Find("Text(Press)").TryGetComponent(out tMP_Text);
+            wrap.Find("Text(Hold)").TryGetComponent(out tMP_Text);
             wrap.Find("Text").TryGetComponent(out text);
             wrap.Find("PressRing").TryGetComponent(out pressRing);
             isClosing2 = false;
@@ -288,7 +288,7 @@ public class PromptControl : MonoBehaviour
         {
             ctsTracking2?.Cancel();
             wrap = lanternCanvas.GetChild(0);
-            wrap.Find("Text(Press)").TryGetComponent(out tMP_Text);
+            wrap.Find("Text(Hold)").TryGetComponent(out tMP_Text);
             wrap.Find("Text").TryGetComponent(out text);
             wrap.Find("PressRing").TryGetComponent(out pressRing);
             await UniTask.Yield(token);
