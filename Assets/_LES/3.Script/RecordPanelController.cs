@@ -120,8 +120,8 @@ public class RecordPanelController : MonoBehaviour, ITabContent
     {
         if (data != null)
         {
-            detailTitleText.text = data.recordTitle;
-            detailContentText.text = data.recordContent;
+            detailTitleText.text = data.recordTitle.GetLocalizedString();
+            detailContentText.text = data.recordContent.GetLocalizedString();
         }
         else
         {
