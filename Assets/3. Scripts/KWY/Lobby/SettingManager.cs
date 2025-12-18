@@ -36,6 +36,8 @@ public class SettingManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    
+
 }
 [System.Serializable]
 public class SettingData
@@ -47,6 +49,7 @@ public class SettingData
     public float bgmVolume = 1.0f;
     public float sfxVolume = 1.0f;
     public string keyBindingOverrides = "";
+    public int locale;
     public SettingData()
     {
         resolutionIndex = -1;

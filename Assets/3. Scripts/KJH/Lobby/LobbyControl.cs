@@ -19,6 +19,7 @@ public class LobbyControl : MonoBehaviour
     [SerializeField] private Image Brightness_p;
 
     private Stack<GameObject> uiPanelStack = new Stack<GameObject>();
+    LobbySettingPanel lobbySettingPanel;
 
 
     private void Awake()
@@ -40,6 +41,7 @@ public class LobbyControl : MonoBehaviour
 
         if (ESC_i != null)
             ESC_i.SetActive(false);
+        lobbySettingPanel = FindAnyObjectByType<LobbySettingPanel>(FindObjectsInactive.Include);
     }
 
     private void OnEnable()
@@ -69,7 +71,11 @@ public class LobbyControl : MonoBehaviour
         allButtons = Title_p.transform.root.GetComponentsInChildren<Button>();
         for (int i = 0; i < allButtons.Length; i++)
             allButtons[i].enabled = false;
+        yield return null;
         DBManager.I.LoadLocal();
+        lobbySettingPanel.brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
+        yield return null;
+        lobbySettingPanel.LoadSettingsToUI();
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         Brightness_p = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
         float b = SettingManager.Instance.setting.brightness;
