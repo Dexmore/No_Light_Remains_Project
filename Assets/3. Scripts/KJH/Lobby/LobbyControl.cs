@@ -73,12 +73,9 @@ public class LobbyControl : MonoBehaviour
             allButtons[i].enabled = false;
         yield return null;
         DBManager.I.LoadLocal();
-        lobbySettingPanel.brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
-        yield return null;
-        lobbySettingPanel.LoadSettingsToUI();
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         Brightness_p = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
-        float b = SettingManager.Instance.setting.brightness;
+        float b = SettingManager.I.setting.brightness;
         Brightness_p.color = new Color(0, 0, 0, 1 - b);
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         InitSteam();
