@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems; // ISelectHandler와 IPointerEnterHandler가 모두 여기 있습니다.
+using UnityEngine.Localization.Settings;
 
 // [수정] IPointerEnterHandler 인터페이스를 추가합니다.
 public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
@@ -23,9 +24,17 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         _button?.onClick.AddListener(OnSlotClicked);
     }
 
+    private void OnDisable()
+    {
+        UnsubscribeFromData();
+    }
+
     // --- (SetItem, ClearSlot 함수는 기존과 동일합니다) ---
     public void SetItem(InventoryItem item, ItemPanelController controller)
     {
+        // [추가] 기존에 구독 중이던 데이터가 있다면 해제
+        UnsubscribeFromData();
+
         _currentItem = item;
         _controller = controller;
 
@@ -35,12 +44,19 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             return; 
         }
 
+        // [추가] 데이터 로드 완료 이벤트 구독
+        _currentItem.data.OnDataLoaded += UpdateNameText;
+
         if (itemIcon != null)
         {
             itemIcon.sprite = _currentItem.data.icon;
             itemIcon.gameObject.SetActive(_currentItem.data.icon != null);
         }
-        itemNameText.text = _currentItem.data.itemName;
+
+        // [수정] 직접 텍스트를 넣는 대신, 공통 함수 호출
+        UpdateNameText();
+
+        itemNameText.text = _currentItem.data.itemName.GetLocalizedString();
         itemNameText.gameObject.SetActive(true);
 
         // [추가] 수량 표시 로직
@@ -62,8 +78,28 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         if (_button != null) _button.interactable = true;
     }
 
+    // [추가] 텍스트를 갱신하는 공통 함수
+    private void UpdateNameText()
+    {
+        if (_currentItem != null && _currentItem.data != null)
+        {
+            // 데이터 에셋에 캐싱된 번역 이름을 가져와서 적용
+            itemNameText.text = _currentItem.data.localizedName;
+        }
+    }
+
+    // [추가] 이벤트 구독 해제 함수 (메모리 누수 방지)
+    private void UnsubscribeFromData()
+    {
+        if (_currentItem != null && _currentItem.data != null)
+        {
+            _currentItem.data.OnDataLoaded -= UpdateNameText;
+        }
+    }
     public void ClearSlot()
     {
+        UnsubscribeFromData(); // [추가]
+        
         _currentItem = null;
         _controller = null;
         if (itemIcon != null)

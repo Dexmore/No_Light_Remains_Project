@@ -87,7 +87,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
 
         for (int i = 0; i < functionSlots.Count; i++)
         {
-            if (i < playerFunctions.Count && playerFunctions[i] != null && !string.IsNullOrEmpty(playerFunctions[i].functionName))
+            if (i < playerFunctions.Count && playerFunctions[i] != null && !string.IsNullOrEmpty(playerFunctions[i].functionName.GetLocalizedString()))
             {
                 functionSlots[i].SetData(playerFunctions[i], this);
             }
@@ -100,7 +100,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         UpdateMainEquippedImage();
         SetupNavigation();
 
-        LanternFunctionData firstAvailableFunc = playerFunctions.FirstOrDefault(f => f != null && !string.IsNullOrEmpty(f.functionName));
+        LanternFunctionData firstAvailableFunc = playerFunctions.FirstOrDefault(f => f != null && !string.IsNullOrEmpty(f.functionName.GetLocalizedString()));
         ShowFunctionDetails(firstAvailableFunc);
     }
 
@@ -112,8 +112,8 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         if (data != null)
         {
             if (detailPanelRoot != null) detailPanelRoot.SetActive(true);
-            detailNameText.text = data.functionName;
-            detailDescriptionText.text = data.functionDescription;
+            detailNameText.text = data.functionName.GetLocalizedString();
+            detailDescriptionText.text = data.functionDescription.GetLocalizedString();
         }
         else
         {
