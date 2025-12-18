@@ -10,9 +10,39 @@ public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
 
-    [Header("로딩시 문구 & 이미지 아래에서 랜덤으로 하나 출력")]
+    [Header("로딩시 이미지 아래에서 랜덤으로 하나 출력")]
     public Sprite[] loadingSprites;
-    public string[] loadingTexts;
+    string[] loadingTexts;
+    void InitLocale()
+    {
+        if (SettingManager.I.setting.locale == 0)
+        {
+            loadingTexts = new string[]
+            {
+                "Regain your Lantern gage by parrying enemy's attacks.\nEnemies are stunned when parried certain times."
+                ,
+                "It's often better to use healing items early rather than waiting for an emergency."
+                ,
+                "Observing the patterns of stronger enemies is key to victory."
+                ,
+                "The Alchemists, in their pursuit of immortality, eventually monopolized the Helios energy."
+            };
+        }
+        else if (SettingManager.I.setting.locale == 1)
+        {
+            loadingTexts = new string[]
+            {
+                "적의 공격을 패링하면 랜턴 게이지가 충전됩니다.\n특정 횟수 이상 패링 시 적은 기절합니다."
+                ,
+                "회복은 위급할 때보다 더 미리 사용하는 것이 좋습니다."
+                ,
+                "강한 적일수록 패턴을 관찰하는 것이 중요합니다."
+                ,
+                "불멸을 추구하던 알케미스트들은 결국 일리오스 에너지를 독점하고 말았습니다."
+                ,
+            };
+        }
+    }
 
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
@@ -37,10 +67,11 @@ public class GameManager : SingletonBehaviour<GameManager>
         InitLoading();
         isOpenPop = false;
         isOpenDialog = false;
+        InitLocale();
     }
     void OnDisable()
     {
-
+        
     }
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
@@ -205,6 +236,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
     async void StartLoading()
     {
+        InitLocale();
         isLoadingDone = false;
         loadingProgress = 0f;
         loadingScreen.SetActive(true);
@@ -213,9 +245,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         loadingTween?.Kill();
         loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine);
         float elapsedTime = 0f;
-        int randomInt = Random.Range(0,loadingSprites.Length);
+        int randomInt = Random.Range(0, loadingSprites.Length);
         loadingImage.sprite = loadingSprites[randomInt];
-        randomInt = Random.Range(0,loadingTexts.Length);
+        randomInt = Random.Range(0, loadingTexts.Length);
         loadingText.text = loadingTexts[randomInt];
         // 가짜 로딩
         while (true)

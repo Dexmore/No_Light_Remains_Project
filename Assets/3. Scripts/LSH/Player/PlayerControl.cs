@@ -315,6 +315,16 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public Inventory inventoryUI;
     void HitHandler(HitData hData)
     {
+        if (hData.attacker.Root() == transform)
+        {
+            MonsterControl monsterControl = hData.target.GetComponentInParent<MonsterControl>();
+            if (monsterControl != null)
+            {
+                currBattery += 3.2f;
+                currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
+                hUDBinder.RefreshBattery();
+            }
+        }
         if (hData.target.Root() != transform) return;
         if (fsm.currentState == die) return;
         if (hData.attackType == HitData.AttackType.Chafe)
@@ -380,7 +390,7 @@ public class PlayerControl : MonoBehaviour
                     AttractParticle ap = upa.GetComponent<AttractParticle>();
                     Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
                     ap.targetVector = pos;
-                    currBattery += 20f;
+                    currBattery += 31f;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
                     StartCoroutine(nameof(ReleaseParred));
@@ -558,7 +568,7 @@ public class PlayerControl : MonoBehaviour
             }
             light0.SetActive(true);
             light1.SetActive(true);
-            light3.SetActive(true);
+            light3.SetActive(false);
             GameManager.I.isLanternOn = true;
         }
     }
@@ -604,10 +614,10 @@ public class PlayerControl : MonoBehaviour
                 }
                 else
                 {
-                    if (currBattery <= 20)
+                    if (currBattery <= 16f)
                     {
                         if (fsm.currentState == die) continue;
-                        currBattery += 0.5f * interval;
+                        currBattery += 0.7f * interval;
                         currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                         DBManager.I.currData.currBattery = currBattery;
                         hUDBinder.RefreshBattery();

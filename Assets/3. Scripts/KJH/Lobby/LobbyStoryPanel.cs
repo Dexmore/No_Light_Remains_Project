@@ -207,13 +207,37 @@ public class LobbyStoryPanel : MonoBehaviour
         switch (data.difficulty)
         {
             case 0:
-                diffText = "쉬움";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        diffText = "Easy";
+                        break;
+                    case 1:
+                        diffText = "쉬움";
+                        break;
+                }
                 break;
             case 1:
-                diffText = "보통";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        diffText = "Normal";
+                        break;
+                    case 1:
+                        diffText = "보통";
+                        break;
+                }
                 break;
             case 2:
-                diffText = "어려움";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        diffText = "Hard";
+                        break;
+                    case 1:
+                        diffText = "어려움";
+                        break;
+                }
                 break;
         }
         wrap.Find("DifficultyText(1)").GetComponent<TMP_Text>().text = $"{diffText}";

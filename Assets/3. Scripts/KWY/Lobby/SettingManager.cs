@@ -38,7 +38,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
             options.Add($"{resData.width} x {resData.height}");
         }
     }
-    [SerializeField] private AudioMixer audioMixer;
+    [SerializeField] AudioMixer audioMixer;
     public void ApplyAllSettings()
     {
         // 1. 해상도 및 전체화면 적용

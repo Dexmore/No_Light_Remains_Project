@@ -220,7 +220,6 @@ public class LobbySettingPanel : MonoBehaviour
         Screen.fullScreenMode = mode;
         SettingManager.I.setting.fullscreenMode = mode;
     }
-
     public void SetResolution(int resolutionIndex)
     {
         Resolution resolution = resolutions[resolutionIndex];

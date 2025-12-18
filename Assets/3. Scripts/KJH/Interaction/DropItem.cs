@@ -54,8 +54,8 @@ public class DropItem : Interactable
             if (_mainCamera == null) _mainCamera = Camera.main;
             UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttGold", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
             AttractParticle ap = upa.GetComponent<AttractParticle>();
-            Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.92f, 0.88f, 0f));
-                ap.targetVector = pos;
+            Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(1.4f, 1f, 0f));
+            ap.targetVector = pos;
         }
         AudioManager.I.PlaySFX("GetItem");
         DBManager.I.currData.gold += gold;

@@ -6,6 +6,9 @@ using UnityEditor;
 using DG.Tweening;
 using NaughtyAttributes;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.Audio;
+using UnityEngine.Localization.Settings;
 
 public class PopupControl : MonoBehaviour
 {
@@ -83,11 +86,23 @@ public class PopupControl : MonoBehaviour
         isOpens[index] = true;
         openPopCount++;
         GameManager.I.isOpenPop = true;
+        if (index == 1)
+        {
+            Pop1Init();
+        }
         if (index == 3)
         {
             TMP_Text tMP_Text = allPopups[index].transform.Find("Difficulty/Text").GetComponent<TMP_Text>();
             pop3Diff = 1;
-            tMP_Text.text = $"보통";
+            switch (SettingManager.I.setting.locale)
+            {
+                case 0:
+                    tMP_Text.text = "Normal";
+                    break;
+                case 1:
+                    tMP_Text.text = "보통";
+                    break;
+            }
             if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
             lobbyStoryPanel.diff = 1;
         }
@@ -114,6 +129,10 @@ public class PopupControl : MonoBehaviour
         if (index == 0)
         {
             DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = true;
+        }
+        if(index == 1)
+        {
+            Pop1UnInit();
         }
     }
     public async void GoMainMenu()
@@ -149,13 +168,37 @@ public class PopupControl : MonoBehaviour
         switch (pop3Diff)
         {
             case 0:
-                tMP_Text.text = $"쉬움";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        tMP_Text.text = "Easy";
+                        break;
+                    case 1:
+                        tMP_Text.text = "쉬움";
+                        break;
+                }
                 break;
             case 1:
-                tMP_Text.text = $"보통";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        tMP_Text.text = "Normal";
+                        break;
+                    case 1:
+                        tMP_Text.text = "보통";
+                        break;
+                }
                 break;
             case 2:
-                tMP_Text.text = $"어려움";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        tMP_Text.text = "Hard";
+                        break;
+                    case 1:
+                        tMP_Text.text = "어려움";
+                        break;
+                }
                 break;
         }
     }
@@ -170,13 +213,37 @@ public class PopupControl : MonoBehaviour
         switch (pop3Diff)
         {
             case 0:
-                tMP_Text.text = $"쉬움";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        tMP_Text.text = "Easy";
+                        break;
+                    case 1:
+                        tMP_Text.text = "쉬움";
+                        break;
+                }
                 break;
             case 1:
-                tMP_Text.text = $"보통";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        tMP_Text.text = "Normal";
+                        break;
+                    case 1:
+                        tMP_Text.text = "보통";
+                        break;
+                }
                 break;
             case 2:
-                tMP_Text.text = $"어려움";
+                switch (SettingManager.I.setting.locale)
+                {
+                    case 0:
+                        tMP_Text.text = "Hard";
+                        break;
+                    case 1:
+                        tMP_Text.text = "어려움";
+                        break;
+                }
                 break;
         }
     }
@@ -195,22 +262,120 @@ public class PopupControl : MonoBehaviour
         lobbyStoryPanel.Pop4DeleteButton();
     }
 
+    // 환경 설정 팝업
+    Toggle pop1FsTogle;
+    Button pop1LangLBtn;
+    Button pop1LangRBtn;
+    TMP_Text pop1LangText;
+    Slider pop1BritSlder;
+    Slider pop1BGMSlder;
+    Slider pop1SFXSlder;
+    void Pop1Init()
+    {
+        Transform tr = allPopups[1].transform;
+        pop1FsTogle = tr.Find("Toggle").GetComponent<Toggle>();
+        pop1LangLBtn = tr.Find("Language/LeftArrowButton").GetComponent<Button>();
+        pop1LangText = tr.Find("Language/LanguageText").GetComponent<TMP_Text>();
+        pop1LangRBtn = tr.Find("Language/RightArrowButton").GetComponent<Button>();
+        pop1BritSlder = tr.Find("BrightnessSlider").GetComponent<Slider>();
+        pop1BGMSlder = tr.Find("BGMSlider").GetComponent<Slider>();
+        pop1SFXSlder = tr.Find("SFXSlider").GetComponent<Slider>();
+        //
+        pop1FsTogle.onValueChanged.AddListener(SetFullscreen);
+        pop1LangLBtn.onClick.AddListener(SetLocaleLeft);
+        pop1LangRBtn.onClick.AddListener(SetLocaleRight);
+        pop1BritSlder.onValueChanged.AddListener(SetBrightness);
+        pop1BGMSlder.onValueChanged.AddListener(SetBGMVolume);
+        pop1SFXSlder.onValueChanged.AddListener(SetSFXVolume);
+        //
+        SettingData settings = SettingManager.I.setting;
+        pop1FsTogle.isOn = settings.fullscreenMode == FullScreenMode.FullScreenWindow;
+        switch (settings.locale)
+        {
+            case 0:
+                pop1LangText.text = "English";
+                break;
+            case 1:
+                pop1LangText.text = "Korean";
+                break;
+        }
+        pop1BritSlder.value = settings.brightness;
+        pop1BGMSlder.value = settings.bgmVolume;
+        pop1SFXSlder.value = settings.sfxVolume;
+    }
+    void Pop1UnInit()
+    {
+        pop1FsTogle.onValueChanged.RemoveListener(SetFullscreen);
+        pop1LangLBtn.onClick.RemoveListener(SetLocaleLeft);
+        pop1LangRBtn.onClick.RemoveListener(SetLocaleRight);
+        pop1BritSlder.onValueChanged.RemoveListener(SetBrightness);
+        pop1BGMSlder.onValueChanged.RemoveListener(SetBGMVolume);
+        pop1SFXSlder.onValueChanged.RemoveListener(SetSFXVolume);
+        SettingManager.I.SaveSettings();
+    }
+    void SetFullscreen(bool value)
+    {
+        SettingManager.I.setting.fullscreenMode = (value) ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+        Screen.fullScreenMode = SettingManager.I.setting.fullscreenMode;
+        SettingManager.I.SaveSettings();
+    }
+    void SetLocaleLeft() => ChangeLocale(-1);
+    void SetLocaleRight() => ChangeLocale(1);
+    async void ChangeLocale(int direction)
+    {
+        try
+        {
+            await LocalizationSettings.InitializationOperation.Task;
+            var locales = LocalizationSettings.AvailableLocales.Locales;
+            
+            // 1. 현재 인덱스 계산 및 순환(Loop) 로직 추가
+            int currentLocaleIndex = SettingManager.I.setting.locale;
+            currentLocaleIndex = (currentLocaleIndex + direction + locales.Count) % locales.Count;
 
+            // 2. 실제 로컬라이제이션 설정 변경
+            if (currentLocaleIndex >= 0 && currentLocaleIndex < locales.Count)
+            {
+                LocalizationSettings.SelectedLocale = locales[currentLocaleIndex];
+                
+                // UI 텍스트 업데이트 (English / Korean 등)
+                pop1LangText.text = locales[currentLocaleIndex].LocaleName;
+            }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            // 3. 데이터 저장
+            SettingManager.I.setting.locale = currentLocaleIndex;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Locale Change Failed: {e.Message}");
+        }
+    }
+    private const float MIN_BRIGHTNESS = 0.06f;
+    void SetBrightness(float value)
+    {
+        Image brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
+        SettingManager.I.setting.brightness = value;
+        if (brightnessPanel != null)
+        {
+            brightnessPanel.color = new Color(0, 0, 0, Mathf.Clamp(1 - value, 0, 1 - MIN_BRIGHTNESS));
+        }
+        SettingManager.I.setting.brightness = Mathf.Clamp(value, MIN_BRIGHTNESS, 1f);
+    }
+    [SerializeField] AudioMixer audioMixer;
+    void SetBGMVolume(float value)
+    {
+        audioMixer.SetFloat("BGMVolume", Mathf.Log10(value) * 20); // 오디오 믹서 연동 시
+        SettingManager.I.setting.bgmVolume = value;
+    }
+    void SetSFXVolume(float value)
+    {
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20); // 오디오 믹서 연동 시
+        SettingManager.I.setting.sfxVolume = value;
+        
+    }
+    public void ClickSound()
+    {
+        AudioManager.I.PlaySFX("UIClick");
+    }
 
 
 
