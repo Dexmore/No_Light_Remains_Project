@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // 리스트 필터링을 위해 사용
+using System.Linq;
 
 [System.Serializable]
 public class SpawnEntry
@@ -14,42 +14,37 @@ public class SpawnEntry
 
     [Tooltip("몬스터 간 생성 간격 (초)")]
     public float spawnInterval = 0.5f;
+
+    [Header("Optional Settings")]
+    [Tooltip("비워두면(None): 기존처럼 랜덤한 곳에서 나옵니다.\n지정하면(Transform): 해당 위치가 '화면 밖'일 때만 그곳에서 나옵니다.")]
+    public Transform specificSpawnPoint;
 }
 
 [System.Serializable]
 public class Wave
 {
-    [Tooltip("이 웨이브에 등장할 몬스터 구성")]
     public List<SpawnEntry> spawnEntries;
-
-    [Tooltip("웨이브 시작 전 대기 시간")]
     public float delayBeforeWave = 2.0f;
 
     [Header("Clear Condition")]
-    [Tooltip("체크(True): 모든 몬스터를 다 죽여야 다음 웨이브 진행 (섬멸전)\n해제(False): 몬스터가 살아있어도 아래 시간(Duration)이 지나면 다음 웨이브 진행 (난전)")]
     public bool waitForClear = true;
-
-    [Tooltip("waitForClear가 꺼져있을 때 적용됨. 스폰 완료 후 다음 웨이브로 넘어가기까지 버티는 시간")]
     public float waveDuration = 2.0f;
 }
 
 public class WaveManager : MonoBehaviour
 {
     [Header("--- Settings ---")]
-    [Tooltip("맵 곳곳에 배치한 스폰 위치들 (빈 GameObject)")]
     public List<Transform> allSpawnPoints;
 
-    [Tooltip("카메라 밖으로 판단할 여유 공간 (클수록 카메라에서 더 멀리 떨어진 곳 찾음)")]
-    public float cameraBuffer = 1.0f;
+    [Tooltip("카메라 화면 밖으로 간주할 여유 범위 (0이면 화면 딱 끝, 0.1이면 화면보다 조금 더 밖)")]
+    public float cameraBuffer = 0.1f;
 
-    [Header("--- Waves Config (기획자 설정) ---")]
+    [Header("--- Waves Config ---")]
     public List<Wave> waves;
 
-    // 내부 상태 변수
     private List<GameObject> currentActiveMonsters = new List<GameObject>();
     private Camera mainCam;
     private int currentWaveIndex = 0;
-
     private bool isBattleStarted = false;
 
     void Start()
@@ -57,20 +52,11 @@ public class WaveManager : MonoBehaviour
         mainCam = Camera.main;
     }
 
-    // 외부(Trigger)에서 호출할 공개 함수
     public void StartBattle()
     {
-        if (isBattleStarted) return; // 이미 시작됐다면 무시
-
+        if (isBattleStarted) return;
         isBattleStarted = true;
         StartCoroutine(ExecuteWaves());
-
-        DoorType1 doorType1 = FindAnyObjectByType<DoorType1>();
-        if(doorType1)
-        {
-            doorType1.Close();
-        }
-
     }
 
     IEnumerator ExecuteWaves()
@@ -78,66 +64,110 @@ public class WaveManager : MonoBehaviour
         foreach (var wave in waves)
         {
             currentWaveIndex++;
-            Debug.Log($"=== Wave {currentWaveIndex} Start (Type: {(wave.waitForClear ? "Elimination" : "Survival")}) ===");
+            Debug.Log($"=== Wave {currentWaveIndex} Start ===");
 
-            // 웨이브 시작 전 딜레이
             yield return new WaitForSeconds(wave.delayBeforeWave);
+
+            //float waitTimer = 0f;
+            //float maxWaitTime = 10.0f;
 
             // 1. 몬스터 스폰 진행
             foreach (var entry in wave.spawnEntries)
             {
                 for (int i = 0; i < entry.count; i++)
                 {
-                    TrySpawnMonsterOffScreen(entry.monsterPrefab);
+                    // [핵심 변경] 지정된 스폰 포인트가 있는 경우
+                    if (entry.specificSpawnPoint != null)
+                    {
+                        // 조건: 지정된 위치가 카메라 '안'에 있다면, '밖'으로 나갈 때까지 무한 대기
+                        while (IsVisibleOnScreen(entry.specificSpawnPoint.position))
+                        {
+                            // waitTimer += 0.5f;
+                            // if (waitTimer > maxWaitTime)
+                            // {
+                            //     Debug.LogWarning("플레이어가 너무 오래 버텨서 강제 소환합니다!");
+                            //     break; // 반복문 탈출 -> 소환
+                            // }
+                            // 개발자를 위한 로그 (너무 자주 뜨지 않게 하고 싶으면 주석 처리)
+                            // Debug.Log($"몬스터가 {entry.specificSpawnPoint.name}에서 나오려 했으나, 화면 안이라 대기중...");
+
+                            // 0.5초 뒤에 다시 검사 (매 프레임 검사는 성능 낭비)
+                            yield return new WaitForSeconds(0.5f);
+                        }
+
+                        // 반복문을 탈출했다면 화면 밖이라는 뜻 -> 소환
+                        SpawnMonsterAtPoint(entry.monsterPrefab, entry.specificSpawnPoint);
+                    }
+                    else
+                    {
+                        // 지정된 위치가 없으면 기존 로직 (알아서 화면 밖 찾아서 소환)
+                        TrySpawnMonsterOffScreen(entry.monsterPrefab);
+                    }
+
+                    // 다음 몬스터 소환 전 딜레이
                     yield return new WaitForSeconds(entry.spawnInterval);
                 }
             }
 
-            // 2. 클리어 조건 확인 (여기가 핵심 변경 사항)
+            // 2. 클리어 조건 확인 (기존과 동일)
             if (wave.waitForClear)
             {
                 if (currentActiveMonsters.Count > 0)
                 {
-                    Debug.Log("Final Wave Logic Finished. Eliminating remaining enemies...");
-
-                    // [A] 섬멸 모드: 맵 상의 모든 몬스터가 0마리가 될 때까지 무한 대기
                     while (true)
                     {
-                        currentActiveMonsters.RemoveAll(m => m == null); // 죽은 놈 정리
-                        if (currentActiveMonsters.Count == 0) break; // 다 죽었으면 탈출
+                        currentActiveMonsters.RemoveAll(m => m == null);
+                        if (currentActiveMonsters.Count == 0) break;
                         yield return new WaitForSeconds(0.5f);
                     }
                 }
-
-                Debug.Log($"=== Wave {currentWaveIndex} Cleared (All Killed) ===");
             }
             else
             {
-                // [B] 서바이벌 모드: 몬스터 생존 여부 상관없이 지정된 시간만큼 버티면 통과
-                // 플레이어는 남은 몬스터 + 다음 웨이브 몬스터를 동시에 상대해야 함 (난이도 상승 요소)
-                Debug.Log($"=== Wave {currentWaveIndex} Spawn Finished. Surviving for {wave.waveDuration}s... ===");
                 yield return new WaitForSeconds(wave.waveDuration);
-                Debug.Log($"=== Wave {currentWaveIndex} Passed (Time Over) ===");
             }
+
+            Debug.Log($"=== Wave {currentWaveIndex} Ended ===");
         }
 
         Debug.Log("🎉 STAGE CLEARED 🎉");
-        DoorType2 doorType2 = FindAnyObjectByType<DoorType2>();
-        if(doorType2)
-        {
-            doorType2.Open();
-        }
+    }
 
-        // TODO: Clear UI Logic
+    // --- Helper Logic ---
+
+    void SpawnMonsterAtPoint(GameObject prefab, Transform spawnPoint)
+    {
+        if (spawnPoint == null) return;
+        GameObject mon = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+        currentActiveMonsters.Add(mon);
     }
 
     /// <summary>
-    /// 카메라 밖의 유효한 스폰 포인트를 찾아 몬스터를 생성합니다.
+    /// 해당 월드 좌표가 현재 카메라 화면(Viewport) 안에 있는지 검사
     /// </summary>
+    bool IsVisibleOnScreen(Vector3 targetPos)
+    {
+        // 1. 카메라의 절반 높이와 너비 계산
+        float camHeight = mainCam.orthographicSize;
+        float camWidth = camHeight * mainCam.aspect;
+
+        // 2. 카메라 중심과 타겟 사이의 거리 계산 (Z축 무시)
+        Vector2 camPos = mainCam.transform.position;
+        Vector2 targetPos2D = targetPos;
+        Vector2 diff = targetPos2D - camPos;
+
+        // 3. 버퍼(여유 공간)를 포함한 화면 영역 안에 있는지 체크
+        // cameraBuffer가 1.0이면 화면 크기보다 1.0만큼 더 넓은 범위를 '화면 안'으로 칩니다.
+        // 타겟이 이 범위 안에 있으면 "보인다(true)" -> 스폰 대기
+        bool isInsideX = Mathf.Abs(diff.x) < (camWidth + cameraBuffer);
+        bool isInsideY = Mathf.Abs(diff.y) < (camHeight + cameraBuffer);
+
+        return isInsideX && isInsideY;
+    }
+
     void TrySpawnMonsterOffScreen(GameObject prefab)
     {
         Transform bestSpot = GetOffScreenSpawnPoint();
-
         if (bestSpot != null)
         {
             GameObject mon = Instantiate(prefab, bestSpot.position, Quaternion.identity);
@@ -145,59 +175,39 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("카메라 밖 스폰 포인트를 찾지 못했습니다. 플레이어에게서 가장 먼 곳에 강제 스폰합니다.");
-            // 비상 대책: 카메라 안이라도 가장 먼 곳에 생성 (게임 멈춤 방지)
+            // 랜덤 스폰인데 쏠 곳이 없으면, 가장 먼 곳에 쏨 (이건 비상 대책이라 그냥 둠)
             Transform fallbackSpot = GetFurthestSpawnPoint();
-            GameObject mon = Instantiate(prefab, fallbackSpot.position, Quaternion.identity);
-            currentActiveMonsters.Add(mon);
+            if (fallbackSpot != null)
+            {
+                GameObject mon = Instantiate(prefab, fallbackSpot.position, Quaternion.identity);
+                currentActiveMonsters.Add(mon);
+            }
         }
     }
 
-    /// <summary>
-    /// 현재 카메라 뷰포트(화면) 밖에 있는 스폰 포인트 중 하나를 랜덤 반환
-    /// </summary>
     Transform GetOffScreenSpawnPoint()
     {
-        // 카메라가 비추는 월드 좌표 영역 계산
-        // 뷰포트 (0,0) -> 좌하단, (1,1) -> 우상단
+        // 기존 로직 유지 (랜덤 스폰용)
         Vector3 minScreen = mainCam.ViewportToWorldPoint(new Vector3(0, 0, mainCam.nearClipPlane));
         Vector3 maxScreen = mainCam.ViewportToWorldPoint(new Vector3(1, 1, mainCam.nearClipPlane));
 
-        // Z축 고려가 필요 없다면 2D 게임 기준 로직 적용
         float minX = minScreen.x - cameraBuffer;
         float maxX = maxScreen.x + cameraBuffer;
         float minY = minScreen.y - cameraBuffer;
         float maxY = maxScreen.y + cameraBuffer;
 
-        // 조건에 맞는(화면 밖) 포인트들만 추출
         var validPoints = allSpawnPoints.Where(p =>
-            p.position.x < minX || p.position.x > maxX || // 좌우 밖
-            p.position.y < minY || p.position.y > maxY    // 상하 밖
+            p.position.x < minX || p.position.x > maxX ||
+            p.position.y < minY || p.position.y > maxY
         ).ToList();
 
-        if (validPoints.Count > 0)
-        {
-            // 그 중 랜덤 하나 선택
-            return validPoints[Random.Range(0, validPoints.Count)];
-        }
-
-        return null; // 모든 포인트가 화면 안에 있음
+        if (validPoints.Count > 0) return validPoints[Random.Range(0, validPoints.Count)];
+        return null;
     }
 
     Transform GetFurthestSpawnPoint()
     {
-        Vector3 cameraPos = mainCam.transform.position;
-        return allSpawnPoints.OrderByDescending(p => Vector3.Distance(p.position, cameraPos)).FirstOrDefault();
-    }
-
-    // 에디터에서 스폰 포인트 위치를 쉽게 보기 위한 기즈모
-    private void OnDrawGizmos()
-    {
-        if (allSpawnPoints == null) return;
-        Gizmos.color = Color.cyan;
-        foreach (var p in allSpawnPoints)
-        {
-            if (p != null) Gizmos.DrawWireSphere(p.position, 0.5f);
-        }
+        if (allSpawnPoints == null || allSpawnPoints.Count == 0) return null;
+        return allSpawnPoints.OrderByDescending(p => Vector3.Distance(p.position, mainCam.transform.position)).FirstOrDefault();
     }
 }
