@@ -9,22 +9,22 @@ using NaughtyAttributes;
 
 public class ItemPanelController : MonoBehaviour, ITabContent
 {
-    [Header("UI 내비게이션 설정")]
-    [SerializeField] private Selectable firstSelectable;
+    [Header("UI 내비게이션 설정 (필수 연결)")]
+    [Tooltip("현재 탭 버튼 (예: 재료)")]
     [SerializeField] private Selectable mainTabButton;
 
+    [Tooltip("왼쪽 탭 버튼 (없으면 비워두세요)")]
+    [SerializeField] private Button prevTabButton; // [추가] 왼쪽 연결용
+
+    [Tooltip("오른쪽 탭 버튼 (예: 랜턴 탭)")]
+    [SerializeField] private Button nextTabButton; // [추가] 오른쪽 연결용
+
     [Header("스크롤 제어")]
-    [SerializeField] private AutoScroll autoScroll; // [추가] 변수 선언 누락 수정
-    [SerializeField] private ScrollRect scrollRect; // [추가] ScrollRect 변수 선언
+    [SerializeField] private AutoScroll autoScroll;
+    [SerializeField] private ScrollRect scrollRect;
 
     [Header("UI 요소")]
     [SerializeField] private TextMeshProUGUI moneyText;
-
-    [Header("서브-탭 (필터) 버튼")]
-    [SerializeField] private Button equipmentButton;
-    [SerializeField] private Button materialButton;
-    [SerializeField] private Color subTabActiveColor = Color.white;
-    [SerializeField] private Color subTabIdleColor = Color.gray;
 
     [Header("아이템 슬롯 관리")]
     [SerializeField] private GameObject itemSlotPrefab;
@@ -37,25 +37,16 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     [SerializeField] private GameObject infoPanelRoot;
 
     private List<ItemSlotUI> _spawnedSlots = new List<ItemSlotUI>();
-    private ItemData.ItemType _currentFilter = ItemData.ItemType.Equipment;
     private Coroutine _initCoroutine;
 
     private void OnEnable()
     {
-        equipmentButton?.onClick.AddListener(() => OnFilterChanged(ItemData.ItemType.Equipment));
-        materialButton?.onClick.AddListener(() => OnFilterChanged(ItemData.ItemType.Material));
         UpdateMoneyText();
     }
 
-    private void OnDisable()
-    {
-        equipmentButton?.onClick.RemoveAllListeners();
-        materialButton?.onClick.RemoveAllListeners();
-    }
-
-    // [추가] Update 함수 추가 (상단 탭 이동 제어용)
     private void Update()
     {
+        // 슬롯에서 위로 탈출하는 로직
         if (_spawnedSlots.Count == 0 || scrollRect == null) return;
 
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
@@ -66,43 +57,22 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         if (currentSelected == firstSlotBtn.gameObject)
         {
             Navigation nav = firstSlotBtn.navigation;
-
             bool isAtTop = false;
 
-            // 1. AutoScroll이 있고 맨 위에 도착했으면 true
-            if (autoScroll != null && autoScroll.IsScrolledToTop)
-            {
-                isAtTop = true;
-            }
-            // 2. 내용이 적어서 스크롤이 필요 없으면 true
-            else if (contentTransform.GetComponent<RectTransform>().rect.height <= scrollRect.viewport.rect.height)
-            {
-                isAtTop = true;
-            }
+            if (autoScroll != null && autoScroll.IsScrolledToTop) isAtTop = true;
+            else if (contentTransform.GetComponent<RectTransform>().rect.height <= scrollRect.viewport.rect.height) isAtTop = true;
 
-            if (isAtTop)
-            {
-                if (_currentFilter == ItemData.ItemType.Equipment) nav.selectOnUp = equipmentButton;
-                else nav.selectOnUp = materialButton;
-            }
-            else
-            {
-                nav.selectOnUp = null; // 아직 올라가는 중이면 위쪽 막음
-            }
+            // 맨 위라면 -> 위 키는 메인 탭 버튼
+            if (isAtTop) nav.selectOnUp = mainTabButton;
+            else nav.selectOnUp = null;
             
             firstSlotBtn.navigation = nav;
         }
     }
 
-    private void RefreshUIFromEvent()
-    {
-        StartMasterCoroutine(_currentFilter, false); 
-        UpdateMoneyText();
-    }
-
     public void OnShow()
     {
-        StartMasterCoroutine(ItemData.ItemType.Equipment, true);
+        StartMasterCoroutine(true);
         UpdateMoneyText();
     }
 
@@ -116,50 +86,38 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         ClearAllSpawnedSlots();
     }
     
-    private void OnFilterChanged(ItemData.ItemType newFilter)
+    private void StartMasterCoroutine(bool isInitialLoad)
     {
-        StartMasterCoroutine(newFilter, false);
-    }
-    
-    private void StartMasterCoroutine(ItemData.ItemType filter, bool isInitialLoad)
-    {
-        if (_initCoroutine != null)
-        {
-            StopCoroutine(_initCoroutine);
-        }
-        _initCoroutine = StartCoroutine(InitializePanelCoroutine(filter, isInitialLoad));
+        if (_initCoroutine != null) StopCoroutine(_initCoroutine);
+        _initCoroutine = StartCoroutine(InitializePanelCoroutine(isInitialLoad));
     }
 
-    private IEnumerator InitializePanelCoroutine(ItemData.ItemType filter, bool isInitialLoad)
+    private IEnumerator InitializePanelCoroutine(bool isInitialLoad)
     {
-        _currentFilter = filter;
-        UpdateSubTabButtons();
         ClearAllSpawnedSlots();
 
-
-        //////////
         List<InventoryItem> allItems = new List<InventoryItem>();
-        for(int i=0; i<DBManager.I.currData.itemDatas.Count; i++)
+        if (DBManager.I != null && DBManager.I.currData.itemDatas != null)
         {
-            CharacterData.ItemData cd = DBManager.I.currData.itemDatas[i];
-            int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.name == cd.Name);
-            if(find == -1) continue;
-            ItemData d = Instantiate(DBManager.I.itemDatabase.allItems[find]);
-            d.name = DBManager.I.itemDatabase.allItems[find].name;
-            d.isNew = cd.isNew;
-            InventoryItem inventoryItem = new InventoryItem(d, cd.count);
-            allItems.Add(inventoryItem);
+            for(int i=0; i < DBManager.I.currData.itemDatas.Count; i++)
+            {
+                CharacterData.ItemData cd = DBManager.I.currData.itemDatas[i];
+                int find = DBManager.I.itemDatabase.allItems.FindIndex(x => x.name == cd.Name);
+                if(find == -1) continue;
+                
+                ItemData d = Instantiate(DBManager.I.itemDatabase.allItems[find]);
+                d.name = DBManager.I.itemDatabase.allItems[find].name;
+                d.isNew = cd.isNew;
+                InventoryItem inventoryItem = new InventoryItem(d, cd.count);
+                allItems.Add(inventoryItem);
+            }
         }
-        //////////
         
         List<InventoryItem> filteredList = allItems
-            .Where(item => item.data != null && item.data.type == _currentFilter)
+            .Where(item => item.data != null && item.data.type == ItemData.ItemType.Material)
             .ToList();
 
-        if (_currentFilter == ItemData.ItemType.Material)
-        {
-            filteredList.Sort((a, b) => a.data.itemName.CompareTo(b.data.itemName));
-        }
+        filteredList.Sort((a, b) => a.data.itemName.CompareTo(b.data.itemName));
 
         if (filteredList.Count > 0)
         {
@@ -174,23 +132,17 @@ public class ItemPanelController : MonoBehaviour, ITabContent
 
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentTransform.GetComponent<RectTransform>());
-
         yield return new WaitForEndOfFrame();
 
         SetupSlotNavigation();
 
-        if (filteredList.Count > 0)
-        {
-            ShowItemDetails(filteredList[0]);
-        }
-        else
-        {
-            ShowItemDetails(null);
-        }
+        if (filteredList.Count > 0) ShowItemDetails(filteredList[0]);
+        else ShowItemDetails(null);
 
-        if (isInitialLoad && firstSelectable != null)
+        if (isInitialLoad)
         {
-            EventSystem.current.SetSelectedGameObject(firstSelectable.gameObject);
+            if (_spawnedSlots.Count > 0) EventSystem.current.SetSelectedGameObject(_spawnedSlots[0].gameObject);
+            else if (mainTabButton != null) EventSystem.current.SetSelectedGameObject(mainTabButton.gameObject);
         }
 
         _initCoroutine = null;
@@ -198,10 +150,8 @@ public class ItemPanelController : MonoBehaviour, ITabContent
     
     private void UpdateMoneyText()
     {
-        if (moneyText != null)
-        {
+        if (moneyText != null && DBManager.I != null)
             moneyText.text = DBManager.I.currData.gold.ToString("N0");
-        }
     }
 
     public void ShowItemDetails(InventoryItem item)
@@ -217,28 +167,44 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         }
         else
         {
-            detailItemNameText.text = "아이템 선택";
+            detailItemNameText.text = "재료 없음";
             detailItemImage.sprite = null;
-            detailItemDescriptionText.text = "목록에서 아이템을 선택하세요.";
+            detailItemDescriptionText.text = "보유 중인 재료 아이템이 없습니다.";
             detailItemImage.gameObject.SetActive(false); 
         }
     }
     
     private void ClearAllSpawnedSlots()
     {
-        foreach (ItemSlotUI slot in _spawnedSlots) Destroy(slot.gameObject);
+        foreach (ItemSlotUI slot in _spawnedSlots) if(slot != null) Destroy(slot.gameObject);
         _spawnedSlots.Clear();
     }
 
+    // [최종 수정] 좌우/아래 모든 방향을 확실하게 연결
     private void SetupSlotNavigation()
     {
-        if (_spawnedSlots.Count == 0)
+        // 1. 메인 탭 버튼 연결 (탭 -> 리스트, 탭 <-> 탭)
+        if (mainTabButton != null)
         {
-            SetSubTabNavigation(equipmentButton, mainTabButton, null, null, materialButton);
-            SetSubTabNavigation(materialButton, mainTabButton, equipmentButton, null, null);
-            return;
+            Navigation customNav = mainTabButton.navigation;
+            customNav.mode = Navigation.Mode.Explicit; // 수동 모드 설정
+
+            // [아래] 슬롯이 있으면 0번 슬롯, 없으면 막음
+            if (_spawnedSlots.Count > 0)
+                customNav.selectOnDown = _spawnedSlots[0].GetComponent<Button>();
+            else
+                customNav.selectOnDown = null;
+
+            // [좌/우] 인스펙터에서 연결한 버튼으로 강제 설정
+            customNav.selectOnLeft = prevTabButton;  // Q 방향
+            customNav.selectOnRight = nextTabButton; // 랜턴 방향
+
+            mainTabButton.navigation = customNav;
         }
+
+        if (_spawnedSlots.Count == 0) return;
         
+        // 2. 슬롯 리스트 연결 (리스트 <-> 리스트, 리스트 -> 탭)
         for (int i = 0; i < _spawnedSlots.Count; i++)
         {
             Button button = _spawnedSlots[i].GetComponent<Button>();
@@ -247,44 +213,17 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             Navigation nav = button.navigation;
             nav.mode = Navigation.Mode.Explicit;
 
-            if (i == 0) 
-                nav.selectOnUp = null; 
-            else 
-                nav.selectOnUp = _spawnedSlots[i - 1]?.GetComponent<Button>();
+            // 위: 첫 슬롯은 메인 탭으로
+            if (i == 0) nav.selectOnUp = mainTabButton;
+            else nav.selectOnUp = _spawnedSlots[i - 1]?.GetComponent<Button>();
 
+            // 아래: 다음 슬롯으로
             nav.selectOnDown = (i == _spawnedSlots.Count - 1) ? null : _spawnedSlots[i + 1]?.GetComponent<Button>();
+            
             nav.selectOnLeft = null;
             nav.selectOnRight = null;
 
             button.navigation = nav;
         }
-        
-        Button firstSlot = _spawnedSlots[0].GetComponent<Button>();
-        
-        SetSubTabNavigation(equipmentButton, mainTabButton, null, firstSlot, materialButton); 
-        SetSubTabNavigation(materialButton, mainTabButton, equipmentButton, firstSlot, null);
     }
-
-    private void SetSubTabNavigation(Button target, Selectable up, Button left, Button down, Button right)
-    {
-        Navigation nav = target.navigation;
-        nav.mode = Navigation.Mode.Explicit;
-        
-        if (up != null) nav.selectOnUp = up;
-        if (left != null) nav.selectOnLeft = left;
-        if (down != null) nav.selectOnDown = down;
-        if (right != null) nav.selectOnRight = right;
-        
-        target.navigation = nav;
-    }
-
-    private void UpdateSubTabButtons()
-    {
-        equipmentButton.GetComponentInChildren<TextMeshProUGUI>().color = ExampleColor(_currentFilter == ItemData.ItemType.Equipment);
-        materialButton.GetComponentInChildren<TextMeshProUGUI>().color = ExampleColor(_currentFilter == ItemData.ItemType.Material);
-    }
-
-    private Color ExampleColor(bool isActive) => isActive ? subTabActiveColor : subTabIdleColor;
-    
-    
 }
