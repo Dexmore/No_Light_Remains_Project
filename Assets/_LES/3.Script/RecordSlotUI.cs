@@ -26,7 +26,7 @@ public class RecordSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         _currentRecord = data;
         _controller = controller;
 
-        recordTitleText.text = _currentRecord.recordTitle;
+        recordTitleText.text = _currentRecord.recordTitle.GetLocalizedString();
         if (newIndicator != null)
         {
             newIndicator.SetActive(_currentRecord.isNew);

@@ -72,7 +72,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         // 1. 그리드 슬롯 채우기 (활성화/비활성화 결정)
         for (int i = 0; i < gridSlots.Count; i++)
         {
-            if (i < playerGears.Count && playerGears[i] != null && !string.IsNullOrEmpty(playerGears[i].gearName))
+            if (i < playerGears.Count && playerGears[i] != null && !string.IsNullOrEmpty(playerGears[i].gearName.GetLocalizedString()))
             {
                 GearData data = playerGears[i];
                 gridSlots[i].SetData(data, this);
@@ -95,7 +95,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         SetupIndexBasedNavigation();
 
         // 4. 상세 정보창 업데이트
-        GearData firstAvailableGear = playerGears.FirstOrDefault(gear => gear != null && !string.IsNullOrEmpty(gear.gearName));
+        GearData firstAvailableGear = playerGears.FirstOrDefault(gear => gear != null && !string.IsNullOrEmpty(gear.gearName.GetLocalizedString()));
         ShowSelectedGearDetails(firstAvailableGear);
     }
 
@@ -204,10 +204,10 @@ public class GearPanelController : MonoBehaviour, ITabContent
     {
         if (gear != null)
         {
-            detailGearName.text = gear.gearName;
+            detailGearName.text = gear.gearName.GetLocalizedString();
             detailGearImage.sprite = gear.gearIcon;
             detailGearImage.gameObject.SetActive(gear.gearIcon != null);
-            detailGearDescription.text = gear.gearDescription;
+            detailGearDescription.text = gear.gearDescription.GetLocalizedString();
 
             detailCostMeter.SetMaxCost(detailCostMeter.GetTotalPipCount());
             detailCostMeter.SetCost(gear.cost);

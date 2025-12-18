@@ -117,7 +117,7 @@ public class ItemPanelController : MonoBehaviour, ITabContent
             .Where(item => item.data != null && item.data.type == ItemData.ItemType.Material)
             .ToList();
 
-        filteredList.Sort((a, b) => a.data.itemName.CompareTo(b.data.itemName));
+        filteredList.Sort((a, b) => a.data.itemName.GetLocalizedString().CompareTo(b.data.itemName.GetLocalizedString()));
 
         if (filteredList.Count > 0)
         {
@@ -160,9 +160,9 @@ public class ItemPanelController : MonoBehaviour, ITabContent
 
         if (item != null && item.data != null)
         {
-            detailItemNameText.text = item.data.itemName;
+            detailItemNameText.text = item.data.itemName.GetLocalizedString();
             detailItemImage.sprite = item.data.icon;
-            detailItemDescriptionText.text = item.data.itemDescription;
+            detailItemDescriptionText.text = item.data.itemDescription.GetLocalizedString();
             detailItemImage.gameObject.SetActive(item.data.icon != null);
         }
         else

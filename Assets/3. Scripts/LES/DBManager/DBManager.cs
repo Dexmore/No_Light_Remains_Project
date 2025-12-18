@@ -6,6 +6,7 @@ using UnityEngine;
 using Steamworks;
 using UnityEngine.Events;
 using NaughtyAttributes;
+using UnityEngine.Localization.Settings;
 public class DBManager : SingletonBehaviour<DBManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -85,8 +86,21 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
         else return;
     }
+    
     IEnumerator Start()
     {
+        // YSH [추가] ItemDatabase의 로컬라이제이션 이벤트 등록 및 초기화
+        if (!LocalizationSettings.InitializationOperation.IsDone)
+        {
+            yield return LocalizationSettings.InitializationOperation;
+        }
+
+        // 이제 로컬라이제이션 시스템이 준비되었으므로 데이터베이스 초기화
+        if (itemDatabase != null)
+        {   
+            itemDatabase.Initialize(); 
+        }
+        
         yield return null;
         StartSteam();
         float _time = Time.time;
@@ -97,6 +111,10 @@ public class DBManager : SingletonBehaviour<DBManager>
                 yield return YieldInstructionCache.WaitForSeconds(0.2f);
                 LoadSteam();
                 LoadLocal();
+
+                // [추가] 2. 데이터 로드 후 모든 아이템/기록물의 번역 텍스트 강제 갱신
+                if (itemDatabase != null) itemDatabase.RefreshAllData();
+
                 yield return YieldInstructionCache.WaitForSeconds(0.2f);
                 StopCoroutine(nameof(CheckLoop));
                 StartCoroutine(nameof(CheckLoop));
@@ -104,6 +122,10 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
         }
+
+        // [추가] 3. 스팀이 없더라도 로컬 데이터를 불러온 후 갱신
+        LoadLocal();
+        if (itemDatabase != null) itemDatabase.RefreshAllData();
     }
     public void StartSteam()
     {
