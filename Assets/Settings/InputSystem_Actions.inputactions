@@ -16,15 +16,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Jump",
-                    "type": "Button",
-                    "id": "f1ba0d36-48eb-4cd5-b651-1c94a6531f70",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Attack",
                     "type": "Button",
                     "id": "6c2ab1b8-8984-453a-af3d-a3c78ae1679a",
@@ -34,18 +25,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LeftDash",
+                    "name": "Jump",
                     "type": "Button",
-                    "id": "a619cb13-e91f-4494-8d15-326ba0d7849b",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "RightDash",
-                    "type": "Button",
-                    "id": "72d50348-bd39-47de-99f5-d8264579ff64",
+                    "id": "f1ba0d36-48eb-4cd5-b651-1c94a6531f70",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -100,6 +82,24 @@
                     "name": "Inventory",
                     "type": "Button",
                     "id": "762998ca-b87d-4b2d-9bcf-aecb9753105e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftDash",
+                    "type": "Button",
+                    "id": "a619cb13-e91f-4494-8d15-326ba0d7849b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightDash",
+                    "type": "Button",
+                    "id": "72d50348-bd39-47de-99f5-d8264579ff64",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -416,7 +416,7 @@
                 {
                     "name": "",
                     "id": "9693ab99-db19-4b3f-b4cb-26bfa74050b9",
-                    "path": "<Keyboard>/v",
+                    "path": "<Keyboard>/b",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -425,37 +425,15 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "One Modifier",
-                    "id": "462e6241-1617-40b8-9473-5c8542f8a8d9",
-                    "path": "OneModifier(overrideModifiersNeedToBePressedFirst=true)",
+                    "name": "",
+                    "id": "3923b09f-77b2-4e88-a7b9-ba9a27230fdf",
+                    "path": "<Keyboard>/v",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard&Mouse",
                     "action": "Parry",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "Modifier",
-                    "id": "345f4350-5b24-4fa3-866f-7dd25e9af7e4",
-                    "path": "<Keyboard>/x",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Binding",
-                    "id": "7c82feff-53fa-4520-85ba-6ce7a6b861ae",
-                    "path": "<Keyboard>/z",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",

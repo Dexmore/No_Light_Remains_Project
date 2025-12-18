@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 public class FollowCamera : MonoBehaviour

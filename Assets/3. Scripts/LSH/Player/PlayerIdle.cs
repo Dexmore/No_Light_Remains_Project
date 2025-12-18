@@ -15,6 +15,8 @@ public class PlayerIdle : IPlayerState
     bool potionPressed;
     private InputAction inventoryAction;
     bool inventoryPressed;
+    private InputAction parryAction;
+    bool parryPressed;
     private InputAction escAction;
     int flagInt = 0;
     public void Enter()
@@ -31,6 +33,8 @@ public class PlayerIdle : IPlayerState
             inventoryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Inventory");
         if (escAction == null)
             escAction = ctx.inputActionAsset.FindActionMap("UI").FindAction("ESC");
+        if (parryAction == null)
+            parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
         ctx.animator.Play("Player_Idle");
         flagInt = 0;
         escAction.performed += InputESC;
@@ -83,6 +87,16 @@ public class PlayerIdle : IPlayerState
         {
             fsm.ChangeState(ctx.openInventory);
         }
+
+        parryPressed = parryAction.IsPressed();
+        if(parryPressed)
+        {
+            if(ctx.Grounded)
+            {
+                fsm.ChangeState(ctx.parry);
+            }
+        }
+
     }
     public void UpdatePhysics()
     {

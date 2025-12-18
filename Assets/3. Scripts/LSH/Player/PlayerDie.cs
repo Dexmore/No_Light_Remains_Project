@@ -18,6 +18,8 @@ public class PlayerDie : IPlayerState
         light1.SetActive(false);
         light3.SetActive(true);
         GameManager.I.isLanternOn = false;
+        DBManager.I.currData.death++;
+        DBManager.I.Save();
     }
     public void Exit()
     {

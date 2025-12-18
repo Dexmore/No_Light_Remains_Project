@@ -103,29 +103,29 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     }
     void Start()
     {
-        volumeBGM = PlayerPrefs.GetFloat("volumeBGM", 1f);
-        volumeSFX = PlayerPrefs.GetFloat("volumeSFX", 1f);
+        // volumeBGM = PlayerPrefs.GetFloat("volumeBGM", 1f);
+        // volumeSFX = PlayerPrefs.GetFloat("volumeSFX", 1f);
         ausBGM0.loop = true;
         ausBGM1.loop = true;
     }
-    // 볼륨조절 슬라이더 드래그시 아래 실행
-    public void SetVolumeBGM(float ratio)
-    {
-        volumeBGM = ratio;
-        ausBGM0.volume = volumeBGM;
-        ausBGM1.volume = volumeBGM;
-    }
-    // 볼륨조절 슬라이더 드래그시 아래 실행
-    public void SetVolumeSFX(float ratio)
-    {
-        volumeSFX = ratio;
-    }
-    // 볼륨조절 슬라이더 포인터 업(End, 릴리즈시) 아래 실행
-    public void SetVolumeEnd()
-    {
-        PlayerPrefs.SetFloat("volumeBGM", volumeBGM);
-        PlayerPrefs.SetFloat("volumeSFX", volumeSFX);
-        PlayerPrefs.Save();
-    }
+    // // 볼륨조절 슬라이더 드래그시 아래 실행
+    // public void SetVolumeBGM(float ratio)
+    // {
+    //     volumeBGM = ratio;
+    //     ausBGM0.volume = volumeBGM;
+    //     ausBGM1.volume = volumeBGM;
+    // }
+    // // 볼륨조절 슬라이더 드래그시 아래 실행
+    // public void SetVolumeSFX(float ratio)
+    // {
+    //     volumeSFX = ratio;
+    // }
+    // // 볼륨조절 슬라이더 포인터 업(End, 릴리즈시) 아래 실행
+    // public void SetVolumeEnd()
+    // {
+    //     PlayerPrefs.SetFloat("volumeBGM", volumeBGM);
+    //     PlayerPrefs.SetFloat("volumeSFX", volumeSFX);
+    //     PlayerPrefs.Save();
+    // }
 
 }
