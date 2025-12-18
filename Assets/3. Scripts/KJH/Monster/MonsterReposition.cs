@@ -19,6 +19,8 @@ public class MonsterReposition : MonsterState
     }
     List<Vector2[]> paths = new List<Vector2[]>();
     RaycastHit2D[] grounds = new RaycastHit2D[10];
+    Ray2D checkCliffRay;
+    RaycastHit2D CheckCliffHit;
     public async UniTask Activate(CancellationToken token)
     {
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))

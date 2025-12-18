@@ -254,6 +254,7 @@ GameObject:
   - component: {fileID: 1862046869389580314}
   - component: {fileID: 8349045221369651068}
   - component: {fileID: 5338324552298598927}
+  - component: {fileID: 1689777026032174550}
   m_Layer: 6
   m_Name: ContaminatedBlob
   m_TagString: Monster
@@ -345,14 +346,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
   height: 0.8
   width: 1.1
-  jumpLength: 1.2
+  jumpLength: 1.5
   isDie: 0
   isGround: 0
   isStagger: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
-  currHP: 0
+  currHealth: 0
   aggressive: 0.6
   data: {fileID: 11400000, guid: 6c285d0eaeefbe941a86167b62e29df5, type: 2}
   ID: 
@@ -395,6 +396,8 @@ MonoBehaviour:
   findRadius: 0
   closeRadius: 0
   parryCount: 0
+  startPosition: {x: 0, y: 0}
+  index: 0
 --- !u!114 &7867875104381242568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -487,6 +490,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d0ab3651234f414f843ce65cbcf4ed9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterReposition
+  coolTime: 0
+--- !u!114 &1689777026032174550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3785753429681866502}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0a37df5ef37f384c926c4448561ca25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterReturnHome
   coolTime: 0
 --- !u!1 &6951672679798495248
 GameObject:

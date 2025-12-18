@@ -89,9 +89,7 @@ public class MonsterPursuit : MonsterState
             if (CheckRayHit.collider == null)
             {
                 stopWall = true;
-                //Debug.Log("a");
             }
-
             if (stopWall)
             {
                 if (control.isDie) return;
@@ -113,7 +111,7 @@ public class MonsterPursuit : MonsterState
                     if (control.isDie) return;
                     if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                         anim.Play("Idle");
-                    if (Random.value < 10f * Time.deltaTime)
+                    if (Random.value < 5f * Time.deltaTime)
                     {
                         await UniTask.Delay(5, cancellationToken: token);
                         control.ChangeNextState();
@@ -122,26 +120,6 @@ public class MonsterPursuit : MonsterState
                 }
             }
             else tempCount = 0;
-
-            // !! 전투 + Find 상태일시 탈출 !!
-            if (!control.HasCondition(MonsterControl.Condition.Peaceful))
-            {
-                if (control.HasCondition(MonsterControl.Condition.FindPlayer))
-                    if (Random.value < 0.005f)
-                    {
-                        await UniTask.Delay(5, cancellationToken: token);
-                        control.ChangeNextState();
-                        return;
-                    }
-                    else if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
-                        if (Random.value < 0.05f)
-                        {
-                            await UniTask.Delay(5, cancellationToken: token);
-                            control.ChangeNextState();
-                            return;
-                        }
-            }
-
             // AddForce방식으로 캐릭터 이동
             if (!stopWall)
                 if (dot < control.data.MoveSpeed)
@@ -176,7 +154,6 @@ public class MonsterPursuit : MonsterState
         }
         control.ChangeNextState();
     }
-
     public async UniTask Activate2(CancellationToken token)
     {
         if (stopDistance > 0 && control.HasCondition(MonsterControl.Condition.ClosePlayer))
@@ -219,6 +196,12 @@ public class MonsterPursuit : MonsterState
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
+            Debug.Log("P7");
+
+            // 반복될수록 추적 포기하기 높게 만들기
+            // 
+
+
             return;
         }
 
@@ -345,12 +328,12 @@ public class MonsterPursuit : MonsterState
                     return;
                 }
 
-                if (!control.isGround)
-                {
-                    await UniTask.Yield(token);
-                    control.ChangeNextState();
-                    return;
-                }
+                // if (!control.isGround)
+                // {
+                //     await UniTask.Yield(token);
+                //     control.ChangeNextState();
+                //     return;
+                // }
 
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;

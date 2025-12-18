@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.InputSystem;
 using UnityEngine.Localization.Settings;
 
 public class SettingManager : SingletonBehaviour<SettingManager>
 {
+    [SerializeField] InputActionAsset inputActions;
     protected override bool IsDontDestroy() => true;
     protected override void Awake()
     {
@@ -60,6 +62,12 @@ public class SettingManager : SingletonBehaviour<SettingManager>
 
         // 3. 언어 설정 적용 (Localization 패키지 사용 시)
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[setting.locale];
+
+        // 4. 조작법 적용
+        if (!string.IsNullOrEmpty(setting.keyBindingOverrides) && inputActions != null)
+        {
+            inputActions.LoadBindingOverridesFromJson(setting.keyBindingOverrides);
+        }
     }
 
     public void LoadSettings()
@@ -81,7 +89,40 @@ public class SettingManager : SingletonBehaviour<SettingManager>
         PlayerPrefs.Save();
     }
 
+    public string GetBindingName(string actionName, int bindingIndex = 0)
+    {
+        if (inputActions == null) return "";
 
+        var action = inputActions.FindAction(actionName);
+        if (action == null) return "";
+
+        // Move 액션의 경우 (0: Left, 1: Right 처리)
+        if (actionName == "Move")
+        {
+            // 이전에 정한 규칙: 0번 index(Left)는 binding 3, 1번 index(Right)는 binding 4
+            // 만약 index가 0이나 1로 들어오면 자동으로 인덱스 변환
+            if (bindingIndex == 0) bindingIndex = 3;
+            else if (bindingIndex == 1) bindingIndex = 4;
+        }
+
+        string path = action.bindings[bindingIndex].effectivePath;
+        string keyName = InputControlPath.ToHumanReadableString(path, InputControlPath.HumanReadableStringOptions.OmitDevice);
+
+        // 화살표 특수문자 변환
+        return ConvertToArrow(keyName);
+    }
+
+    private string ConvertToArrow(string keyName)
+    {
+        return keyName switch
+        {
+            "Left Arrow" or "LeftArrow" => "←",
+            "Right Arrow" or "RightArrow" => "→",
+            "Up Arrow" or "UpArrow" => "↑",
+            "Down Arrow" or "DownArrow" => "↓",
+            _ => keyName
+        };
+    }
 
 }
 [System.Serializable]

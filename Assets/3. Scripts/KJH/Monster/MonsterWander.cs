@@ -9,6 +9,7 @@ public class MonsterWander : MonsterState
     float duration;
     bool isMoveAnimation;
     Vector2 moveDirection = Vector2.zero;
+
     public override async UniTask Enter(CancellationToken token)
     {
         await UniTask.Yield(token);
@@ -22,6 +23,15 @@ public class MonsterWander : MonsterState
         else
             Activate2(ctsLink.Token).Forget();
         isMoveAnimation = false;
+
+        float homeRadius = control.findRadius * 1.4f;
+        float homeDistance = Vector2.Distance(control.startPosition, transform.position);
+        float ratio = homeDistance / homeRadius;
+        ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
+        float returnChance = Mathf.Pow(ratio, 3);
+        Debug.Log($"homeDistance:{homeDistance} , returnChanve:{returnChance}");
+
+
     }
     public override void Exit()
     {
@@ -48,8 +58,22 @@ public class MonsterWander : MonsterState
         else if (moveDirection.x < 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         int tempCount = 0;
+        float returnTime = 0;
         while (Time.time - startTime < duration && !token.IsCancellationRequested)
         {
+            
+            if(Time.time - returnTime > 1.8f)
+            {
+                float homeRadius = control.findRadius * 1.4f;
+                float homeDistance = Vector2.Distance(control.startPosition, transform.position);
+                float ratio = homeDistance / homeRadius;
+                ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
+                float returnChance = Mathf.Pow(ratio, 3);
+                Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+                returnTime = Time.time;
+            }
+
+
             float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
             // 벽 향해서 전진하는 버그 막기
             bool stopWall = false;
@@ -82,7 +106,6 @@ public class MonsterWander : MonsterState
             if (CheckRayHit.collider == null)
             {
                 stopWall = true;
-                //Debug.Log("a");
             }
 
             if (stopWall)
@@ -182,7 +205,7 @@ public class MonsterWander : MonsterState
         for (int i = 0; i < 8; i++)
         {
             // Astar로 지정할 임시목적지 선정
-            Vector2 pos = ((Vector2)transform.position) + control.data.MoveSpeed * Random.insideUnitCircle * Random.Range(5f, 10f);
+            Vector2 pos = ((Vector2)transform.position) + control.data.MoveSpeed * Random.insideUnitCircle * Random.Range(3f, 7f);
             int count = Physics2D.RaycastNonAlloc(pos + 5f * Vector2.up, Vector2.down, grounds, 10f, control.groundLayer);
             if (count == 0) continue;
             int rnd2 = Random.Range(0, count);
@@ -220,6 +243,17 @@ public class MonsterWander : MonsterState
             float length = moveDirection.magnitude;
             float xLength = Mathf.Abs(moveDirection.x);
             float yLength = Mathf.Abs(moveDirection.y);
+
+            if (i % 3 == 0)
+            {
+                float homeRadius = control.findRadius * 1.4f;
+                float homeDistance = Vector2.Distance(control.startPosition, transform.position);
+                float ratio = homeDistance / homeRadius;
+                ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
+                float returnChance = Mathf.Pow(ratio, 3);
+                Debug.Log($"homeDistance:{homeDistance} , W returnChanve:{returnChance}");
+            }
+
 
             // 3. Astar상 땅 수직 아래로 파고들거나 하늘로 치솟는 경로가 나오는 경우
             if (xLength <= 0.5f * astar.unit && yLength > 2.5f * astar.unit)
@@ -270,6 +304,7 @@ public class MonsterWander : MonsterState
                 }
                 await UniTask.Delay(500, cancellationToken: token);
                 control.ChangeNextState();
+                Debug.Log("7");
                 return;
             }
 
@@ -299,7 +334,6 @@ public class MonsterWander : MonsterState
                     await UniTask.Delay(500, cancellationToken: token);
                     control.ChangeNextState();
                     return;
-
                 }
             }
 

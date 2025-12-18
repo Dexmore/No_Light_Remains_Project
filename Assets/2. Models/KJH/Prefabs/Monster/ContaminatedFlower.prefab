@@ -803,6 +803,7 @@ GameObject:
   - component: {fileID: 7497169102679589641}
   - component: {fileID: 5028216363324574023}
   - component: {fileID: 3184333215785844659}
+  - component: {fileID: 3619138270973317954}
   m_Layer: 6
   m_Name: ContaminatedFlower
   m_TagString: Monster
@@ -895,14 +896,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
   height: 0.85
   width: 1.2
-  jumpLength: 1.6
+  jumpLength: 1.5
   isDie: 0
   isGround: 0
   isStagger: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
-  currHP: 0
+  currHealth: 0
   aggressive: 0.7
   data: {fileID: 11400000, guid: 0d74644b32103ec42adc36255e32e17f, type: 2}
   ID: 
@@ -948,6 +949,8 @@ MonoBehaviour:
   findRadius: 0
   closeRadius: 0
   parryCount: 0
+  startPosition: {x: 0, y: 0}
+  index: 0
 --- !u!114 &4572157595017877094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1075,6 +1078,19 @@ MonoBehaviour:
   damageMultiplier: 1.45
   staggerType: 2
   durationRange: {x: 3, y: 6}
+--- !u!114 &3619138270973317954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8038197678873106803}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0a37df5ef37f384c926c4448561ca25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterReturnHome
+  coolTime: 0
 --- !u!1001 &617368786398622256
 PrefabInstance:
   m_ObjectHideFlags: 0

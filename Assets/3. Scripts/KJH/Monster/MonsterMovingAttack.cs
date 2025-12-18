@@ -14,6 +14,8 @@ public class MonsterMovingAttack : MonsterState
     int multiHitCount = 1;
     MonsterShortAttack monsterShortAttack;
     public override MonsterControl.State mapping => MonsterControl.State.MovingAttack;
+    Ray2D checkCliffRay;
+    RaycastHit2D CheckCliffHit;
     public override async UniTask Enter(CancellationToken token)
     {
         TryGetComponent(out monsterShortAttack);

@@ -101,13 +101,14 @@ public class PlayerControl : MonoBehaviour
         {
             CharacterData newData = new CharacterData();
             newData.gold = 0;
+            newData.death = 0;
             newData.sceneName = "Stage0";
             newData.lastPos = Vector2.zero;
             newData.maxHealth = maxHealth;
             newData.maxBattery = maxBattery;
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
-            newData.potionCount = 5;
+            newData.potionCount = 3;
             newData.maxGearCost = 3;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
@@ -121,7 +122,7 @@ public class PlayerControl : MonoBehaviour
             light3.SetActive(true);
             // 신규캐릭터 시작 아이템
             DBManager.I.AddLantern("BasicLantern");
-            int find = DBManager.I.currData.lanternDatas.FindIndex(x=> x.Name == "BasicLantern");
+            int find = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == "BasicLantern");
             CharacterData.LanternData lanternData = DBManager.I.currData.lanternDatas[find];
             lanternData.isEquipped = true;
             DBManager.I.currData.lanternDatas[find] = lanternData;
@@ -404,12 +405,12 @@ public class PlayerControl : MonoBehaviour
                     GameManager.I.HitEffect(hData.hitPoint, 0.45f);
                     break;
                 case HitData.StaggerType.Large:
-                    multiplier = 1.3f;
-                    GameManager.I.HitEffect(hData.hitPoint, 0.65f);
+                    multiplier = 1.29f;
+                    GameManager.I.HitEffect(hData.hitPoint, 0.61f);
                     break;
             }
             Vector2 dir = 2.8f * multiplier * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
-            dir.y = 2.3f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            dir.y = 2.1f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
@@ -573,7 +574,7 @@ public class PlayerControl : MonoBehaviour
                 if (currBattery <= 100)
                 {
                     if (fsm.currentState == die) continue;
-                    currBattery += 6f * interval;
+                    currBattery += 9f * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
@@ -601,13 +602,16 @@ public class PlayerControl : MonoBehaviour
                         GameManager.I.isLanternOn = false;
                     }
                 }
-                else if (currBattery <= 100)
+                else
                 {
-                    if (fsm.currentState == die) continue;
-                    currBattery += 0.1f * interval;
-                    currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
-                    DBManager.I.currData.currBattery = currBattery;
-                    hUDBinder.RefreshBattery();
+                    if (currBattery <= 20)
+                    {
+                        if (fsm.currentState == die) continue;
+                        currBattery += 0.5f * interval;
+                        currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                        DBManager.I.currData.currBattery = currBattery;
+                        hUDBinder.RefreshBattery();
+                    }
                 }
             }
         }

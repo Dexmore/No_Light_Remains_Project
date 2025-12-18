@@ -179,6 +179,7 @@ public class PromptControl : MonoBehaviour
             itrctCanvas.TryGetComponent(out lr);
             wrap.Find("Text(Press)").TryGetComponent(out tMP_Text);
             wrap.Find("Text").TryGetComponent(out text);
+            text.text = SettingManager.I.GetBindingName("Interaction");
             isClosing1 = false;
             ctsClose1?.Cancel();
         }
@@ -191,6 +192,7 @@ public class PromptControl : MonoBehaviour
             lanternCanvas.TryGetComponent(out lr);
             wrap.Find("Text(Hold)").TryGetComponent(out tMP_Text);
             wrap.Find("Text").TryGetComponent(out text);
+            text.text = SettingManager.I.GetBindingName("LanternInteraction");
             wrap.Find("PressRing").TryGetComponent(out pressRing);
             isClosing2 = false;
             ctsClose2?.Cancel();

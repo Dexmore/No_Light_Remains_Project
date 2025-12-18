@@ -13,6 +13,8 @@ public class MonsterBiteAttack : MonsterState
     int multiHitCount = 1;
     GameObject chafe;
     public override MonsterControl.State mapping => MonsterControl.State.BiteAttack;
+    Ray2D checkCliffRay;
+    RaycastHit2D CheckCliffHit;
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;

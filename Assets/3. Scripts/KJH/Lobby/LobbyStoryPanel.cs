@@ -273,7 +273,7 @@ public class LobbyStoryPanel : MonoBehaviour
         await Task.Delay(200);
         CharacterData newData = new CharacterData();
         newData.gold = 0;
-        newData.death = 1;
+        newData.death = 0;
         newData.difficulty = diff;
         newData.sceneName = "Cinematic";
         newData.lastPos = Vector2.zero;
@@ -281,7 +281,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.maxBattery = 100;
         newData.currHealth = 400;
         newData.currBattery = 100;
-        newData.potionCount = 5;
+        newData.potionCount = 3;
         newData.maxGearCost = 3;
         newData.itemDatas = new List<CharacterData.ItemData>();
         newData.gearDatas = new List<CharacterData.GearData>();

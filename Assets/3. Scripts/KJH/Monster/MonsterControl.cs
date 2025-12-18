@@ -33,6 +33,9 @@ public class MonsterControl : MonoBehaviour
     BossHUD bossHUD;
     void Awake()
     {
+        startPosition = transform.position;
+        startPosition.x = Mathf.Floor(startPosition.x * 10f) * 0.1f;
+        startPosition.y = Mathf.Floor(startPosition.y * 10f) * 0.1f;
         SettingFSM();
         TryGetComponent(out astar);
         TryGetComponent(out rb);
@@ -288,7 +291,11 @@ public class MonsterControl : MonoBehaviour
         SequenceAttack3,
         BeamAttack,
         Heal,
-        MovingCharge,
+        ReturnHome,
+        Shooting1,
+        Shooting2,
+        Shooting3,
+
 
 
     }
@@ -634,7 +641,7 @@ public class MonsterControl : MonoBehaviour
     async UniTask Sensor(CancellationToken token)
     {
         await UniTask.Yield(token);
-        findRadius = 9f * ((width + height) * 0.58f + 0.55f);
+        findRadius = 4.1f * ((width + height) * 0.58f + 0.55f);
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         bool canPhase2 = false;
@@ -712,7 +719,7 @@ public class MonsterControl : MonoBehaviour
             copy = memories.ToDictionary(x => x.Key, x => x.Value);
             foreach (var element in memories)
             {
-                if (Time.time - element.Value > 20f)
+                if (Time.time - element.Value > 15f)
                 {
                     copy.Remove(element.Key);
                 }
@@ -1123,6 +1130,10 @@ public class MonsterControl : MonoBehaviour
         }
     }
     #endregion
+
+    [Space(50)]
+    public Vector2 startPosition;
+    public int index;
 
 
 

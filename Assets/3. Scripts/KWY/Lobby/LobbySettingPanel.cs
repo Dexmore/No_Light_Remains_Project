@@ -318,12 +318,52 @@ public class LobbySettingPanel : MonoBehaviour
             .OnMatchWaitForAnother(0.1f)
             .OnComplete(operation =>
             {
+                // 1. UI 텍스트 업데이트 (화살표 변환 포함)
                 buttonText.text = GetReadableKeyName(action, bindingIndex);
 
-                // [중요] 완료 후 액션 다시 활성화
+                // 2. 현재 새롭게 설정된 키의 경로(Path) 저장
+                string newPath = action.bindings[bindingIndex].effectivePath;
+
+                // 3. Dash 액션 동기화 (Move 변경 시)
+                if (action.name == "Move")
+                {
+                    string dashActionName = (index == 0) ? "LeftDash" : "RightDash";
+                    var dashAction = inputActions.FindAction(dashActionName);
+
+                    if (dashAction != null)
+                    {
+                        bool dashWasEnabled = dashAction.enabled;
+                        if (dashWasEnabled) dashAction.Disable();
+                        
+                        // 이동 키와 동일한 경로로 대시 키 덮어쓰기
+                        dashAction.ApplyBindingOverride(0, newPath);
+                        
+                        if (dashWasEnabled) dashAction.Enable();
+                    }
+                }
+
+                // 4. LanternInteraction 액션 동기화 (Lantern 변경 시)
+                if (action.name == "Lantern")
+                {
+                    string targetName = "LanternInteraction";
+                    var interactionAction = inputActions.FindAction(targetName);
+
+                    if (interactionAction != null)
+                    {
+                        bool interactionWasEnabled = interactionAction.enabled;
+                        if (interactionWasEnabled) interactionAction.Disable();
+
+                        // 랜턴 키와 동일한 경로로 랜턴 상호작용 키 덮어쓰기
+                        interactionAction.ApplyBindingOverride(0, newPath);
+
+                        if (interactionWasEnabled) interactionAction.Enable();
+                    }
+                }
+
+                // [중요] 메인 액션 다시 활성화
                 if (wasEnabled) action.Enable();
 
-                OnKeyBindingChanged();
+                OnKeyBindingChanged(); // 변경 사항 JSON 저장
                 CleanUpOperation();
                 ResetColor();
             })
