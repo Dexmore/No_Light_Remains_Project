@@ -9,6 +9,7 @@ public class MonsterReturnHome : MonsterState
     public override async UniTask Enter(CancellationToken token)
     {
         duration = Random.Range(0.4f, 1.2f);
+        if (duration > 1.05f) duration = Random.Range(3.4f, 4.2f);
         await UniTask.Yield(token);
         ctsReturn?.Cancel();
         ctsReturn = new CancellationTokenSource();
