@@ -455,12 +455,24 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         #endregion
         #region Monster & Object
-        
+
+        MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.InstanceID);
+        Debug.Log($"monster count : {allMonsters.Length}");
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        int find = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+        Debug.Log($"scene DB find : {find != -1}");
+        if(find != -1)
+        {
+
+            
+        }
+
         #endregion
 
 
     }
-    
+
 
 
 }
