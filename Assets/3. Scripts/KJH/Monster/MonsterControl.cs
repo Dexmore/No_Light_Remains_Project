@@ -1134,6 +1134,7 @@ public class MonsterControl : MonoBehaviour
     [Space(50)]
     public Vector2 startPosition;
     public int index;
+    [Range(0, 1)] public float homeValue = 1f;
 
 
 
