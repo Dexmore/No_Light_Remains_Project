@@ -15,6 +15,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     string[] loadingTexts;
     void InitLocale()
     {
+        // 영어
         if (SettingManager.I.setting.locale == 0)
         {
             loadingTexts = new string[]
@@ -28,6 +29,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 "The Alchemists, in their pursuit of immortality, eventually monopolized the Helios energy."
             };
         }
+        // 한글
         else if (SettingManager.I.setting.locale == 1)
         {
             loadingTexts = new string[]

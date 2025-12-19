@@ -24,13 +24,6 @@ public class MonsterWander : MonsterState
             Activate2(ctsLink.Token).Forget();
         isMoveAnimation = false;
 
-        float homeRadius = control.findRadius * 1.4f;
-        float homeDistance = Vector2.Distance(control.startPosition, transform.position);
-        float ratio = homeDistance / homeRadius;
-        ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
-        float returnChance = Mathf.Pow(ratio, 3);
-        // Debug.Log($"homeDistance:{homeDistance} , returnChanve:{returnChance}");
-
     }
     public override void Exit()
     {
@@ -61,22 +54,20 @@ public class MonsterWander : MonsterState
         float returnTime = 0;
         while (Time.time - startTime < duration && !token.IsCancellationRequested)
         {
-
-            if (Time.time - returnTime > 1.8f)
+            
+            if(Time.time - returnTime > 1.8f)
             {
                 float homeRadius = control.findRadius * 1.4f;
                 float homeDistance = Vector2.Distance(control.startPosition, transform.position);
                 float ratio = homeDistance / homeRadius;
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
-                //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
-                if (Random.value < control.homeValue)
-                    if (Random.value < returnChance)
-                    {
-                        await UniTask.Delay(5, cancellationToken: token);
-                        control.ChangeState(MonsterControl.State.ReturnHome, true);
-                        return;
-                    }
+                if(Random.value < returnChance)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    control.ChangeState(MonsterControl.State.ReturnHome, true);
+                    return;
+                }
                 returnTime = Time.time;
             }
 
@@ -108,7 +99,6 @@ public class MonsterWander : MonsterState
             float rayLength = 2f * control.height;
             checkRay.origin = rayOrigin;
             checkRay.direction = rayDirection;
-            //Debug.DrawRay(checkRay.origin, rayLength * checkRay.direction, Color.green, 1f);
             CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
             if (CheckRayHit.collider == null)
             {
@@ -258,14 +248,12 @@ public class MonsterWander : MonsterState
                 float ratio = homeDistance / homeRadius;
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
-                //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
-                if (Random.value < control.homeValue)
-                    if (Random.value < returnChance)
-                    {
-                        await UniTask.Delay(5, cancellationToken: token);
-                        control.ChangeState(MonsterControl.State.ReturnHome, true);
-                        return;
-                    }
+                if(Random.value < returnChance)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    control.ChangeState(MonsterControl.State.ReturnHome, true);
+                    return;
+                }
             }
 
 
@@ -291,7 +279,6 @@ public class MonsterWander : MonsterState
             checkRay.direction = rayDirection;
             CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
             float angle = 999;
-            //Debug.DrawRay(checkRay.origin, rayLength * checkRay.direction, Color.white, 2f);
             if (CheckRayHit.collider != null)
             {
                 Vector2 normal = CheckRayHit.normal;
@@ -303,7 +290,6 @@ public class MonsterWander : MonsterState
             // 1. 전방에 급한 벽이 있는 경우
             if (angle < 45)
             {
-                //Debug.DrawLine(startPos, targetPos, Color.red, 3f);
                 moveDirection.y = 0f;
                 moveDirection.Normalize();
                 float ratio = yLength / control.jumpLength;
@@ -318,7 +304,6 @@ public class MonsterWander : MonsterState
                 }
                 await UniTask.Delay(500, cancellationToken: token);
                 control.ChangeNextState();
-                Debug.Log("7");
                 return;
             }
 
@@ -327,9 +312,8 @@ public class MonsterWander : MonsterState
             {
                 Vector2 nextTarget = findPath[i + 1];
                 float _length = Mathf.Abs(nextTarget.x - startPos.x);
-                if (_length > 3f * astar.unit && IsHorizontalJumpGround(startPos, nextTarget))
+                if (_length > 3f * astar.unit && _length < 1.2f * control.jumpLength && IsHorizontalJumpGround(startPos, nextTarget))
                 {
-                    //Debug.DrawLine(startPos, nextTarget, Color.green, 3f);
                     Vector2 jumpDirection = (nextTarget - startPos).normalized;
                     if (jumpDirection.y <= 0.3f * control.height) jumpDirection = model.right + Vector3.up;
                     jumpDirection = 0.4f * jumpDirection + 0.6f * Vector2.up;
@@ -402,7 +386,6 @@ public class MonsterWander : MonsterState
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
                 rayLength = 2f * control.height;
-                //Debug.DrawRay(rayOrigin, rayLength * rayDirection, Color.white, 3f * Time.fixedDeltaTime);
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;
                 CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
@@ -479,7 +462,6 @@ public class MonsterWander : MonsterState
             Vector2 rayOrigin = new Vector2(checkX, startPos.y + rayHeightOffset);
             // 수직 아래로 레이캐스트 실행
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, rayLength, control.groundLayer);
-            //Debug.DrawRay(rayOrigin, rayLength * Vector2.down, Color.white, 2f);
             // 만약 레이가 땅에 닿지 않는다면 (hit.collider == null), 
             if (hit.collider == null) count++;
         }

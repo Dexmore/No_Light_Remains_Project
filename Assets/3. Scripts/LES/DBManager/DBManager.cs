@@ -505,7 +505,8 @@ public struct CharacterData
     public float currBattery;
     public int gold;
     public int maxGearCost;
-    public int potionCount;
+    public int maxPotionCount;
+    public int currPotionCount;
     public int difficulty;
     public int language;
     public string sceneName;

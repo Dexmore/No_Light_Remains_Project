@@ -108,7 +108,8 @@ public class PlayerControl : MonoBehaviour
             newData.maxBattery = maxBattery;
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
-            newData.potionCount = 3;
+            newData.maxPotionCount = 3;
+            newData.currPotionCount = 3;
             newData.maxGearCost = 3;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
@@ -116,6 +117,10 @@ public class PlayerControl : MonoBehaviour
             newData.recordDatas = new List<CharacterData.RecordData>();
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
+            System.DateTime now = System.DateTime.Now;
+            string datePart = now.ToString("yyyy.MM.dd");
+            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+            newData.lastTime = $"{datePart}-{secondsOfDay}";
             DBManager.I.currData = newData;
             light0.SetActive(false);
             light1.SetActive(false);
@@ -320,7 +325,7 @@ public class PlayerControl : MonoBehaviour
             MonsterControl monsterControl = hData.target.GetComponentInParent<MonsterControl>();
             if (monsterControl != null)
             {
-                currBattery += 3.2f;
+                currBattery += lanternAttackAmount;
                 currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                 hUDBinder.RefreshBattery();
             }
@@ -390,7 +395,7 @@ public class PlayerControl : MonoBehaviour
                     AttractParticle ap = upa.GetComponent<AttractParticle>();
                     Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
                     ap.targetVector = pos;
-                    currBattery += 31f;
+                    currBattery += lanternParryAmount;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
                     StartCoroutine(nameof(ReleaseParred));
@@ -594,7 +599,7 @@ public class PlayerControl : MonoBehaviour
             {
                 if (GameManager.I.isLanternOn)
                 {
-                    currBattery -= 2.5f * interval;
+                    currBattery += lanternDecreaseTick * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
@@ -638,6 +643,12 @@ public class PlayerControl : MonoBehaviour
         sfxFootStep.Pause();
     }
     #endregion
+
+    [Space(40)]
+    [Header("랜턴 다는 양, 차는 양 조절")]
+    [SerializeField] float lanternDecreaseTick = -2.5f;
+    [SerializeField] float lanternParryAmount = 31f;
+    [SerializeField] float lanternAttackAmount = 3f;
 
 
 }

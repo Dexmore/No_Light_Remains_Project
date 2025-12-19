@@ -102,7 +102,7 @@ public class LobbyStoryPanel : MonoBehaviour
                     wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Player{i + 1}";
                     wrap.Find("DeathText(1)").GetComponent<TMP_Text>().text = $"{data.death}";
                     wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
-                    //wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"{data.lastTime.Split("-")[0]}";
+                    wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"{data.lastTime.Split("-")[0]}";
                     wrap.Find("LastText(1)").GetComponent<TMP_Text>().text = $"";
                     wrap.Find("GoldText(1)").GetComponent<TMP_Text>().text = $"{data.gold}";
                 }
@@ -305,8 +305,15 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.maxBattery = 100;
         newData.currHealth = 400;
         newData.currBattery = 100;
-        newData.potionCount = 3;
+        newData.maxPotionCount = 3;
+        newData.currPotionCount = 3;
         newData.maxGearCost = 3;
+        
+        System.DateTime now = System.DateTime.Now;
+        string datePart = now.ToString("yyyy.MM.dd");
+        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+        newData.lastTime = $"{datePart}-{secondsOfDay}";
+
         newData.itemDatas = new List<CharacterData.ItemData>();
         newData.gearDatas = new List<CharacterData.GearData>();
         newData.lanternDatas = new List<CharacterData.LanternData>();

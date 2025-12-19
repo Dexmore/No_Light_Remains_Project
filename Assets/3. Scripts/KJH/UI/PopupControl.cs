@@ -338,7 +338,7 @@ public class PopupControl : MonoBehaviour
                 LocalizationSettings.SelectedLocale = locales[currentLocaleIndex];
                 
                 // UI 텍스트 업데이트 (English / Korean 등)
-                pop1LangText.text = locales[currentLocaleIndex].LocaleName;
+                pop1LangText.text = locales[currentLocaleIndex].LocaleName.Split("(")[0];
             }
 
             // 3. 데이터 저장

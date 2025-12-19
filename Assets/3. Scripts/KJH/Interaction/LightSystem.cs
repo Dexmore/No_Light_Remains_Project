@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.Rendering.Universal;
 public class PlayerLight : MonoBehaviour
 {
-    public bool isFreeformLight;
+    bool isFreeformLight = true;
     public float radius;
     public LayerMask layerMask;
     public int polyCount = 127;

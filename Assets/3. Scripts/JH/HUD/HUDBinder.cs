@@ -208,8 +208,8 @@ public class HUDBinder : MonoBehaviour
     }
     void RefreshPotionInLoop()
     {
-        if (displayPotionCount == DBManager.I.currData.potionCount) return;
-        displayPotionCount = DBManager.I.currData.potionCount;
+        if (displayPotionCount == DBManager.I.currData.currPotionCount) return;
+        displayPotionCount = DBManager.I.currData.currPotionCount;
         for (int i = 0; i < potionImages.Length; i++)
             potionImages[i].gameObject.SetActive(false);
         for (int i = 0; i < displayPotionCount; i++)
