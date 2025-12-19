@@ -61,7 +61,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onDie = (x) => { };
     public UnityAction<int, SimpleTrigger> onSimpleTriggerEnter = (x, y) => { };
     public UnityAction<int, SimpleTrigger> onSimpleTriggerExit = (x, y) => { };
-    public UnityAction onSceneChanged = () => { };
+    public UnityAction onSceneChangeAfter = () => { };
+    public UnityAction onSceneChangeBefore = () => { };
 
     void OnEnable()
     {
@@ -83,6 +84,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         FadeOut(0.8f);
         await Task.Delay(1300);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
+        onSceneChangeBefore.Invoke();
         if (loadingScreen)
         {
             StartLoading();
@@ -99,8 +101,9 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(600);
-        FadeIn(0.5f);
+        await Task.Delay(500);
+        onSceneChangeAfter.Invoke();
+        FadeIn(0.3f);
         await Task.Delay(1300);
         isSceneWaiting = false;
     }
@@ -111,6 +114,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         FadeOut(0.8f);
         await Task.Delay(1300);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
+        onSceneChangeBefore.Invoke();
         if (loadingScreen)
         {
             StartLoading();
@@ -127,11 +131,11 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(600);
-        FadeIn(0.5f);
+        await Task.Delay(500);
+        onSceneChangeAfter.Invoke();
+        FadeIn(0.3f);
         await Task.Delay(1300);
         isSceneWaiting = false;
-        onSceneChanged.Invoke();
     }
     #endregion
     #region Fade

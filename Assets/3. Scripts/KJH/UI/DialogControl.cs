@@ -3,10 +3,77 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using NaughtyAttributes;
 using DG.Tweening;
+using NaughtyAttributes;
+
 public class DialogControl : MonoBehaviour
 {
+    List<string[]> allDialogTexts = new List<string[]>();
+    void InitLocale()
+    {
+        // 영어
+        if (SettingManager.I.setting.locale == 0)
+        {
+            allDialogTexts = new List<string[]>()
+            {
+                // 대사 0
+                new string[]
+                {
+                    "도시 외곽 지역을 중심으로 어둠이 퍼지고 있다.\n어둠은 생명체와 기계들을 오염시켜서 점점 괴물로 만들고 있다.",
+                    "나는 숨어서 오래 연구한 끝에 막대한 빛 에너지 '일리오스'를\n방출하는 장치를 만드는 데 성공했다. 이것만 있으면 도시를\n뒤덮은 괴물 '칼리고'들을 정화할 수 있을 것이다.",
+                    "...슬슬 출발할 시간이 되었다. 움직여보자."
+                },
+                // 대사 1
+                new string[]
+                {
+                    "막대한 빛 에너지 '일리오스'를 특정 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 등에 '일리오스'를 주입해보자."
+                },
+                // 대사 2
+                new string[]
+                {
+                    "대사2-1페이지 (단일 페이지 예시)"
+                },
+                // 대사 3
+                new string[]
+                {
+                    "대사3-1페이지...\n....\n..",
+                    "대사3-2페이지...\n....\n.."
+                },
+            };
+        }
+        // 한국어
+        else if (SettingManager.I.setting.locale == 1)
+        {
+            allDialogTexts = new List<string[]>()
+            {
+                // 대사 0
+                new string[]
+                {
+                    "도시 외곽 지역을 중심으로 어둠이 퍼지고 있다.\n어둠은 생명체와 기계들을 오염시켜서 점점 괴물로 만들고 있다.",
+                    "나는 숨어서 오래 연구한 끝에 막대한 빛 에너지 '일리오스'를\n방출하는 장치를 만드는 데 성공했다. 이것만 있으면 도시를\n뒤덮은 괴물 '칼리고'들을 정화할 수 있을 것이다.",
+                    "...슬슬 출발할 시간이 되었다. 움직여보자."
+                },
+                // 대사 1
+                new string[]
+                {
+                    "막대한 빛 에너지 '일리오스'를 특정 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 등에 '일리오스'를 주입해보자."
+                },
+                // 대사 2
+                new string[]
+                {
+                    "대사2-1페이지 (단일 페이지 예시)"
+                },
+                // 대사 3
+                new string[]
+                {
+                    "대사3-1페이지...\n....\n..",
+                    "대사3-2페이지...\n....\n.."
+                },
+            };
+        }
+    }
+    
+
     [SerializeField] private InputActionReference nextPageAction1;
     [SerializeField] private InputActionReference nextPageAction2;
     [SerializeField] private InputActionReference nextPageAction3;
@@ -187,33 +254,7 @@ public class DialogControl : MonoBehaviour
             StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(ShowTextCoroutine(text));
     }
-    // --- Data ---
-    List<string[]> allDialogTexts = new List<string[]>()
-    {
-        //0
-        new string[]
-        {
-            "도시 외곽 지역을 중심으로 어둠이 퍼지고 있다.\n어둠은 생명체와 기계들을 오염시켜서 점점 괴물로 만들고 있다.",
-            "나는 숨어서 오래 연구한 끝에 막대한 빛 에너지 '일리오스'를\n방출하는 장치를 만드는 데 성공했다. 이것만 있으면 도시를\n뒤덮은 괴물 '칼리고'들을 정화할 수 있을 것이다.",
-            "...슬슬 출발할 시간이 되었다. 움직여보자."
-        },
-        //1
-        new string[]
-        {
-            "막대한 빛 에너지 '일리오스'를 특정 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 등에 '일리오스'를 주입해보자."
-        },
-        //2
-        new string[]
-        {
-            "대사2-1페이지 (단일 페이지 예시)"
-        },
-        //3
-        new string[]
-        {
-            "대사3-1페이지...\n....\n..",
-            "대사3-2페이지...\n....\n.."
-        },
-    };
+
 
 #if UNITY_EDITOR
     [Header("Editor Test")]

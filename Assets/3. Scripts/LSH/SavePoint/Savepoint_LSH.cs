@@ -17,6 +17,9 @@ public class SavePoint_LSH : InteractableObject
 
         DBManager.I.currData.sceneName = sceneName;
         DBManager.I.currData.lastPos = pos2D;
+        
+        PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
+        if(playerControl) playerControl.currHealth = DBManager.I.currData.maxHealth;
         DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
         DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
