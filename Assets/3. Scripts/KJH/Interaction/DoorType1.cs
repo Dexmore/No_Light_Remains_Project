@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 public class DoorType1 : MonoBehaviour
 {
@@ -10,12 +11,13 @@ public class DoorType1 : MonoBehaviour
     }
     bool isOpen;
     int playerLayer;
-    public void Open()
+    public async void Open()
     {
         if (isOpen) return;
         isOpen = true;
-        AudioManager.I.PlaySFX("DoorOpen", transform.position, spatialBlend: 0.5f);
         animator.Play("Open");
+        await Task.Delay(700);
+        AudioManager.I.PlaySFX("DoorOpen", transform.position, spatialBlend: 0.5f);
     }
     public void Close()
     {

@@ -413,11 +413,11 @@ public class GameManager : SingletonBehaviour<GameManager>
         return sb.ToString();
     }
     #endregion
-    public void SetSceneFromDB()
+    public void SetSceneFromDB(bool isLeftDirection = false)
     {
-        SetScene(DBManager.I.currData.lastPos);
+        SetScene(DBManager.I.currData.lastPos, isLeftDirection);
     }
-    public async void SetScene(Vector2 position)
+    public async void SetScene(Vector2 position, bool isLeftDirection = false)
     {
         #region Player & Camera
         PlayerControl playerControl1 = FindAnyObjectByType<PlayerControl>();
@@ -441,17 +441,29 @@ public class GameManager : SingletonBehaviour<GameManager>
             playerControl2 = FindAnyObjectByType<PlayerControl>();
         if (followCamera2 == null)
             followCamera2 = FindAnyObjectByType<FollowCamera>();
-        if (playerControl2 != null)
+        if (!isLeftDirection)
         {
-            playerControl2.transform.position = position;
-            playerControl2.startPosition = position;
+            playerControl2.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
         }
-        float boundedX = Mathf.Clamp(position.x, followCamera2.xBound.x, followCamera2.xBound.y);
-        float boundedY = Mathf.Clamp(position.y, followCamera2.yBound.x, followCamera2.yBound.y);
-        if (followCamera2 != null)
+        else
         {
-            followCamera2.transform.position = new Vector3(boundedX, boundedY, 0f) + followCamera2.offset;
-            return;
+            playerControl2.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        }
+        if (position != Vector2.zero)
+        {
+            if (playerControl2 != null)
+            {
+                playerControl2.transform.position = position;
+                playerControl2.startPosition = position;
+
+            }
+            float boundedX = Mathf.Clamp(position.x, followCamera2.xBound.x, followCamera2.xBound.y);
+            float boundedY = Mathf.Clamp(position.y, followCamera2.yBound.x, followCamera2.yBound.y);
+            if (followCamera2 != null)
+            {
+                followCamera2.transform.position = new Vector3(boundedX, boundedY, 0f) + followCamera2.offset;
+                return;
+            }
         }
         #endregion
         #region Monster & Object
@@ -462,10 +474,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         string sceneName = SceneManager.GetActiveScene().name;
         int find = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
         Debug.Log($"scene DB find : {find != -1}");
-        if(find != -1)
+        if (find != -1)
         {
 
-            
+
         }
 
         #endregion
