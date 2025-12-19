@@ -17,7 +17,10 @@ public class MonsterWander : MonsterState
         ctsWander?.Cancel();
         ctsWander = new CancellationTokenSource();
         var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(token, ctsWander.Token);
-        anim.Play("Idle");
+        if (anim)
+        {
+            anim.Play("Idle");
+        }
         if (Random.value <= 0.75f)
             Activate(ctsLink.Token).Forget();
         else
@@ -37,8 +40,9 @@ public class MonsterWander : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         checkRay = new Ray2D();
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            anim.Play("Idle");
+        if (anim)
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                anim.Play("Idle");
         float startTime = Time.time;
         moveDirection = Vector2.zero;
         if (Random.value <= 0.5f)
@@ -54,15 +58,15 @@ public class MonsterWander : MonsterState
         float returnTime = 0;
         while (Time.time - startTime < duration && !token.IsCancellationRequested)
         {
-            
-            if(Time.time - returnTime > 1.8f)
+
+            if (Time.time - returnTime > 1.8f)
             {
-                float homeRadius = control.findRadius * 1.4f;
+                float homeRadius = control.findRadius * 1.1f;
                 float homeDistance = Vector2.Distance(control.startPosition, transform.position);
                 float ratio = homeDistance / homeRadius;
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
-                if(Random.value < returnChance)
+                if (Random.value < returnChance)
                 {
                     await UniTask.Delay(5, cancellationToken: token);
                     control.ChangeState(MonsterControl.State.ReturnHome, true);
@@ -96,10 +100,11 @@ public class MonsterWander : MonsterState
             }
             Vector2 rayOrigin = transform.position + control.width * model.right + 0.2f * control.height * Vector3.up;
             Vector2 rayDirection = Vector3.down;
-            float rayLength = 2f * control.height;
+            float rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
             checkRay.origin = rayOrigin;
             checkRay.direction = rayDirection;
             CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+            //Debug.DrawRay(rayOrigin,rayLength * rayDirection, Color.green, 1f);
             if (CheckRayHit.collider == null)
             {
                 stopWall = true;
@@ -108,8 +113,9 @@ public class MonsterWander : MonsterState
             if (stopWall)
             {
                 if (control.isDie) return;
-                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-                    anim.Play("Idle");
+                if (anim)
+                    if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                        anim.Play("Idle");
                 if (Random.value < 5f * Time.deltaTime)
                 {
                     await UniTask.Delay(5, cancellationToken: token);
@@ -192,8 +198,9 @@ public class MonsterWander : MonsterState
     RaycastHit2D[] grounds = new RaycastHit2D[10];
     public async UniTask Activate2(CancellationToken token)
     {
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            anim.Play("Idle");
+        if (anim)
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                anim.Play("Idle");
         await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
 
         // Astar를 통해 주변 배회 경로 구하기 (8번 시도)
@@ -243,12 +250,12 @@ public class MonsterWander : MonsterState
 
             if (i % 3 == 0)
             {
-                float homeRadius = control.findRadius * 1.4f;
+                float homeRadius = control.findRadius * 1.1f;
                 float homeDistance = Vector2.Distance(control.startPosition, transform.position);
                 float ratio = homeDistance / homeRadius;
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
-                if(Random.value < returnChance)
+                if (Random.value < returnChance)
                 {
                     await UniTask.Delay(5, cancellationToken: token);
                     control.ChangeState(MonsterControl.State.ReturnHome, true);
@@ -312,7 +319,7 @@ public class MonsterWander : MonsterState
             {
                 Vector2 nextTarget = findPath[i + 1];
                 float _length = Mathf.Abs(nextTarget.x - startPos.x);
-                if (_length > 3f * astar.unit && _length < 1.2f * control.jumpLength && IsHorizontalJumpGround(startPos, nextTarget))
+                if (_length > 2.3f * astar.unit && _length < 1.05f * control.jumpLength && IsHorizontalJumpGround(startPos, nextTarget))
                 {
                     Vector2 jumpDirection = (nextTarget - startPos).normalized;
                     if (jumpDirection.y <= 0.3f * control.height) jumpDirection = model.right + Vector3.up;
@@ -385,7 +392,7 @@ public class MonsterWander : MonsterState
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
-                rayLength = 2f * control.height;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;
                 CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
@@ -395,7 +402,7 @@ public class MonsterWander : MonsterState
                     control.ChangeNextState();
                     return;
                 }
-                
+
                 moveDirection.Normalize();
                 float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
                 // 이동

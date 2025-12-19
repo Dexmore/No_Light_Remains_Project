@@ -642,6 +642,9 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 4.1f * ((width + height) * 0.58f + 0.55f);
+        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+            findRadius = 20.1f * ((width + height) * 0.58f + 0.55f);
+        
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         bool canPhase2 = false;

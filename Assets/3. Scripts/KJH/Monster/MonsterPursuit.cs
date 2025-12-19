@@ -105,7 +105,7 @@ public class MonsterPursuit : MonsterState
             }
             Vector2 rayOrigin = transform.position + control.width * model.right + 0.2f * control.height * Vector3.up;
             Vector2 rayDirection = Vector3.down;
-            float rayLength = 2f * control.height;
+            float rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
             checkRay.origin = rayOrigin;
             checkRay.direction = rayDirection;
             //Debug.DrawRay(checkRay.origin, rayLength * checkRay.direction, Color.green, 1f);
@@ -390,7 +390,7 @@ public class MonsterPursuit : MonsterState
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
-                rayLength = 2f * control.height;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 //Debug.DrawRay(rayOrigin, rayLength * rayDirection, Color.white, 3f * Time.fixedDeltaTime);
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;
