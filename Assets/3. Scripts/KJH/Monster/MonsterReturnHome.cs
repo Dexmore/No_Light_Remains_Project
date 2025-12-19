@@ -13,7 +13,8 @@ public class MonsterReturnHome : MonsterState
         ctsReturn?.Cancel();
         ctsReturn = new CancellationTokenSource();
         var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(token, ctsReturn.Token);
-        anim.Play("Idle");
+        if (anim)
+            anim.Play("Idle");
         if (Random.value <= 0.5f)
             Activate(ctsLink.Token).Forget();
         else
@@ -34,8 +35,9 @@ public class MonsterReturnHome : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         checkRay = new Ray2D();
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            anim.Play("Idle");
+        if (anim)
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                anim.Play("Idle");
         float startTime = Time.time;
 
         moveDirection = control.startPosition - (Vector2)transform.position;
@@ -88,7 +90,7 @@ public class MonsterReturnHome : MonsterState
             }
             Vector2 rayOrigin = transform.position + control.width * model.right + 0.2f * control.height * Vector3.up;
             Vector2 rayDirection = Vector3.down;
-            float rayLength = 2f * control.height;
+            float rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
             checkRay.origin = rayOrigin;
             checkRay.direction = rayDirection;
             //Debug.DrawRay(checkRay.origin, rayLength * checkRay.direction, Color.green, 1f);
@@ -101,8 +103,9 @@ public class MonsterReturnHome : MonsterState
             if (stopWall)
             {
                 if (control.isDie) return;
-                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-                    anim.Play("Idle");
+                if (anim)
+                    if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                        anim.Play("Idle");
                 if (Random.value < 5f * Time.deltaTime)
                 {
                     await UniTask.Delay(5, cancellationToken: token);
@@ -117,8 +120,9 @@ public class MonsterReturnHome : MonsterState
                 if (tempCount > 5)
                 {
                     if (control.isDie) return;
-                    if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-                        anim.Play("Idle");
+                    if (anim)
+                        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                            anim.Play("Idle");
                     if (Random.value < 10f * Time.deltaTime)
                     {
                         await UniTask.Delay(5, cancellationToken: token);
@@ -185,8 +189,9 @@ public class MonsterReturnHome : MonsterState
     RaycastHit2D[] grounds = new RaycastHit2D[10];
     public async UniTask Activate2(CancellationToken token)
     {
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            anim.Play("Idle");
+        if (anim)
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                anim.Play("Idle");
         await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
 
         // Astar를 통해 주변 귀환 경로 구하기
@@ -356,7 +361,7 @@ public class MonsterReturnHome : MonsterState
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
-                rayLength = 2f * control.height;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 //Debug.DrawRay(rayOrigin, rayLength * rayDirection, Color.white, 3f * Time.fixedDeltaTime);
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;

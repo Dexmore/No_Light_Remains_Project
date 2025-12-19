@@ -55,7 +55,7 @@ public class MonsterBiteAttack : MonsterState
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
-                rayLength = 2f * control.height;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;
                 CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
@@ -137,7 +137,7 @@ public class MonsterBiteAttack : MonsterState
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
-                rayLength = 2f * control.height;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;
                 CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
@@ -185,7 +185,7 @@ public class MonsterBiteAttack : MonsterState
                 // 낭떠러지 체크
                 rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
-                rayLength = 2f * control.height;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
                 checkRay.direction = rayDirection;
                 CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
@@ -205,7 +205,6 @@ public class MonsterBiteAttack : MonsterState
         }
         if (Time.time - startTime > 0.55f && !once)
         {
-            Debug.Log("a");
             once = true;
             rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
         }
