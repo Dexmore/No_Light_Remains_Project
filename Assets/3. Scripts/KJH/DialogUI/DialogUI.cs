@@ -6,7 +6,7 @@ using TMPro;
 using DG.Tweening;
 using NaughtyAttributes;
 
-public class DialogControl : MonoBehaviour
+public class DialogUI : MonoBehaviour
 {
     List<string[]> allDialogTexts = new List<string[]>();
     void InitLocale()

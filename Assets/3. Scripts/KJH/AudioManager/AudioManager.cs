@@ -16,7 +16,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         public AudioClip audioClip;
         public int weight;
     }
-
     [SerializeField] List<MyStruct1> autoBGM;
     [Space(50)]
     [SerializeField] List<AudioClip> bgmList = new List<AudioClip>();
