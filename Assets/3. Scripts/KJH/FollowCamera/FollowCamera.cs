@@ -13,21 +13,12 @@ public class FollowCamera : MonoBehaviour
     {
         isReady = false;
         var ucd = Camera.main.GetUniversalAdditionalCameraData();
-        yield return new WaitForSeconds(1f);
-        float startTime = Time.time;
-        // 시작후 페이드 약간 동안은 즉시 이동 처리
-        while (Time.time - startTime < 5f)
-        {
-            yield return null;
-            if (!GameManager.I.isSceneWaiting) break;
-            transform.position = target.position + offset;
-        }
-        isReady = true;
+        yield return null;
     }
     bool isReady;
     void FixedUpdate()
     {
-        if (!isReady) return;
+        //if (!isReady) return;
         if (target != null)
         {
             // 플레이어의 위치에 오프셋을 더해 카메라가 원하는 위치를 계산

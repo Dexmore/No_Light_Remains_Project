@@ -14,7 +14,7 @@ public class MonsterReturnHome : MonsterState
         ctsReturn = new CancellationTokenSource();
         var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(token, ctsReturn.Token);
         anim.Play("Idle");
-        if (Random.value <= 0.75f)
+        if (Random.value <= 0.5f)
             Activate(ctsLink.Token).Forget();
         else
             Activate2(ctsLink.Token).Forget();
@@ -41,6 +41,18 @@ public class MonsterReturnHome : MonsterState
         moveDirection = control.startPosition - (Vector2)transform.position;
         moveDirection.y = 0;
         moveDirection.Normalize();
+
+        float rnd = Random.value;
+        if (rnd <= 0.07f)
+            moveDirection = Vector2.right;
+        else if (rnd >= 0.93f)
+            moveDirection = Vector2.left;
+        rnd = Random.value;
+        if (rnd < 0.07f) control.RemoveCondition(MonsterControl.Condition.FindPlayer);
+        rnd = Random.value;
+        if (rnd < 0.07f) moveDirection = -model.right;
+
+
 
         // 캐릭터 좌우 방향 설정
         if (moveDirection.x > 0 && model.right.x < 0)

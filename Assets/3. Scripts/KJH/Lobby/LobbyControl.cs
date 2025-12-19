@@ -82,7 +82,7 @@ public class LobbyControl : MonoBehaviour
     }
 
     Button[] allButtons;
-    PopupControl popupControl;
+    PopupUI PopupUI;
     void InitSteam()
     {
         if (!DBManager.I.IsSteam())
@@ -90,9 +90,9 @@ public class LobbyControl : MonoBehaviour
             if (!GameManager.I.isShowPop0)
             {
                 GameManager.I.isShowPop0 = true;
-                if (popupControl == null) GameManager.I.TryGetComponent(out popupControl);
+                if (PopupUI == null) GameManager.I.TryGetComponent(out PopupUI);
                 // 스팀 로그인에 실패하였습니다.
-                popupControl.OpenPop(0);
+                PopupUI.OpenPop(0);
                 DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = false;
             }
         }

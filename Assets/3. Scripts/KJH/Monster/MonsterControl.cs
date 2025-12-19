@@ -412,7 +412,7 @@ public class MonsterControl : MonoBehaviour
                 coolTime.duration = time;
                 coolTimeList.Add(coolTime);
                 AddCanNot(state, "CoolTime");
-                SetCoolTimeUT(coolTime, cts.Token).Forget();
+                SetCoolTimeUT(coolTime, coolTime.cts.Token).Forget();
                 return;
             }
             // 기존에 있는게 있다면 새로 덮어쓰기
@@ -428,7 +428,7 @@ public class MonsterControl : MonoBehaviour
             coolTimeList[find].cts = new CancellationTokenSource();
             coolTimeList[find].startTime = Time.time;
             coolTimeList[find].duration = time;
-            SetCoolTimeUT(coolTimeList[find], cts.Token).Forget();
+            SetCoolTimeUT(coolTimeList[find], coolTimeList[find].cts.Token).Forget();
         }
     }
     public void PauseCoolTime(State state)
