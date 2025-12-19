@@ -395,6 +395,7 @@ public class MonsterWander : MonsterState
                     control.ChangeNextState();
                     return;
                 }
+                
                 moveDirection.Normalize();
                 float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
                 // 이동

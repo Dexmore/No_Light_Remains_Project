@@ -19,8 +19,12 @@ public class MonsterReposition : MonsterState
     }
     List<Vector2[]> paths = new List<Vector2[]>();
     RaycastHit2D[] grounds = new RaycastHit2D[10];
-    Ray2D checkCliffRay;
-    RaycastHit2D CheckCliffHit;
+    // 낭떠러지 체크용
+    Vector2 rayOrigin;
+    Vector2 rayDirection;
+    float rayLength;
+    Ray2D checkRay;
+    RaycastHit2D CheckRayHit;
     public async UniTask Activate(CancellationToken token)
     {
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
@@ -188,6 +192,18 @@ public class MonsterReposition : MonsterState
                         return;
                     }
                 }
+                // 낭떠러지 체크
+                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayDirection = Vector3.down;
+                rayLength = 2f * control.height;
+                checkRay.origin = rayOrigin;
+                checkRay.direction = rayDirection;
+                CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                if (CheckRayHit.collider == null)
+                {
+                    stopWall = true;
+                }  
+                
                 if (!stopWall)
                     if (dot < control.data.MoveSpeed)
                     {
