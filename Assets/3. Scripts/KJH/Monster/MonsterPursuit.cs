@@ -23,6 +23,7 @@ public class MonsterPursuit : MonsterState
     }
     Ray2D checkCliffRay;
     RaycastHit2D CheckCliffHit;
+    int farCount = 0;
     // 단순 좌우 이동형 추적
     public async UniTask Activate(CancellationToken token)
     {
@@ -55,8 +56,31 @@ public class MonsterPursuit : MonsterState
         else if (moveDirection.x < 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         int tempCount = 0;
+        float returnTime = Time.time;
         while (Time.time - startTime < duration && !token.IsCancellationRequested)
         {
+
+            if (Time.time - returnTime > 1.8f)
+            {
+                float homeRadius = control.findRadius * 2.4f;
+                float homeDistance = Vector2.Distance(control.startPosition, transform.position);
+                float ratio = homeDistance / homeRadius;
+                ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
+                float returnChance = Mathf.Pow(ratio, 3);
+                //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+                if (Random.value < control.homeValue)
+                    if (Random.value < returnChance * 0.5f)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeState(MonsterControl.State.ReturnHome, true);
+                        return;
+                    }
+                returnTime = Time.time;
+            }
+
+
+
+
             float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
             // 벽 향해서 전진하는 버그 막기
             bool stopWall = false;
@@ -194,14 +218,23 @@ public class MonsterPursuit : MonsterState
         Vector2[] findPath = await astar.Find((Vector2)target.position + addPos, token);
         if (findPath.Length <= 1)
         {
-            await UniTask.Yield(token);
-            control.ChangeNextState();
-            Debug.Log("P7");
 
-            // 반복될수록 추적 포기하기 높게 만들기
-            // 
+            // 반복될수록 추적 포기할 확률 높게 만들기
+            float returnChance = 1.0f / (1.0f + Mathf.Exp(-0.5f * (farCount - 7f)));
 
-
+            if (Random.value < returnChance && Random.value < control.homeValue)
+            {
+                farCount = 0;
+                await UniTask.Delay(5, cancellationToken: token);
+                control.ChangeState(MonsterControl.State.ReturnHome, true);
+                return;
+            }
+            else
+            {
+                farCount++;
+                await UniTask.Yield(token);
+                control.ChangeNextState();
+            }
             return;
         }
 
@@ -214,6 +247,25 @@ public class MonsterPursuit : MonsterState
             float length = moveDirection.magnitude;
             float xLength = Mathf.Abs(moveDirection.x);
             float yLength = Mathf.Abs(moveDirection.y);
+
+            if (i % 3 == 0)
+            {
+                float homeRadius = control.findRadius * 2.4f;
+                float homeDistance = Vector2.Distance(control.startPosition, transform.position);
+                float ratio = homeDistance / homeRadius;
+                ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
+                float returnChance = Mathf.Pow(ratio, 3);
+                //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+                if (Random.value < control.homeValue)
+                    if (Random.value < returnChance * 0.5f)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeState(MonsterControl.State.ReturnHome, true);
+                        return;
+                    }
+            }
+
+
 
             // 3. Astar상 땅 수직 아래로 파고들거나 하늘로 치솟는 경로가 나오는 경우
             if (xLength <= 0.5f * astar.unit && yLength > 2.5f * astar.unit)

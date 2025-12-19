@@ -10,15 +10,25 @@ public class MonsterIdle : MonsterState
     {
         await UniTask.Yield(token);
         duration = Random.Range(durationRange.x, durationRange.y);
-        Activate(token).Forget();
 
+
+        await UniTask.Yield(token);
         float homeRadius = control.findRadius * 1.4f;
         float homeDistance = Vector2.Distance(control.startPosition, transform.position);
         float ratio = homeDistance / homeRadius;
         ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
         float returnChance = Mathf.Pow(ratio, 3);
-        // Debug.Log($"homeDistance:{homeDistance} , returnChanve:{returnChance}");
+        //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+        if (Random.value < control.homeValue)
+            if (Random.value < returnChance)
+            {
+                await UniTask.Delay(5, cancellationToken: token);
+                control.ChangeState(MonsterControl.State.ReturnHome, true);
+                return;
+            }
 
+        await UniTask.Yield(token);
+        Activate(token).Forget();
     }
     public async UniTask Activate(CancellationToken token)
     {

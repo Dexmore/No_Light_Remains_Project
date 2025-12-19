@@ -412,7 +412,7 @@ public class MonsterControl : MonoBehaviour
                 coolTime.duration = time;
                 coolTimeList.Add(coolTime);
                 AddCanNot(state, "CoolTime");
-                SetCoolTimeUT(coolTime).Forget();
+                SetCoolTimeUT(coolTime, cts.Token).Forget();
                 return;
             }
             // 기존에 있는게 있다면 새로 덮어쓰기
@@ -428,7 +428,7 @@ public class MonsterControl : MonoBehaviour
             coolTimeList[find].cts = new CancellationTokenSource();
             coolTimeList[find].startTime = Time.time;
             coolTimeList[find].duration = time;
-            SetCoolTimeUT(coolTimeList[find]).Forget();
+            SetCoolTimeUT(coolTimeList[find], cts.Token).Forget();
         }
     }
     public void PauseCoolTime(State state)
@@ -490,7 +490,7 @@ public class MonsterControl : MonoBehaviour
                 coolTime.duration = time;
                 coolTimeList.Add(coolTime);
                 AddCanNot(type, "CoolTime");
-                SetCoolTimeUT(coolTime).Forget();
+                SetCoolTimeUT(coolTime, cts.Token).Forget();
                 return;
             }
             // 기존에 있는게 있다면 새로 덮어쓰기
@@ -506,12 +506,12 @@ public class MonsterControl : MonoBehaviour
             coolTimeList[find].cts = new CancellationTokenSource();
             coolTimeList[find].startTime = Time.time;
             coolTimeList[find].duration = time;
-            SetCoolTimeUT(coolTimeList[find]).Forget();
+            SetCoolTimeUT(coolTimeList[find], cts.Token).Forget();
         }
     }
-    async UniTask SetCoolTimeUT(CoolTime coolTime)
+    async UniTask SetCoolTimeUT(CoolTime coolTime, CancellationToken token)
     {
-        CancellationTokenSource ctsComp = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, coolTime.cts.Token);
+        CancellationTokenSource ctsComp = CancellationTokenSource.CreateLinkedTokenSource(token, coolTime.cts.Token);
         float startTime = Time.time;
         while (!ctsComp.IsCancellationRequested && Time.time - startTime < coolTime.duration)
         {
@@ -1134,6 +1134,7 @@ public class MonsterControl : MonoBehaviour
     [Space(50)]
     public Vector2 startPosition;
     public int index;
+    [Range(0, 1)] public float homeValue = 1f;
 
 
 
