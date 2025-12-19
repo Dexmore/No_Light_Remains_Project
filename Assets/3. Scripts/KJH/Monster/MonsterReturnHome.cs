@@ -51,7 +51,7 @@ public class MonsterReturnHome : MonsterState
         float returnTime = 0;
         while (Time.time - startTime < duration && !token.IsCancellationRequested)
         {
-            
+
             float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
             // 벽 향해서 전진하는 버그 막기
             bool stopWall = false;

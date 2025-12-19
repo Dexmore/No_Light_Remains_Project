@@ -61,8 +61,8 @@ public class MonsterWander : MonsterState
         float returnTime = 0;
         while (Time.time - startTime < duration && !token.IsCancellationRequested)
         {
-            
-            if(Time.time - returnTime > 1.8f)
+
+            if (Time.time - returnTime > 1.8f)
             {
                 float homeRadius = control.findRadius * 1.4f;
                 float homeDistance = Vector2.Distance(control.startPosition, transform.position);
@@ -70,12 +70,13 @@ public class MonsterWander : MonsterState
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
                 //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
-                if(Random.value < returnChance)
-                {
-                    await UniTask.Delay(5, cancellationToken: token);
-                    control.ChangeState(MonsterControl.State.ReturnHome, true);
-                    return;
-                }
+                if (Random.value < control.homeValue)
+                    if (Random.value < returnChance)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeState(MonsterControl.State.ReturnHome, true);
+                        return;
+                    }
                 returnTime = Time.time;
             }
 
@@ -258,12 +259,13 @@ public class MonsterWander : MonsterState
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
                 //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
-                if(Random.value < returnChance)
-                {
-                    await UniTask.Delay(5, cancellationToken: token);
-                    control.ChangeState(MonsterControl.State.ReturnHome, true);
-                    return;
-                }
+                if (Random.value < control.homeValue)
+                    if (Random.value < returnChance)
+                    {
+                        await UniTask.Delay(5, cancellationToken: token);
+                        control.ChangeState(MonsterControl.State.ReturnHome, true);
+                        return;
+                    }
             }
 
 
