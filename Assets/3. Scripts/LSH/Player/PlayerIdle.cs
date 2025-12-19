@@ -103,16 +103,16 @@ public class PlayerIdle : IPlayerState
 
     }
     bool isESC;
-    PopupControl popupControl;
+    PopupUI PopupUI;
     void InputESC(InputAction.CallbackContext callbackContext)
     {
         if (!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop)
         {
-            if (popupControl == null)
-                popupControl = GameManager.I.transform.GetComponent<PopupControl>();
+            if (PopupUI == null)
+                PopupUI = GameManager.I.transform.GetComponent<PopupUI>();
             fsm.ChangeState(ctx.stop);
             GameManager.I.isOpenPop = true;
-            popupControl.OpenPop(1);
+            PopupUI.OpenPop(1);
         }
         isESC = true;
     }

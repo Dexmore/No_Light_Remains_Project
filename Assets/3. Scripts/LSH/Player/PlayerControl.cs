@@ -175,7 +175,7 @@ public class PlayerControl : MonoBehaviour
     {
         fsm.Update();
         CheckGroundedPrecise();
-
+        FixBugPosition();
     }
     void FixedUpdate()
     {
@@ -632,6 +632,12 @@ public class PlayerControl : MonoBehaviour
         }
     }
     #endregion
+    [HideInInspector] public Vector2 startPosition;
+    void FixBugPosition()
+    {
+        if (transform.position.y > -24.5) return;
+        Debug.Log("BugPosition");
+    }
     #region FootStep
     AudioSource sfxFootStep;
     public void PlayFootStep()

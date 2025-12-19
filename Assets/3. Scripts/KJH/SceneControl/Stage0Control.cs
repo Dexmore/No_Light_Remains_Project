@@ -5,11 +5,11 @@ using UnityEngine.InputSystem;
 public class Stage0Control : MonoBehaviour
 {
     [SerializeField] InputActionAsset inputActionAsset;
-    DialogControl dialogControl;
+    DialogUI DialogUI;
     PlayerControl playerControl;
     void Awake()
     {
-        dialogControl = FindAnyObjectByType<DialogControl>();
+        DialogUI = FindAnyObjectByType<DialogUI>();
         playerControl = FindAnyObjectByType<PlayerControl>();
     }
     void Init()
@@ -36,7 +36,7 @@ public class Stage0Control : MonoBehaviour
         //         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         //     }
         //     yield return YieldInstructionCache.WaitForSeconds(0.3f);
-        //     dialogControl.Open(0);
+        //     DialogUI.Open(0);
         // }
     }
     void HandlerSimpleTriggerEnter(int index, SimpleTrigger trigger)
@@ -58,7 +58,7 @@ public class Stage0Control : MonoBehaviour
         //     if (DBManager.I.currData.progress1 == 0)
         //     {
         //         DBManager.I.currData.progress1 = 1;
-        //         dialogControl.Open(1);
+        //         DialogUI.Open(1);
         //     }
         // }
     }

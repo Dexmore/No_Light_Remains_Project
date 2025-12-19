@@ -18,6 +18,7 @@ public class Portal : Interactable
         if (!isReady) return;
         if (isRun) return;
         isRun = true;
+        GameManager.I.SetScene(targetPosition);
         GameManager.I.LoadSceneAsync(sceneName, loadingPage);
     }
     
