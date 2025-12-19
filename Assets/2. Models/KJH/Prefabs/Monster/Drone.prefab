@@ -940,6 +940,7 @@ GameObject:
   - component: {fileID: 1749686000128439311}
   - component: {fileID: 1357127461751023119}
   - component: {fileID: 6811123232829218298}
+  - component: {fileID: -7175508883786422352}
   m_Layer: 6
   m_Name: Drone
   m_TagString: Monster
@@ -1032,7 +1033,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
   height: 2.5
   width: 2.5
-  jumpLength: 1.5
+  jumpLength: 1.3
   isDie: 0
   isGround: 0
   isStagger: 0
@@ -1082,6 +1083,8 @@ MonoBehaviour:
   findRadius: 0
   closeRadius: 7
   parryCount: 0
+  startPosition: {x: 0, y: 0}
+  index: 0
 --- !u!114 &8106200046209513676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1188,6 +1191,19 @@ MonoBehaviour:
   staggerType: 1
   durationRange: {x: 1.8, y: 2.5}
   range: 1.4
+--- !u!114 &-7175508883786422352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7445973645024490474}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0a37df5ef37f384c926c4448561ca25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterReturnHome
+  coolTime: 0
 --- !u!1 &7505337462300168710
 GameObject:
   m_ObjectHideFlags: 0

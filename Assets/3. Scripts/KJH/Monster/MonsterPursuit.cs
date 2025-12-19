@@ -23,6 +23,7 @@ public class MonsterPursuit : MonsterState
     }
     Ray2D checkCliffRay;
     RaycastHit2D CheckCliffHit;
+    int farCount = 0;
     // 단순 좌우 이동형 추적
     public async UniTask Activate(CancellationToken token)
     {
@@ -194,14 +195,22 @@ public class MonsterPursuit : MonsterState
         Vector2[] findPath = await astar.Find((Vector2)target.position + addPos, token);
         if (findPath.Length <= 1)
         {
-            await UniTask.Yield(token);
-            control.ChangeNextState();
-            Debug.Log("P7");
 
-            // 반복될수록 추적 포기하기 높게 만들기
-            // 
-
-
+            // 반복될수록 추적 포기할 확률 높게 만들기
+            float returnChance = 1.0f / (1.0f + Mathf.Exp(-0.5f * (farCount - 7f)));
+            if (Random.value < returnChance)
+            {
+                farCount = 0;
+                await UniTask.Delay(5, cancellationToken: token);
+                control.ChangeState(MonsterControl.State.ReturnHome, true);
+                return;
+            }
+            else
+            {
+                farCount++;
+                await UniTask.Yield(token);
+                control.ChangeNextState();
+            }
             return;
         }
 

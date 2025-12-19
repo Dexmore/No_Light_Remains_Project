@@ -31,11 +31,11 @@ public class MonsterWander : MonsterState
         float returnChance = Mathf.Pow(ratio, 3);
         // Debug.Log($"homeDistance:{homeDistance} , returnChanve:{returnChance}");
 
-
     }
     public override void Exit()
     {
         base.Exit();
+        ctsWander?.Cancel();
     }
     Ray2D checkRay;
     RaycastHit2D CheckRayHit;
@@ -69,7 +69,13 @@ public class MonsterWander : MonsterState
                 float ratio = homeDistance / homeRadius;
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
-                Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+                //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+                if(Random.value < returnChance)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    control.ChangeState(MonsterControl.State.ReturnHome, true);
+                    return;
+                }
                 returnTime = Time.time;
             }
 
@@ -251,7 +257,13 @@ public class MonsterWander : MonsterState
                 float ratio = homeDistance / homeRadius;
                 ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
                 float returnChance = Mathf.Pow(ratio, 3);
-                Debug.Log($"homeDistance:{homeDistance} , W returnChanve:{returnChance}");
+                //Debug.Log($"homeDistance:{homeDistance} , W1 returnChanve:{returnChance}");
+                if(Random.value < returnChance)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    control.ChangeState(MonsterControl.State.ReturnHome, true);
+                    return;
+                }
             }
 
 
