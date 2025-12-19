@@ -11,7 +11,7 @@ public class PlayerUsePotion : IPlayerState
     [HideInInspector] public float emptyTime;
     public void Enter()
     {
-        if (DBManager.I.currData.potionCount <= 0)
+        if (DBManager.I.currData.currPotionCount <= 0)
         {
             emptyTime = Time.time;
             AudioManager.I.PlaySFX("Fail1");
@@ -70,7 +70,7 @@ public class PlayerUsePotion : IPlayerState
             if (!sfxFlag2)
             {
                 sfxFlag2 = true;
-                DBManager.I.currData.potionCount--;
+                DBManager.I.currData.currPotionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
                 if (_mainCamera == null) _mainCamera = Camera.main;
                 UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttPotion", MethodCollection.WorldTo1920x1080Position(ctx.transform.position, _mainCamera), Quaternion.identity);

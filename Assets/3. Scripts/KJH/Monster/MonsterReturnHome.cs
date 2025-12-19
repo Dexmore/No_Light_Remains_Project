@@ -261,7 +261,7 @@ public class MonsterReturnHome : MonsterState
                 }
                 await UniTask.Delay(500, cancellationToken: token);
                 control.ChangeNextState();
-                Debug.Log("7");
+                //Debug.Log("7");
                 return;
             }
 
@@ -270,7 +270,7 @@ public class MonsterReturnHome : MonsterState
             {
                 Vector2 nextTarget = findPath[i + 1];
                 float _length = Mathf.Abs(nextTarget.x - startPos.x);
-                if (_length > 3f * astar.unit && IsHorizontalJumpGround(startPos, nextTarget))
+                if (_length > 3f * astar.unit && _length < 1.2f * control.jumpLength && IsHorizontalJumpGround(startPos, nextTarget))
                 {
                     //Debug.DrawLine(startPos, nextTarget, Color.green, 3f);
                     Vector2 jumpDirection = (nextTarget - startPos).normalized;

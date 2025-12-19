@@ -80,6 +80,7 @@ public class LobbySettingPanel : MonoBehaviour
         SettingManager.I.setting = new SettingData();
         LoadSettingsToUI();
         ApplyAndSaveChanges();
+        SettingManager.I.ApplyAllSettings();
     }
     public void LoadSettingsToUI()
     {

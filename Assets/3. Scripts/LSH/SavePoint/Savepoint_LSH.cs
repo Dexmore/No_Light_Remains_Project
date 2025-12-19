@@ -12,11 +12,21 @@ public class SavePoint_LSH : InteractableObject
         base.Run();
 
         Vector2 pos2D = transform.position;
-        
+
         string sceneName = SceneManager.GetActiveScene().name;
 
         DBManager.I.currData.sceneName = sceneName;
         DBManager.I.currData.lastPos = pos2D;
+        DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
+        DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
+        HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
+        hUDBinder?.Refresh(1f);
+
+        System.DateTime now = System.DateTime.Now;
+        string datePart = now.ToString("yyyy.MM.dd");
+        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+        DBManager.I.currData.lastTime = $"{datePart}-{secondsOfDay}";
+
         DBManager.I.Save();
 
         Debug.Log($"[SavePoint] Saved at {pos2D} in scene {sceneName}");
