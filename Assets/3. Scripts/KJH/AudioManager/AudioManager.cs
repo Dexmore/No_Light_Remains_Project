@@ -4,9 +4,24 @@ using UnityEngine;
 public class AudioManager : SingletonBehaviour<AudioManager>
 {
     protected override bool IsDontDestroy() => true;
+    [System.Serializable]
+    public struct MyStruct1
+    {
+        public string scneneName;
+        public List<MyStruct2> list;
+    }
+    [System.Serializable]
+    public struct MyStruct2
+    {        
+        public AudioClip audioClip;
+        public int weight;
+    }
+
+    [SerializeField] List<MyStruct1> autoBGM;
+    [Space(50)]
     [SerializeField] List<AudioClip> bgmList = new List<AudioClip>();
     [SerializeField] List<AudioClip> sfxList = new List<AudioClip>();
-    [SerializeField] List<AudioClip> ambienceList = new List<AudioClip>();
+    //[SerializeField] List<AudioClip> ambienceList = new List<AudioClip>();
     [SerializeField] SFX sfxPrefab;
     AudioSource ausBGM0;
     AudioSource ausBGM1;
@@ -14,6 +29,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     AudioClip lastBGMclip;
     [ReadOnlyInspector][SerializeField] float volumeBGM = 1f;
     [ReadOnlyInspector][SerializeField] float volumeSFX = 1f;
+    
     protected override void Awake()
     {
         base.Awake();
