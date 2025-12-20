@@ -412,7 +412,7 @@ public class MonsterControl : MonoBehaviour
                 coolTime.duration = time;
                 coolTimeList.Add(coolTime);
                 AddCanNot(state, "CoolTime");
-                SetCoolTimeUT(coolTime, cts.Token).Forget();
+                SetCoolTimeUT(coolTime, coolTime.cts.Token).Forget();
                 return;
             }
             // 기존에 있는게 있다면 새로 덮어쓰기
@@ -428,7 +428,7 @@ public class MonsterControl : MonoBehaviour
             coolTimeList[find].cts = new CancellationTokenSource();
             coolTimeList[find].startTime = Time.time;
             coolTimeList[find].duration = time;
-            SetCoolTimeUT(coolTimeList[find], cts.Token).Forget();
+            SetCoolTimeUT(coolTimeList[find], coolTimeList[find].cts.Token).Forget();
         }
     }
     public void PauseCoolTime(State state)
@@ -642,6 +642,9 @@ public class MonsterControl : MonoBehaviour
     {
         await UniTask.Yield(token);
         findRadius = 4.1f * ((width + height) * 0.58f + 0.55f);
+        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+            findRadius = 20.1f * ((width + height) * 0.58f + 0.55f);
+        
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         bool canPhase2 = false;

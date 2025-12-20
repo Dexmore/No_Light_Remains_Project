@@ -540,7 +540,7 @@ public class Astar2DXYPathFinder : MonoBehaviour
                randomSeed = (uint)Time.frameCount,
           };
           jobHandle1 = job.Schedule();
-          await UniTask.WaitUntil(() => jobHandle1.IsCompleted);
+          await UniTask.WaitUntil(() => jobHandle1.IsCompleted, cancellationToken: token);
           jobHandle1.Complete();
 
           //Astar Job 끝. 최종경로

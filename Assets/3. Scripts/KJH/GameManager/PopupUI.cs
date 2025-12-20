@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using UnityEngine.Audio;
 using UnityEngine.Localization.Settings;
 
-public class PopupControl : MonoBehaviour
+public class PopupUI : MonoBehaviour
 {
     [SerializeField] private InputActionReference cancelAction;
     GameObject canvasGo;

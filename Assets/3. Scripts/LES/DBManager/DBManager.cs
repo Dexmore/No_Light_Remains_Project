@@ -86,7 +86,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
         else return;
     }
-    
+
     IEnumerator Start()
     {
         // YSH [추가] ItemDatabase의 로컬라이제이션 이벤트 등록 및 초기화
@@ -97,10 +97,10 @@ public class DBManager : SingletonBehaviour<DBManager>
 
         // 이제 로컬라이제이션 시스템이 준비되었으므로 데이터베이스 초기화
         if (itemDatabase != null)
-        {   
-            itemDatabase.Initialize(); 
+        {
+            itemDatabase.Initialize();
         }
-        
+
         yield return null;
         StartSteam();
         float _time = Time.time;
@@ -518,6 +518,7 @@ public struct CharacterData
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;
     public List<RecordData> recordDatas;
+    public List<SceneData> sceneDatas;
     [System.Serializable]
     public struct ItemData
     {
@@ -545,6 +546,33 @@ public struct CharacterData
         public string Name;
         public bool isNew;
     }
+
+    [System.Serializable]
+    public struct SceneData
+    {
+        public string sceneName;
+        public List<MonsterPositionData> monsterPositionDatas;
+        public List<ObjectPositionData> objectPositionDatas;
+        public string lastTime;
+    }
+    [System.Serializable]
+    public struct MonsterPositionData
+    {
+        public string Name;
+        public int index; // 이름이 동일한 몬스터일시 구분 번호
+        public string lastDeathTime; // 빈문자열 ""일시 죽지 않고 살아있는 상태
+        public Vector2 lastPos;
+        public float lastHealth;
+    }
+    [System.Serializable]
+    public struct ObjectPositionData
+    {
+        public string Name;
+        public int index; // 이름이 동일한 오브젝트일시 구분 번호
+        public string lastCompleteTime; // 빈문자열 ""일시 아직 작동완료 안된 상태
+        public Vector2 lastPos;
+    }
+    
 
 
 

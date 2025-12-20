@@ -7,6 +7,13 @@ public class Portal : Interactable
     public bool loadingPage = false;
     [SerializeField] string sceneName;
     [SerializeField] Vector2 targetPosition;
+    [SerializeField] Direction direction;
+    [System.Serializable]
+    public enum Direction
+    {
+        right,
+        left,
+    }
     bool isRun = false;
     void Start()
     {
@@ -18,8 +25,12 @@ public class Portal : Interactable
         if (!isReady) return;
         if (isRun) return;
         isRun = true;
+        if (direction == Direction.right)
+            GameManager.I.SetScene(targetPosition, false);
+        else
+            GameManager.I.SetScene(targetPosition, true);
         GameManager.I.LoadSceneAsync(sceneName, loadingPage);
     }
-    
+
 
 }

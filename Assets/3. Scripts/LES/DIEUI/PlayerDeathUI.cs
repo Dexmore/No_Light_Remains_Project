@@ -109,7 +109,7 @@ public class PlayerDeathUI : MonoBehaviour
 
         // 6. 현재 씬 재시작
         string currentSceneName = DBManager.I.currData.sceneName;
-        GameManager.I.SetPlayerPosition(DBManager.I.currData.lastPos);
+        GameManager.I.SetSceneFromDB();
         GameManager.I.LoadSceneAsync(currentSceneName, false);
     }
 }

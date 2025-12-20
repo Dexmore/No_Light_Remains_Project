@@ -7,10 +7,10 @@ using DG.Tweening;
 using System.Linq;
 public class LobbyStoryPanel : MonoBehaviour
 {
-    PopupControl popupControl;
+    PopupUI PopupUI;
     void Awake()
     {
-        GameManager.I.TryGetComponent(out popupControl);
+        GameManager.I.TryGetComponent(out PopupUI);
         slots = new Transform[3];
         slots[0] = transform.Find("Wrap/CharacterSlot0");
         slots[1] = transform.Find("Wrap/CharacterSlot1");
@@ -37,13 +37,13 @@ public class LobbyStoryPanel : MonoBehaviour
         if (DBManager.I.IsSteamInit())
         {
             await Task.Delay(2000);
-            popupControl.ClosePop(0, false);
-            popupControl.OpenPop(2);
+            PopupUI.ClosePop(0, false);
+            PopupUI.OpenPop(2);
         }
         else
         {
-            popupControl.ClosePop(2, false);
-            popupControl.OpenPop(0);
+            PopupUI.ClosePop(2, false);
+            PopupUI.OpenPop(0);
         }
         RefreshSlots();
     }
@@ -158,7 +158,7 @@ public class LobbyStoryPanel : MonoBehaviour
         ColorRecoverSlot(2);
         ColorChangeSlot(index);
         await Task.Delay(50);
-        popupControl.OpenPop(3, false);
+        PopupUI.OpenPop(3, false);
     }
     public void SelectButton(int index)
     {
@@ -285,7 +285,7 @@ public class LobbyStoryPanel : MonoBehaviour
             DBManager.I.currSlot = select + 3;
         }
         await Task.Delay(200);
-        GameManager.I.SetPlayerPosition(DBManager.I.currData.lastPos);
+        GameManager.I.SetSceneFromDB();
         GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
     }
     [HideInInspector] public int diff;
@@ -293,7 +293,7 @@ public class LobbyStoryPanel : MonoBehaviour
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
         DisableAllButtons();
-        popupControl.ClosePop(3, false);
+        PopupUI.ClosePop(3, false);
         await Task.Delay(200);
         CharacterData newData = new CharacterData();
         newData.gold = 0;
@@ -318,6 +318,8 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.gearDatas = new List<CharacterData.GearData>();
         newData.lanternDatas = new List<CharacterData.LanternData>();
         newData.recordDatas = new List<CharacterData.RecordData>();
+        newData.sceneDatas = new List<CharacterData.SceneData>();
+
         DBManager.I.currData = newData;
         // 신규캐릭터 시작 아이템
         DBManager.I.AddLantern("BasicLantern");
@@ -368,12 +370,12 @@ public class LobbyStoryPanel : MonoBehaviour
     public async void DeleteButton()
     {
         AudioManager.I.PlaySFX("UIClick");
-        popupControl.OpenPop(4);
+        PopupUI.OpenPop(4);
     }
     public async void Pop4DeleteButton()
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
-        popupControl.ClosePop(4, false);
+        PopupUI.ClosePop(4, false);
         if (isSteamSlot)
         {
             SaveData copy = new SaveData();

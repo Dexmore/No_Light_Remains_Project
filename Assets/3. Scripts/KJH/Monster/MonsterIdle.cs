@@ -13,7 +13,7 @@ public class MonsterIdle : MonsterState
 
 
         await UniTask.Yield(token);
-        float homeRadius = control.findRadius * 1.4f;
+        float homeRadius = control.findRadius * 1.1f;
         float homeDistance = Vector2.Distance(control.startPosition, transform.position);
         float ratio = homeDistance / homeRadius;
         ratio = Mathf.Clamp(ratio - 0.1f, 0f, 1f);
@@ -33,7 +33,10 @@ public class MonsterIdle : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         if (control.isDie) return;
-        anim.Play("Idle");
+        if(anim)
+        {
+            anim.Play("Idle");
+        }
         await UniTask.Delay((int)(duration * 1000f), cancellationToken: token);
         control.ChangeNextState();
     }

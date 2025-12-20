@@ -115,6 +115,7 @@ public class PlayerControl : MonoBehaviour
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             newData.recordDatas = new List<CharacterData.RecordData>();
+            newData.sceneDatas = new List<CharacterData.SceneData>();
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
             System.DateTime now = System.DateTime.Now;
@@ -131,6 +132,7 @@ public class PlayerControl : MonoBehaviour
             CharacterData.LanternData lanternData = DBManager.I.currData.lanternDatas[find];
             lanternData.isEquipped = true;
             DBManager.I.currData.lanternDatas[find] = lanternData;
+            startPosition = transform.position;
         }
         else
         {
@@ -175,7 +177,7 @@ public class PlayerControl : MonoBehaviour
     {
         fsm.Update();
         CheckGroundedPrecise();
-
+        FixBugPosition();
     }
     void FixedUpdate()
     {
@@ -632,6 +634,13 @@ public class PlayerControl : MonoBehaviour
         }
     }
     #endregion
+    [HideInInspector] public Vector2 startPosition;
+    void FixBugPosition()
+    {
+        if (transform.position.y > -24.5) return;
+        Debug.Log("BugPosition");
+        transform.position = startPosition;
+    }
     #region FootStep
     AudioSource sfxFootStep;
     public void PlayFootStep()

@@ -13,8 +13,12 @@ public class MonsterBiteAttack : MonsterState
     int multiHitCount = 1;
     GameObject chafe;
     public override MonsterControl.State mapping => MonsterControl.State.BiteAttack;
-    Ray2D checkCliffRay;
-    RaycastHit2D CheckCliffHit;
+    // 낭떠러지 체크용
+    Vector2 rayOrigin;
+    Vector2 rayDirection;
+    float rayLength;
+    Ray2D checkRay;
+    RaycastHit2D CheckRayHit;
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
@@ -47,6 +51,19 @@ public class MonsterBiteAttack : MonsterState
         {
             while (Time.time - startTime < 0.3f)
             {
+
+                // 낭떠러지 체크
+                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayDirection = Vector3.down;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+                checkRay.origin = rayOrigin;
+                checkRay.direction = rayDirection;
+                CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                if (CheckRayHit.collider == null)
+                {
+                    break;
+                }  
+
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
                 moveDirection = transform.position - target.position;
                 moveDirection.y = 0;
@@ -117,6 +134,18 @@ public class MonsterBiteAttack : MonsterState
         {
             if (Time.time - startTime > 0.55f && !once)
             {
+                // 낭떠러지 체크
+                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayDirection = Vector3.down;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+                checkRay.origin = rayOrigin;
+                checkRay.direction = rayDirection;
+                CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                if (CheckRayHit.collider == null)
+                {
+                    break;
+                }
+
                 once = true;
                 rb.AddForce(model.right * Random.Range(1.3f, 6.2f), ForceMode2D.Impulse);
                 if (transform.Find("Chafe") != null)
@@ -152,6 +181,19 @@ public class MonsterBiteAttack : MonsterState
                         }
                     }
                 }
+
+                // 낭떠러지 체크
+                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayDirection = Vector3.down;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+                checkRay.origin = rayOrigin;
+                checkRay.direction = rayDirection;
+                CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                if (CheckRayHit.collider == null)
+                {
+                    stopWall = true;
+                }  
+
                 // AddForce방식으로 캐릭터 이동
                 if (!stopWall)
                     if (dot < control.data.MoveSpeed)
@@ -163,7 +205,6 @@ public class MonsterBiteAttack : MonsterState
         }
         if (Time.time - startTime > 0.55f && !once)
         {
-            Debug.Log("a");
             once = true;
             rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
         }

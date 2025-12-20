@@ -6,7 +6,7 @@ using TMPro;
 using DG.Tweening;
 using NaughtyAttributes;
 
-public class DialogControl : MonoBehaviour
+public class DialogUI : MonoBehaviour
 {
     List<string[]> allDialogTexts = new List<string[]>();
     void InitLocale()
@@ -16,28 +16,31 @@ public class DialogControl : MonoBehaviour
         {
             allDialogTexts = new List<string[]>()
             {
-                // 대사 0
+                //대사0
                 new string[]
                 {
-                    "도시 외곽 지역을 중심으로 어둠이 퍼지고 있다.\n어둠은 생명체와 기계들을 오염시켜서 점점 괴물로 만들고 있다.",
-                    "나는 숨어서 오래 연구한 끝에 막대한 빛 에너지 '일리오스'를\n방출하는 장치를 만드는 데 성공했다. 이것만 있으면 도시를\n뒤덮은 괴물 '칼리고'들을 정화할 수 있을 것이다.",
-                    "...슬슬 출발할 시간이 되었다. 움직여보자."
+                    //1페이지
+                    "aaaaaaaaaa\nbbbbbbbbbbb",
+                    //2페이지
+                    "ccccccccc\nddddddddd\neeeeeeeee",
+                    //3페이지
+                    "fffffffffffffff"
                 },
-                // 대사 1
+                //대사1
                 new string[]
                 {
-                    "막대한 빛 에너지 '일리오스'를 특정 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 등에 '일리오스'를 주입해보자."
+                    "aassd"
                 },
-                // 대사 2
+                //대사2
                 new string[]
                 {
-                    "대사2-1페이지 (단일 페이지 예시)"
+                    "dialog2 page1"
                 },
-                // 대사 3
+                //대사3
                 new string[]
                 {
-                    "대사3-1페이지...\n....\n..",
-                    "대사3-2페이지...\n....\n.."
+                    "dialog3 page1 line1\ndialog 3-1 line2\ndialog 3-1 line3",
+                    "dialog3 page2 line1\ndialog 3-1 line2"
                 },
             };
         }
@@ -46,28 +49,28 @@ public class DialogControl : MonoBehaviour
         {
             allDialogTexts = new List<string[]>()
             {
-                // 대사 0
+                //대사0
                 new string[]
                 {
                     "도시 외곽 지역을 중심으로 어둠이 퍼지고 있다.\n어둠은 생명체와 기계들을 오염시켜서 점점 괴물로 만들고 있다.",
                     "나는 숨어서 오래 연구한 끝에 막대한 빛 에너지 '일리오스'를\n방출하는 장치를 만드는 데 성공했다. 이것만 있으면 도시를\n뒤덮은 괴물 '칼리고'들을 정화할 수 있을 것이다.",
                     "...슬슬 출발할 시간이 되었다. 움직여보자."
                 },
-                // 대사 1
+                //대사1
                 new string[]
                 {
-                    "막대한 빛 에너지 '일리오스'를 특정 전기·전자 장치에 주입하면\n원래의 성능보다 더욱 뛰어난 힘을 발휘 할수 있다.\n혹은 원래의 기능과 다른 매우 신비한 힘이 발휘되기도 한다.\n여기있는 고장난 등에 '일리오스'를 주입해보자."
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다"
                 },
-                // 대사 2
+                //대사2
                 new string[]
                 {
-                    "대사2-1페이지 (단일 페이지 예시)"
+                    "대사2의 1페이지입니다 (단일 페이지 예시)"
                 },
-                // 대사 3
+                //대사3
                 new string[]
                 {
-                    "대사3-1페이지...\n....\n..",
-                    "대사3-2페이지...\n....\n.."
+                    "대사3의 1페이지입니다...\n..2번째줄..\n.3번째줄.",
+                    "대사3의 2페이지입니다...\n..2번째줄..\n.3번째줄.",
                 },
             };
         }
@@ -162,6 +165,7 @@ public class DialogControl : MonoBehaviour
     }
     public void Open(int index)
     {
+        InitLocale();
         if (index < 0 || index >= allDialogTexts.Count)
         {
             Debug.LogError($"유효하지 않은 대화 인덱스: {index}");

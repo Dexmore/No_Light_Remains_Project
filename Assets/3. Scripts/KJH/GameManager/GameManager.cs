@@ -74,7 +74,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
     void OnDisable()
     {
-        
+
     }
     #region Load Scene
     public async void LoadSceneAsync(int index, bool loadingScreen = false)
@@ -101,11 +101,12 @@ public class GameManager : SingletonBehaviour<GameManager>
                 await Task.Delay(10);
             }
         }
-        await Task.Delay(500);
-        onSceneChangeAfter.Invoke();
-        FadeIn(0.3f);
-        await Task.Delay(1300);
+        await Task.Delay(10);
         isSceneWaiting = false;
+        onSceneChangeAfter.Invoke();
+        await Task.Delay(500);
+        FadeIn(0.4f);
+        await Task.Delay(1300);
     }
     public async void LoadSceneAsync(string name, bool loadingScreen = false)
     {
@@ -412,36 +413,78 @@ public class GameManager : SingletonBehaviour<GameManager>
         return sb.ToString();
     }
     #endregion
-
-    public async void SetPlayerPosition(Vector2 vector2)
+    public void SetSceneFromDB(bool isLeftDirection = false)
     {
-        PlayerControl playerControl = null;
-        FollowCamera followCamera = null;
-        await Task.Delay(50);
+        SetScene(DBManager.I.currData.lastPos, isLeftDirection);
+    }
+    public async void SetScene(Vector2 position, bool isLeftDirection = false)
+    {
+        #region Player & Camera
+        PlayerControl playerControl1 = FindAnyObjectByType<PlayerControl>();
+        FollowCamera followCamera1 = FindAnyObjectByType<FollowCamera>();
+        PlayerControl playerControl2 = null;
+        FollowCamera followCamera2 = null;
+        await Task.Delay(20);
         while (isSceneWaiting)
         {
-            await Task.Delay(50);
-            if (playerControl == null)
-                playerControl = FindAnyObjectByType<PlayerControl>();
-            if (followCamera == null)
-                followCamera = FindAnyObjectByType<FollowCamera>();
+            if (playerControl2 == null)
+                playerControl2 = FindAnyObjectByType<PlayerControl>();
+            if (followCamera2 == null)
+                followCamera2 = FindAnyObjectByType<FollowCamera>();
+            await Task.Delay(20);
+            if (playerControl2 != null && playerControl2 != null
+            && playerControl1 != playerControl2
+            && followCamera1 != followCamera2) break;
         }
-        await Task.Delay(50);
-        float _time = Time.time;
-        while (Time.time - _time < 2f)
+        await Task.Delay(20);
+        if (playerControl2 == null)
+            playerControl2 = FindAnyObjectByType<PlayerControl>();
+        if (followCamera2 == null)
+            followCamera2 = FindAnyObjectByType<FollowCamera>();
+        if (!isLeftDirection)
         {
-            if (playerControl == null)
-                playerControl = FindAnyObjectByType<PlayerControl>();
-            if (followCamera == null)
-                followCamera = FindAnyObjectByType<FollowCamera>();
-            if (playerControl != null && followCamera != null) break;
-            await Task.Delay(50);
+            playerControl2.childTR.localRotation = Quaternion.Euler(0f, 0f, 0f);
         }
-        if (playerControl != null)
-            playerControl.transform.position = vector2;
-        if (followCamera != null)
-            followCamera.transform.position = vector2;
+        else
+        {
+            playerControl2.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        }
+        if (position != Vector2.zero)
+        {
+            if (playerControl2 != null)
+            {
+                playerControl2.transform.position = position;
+                playerControl2.startPosition = position;
+
+            }
+            float boundedX = Mathf.Clamp(position.x, followCamera2.xBound.x, followCamera2.xBound.y);
+            float boundedY = Mathf.Clamp(position.y, followCamera2.yBound.x, followCamera2.yBound.y);
+            if (followCamera2 != null)
+            {
+                followCamera2.transform.position = new Vector3(boundedX, boundedY, 0f) + followCamera2.offset;
+                return;
+            }
+        }
+        #endregion
+        #region Monster & Object
+
+        MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.InstanceID);
+        Debug.Log($"monster count : {allMonsters.Length}");
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        int find = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+        Debug.Log($"scene DB find : {find != -1}");
+        if (find != -1)
+        {
+
+
+        }
+
+        #endregion
+
+
     }
+
 
 
 }
