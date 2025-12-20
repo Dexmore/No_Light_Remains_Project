@@ -1,11 +1,14 @@
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
 using TMPro;
+
 public class GameManager : SingletonBehaviour<GameManager>
 {
     protected override bool IsDontDestroy() => true;
@@ -82,6 +85,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(0.8f);
+        await SceneLoadBefore();
         await Task.Delay(1300);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
         onSceneChangeBefore.Invoke();
@@ -113,6 +117,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(0.8f);
+        await SceneLoadBefore();
         await Task.Delay(1300);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
         onSceneChangeBefore.Invoke();
@@ -214,7 +219,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         dimImg.color = new Color(0f, 0f, 0f, 1f);
         //진행
         Tween tween;
-        tween = dimImg.DOFade(0f, 2.8f).SetEase(Ease.InSine);
+        tween = dimImg.DOFade(0f, 2.3f).SetEase(Ease.InSine);
         tween.OnComplete(() =>
         {
             fadeScreen.SetActive(false);
@@ -302,8 +307,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         amount = Mathf.Clamp01(amount);
         hitEffectStartTime = Time.time;
         ScreenShake(amount);
-        //TimeSlow(amount);
-        LineEffect(point, amount);
     }
     async void ScreenShake(float amount)
     {
@@ -337,10 +340,6 @@ public class GameManager : SingletonBehaviour<GameManager>
     //         });
     //     await Task.Delay((int)(1000 * resetDuration)); // 복구 트윈이 완료될 때까지 대기
     // }
-    async void LineEffect(Vector2 pos, float amount)
-    {
-
-    }
     #endregion
     #region Glitch Effect
     private const int glitchDelayMs = 25;
@@ -462,27 +461,65 @@ public class GameManager : SingletonBehaviour<GameManager>
             if (followCamera2 != null)
             {
                 followCamera2.transform.position = new Vector3(boundedX, boundedY, 0f) + followCamera2.offset;
-                return;
             }
         }
         #endregion
-        #region Monster & Object
+        #region Monster & Object Setting and Save In NewScene Opening
 
         MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.InstanceID);
-        Debug.Log($"monster count : {allMonsters.Length}");
+        //Debug.Log($"monster count : {allMonsters.Length}");
 
         string sceneName = SceneManager.GetActiveScene().name;
-        int find = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
-        Debug.Log($"scene DB find : {find != -1}");
-        if (find != -1)
+        List<CharacterData.SceneData> sceneDatas = DBManager.I.currData.sceneDatas;
+        int find = sceneDatas.FindIndex(x => x.sceneName == sceneName);
+        //Debug.Log($"scene DB find : {find != -1}");
+        CharacterData.SceneData sceneData;
+        if (find == -1)
         {
+            sceneData = new CharacterData.SceneData();
+            sceneData.sceneName = sceneName;
+            sceneData.monsterPositionDatas = new List<CharacterData.MonsterPositionData>();
+            //몬스터
+            for (int i = 0; i < allMonsters.Length; i++)
+            {
+                CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
+                monsterPositionData.Name = allMonsters[i].name;
+                monsterPositionData.index = allMonsters[i].index;
+                monsterPositionData.lastHealth = allMonsters[i].maxHP;
+                monsterPositionData.lastPos = allMonsters[i].transform.position;
+                monsterPositionData.lastDeathTime = "";
+                sceneData.monsterPositionDatas.Add(monsterPositionData);
+            }
+            // //오브젝트
+            // //for ()
+            // {
 
+            // }
+            sceneDatas.Add(sceneData);
 
+            DBManager.I.Save();
         }
+        else
+        {
+            sceneData = sceneDatas[find];
+            //몬스터
+            //for (int i = 0; i < sceneData.monsterPositionDatas.Count; i++)
+            {
 
+            }
+            //오브젝트
+            //for ()
+            {
+
+            }
+        }
         #endregion
 
-
+    }
+    public async Task SceneLoadBefore()
+    {
+        #region Monster & Object Save In Scene Closing
+        #endregion
     }
 
 
@@ -527,7 +564,6 @@ public struct HitData
     }
 }
 
-// public enum Language
 // {
 //     English, // 영어
 //     Korean,  // 한국어

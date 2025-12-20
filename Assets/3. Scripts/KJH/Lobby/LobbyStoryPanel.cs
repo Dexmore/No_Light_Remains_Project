@@ -319,6 +319,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.lanternDatas = new List<CharacterData.LanternData>();
         newData.recordDatas = new List<CharacterData.RecordData>();
         newData.sceneDatas = new List<CharacterData.SceneData>();
+        newData.progressDatas = new List<CharacterData.ProgressData>();
 
         DBManager.I.currData = newData;
         // 신규캐릭터 시작 아이템
