@@ -519,6 +519,7 @@ public struct CharacterData
     public List<LanternData> lanternDatas;
     public List<RecordData> recordDatas;
     public List<SceneData> sceneDatas;
+    public List<ProgressData> progressDatas;
     [System.Serializable]
     public struct ItemData
     {
@@ -572,6 +573,14 @@ public struct CharacterData
         public string lastCompleteTime; // 빈문자열 ""일시 아직 작동완료 안된 상태
         public Vector2 lastPos;
     }
+    [System.Serializable]
+    public struct ProgressData
+    {
+        public string Name;
+        public int progress;
+        public bool isComplete;
+    }
+
     
 
 

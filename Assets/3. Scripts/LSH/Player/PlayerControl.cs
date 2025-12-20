@@ -116,6 +116,7 @@ public class PlayerControl : MonoBehaviour
             newData.lanternDatas = new List<CharacterData.LanternData>();
             newData.recordDatas = new List<CharacterData.RecordData>();
             newData.sceneDatas = new List<CharacterData.SceneData>();
+            newData.progressDatas = new List<CharacterData.ProgressData>();
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
             System.DateTime now = System.DateTime.Now;
