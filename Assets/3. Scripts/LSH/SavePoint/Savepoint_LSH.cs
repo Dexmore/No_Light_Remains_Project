@@ -25,6 +25,8 @@ public class SavePoint_LSH : InteractableObject
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
         hUDBinder?.Refresh(1f);
 
+        _ = GameManager.I.SaveAllMonsterAndObject();
+
         System.DateTime now = System.DateTime.Now;
         string datePart = now.ToString("yyyy.MM.dd");
         int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;

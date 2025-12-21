@@ -74,19 +74,18 @@ public static class MethodCollection
     }
     public static Transform Root(this Transform x)
     {
-        Transform result = x.transform.root;
-        if (result == null) result = x.transform;
-        if (result.name.Substring(0, 3) != "---") return result;
-        List<Transform> trs = x.transform.GetComponentsInParent<Transform>().ToList();
-        foreach (var tr in trs)
+        Transform absoluteRoot = x.root;
+        // 1. 루트가 없거나(그럴 일은 거의 없지만), 루트 이름이 "---"로 시작하지 않으면 바로 반환
+        if (absoluteRoot == null || !absoluteRoot.name.StartsWith("---"))
+            return absoluteRoot;
+        // 2. 루트가 "---" 그룹이라면, 현재 오브젝트부터 부모를 타고 올라가서
+        //    부모가 absoluteRoot인 '바로 그 직전 자식'을 찾습니다.
+        Transform current = x;
+        while (current.parent != null && current.parent != absoluteRoot)
         {
-            if (tr.parent == result)
-            {
-                result = tr;
-                break;
-            }
+            current = current.parent;
         }
-        return result;
+        return current;
     }
     // [4. 공간상에서 두 Ray가 만나는 교점을 찾는 메소드]
     // 리턴 값이 (-999, -999, -999) 라는건 두 Ray가 공간상에서 서로 안겹친다는 의미
@@ -245,7 +244,7 @@ public static class MethodCollection
         // 고정 목표 해상도
         const float FIXED_WIDTH = 1920f;
         const float FIXED_HEIGHT = 1080f;
-        
+
         // 1. WorldToScreenPoint를 사용하여 월드 좌표를 현재 화면 픽셀 좌표로 변환
         // 반환되는 screenPoint는 현재 해상도의 픽셀 좌표입니다.
         // X: 0 ~ Screen.width, Y: 0 ~ Screen.height
@@ -256,7 +255,7 @@ public static class MethodCollection
         {
             // 카메라 뒤에 있는 경우, 계산을 생략하고 Vector2.zero나 특별한 값 반환
             // 여기서는 Vector2.zero를 반환하도록 합니다.
-            return Vector2.zero; 
+            return Vector2.zero;
         }
 
         // 2. 현재 화면의 해상도를 가져옵니다.
@@ -265,21 +264,21 @@ public static class MethodCollection
 
         // 3. 현재 해상도와 고정 해상도(1920x1080) 간의 비율을 계산합니다.
         // 우리는 현재 픽셀 좌표(screenPoint)를 '역으로' 스케일링해야 합니다.
-        
+
         // Width 비율: 현재 픽셀 좌표가 (1920/Screen.width) 비율만큼 커지거나 작아져야 합니다.
         float ratioX = FIXED_WIDTH / currentWidth;
-        
+
         // Height 비율: 현재 픽셀 좌표가 (1080/Screen.height) 비율만큼 커지거나 작아져야 합니다.
         float ratioY = FIXED_HEIGHT / currentHeight;
 
         // 4. (중요) 화면 비율 보정 방식을 결정합니다. (캔버스 스케일러의 Match Mode와 유사)
         // 여기서는 간단하게 X축 비율만 사용하거나 Y축 비율만 사용할 수도 있지만,
         // 일반적으로 게임에서는 비율이 깨지는 것을 방지하기 위해 둘 중 하나를 기준으로 합니다.
-        
+
         // 예시: Width 기준으로 스케일링 (1920x1080 기준 픽셀 좌표를 얻는 일반적인 방법)
         // 1080p 해상도에서 640x480으로 플레이할 때, UI는 보통 작은 화면에 맞게 비율 조정됩니다.
         // 이 예시에서는 X와 Y를 각각의 비율로 보정하여 1920x1080 화면에 '있는' 픽셀 좌표로 만듭니다.
-        
+
         float fixedX = screenPoint.x * ratioX;
         float fixedY = screenPoint.y * ratioY;
 

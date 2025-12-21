@@ -99,6 +99,7 @@ public class PlayerControl : MonoBehaviour
         CharacterData characterData = DBManager.I.currData;
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
+            // 테스트 플레이어 시작 영역 (정상적인 로비-캐릭터 선택씬을 거친 게임흐름과 무관함)
             CharacterData newData = new CharacterData();
             newData.gold = 0;
             newData.death = 0;
@@ -111,6 +112,7 @@ public class PlayerControl : MonoBehaviour
             newData.maxPotionCount = 3;
             newData.currPotionCount = 3;
             newData.maxGearCost = 3;
+            newData.difficulty = 1;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();

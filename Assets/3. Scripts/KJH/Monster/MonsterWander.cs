@@ -98,7 +98,7 @@ public class MonsterWander : MonsterState
                     }
                 }
             }
-            Vector2 rayOrigin = transform.position + control.width * model.right + 0.2f * control.height * Vector3.up;
+            Vector2 rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
             Vector2 rayDirection = Vector3.down;
             float rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
             checkRay.origin = rayOrigin;
@@ -390,7 +390,7 @@ public class MonsterWander : MonsterState
                 }
 
                 // 낭떠러지 체크
-                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
                 rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;

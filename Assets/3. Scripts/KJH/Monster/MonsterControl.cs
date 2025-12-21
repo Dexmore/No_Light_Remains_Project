@@ -13,6 +13,7 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public bool isGround;
     [HideInInspector] public bool isStagger;
     public LayerMask groundLayer;
+    public float maxHealth;
     public float currHealth;
     [Range(0f, 1f)] public float aggressive = 0.2f;
 
@@ -69,8 +70,8 @@ public class MonsterControl : MonoBehaviour
                 diffMultiplier = 1.33f;
                 break;
         }
-        maxHP = data.HP * diffMultiplier;
-        currHealth = maxHP;
+        maxHealth = data.HP * diffMultiplier;
+        currHealth = maxHealth;
         if (astar)
         {
             astar.height = height;
@@ -644,7 +645,7 @@ public class MonsterControl : MonoBehaviour
         findRadius = 4.1f * ((width + height) * 0.58f + 0.55f);
         if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
             findRadius = 20.1f * ((width + height) * 0.58f + 0.55f);
-        
+
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         bool canPhase2 = false;
@@ -661,12 +662,21 @@ public class MonsterControl : MonoBehaviour
                 canPhase3 = true;
                 break;
             }
+        bool isSetTarget = false;
         while (!token.IsCancellationRequested)
         {
             int timeDelta = Random.Range(150, 500);
             await UniTask.Delay(timeDelta, cancellationToken: token);
             //nearPlayers = Physics2D.OverlapCircleAll((Vector2)transform.position, findRadius, LayerMask.GetMask("Player"));
             count = Physics2D.OverlapCircleNonAlloc(transform.position, findRadius, nearPlayers, LayerMask.GetMask("Player"));
+            if (count > 0)
+            {
+                if (bossHUD && !isSetTarget)
+                {
+                    isSetTarget = true;
+                    bossHUD.SetTarget(this);
+                }
+            }
             // visibilites
             float minDist = 999;
             for (int i = 0; i < count; i++)
@@ -695,7 +705,15 @@ public class MonsterControl : MonoBehaviour
                     minDist = dist;
                 if (dist <= closeRadius)
                     if (!HasCondition(Condition.ClosePlayer))
+                    {
                         AddCondition(Condition.ClosePlayer);
+                        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+                            if (bossHUD.target != this)
+                            {
+                                bossHUD.SetTarget(this);
+                            }
+                    }
+
             }
             if (minDist > closeRadius)
                 if (HasCondition(Condition.ClosePlayer))
@@ -759,8 +777,6 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
-                                    if (bossHUD != null)
-                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -772,8 +788,6 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
-                                    if (bossHUD != null)
-                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -919,7 +933,7 @@ public class MonsterControl : MonoBehaviour
                     staggerFactor1 = 0.81f;
                     break;
                 case MonsterType.Large:
-                    staggerFactor1 = 0.69f;
+                    staggerFactor1 = 0.65f;
                     break;
                 case MonsterType.Boss:
                     staggerFactor1 = 0.43f;
@@ -1136,7 +1150,6 @@ public class MonsterControl : MonoBehaviour
 
     [Space(50)]
     public Vector2 startPosition;
-    public int index;
     [Range(0, 1)] public float homeValue = 1f;
 
 

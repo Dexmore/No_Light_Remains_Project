@@ -19,12 +19,36 @@ public class MonsterDie : MonsterState
     {
         control.isDie = true;
         await UniTask.Yield(token);
-        if(transform.Find("Chafe") != null)
+        if (transform.Find("Chafe") != null)
             chafe = transform.Find("Chafe").gameObject;
         else
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
         Activate(token).Forget();
+        if (DBManager.I.currData.sceneDatas != null)
+        {
+            string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            int find1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+            if (find1 != -1)
+            {
+                string strimedName = transform.name.Split("(")[0];
+                if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
+                {
+                    int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
+                    if (find2 != -1)
+                    {
+                        var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
+                        var mData = monsterList[find2];
+                        System.DateTime now = System.DateTime.Now;
+                        string datePart = now.ToString("yyyy.MM.dd");
+                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                        mData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                        mData.lastHealth = 0;
+                        monsterList[find2] = mData;
+                    }
+                }
+            }
+        }
     }
     public async UniTask Activate(CancellationToken token)
     {
@@ -53,7 +77,8 @@ public class MonsterDie : MonsterState
             await UniTask.Delay(10, cancellationToken: token);
         }
         await UniTask.Yield(token);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+        //Destroy(gameObject);
     }
     public override void Exit()
     {

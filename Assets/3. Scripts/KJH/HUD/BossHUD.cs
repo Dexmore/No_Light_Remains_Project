@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 public class BossHUD : MonoBehaviour
 {
-    [ReadOnlyInspector][SerializeField] MonsterControl _target;
+    [ReadOnlyInspector] public MonsterControl target;
     Transform canvas;
     TMP_Text textName;
     SlicedLiquidBar slicedLiquidBar;
@@ -42,16 +42,16 @@ public class BossHUD : MonoBehaviour
         {
             canvas.gameObject.SetActive(false);
         }
-        if (_target != target)
+        if (this.target != target)
         {
-            _target = target;
+            this.target = target;
             if (isFirst)
             {
                 isFirst = false;
                 StartCoroutine(nameof(Opening));
             }
             //
-            float ratio = _target.currHealth / _target.data.HP;
+            float ratio = target.currHealth / target.maxHealth;
             slicedLiquidBar.Value = ratio;
             textName.text = target.data.Name;
             if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
@@ -103,10 +103,10 @@ public class BossHUD : MonoBehaviour
     }
     void HitHandler(HitData hData)
     {
-        if (_target == null) return;
-        if (_target.isDie) return;
-        if (hData.target.Root() != _target.transform) return;
-        float ratio = _target.currHealth / _target.data.HP;
+        if (target == null) return;
+        if (target.isDie) return;
+        if (hData.target.Root() != target.transform) return;
+        float ratio = target.currHealth / target.maxHealth;
         slicedLiquidBar.Value = ratio;
         RectTransform rect = slicedLiquidBar.transform as RectTransform;
         Vector2 particlePos = Vector2.zero;

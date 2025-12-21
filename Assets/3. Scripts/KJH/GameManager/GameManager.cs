@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using DG.Tweening;
 using TMPro;
+using NaughtyAttributes;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
@@ -80,13 +81,17 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     }
     #region Load Scene
-    public async void LoadSceneAsync(int index, bool loadingScreen = false)
+    public async void LoadSceneAsync(int index, bool loadingScreen = false, bool isDie = false)
     {
         isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(0.8f);
-        await SceneLoadBefore();
-        await Task.Delay(1300);
+        await Task.Delay(3000);
+        if(!isDie)
+        {
+            await SaveAllMonsterAndObject();
+        }
+        await Task.Delay(800);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
         onSceneChangeBefore.Invoke();
         if (loadingScreen)
@@ -112,13 +117,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         FadeIn(0.4f);
         await Task.Delay(1300);
     }
-    public async void LoadSceneAsync(string name, bool loadingScreen = false)
+    public async void LoadSceneAsync(string name, bool loadingScreen = false, bool isDie = false)
     {
         isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(0.8f);
-        await SceneLoadBefore();
-        await Task.Delay(1300);
+        await Task.Delay(3000);
+        if(!isDie)
+        {
+            await SaveAllMonsterAndObject();
+        }
+        await Task.Delay(800);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
         onSceneChangeBefore.Invoke();
         if (loadingScreen)
@@ -464,63 +473,146 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
         }
         #endregion
-        #region Monster & Object Setting and Save In NewScene Opening
-
-        MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.InstanceID);
-        //Debug.Log($"monster count : {allMonsters.Length}");
-
+        LoadAllMonsterAndObject();
+    }
+    public async Task SaveAllMonsterAndObject()
+    {
         string sceneName = SceneManager.GetActiveScene().name;
+        if(!sceneName.Contains("Stage")) return;
+        MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Include, sortMode: FindObjectsSortMode.InstanceID);
         List<CharacterData.SceneData> sceneDatas = DBManager.I.currData.sceneDatas;
         int find = sceneDatas.FindIndex(x => x.sceneName == sceneName);
-        //Debug.Log($"scene DB find : {find != -1}");
         CharacterData.SceneData sceneData;
         if (find == -1)
         {
             sceneData = new CharacterData.SceneData();
             sceneData.sceneName = sceneName;
             sceneData.monsterPositionDatas = new List<CharacterData.MonsterPositionData>();
-            //몬스터
             for (int i = 0; i < allMonsters.Length; i++)
             {
-                CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
-                monsterPositionData.Name = allMonsters[i].name;
-                monsterPositionData.index = allMonsters[i].index;
-                monsterPositionData.lastHealth = allMonsters[i].maxHP;
-                monsterPositionData.lastPos = allMonsters[i].transform.position;
-                monsterPositionData.lastDeathTime = "";
-                sceneData.monsterPositionDatas.Add(monsterPositionData);
+                if (!allMonsters[i].name.Contains("(")) continue;
+                if (int.TryParse(allMonsters[i].name.Split("(")[1].Split(")")[0], out int result))
+                {
+                    CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
+                    monsterPositionData.Name = allMonsters[i].name.Split("(")[0];
+                    monsterPositionData.index = result;
+                    monsterPositionData.lastHealth = allMonsters[i].currHealth;
+                    monsterPositionData.lastPos = allMonsters[i].transform.position;
+                    if (allMonsters[i].gameObject.activeInHierarchy)
+                    {
+                        monsterPositionData.lastDeathTime = "";
+                    }
+                    else
+                    {
+                        System.DateTime now = System.DateTime.Now;
+                        string datePart = now.ToString("yyyy.MM.dd");
+                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                        monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                    }
+                    sceneData.monsterPositionDatas.Add(monsterPositionData);
+                }
+                else continue;
             }
-            // //오브젝트
-            // //for ()
-            // {
-
-            // }
-            sceneDatas.Add(sceneData);
-
-            DBManager.I.Save();
+            DBManager.I.currData.sceneDatas.Add(sceneData);
         }
         else
         {
             sceneData = sceneDatas[find];
-            //몬스터
-            //for (int i = 0; i < sceneData.monsterPositionDatas.Count; i++)
+            for (int i = 0; i < allMonsters.Length; i++)
             {
-
+                if (!allMonsters[i].name.Contains("(")) continue;
+                if (int.TryParse(allMonsters[i].name.Split("(")[1].Split(")")[0], out int result))
+                {
+                    string mName = allMonsters[i].name.Split("(")[0];
+                    int find2 = sceneData.monsterPositionDatas.FindIndex(x => x.Name == mName && x.index == result);
+                    if (find2 == -1)
+                    {
+                        CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
+                        monsterPositionData.Name = allMonsters[i].name.Split("(")[0];
+                        monsterPositionData.index = result;
+                        monsterPositionData.lastHealth = allMonsters[i].currHealth;
+                        monsterPositionData.lastPos = allMonsters[i].transform.position;
+                        if (allMonsters[i].gameObject.activeInHierarchy)
+                        {
+                            monsterPositionData.lastDeathTime = "";
+                        }
+                        else
+                        {
+                            System.DateTime now = System.DateTime.Now;
+                            string datePart = now.ToString("yyyy.MM.dd");
+                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                            monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                        }
+                        sceneData.monsterPositionDatas.Add(monsterPositionData);
+                    }
+                    else
+                    {
+                        CharacterData.MonsterPositionData monsterPositionData = sceneData.monsterPositionDatas[find2];
+                        monsterPositionData.index = result;
+                        monsterPositionData.lastHealth = allMonsters[i].currHealth;
+                        monsterPositionData.lastPos = allMonsters[i].transform.position;
+                        if (allMonsters[i].gameObject.activeInHierarchy)
+                        {
+                            monsterPositionData.lastDeathTime = "";
+                        }
+                        else if (monsterPositionData.lastDeathTime == "")
+                        {
+                            System.DateTime now = System.DateTime.Now;
+                            string datePart = now.ToString("yyyy.MM.dd");
+                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                            monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                        }
+                        sceneData.monsterPositionDatas[find2] = monsterPositionData;
+                    }
+                }
+                else continue;
             }
-            //오브젝트
-            //for ()
-            {
-
-            }
+            DBManager.I.currData.sceneDatas[find] = sceneData;
         }
-        #endregion
+        await Task.Delay(200);
+    }
+    void LoadAllMonsterAndObject()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+        MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Include, sortMode: FindObjectsSortMode.InstanceID);
+        List<CharacterData.SceneData> sceneDatas = DBManager.I.currData.sceneDatas;
+        int find = sceneDatas.FindIndex(x => x.sceneName == sceneName);
+        CharacterData.SceneData sceneData;
+        if (find != -1)
+        {
+            sceneData = sceneDatas[find];
+            float currTime = Time.time;
+
+            //몬스터 불러오기
+            for (int i = 0; i < allMonsters.Length; i++)
+            {
+                if (!allMonsters[i].name.Contains("(")) continue;
+                if (int.TryParse(allMonsters[i].name.Split("(")[1].Split(")")[0], out int result))
+                {
+                    int findIndex = sceneData.monsterPositionDatas.FindIndex(x => x.Name == allMonsters[i].name.Split("(")[0] && x.index == result);
+                    if (findIndex == -1) continue;
+                    var monsterPositionData = sceneData.monsterPositionDatas[findIndex];
+                    // 서버 저장데이터상 현재 몬스터가 살아있는걸로 되어있는경우
+                    if (monsterPositionData.lastDeathTime == "")
+                    {
+                        allMonsters[i].transform.Root().position = monsterPositionData.lastPos;
+                        allMonsters[i].currHealth = monsterPositionData.lastHealth;
+                        //allMonsters[i].transform.Root().gameObject.SetActive(true);
+                    }
+                    // 서버 저장데이터상 이 몬스터가 죽어있는걸로 되어있는경우. 씬 시작시 아래처럼 셋팅
+                    else
+                    {
+                        allMonsters[i].transform.Root().gameObject.SetActive(false);
+                    }
+                }
+                else continue;
+            }
+            //오브젝트 불러오기
+        }
 
     }
-    public async Task SceneLoadBefore()
-    {
-        #region Monster & Object Save In Scene Closing
-        #endregion
-    }
+
+
 
 
 

@@ -60,6 +60,41 @@ public class DBManager : SingletonBehaviour<DBManager>
         dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
         dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
         dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
+
+        for (int i = 0; i < dataToSave.sceneDatas.Count; i++)
+        {
+            CharacterData.SceneData sData = dataToSave.sceneDatas[i];
+            if (sData.monsterPositionDatas != null)
+            {
+                for (int j = 0; j < sData.monsterPositionDatas.Count; j++)
+                {
+                    CharacterData.MonsterPositionData mData = sData.monsterPositionDatas[j];
+                    mData.lastHealth = RoundToOneDecimal(mData.lastHealth);
+                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                    sData.monsterPositionDatas[j] = mData;
+                }
+            }
+            if (sData.objectPositionDatas != null)
+            {
+                for (int j = 0; j < sData.objectPositionDatas.Count; j++)
+                {
+                    CharacterData.ObjectPositionData mData = sData.objectPositionDatas[j];
+                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                    sData.objectPositionDatas[j] = mData;
+                }
+            }
+            dataToSave.sceneDatas[i] = sData;
+        }
+
+
+
+
+
+
+
+
         savedData = dataToSave;
 
         if (currSlot >= 0 && currSlot <= 2)
@@ -487,7 +522,7 @@ public class DBManager : SingletonBehaviour<DBManager>
 
     private float RoundToOneDecimal(float value)
     {
-        return Mathf.Round(value * 10f) * 0.1f;
+        return Mathf.Round(value * 100f) * 0.01f;
     }
 
 }
@@ -508,9 +543,7 @@ public struct CharacterData
     public int maxPotionCount;
     public int currPotionCount;
     public int difficulty;
-    public int language;
     public string sceneName;
-    public int level;
     public int death;
     public string lastTime;
     public Vector2 lastPos;
@@ -581,7 +614,7 @@ public struct CharacterData
         public bool isComplete;
     }
 
-    
+
 
 
 
