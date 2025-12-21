@@ -89,9 +89,9 @@ public class PlayerIdle : IPlayerState
         }
 
         parryPressed = parryAction.IsPressed();
-        if(parryPressed)
+        if (parryPressed)
         {
-            if(ctx.Grounded)
+            if (ctx.Grounded)
             {
                 fsm.ChangeState(ctx.parry);
             }
