@@ -254,12 +254,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314517066}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -43.1, y: -2.994999, z: 0}
   m_LocalScale: {x: 67, y: 67, z: 67}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 861288239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &337951970
 PrefabInstance:
@@ -3468,6 +3468,8 @@ Transform:
   m_Children:
   - {fileID: 1066227898}
   - {fileID: 339705647}
+  - {fileID: 3036626379773432636}
+  - {fileID: 314517068}
   - {fileID: 1818144165}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5130,13 +5132,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2058799825568956992}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1233158554020104311}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 861288239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3683678653182530017
 GameObject:
@@ -5267,7 +5269,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
-  isAuto: 1
   loadingPage: 0
   sceneName: Stage1
   targetPosition: {x: 0, y: 0}
@@ -5583,5 +5584,3 @@ SceneRoots:
   - {fileID: 781791605}
   - {fileID: 1883439321}
   - {fileID: 1566167755}
-  - {fileID: 3036626379773432636}
-  - {fileID: 314517068}

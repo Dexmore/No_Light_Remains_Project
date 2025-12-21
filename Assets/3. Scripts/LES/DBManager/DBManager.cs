@@ -612,6 +612,7 @@ public struct CharacterData
         public string Name;
         public int progress;
         public bool isComplete;
+        public int replayWaitTimeSecond;
     }
 
 

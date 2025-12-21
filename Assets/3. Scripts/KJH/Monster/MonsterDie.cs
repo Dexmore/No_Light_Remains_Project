@@ -27,24 +27,28 @@ public class MonsterDie : MonsterState
         Activate(token).Forget();
         if (DBManager.I.currData.sceneDatas != null)
         {
-            string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            int find1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
-            if (find1 != -1)
+            if (transform.name.Contains("("))
             {
-                string strimedName = transform.name.Split("(")[0];
-                if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
+                string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                int find1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+                if (find1 != -1)
                 {
-                    int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
-                    if (find2 != -1)
+                    string strimedName = transform.name.Split("(")[0];
+
+                    if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
                     {
-                        var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
-                        var mData = monsterList[find2];
-                        System.DateTime now = System.DateTime.Now;
-                        string datePart = now.ToString("yyyy.MM.dd");
-                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                        mData.lastDeathTime = $"{datePart}-{secondsOfDay}";
-                        mData.lastHealth = 0;
-                        monsterList[find2] = mData;
+                        int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
+                        if (find2 != -1)
+                        {
+                            var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
+                            var mData = monsterList[find2];
+                            System.DateTime now = System.DateTime.Now;
+                            string datePart = now.ToString("yyyy.MM.dd");
+                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                            mData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                            mData.lastHealth = 0;
+                            monsterList[find2] = mData;
+                        }
                     }
                 }
             }

@@ -9663,7 +9663,7 @@ PrefabInstance:
     - target: {fileID: 3015526148148095671, guid: a056411b80a3f8e4c8965f0115303de1, type: 3}
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1504312412}
     - target: {fileID: 4933104194866658789, guid: a056411b80a3f8e4c8965f0115303de1, type: 3}
       propertyPath: m_Color.b
       value: 0.2
@@ -9899,7 +9899,7 @@ GameObject:
   - component: {fileID: 213233722}
   - component: {fileID: 213233721}
   m_Layer: 8
-  m_Name: DarkVanishPlatform
+  m_Name: DarkVanishPlatform(1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10986,13 +10986,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 707549963}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1870465624}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236198119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &716762279
 PrefabInstance:
@@ -11668,7 +11668,7 @@ GameObject:
   - component: {fileID: 947101934}
   - component: {fileID: 947101933}
   m_Layer: 8
-  m_Name: LightAppearPlatform
+  m_Name: LightAppearPlatform(2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12314,6 +12314,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 440796771}
+  - {fileID: 707549964}
   - {fileID: 207508691}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12665,6 +12666,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4401340047381757193, guid: 967ccda8430daac4e9775fd1f36d9d22, type: 3}
   m_PrefabInstance: {fileID: 1431092744}
   m_PrefabAsset: {fileID: 0}
+--- !u!19719996 &1504312412 stripped
+TilemapCollider2D:
+  m_CorrespondingSourceObject: {fileID: -4908516367690720039, guid: a056411b80a3f8e4c8965f0115303de1, type: 3}
+  m_PrefabInstance: {fileID: 207508690}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1510164369
 GameObject:
   m_ObjectHideFlags: 0
@@ -12711,7 +12717,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
-  isAuto: 1
   loadingPage: 0
   sceneName: Stage0
   targetPosition: {x: 180, y: 0.1}
@@ -13100,7 +13105,7 @@ GameObject:
   - component: {fileID: 1832489938}
   - component: {fileID: 1832489937}
   m_Layer: 8
-  m_Name: LightAppearPlatform
+  m_Name: LightAppearPlatform(1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13888,7 +13893,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
-  isAuto: 1
   loadingPage: 0
   sceneName: Stage2
   targetPosition: {x: 0, y: 0}
@@ -13956,7 +13960,7 @@ GameObject:
   - component: {fileID: 6019233230069125475}
   - component: {fileID: 830579563681485530}
   m_Layer: 8
-  m_Name: DarkVanishPlatform
+  m_Name: DarkVanishPlatform(0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14633,7 +14637,7 @@ GameObject:
   - component: {fileID: 3755411897849703613}
   - component: {fileID: 1363810051702960810}
   m_Layer: 8
-  m_Name: LightAppearPlatform
+  m_Name: LightAppearPlatform(0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14906,4 +14910,3 @@ SceneRoots:
   - {fileID: 887394174}
   - {fileID: 1393994273}
   - {fileID: 1349269253}
-  - {fileID: 707549964}

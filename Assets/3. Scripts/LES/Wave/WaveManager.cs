@@ -150,6 +150,7 @@ public class WaveManager : MonoBehaviour
     {
         if (spawnPoint == null) return;
         GameObject mon = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+        mon.transform.name = prefab.transform.name;
         currentActiveMonsters.Add(mon);
     }
 

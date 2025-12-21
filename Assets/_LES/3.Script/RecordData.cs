@@ -5,9 +5,10 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 [CreateAssetMenu(fileName = "NewRecordData", menuName = "Project Data/Record")]
 public class RecordData : ScriptableObject
 {
+    public enum Type { StoryRecord, MonsterRecord }
+    public Type type;
     // [중요] [TextArea] 속성이 있으면 Localization UI가 깨집니다. 반드시 지워주세요.
     public LocalizedString recordTitle; 
-    
     public LocalizedString recordContent; 
     
     [Header("Runtime Localized Strings")]

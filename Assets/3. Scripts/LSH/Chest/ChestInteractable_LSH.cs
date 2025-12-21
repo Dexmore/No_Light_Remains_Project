@@ -4,6 +4,7 @@ using UnityEngine;
 public class ChestInteractable_LSH : Interactable
 {
     public override Type type => Type.DropItem;
+    public override bool isAuto => false;
     public override bool isReady { get; set; } = true;
 
     [Header("Animator")]
@@ -31,11 +32,16 @@ public class ChestInteractable_LSH : Interactable
         isReady = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    // private void OnTriggerEnter2D(Collider2D other)
+    // {
+    //     if (!isReady || opened) return;
+    //     if (!other.CompareTag("Player")) return;
+
+    //     OpenChest();
+    // }
+    public override void Run()
     {
         if (!isReady || opened) return;
-        if (!other.CompareTag("Player")) return;
-
         OpenChest();
     }
 

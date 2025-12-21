@@ -496,7 +496,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
-  isAuto: 1
   loadingPage: 0
   sceneName: Stage5
   targetPosition: {x: 78, y: 66.1}
@@ -844,7 +843,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -16
   m_Sprite: {fileID: -3865860345337302239, guid: a1d474019dbf3ea42b893beca30b5eea, type: 3}
-  m_Color: {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -886,13 +885,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 727713946}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -27.88, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 657810476}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236198119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &789531338
 PrefabInstance:
@@ -1530,6 +1529,7 @@ Transform:
   m_Children:
   - {fileID: 655468336}
   - {fileID: 177897182}
+  - {fileID: 727713947}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1303726073
@@ -3656,4 +3656,3 @@ SceneRoots:
   - {fileID: 628630077}
   - {fileID: 982416850}
   - {fileID: 421327726}
-  - {fileID: 727713947}
