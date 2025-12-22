@@ -121,7 +121,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
                     break;
             }
             hitData.staggerType = staggerType;
-            hitData.damage = Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack;
+            hitData.damage = Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack;
             GameManager.I.onHit.Invoke(hitData);
         }
     }

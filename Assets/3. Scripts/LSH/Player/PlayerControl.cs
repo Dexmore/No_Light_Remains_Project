@@ -386,6 +386,8 @@ public class PlayerControl : MonoBehaviour
                 GameManager.I.onAvoid.Invoke(hData);
                 ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                 AudioManager.I.PlaySFX("Woosh1");
+                hitCoolTime1speed = 5f;
+                hitCoolTime2speed = 5f;
                 return;
             }
             if (Parred)
@@ -403,6 +405,8 @@ public class PlayerControl : MonoBehaviour
                     currBattery += lanternParryAmount;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
+                    hitCoolTime1speed = 5f;
+                    hitCoolTime2speed = 5f;
                     StartCoroutine(nameof(ReleaseParred));
                     return;
                 }
@@ -535,13 +539,28 @@ public class PlayerControl : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         run.isStagger = false;
-        yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 0.7f));
+        float elapsed = 0;
+        float rnd = Random.Range(0.5f, 0.7f);
+        while(elapsed < rnd)
+        {
+            elapsed += hitCoolTime1speed * Time.deltaTime;
+            yield return null;
+        }
+        hitCoolTime1speed = 1f;
         isHit1 = false;
     }
+    float hitCoolTime1speed = 1f;
+    float hitCoolTime2speed = 1f;
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(1.12f);
+        float elapsed = 0;
+        while(elapsed < 1.12f)
+        {
+            elapsed += hitCoolTime2speed * Time.deltaTime;
+            yield return null;
+        }
         isHit2 = false;
+        hitCoolTime2speed = 1f;
     }
     IEnumerator ReleaseParred()
     {

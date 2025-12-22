@@ -154,7 +154,7 @@ public class MonsterNormalAttack : MonsterState
                     "NormalAttack",
                     transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
                     hitPoint,
                     new string[1]{"Hit2"},
                     staggerType

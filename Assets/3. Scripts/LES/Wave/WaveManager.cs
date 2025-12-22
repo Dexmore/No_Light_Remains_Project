@@ -128,7 +128,7 @@ public class WaveManager : MonoBehaviour
                         if (!isAnyMonsterActive)
                         {
                             currentActiveMonsters.Clear(); // 다음 웨이브를 위해 리스트 청소
-                            break; 
+                            break;
                         }
 
                         yield return new WaitForSeconds(0.5f);
@@ -151,6 +151,11 @@ public class WaveManager : MonoBehaviour
         if (spawnPoint == null) return;
         GameObject mon = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
         mon.transform.name = prefab.transform.name;
+        MonsterControl monsterControl = mon.GetComponent<MonsterControl>();
+        if (monsterControl)
+        {
+            if (monsterControl.homeValue >= 0.5f) monsterControl.homeValue = 0.5f * monsterControl.homeValue;
+        }
         currentActiveMonsters.Add(mon);
     }
 
