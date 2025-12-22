@@ -142,8 +142,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.7}
-  m_Size: {x: 0.5, y: 1.4}
+  m_Offset: {x: 0, y: 1.4}
+  m_Size: {x: 0.5, y: 2.8}
   m_Direction: 0
 --- !u!114 &2361577865676177020
 MonoBehaviour:
@@ -465,11 +465,9 @@ GameObject:
   - component: {fileID: 4723647863457218762}
   - component: {fileID: 3331778869664097147}
   - component: {fileID: 2525226197719094851}
-  - component: {fileID: 8269627528515926035}
-  - component: {fileID: 22057438559650774}
   - component: {fileID: -6443516967124353250}
   m_Layer: 6
-  m_Name: Slicer
+  m_Name: CagedShocker
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -599,14 +597,8 @@ MonoBehaviour:
       weight: 10
       coolTime: 1
     - state: 10
-      weight: 1800
+      weight: 2000
       coolTime: 1
-    - state: 14
-      weight: 600
-      coolTime: 5
-    - state: 13
-      weight: 48
-      coolTime: 16
   attackRange: {fileID: 0}
   state: 0
   prevState: 0
@@ -664,17 +656,9 @@ MonoBehaviour:
   duration: 0.6
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 11
+    gold: 7
     countRange: {x: 2, y: 3}
     probability: 1
-  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
-    gold: 0
-    countRange: {x: 1, y: 1}
-    probability: 0.7
-  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
-    gold: 0
-    countRange: {x: 1, y: 1}
-    probability: 0.3
 --- !u!114 &3455459431602799887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -730,44 +714,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterNormalAttack
   coolTime: 0
   damageMultiplier: 1
-  staggerType: 1
+  staggerType: 2
   durationRange: {x: 3.1, y: 3.4}
   range: 1.4
---- !u!114 &8269627528515926035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5011160000589489447}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68f4d00957b57be4180393cd186c7859, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterMovingAttack
-  coolTime: 0
-  damageMultiplier: 1.2
-  staggerType: 2
-  durationRange: {x: 3.3, y: 3.5}
-  range: 1.4
-  moveTimeRange: {x: 1.333, y: 1.8}
---- !u!114 &22057438559650774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5011160000589489447}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1aa6722c6594e204aba34b7d7ea16b66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterShortAttack
-  coolTime: 0
-  damageMultiplier: 0.7
-  staggerType: 0
-  durationRange: {x: 2, y: 2.2}
-  range: 1
 --- !u!114 &-6443516967124353250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -806,7 +755,7 @@ Transform:
   m_GameObject: {fileID: 6604516061141603946}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1, y: 2, z: 0}
+  m_LocalPosition: {x: 0.1, y: 1.88, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1054,7 +1003,7 @@ GameObject:
   - component: {fileID: 8251926785477482230}
   - component: {fileID: 3668057563191940043}
   m_Layer: 6
-  m_Name: Slicer
+  m_Name: CagedShocker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1124,7 +1073,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 5201653221414309236, guid: 3bd8dea2408a6914bb71a45e1e994a41, type: 3}
+  m_Sprite: {fileID: -4983663432883839795, guid: 25af5f7e241e8b84cb0ee3d47318b5ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1169,8 +1118,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.8}
-  m_Size: {x: 0.8, y: 1.6}
+  m_Offset: {x: 0, y: 1.4}
+  m_Size: {x: 0.8, y: 2.8}
   m_Direction: 0
 --- !u!95 &3668057563191940043
 Animator:
@@ -1182,7 +1131,7 @@ Animator:
   m_GameObject: {fileID: 8628135345381627966}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 89405a024b0286c49848557b2528937a, type: 2}
+  m_Controller: {fileID: 9100000, guid: d552fd644002ca941832f7cc7cd3b337, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1205,6 +1154,10 @@ PrefabInstance:
     - target: {fileID: 552386618970972170, guid: 69c61a6d7d78fb9498ea196c60345c71, type: 3}
       propertyPath: m_Name
       value: AttackRange
+      objectReference: {fileID: 0}
+    - target: {fileID: 552386618970972170, guid: 69c61a6d7d78fb9498ea196c60345c71, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2383188625122847702, guid: 69c61a6d7d78fb9498ea196c60345c71, type: 3}
       propertyPath: m_LocalPosition.x
