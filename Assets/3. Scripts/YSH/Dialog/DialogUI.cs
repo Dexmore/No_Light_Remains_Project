@@ -24,7 +24,7 @@ public class DialogUI : MonoBehaviour
                     //2페이지
                     "ccccccccc\nddddddddd\neeeeeeeee",
                     //3페이지
-                    "fffffffffffffff"
+                    "fffffffffffffff",
                 },
                 //대사1
                 new string[]

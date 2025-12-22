@@ -229,7 +229,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.21226418, b: 0.24180457, a: 0.14901961}
+      maxColor: {r: 0.8773585, g: 0.16140087, b: 0.18989679, a: 0.14901961}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5101,6 +5101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42fabf56b309eb6429fb908082816f66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ParticleAttractor
+  speedMultiplier: 1
   targetVector: {x: 0, y: 0, z: 0}
   targetTransform: {fileID: 0}
   attractionStrength: 0.45

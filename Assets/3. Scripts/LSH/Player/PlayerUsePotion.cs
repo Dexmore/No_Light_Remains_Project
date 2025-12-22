@@ -5,7 +5,7 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 3.4f;   // 총 길이
+    private const float duration = 3.95f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
@@ -43,6 +43,7 @@ public class PlayerUsePotion : IPlayerState
         sfxFlag2 = false;
         sfxFlag3 = false;
         aniFlag1 = false;
+        sfx?.Despawn();
         upa?.Despawn();
     }
     SFX sfx;
@@ -65,22 +66,34 @@ public class PlayerUsePotion : IPlayerState
             aniFlag1 = true;
             ctx.animator.Play("Player_UsePotion");
         }
-        if (_elapsedTime > 1.2f)
+        if (_elapsedTime > 1.4f)
         {
+            float startHealth = ctx.currHealth;
             if (!sfxFlag2)
             {
                 sfxFlag2 = true;
+                // 회복 시작 시점의 체력을 저장 (정확한 Lerp를 위해 필요)
                 DBManager.I.currData.currPotionCount--;
                 sfx = AudioManager.I.PlaySFX("Drink");
                 if (_mainCamera == null) _mainCamera = Camera.main;
-                UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttPotion", MethodCollection.WorldTo1920x1080Position(ctx.transform.position, _mainCamera), Quaternion.identity);
-                AttractParticle ap = upa.GetComponent<AttractParticle>();
-                Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.21f, 0.895f, 0f));
-                ap.targetVector = pos;
+                // 지역 변수가 아닌 클래스 멤버 변수 upa에 할당
+                upa = ParticleManager.I.PlayUIParticle("UIAttPotion",
+                    MethodCollection.WorldTo1920x1080Position(ctx.transform.position, _mainCamera),
+                    Quaternion.identity);
+                if (upa != null && upa.TryGetComponent(out AttractParticle ap))
+                {
+                    Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.21f, 0.895f, 0f));
+                    ap.targetVector = pos;
+                }
             }
-            ctx.currHealth += (1f / (duration - 1.2f)) * ctx.maxHealth * Time.deltaTime;
+            // --- 가속 회복 로직 시작 ---
+            float t = (_elapsedTime - 1.4f) / (duration - 1.4f);
+            t = Mathf.Clamp01(t);
+            float acceleratedT = t * t * t * t * t;
+            ctx.currHealth = Mathf.Lerp(startHealth, ctx.maxHealth, acceleratedT);
             ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, ctx.maxHealth);
             DBManager.I.currData.currHealth = ctx.currHealth;
+            // --- 가속 회복 로직 끝 ---
         }
         if (_elapsedTime > 1.32f && !sfxFlag3)
         {
