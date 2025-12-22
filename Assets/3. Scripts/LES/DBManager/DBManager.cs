@@ -473,21 +473,23 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
     /// <summary>
-    /// 아이템 소지여부 검사 메소드
+    /// 아이템 소지여부 (+몇개 소지하고있는지 +장착중인지도) 검사해주는 메소드
     /// </summary>
     public bool HasItem(string Name, out int count)
     {
         count = currData.itemDatas.Count(x => x.Name == Name);
         return count > 0;
     }
-    public bool HasGear(string Name)
+    public bool HasGear(string Name, out bool isEquip)
     {
         var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
+        isEquip = currData.gearDatas[findItems].isEquipped;
         return findItems != -1;
     }
-    public bool HasLantern(string Name)
+    public bool HasLantern(string Name, out bool isEquip)
     {
         var findItems = currData.lanternDatas.FindIndex(x => x.Name == Name);
+        isEquip = currData.gearDatas[findItems].isEquipped;
         return findItems != -1;
     }
     public bool HasRecord(string Name)

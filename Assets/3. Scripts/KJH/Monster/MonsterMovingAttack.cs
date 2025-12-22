@@ -14,8 +14,12 @@ public class MonsterMovingAttack : MonsterState
     int multiHitCount = 1;
     MonsterShortAttack monsterShortAttack;
     public override MonsterControl.State mapping => MonsterControl.State.MovingAttack;
-    Ray2D checkCliffRay;
-    RaycastHit2D CheckCliffHit;
+    // 낭떠러지 체크용
+    Vector2 rayOrigin;
+    Vector2 rayDirection;
+    float rayLength;
+    Ray2D checkRay;
+    RaycastHit2D CheckRayHit;
     public override async UniTask Enter(CancellationToken token)
     {
         TryGetComponent(out monsterShortAttack);
@@ -89,6 +93,16 @@ public class MonsterMovingAttack : MonsterState
                         }
                     }
                 }
+                rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
+                rayDirection = Vector3.down;
+                rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+                checkRay.origin = rayOrigin;
+                checkRay.direction = rayDirection;
+                CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                if (CheckRayHit.collider == null)
+                {
+                    stopWall = true;
+                }
                 // AddForce방식으로 캐릭터 이동
                 if (!stopWall)
                     if (dot < control.data.MoveSpeed)
@@ -132,7 +146,28 @@ public class MonsterMovingAttack : MonsterState
         anim.Play("MovingAttack");
         startTime = Time.time;
         await UniTask.Delay((int)(1000f * moveTimeRange.x), cancellationToken: token);
-        rb.AddForce(23f * model.right, ForceMode2D.Impulse);
+
+        int count = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            rayOrigin = transform.position + 1.3f * (5f - i) * control.width * model.right + 0.2f * control.height * Vector3.up;
+            rayDirection = Vector3.down;
+            rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+            checkRay.origin = rayOrigin;
+            checkRay.direction = rayDirection;
+            CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+            if (CheckRayHit.collider != null)
+            {
+                rb.AddForce((12f + 2f * (5f - i)) * model.right, ForceMode2D.Impulse);
+                break;
+            }
+            count++;
+        }
+        if (count == 3)
+        {
+            rb.AddForce(6f * model.right, ForceMode2D.Impulse);
+        }
+
         await UniTask.Delay(50, cancellationToken: token);
         while (Time.time - startTime < moveTimeRange.y)
         {
@@ -160,6 +195,20 @@ public class MonsterMovingAttack : MonsterState
                     }
                 }
             }
+
+            rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
+            rayDirection = Vector3.down;
+            rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+            checkRay.origin = rayOrigin;
+            checkRay.direction = rayDirection;
+            CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+            if (CheckRayHit.collider == null)
+            {
+                stopWall = true;
+            }
+
+
+
             // AddForce방식으로 캐릭터 이동
             if (!stopWall)
                 if (dot < control.data.MoveSpeed)
@@ -177,7 +226,7 @@ public class MonsterMovingAttack : MonsterState
         {
             if (monsterShortAttack == null) break;
             await UniTask.Yield(token);
-            if (!isPlayerHit && pControl.fsm.currentState == pControl.hit) 
+            if (!isPlayerHit && pControl.fsm.currentState == pControl.hit)
             {
                 isPlayerHit = true;
                 startTime -= 1.7f;
@@ -211,7 +260,7 @@ public class MonsterMovingAttack : MonsterState
                     coll.transform,
                     Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
                     hitPoint,
-                    new string[1]{"Hit2"},
+                    new string[1] { "Hit2" },
                     staggerType
                 )
             );

@@ -1354,6 +1354,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
+  maxHealth: 0
   currHealth: 0
   aggressive: 0.9
   data: {fileID: 11400000, guid: 67ffca1b65334b84dbdea82a62f6cd5b, type: 2}
@@ -1362,7 +1363,6 @@ MonoBehaviour:
   Type: 0
   MoveSpeed: 0
   Attack: 0
-  maxHP: 0
   patterns:
   - condition: 1
     frequencies:
@@ -1388,12 +1388,12 @@ MonoBehaviour:
     - state: 10
       weight: 2000
       coolTime: 1
-  - condition: 16
+  - condition: 8
     frequencies:
     - state: 15
       weight: 550
       coolTime: 9
-  - condition: 32
+  - condition: 16
     frequencies:
     - state: 15
       weight: 1000
@@ -1408,7 +1408,6 @@ MonoBehaviour:
   closeRadius: 3.5
   parryCount: 0
   startPosition: {x: 0, y: 0}
-  index: 0
   homeValue: 0.2
 --- !u!114 &1348512317345828506
 MonoBehaviour:

@@ -13,7 +13,7 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public bool isGround;
     [HideInInspector] public bool isStagger;
     public LayerMask groundLayer;
-    public float maxHealth;
+    [ReadOnlyInspector] public float maxHealth;
     public float currHealth;
     [Range(0f, 1f)] public float aggressive = 0.2f;
 
@@ -24,7 +24,6 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public MonsterType Type;
     [ReadOnlyInspector] public float MoveSpeed;
     [ReadOnlyInspector] public float Attack;
-    [ReadOnlyInspector] public float maxHP;
 
     [Header("Pattern")]
     public Pattern[] patterns;
@@ -351,8 +350,8 @@ public class MonsterControl : MonoBehaviour
         Peaceful = 1 << 0,
         FindPlayer = 1 << 1,
         ClosePlayer = 1 << 2,
-        Phase2 = 1 << 4,
-        Phase3 = 1 << 5,
+        Phase2 = 1 << 3,
+        Phase3 = 1 << 4,
     }
     [System.Serializable]
     public struct Pattern
@@ -644,7 +643,7 @@ public class MonsterControl : MonoBehaviour
         await UniTask.Yield(token);
         findRadius = 4.1f * ((width + height) * 0.58f + 0.55f);
         if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
-            findRadius = 20.1f * ((width + height) * 0.58f + 0.55f);
+            findRadius = 30.1f * ((width + height) * 0.58f + 0.55f);
 
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
@@ -813,7 +812,7 @@ public class MonsterControl : MonoBehaviour
                 }
             }
             // Injury
-            float ratio = (currHealth / maxHP);
+            float ratio = currHealth / maxHealth;
             if (canPhase2)
             {
                 if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Phase2))

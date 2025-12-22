@@ -63,10 +63,10 @@ public class PlayerInteraction : MonoBehaviour
     {
         target1 = null;
         target2 = null;
-        interactionAction.performed -= InputInteraction;
-        interactionAction.canceled -= CancelInteraction;
-        lanternAction.performed -= InputLantern;
-        lanternAction.canceled -= CancelLantern;
+        interactionAction.performed -= InputInteract;
+        interactionAction.canceled -= CancelInteract;
+        lanternAction.performed -= InputLanternInteract;
+        lanternAction.canceled -= CancelLanternInteract;
     }
     void Init()
     {
@@ -77,15 +77,15 @@ public class PlayerInteraction : MonoBehaviour
         Sensor(cts.Token).Forget();
         target1 = null;
         target2 = null;
-        interactionAction.performed += InputInteraction;
-        interactionAction.canceled += CancelInteraction;
-        lanternAction.performed += InputLantern;
-        lanternAction.canceled += CancelLantern;
+        interactionAction.performed += InputInteract;
+        interactionAction.canceled += CancelInteract;
+        lanternAction.performed += InputLanternInteract;
+        lanternAction.canceled += CancelLanternInteract;
         flag1 = false;
     }
     public bool press1;
     public bool press2;
-    void InputInteraction(InputAction.CallbackContext callback)
+    void InputInteract(InputAction.CallbackContext callback)
     {
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
@@ -95,33 +95,15 @@ public class PlayerInteraction : MonoBehaviour
             {
                 if (flag1) return;
                 flag1 = true;
-                DropItem dropItem = target1 as DropItem;
-                if (dropItem != null)
-                {
-                    AudioManager.I.PlaySFX("UIClick2");
-                    prompt.ClickEffect(0);
-                    GetItem_ut(dropItem, cts.Token).Forget();
-                }
-                else
-                {
-                    AudioManager.I.PlaySFX("UIClick2");
-                    prompt.ClickEffect(0);
-                    RunInteractableObject(target1, cts.Token).Forget();
-                }
+                AudioManager.I.PlaySFX("UIClick2");
+                prompt.ClickEffect(0);
+                Run(target1, cts.Token).Forget();
             }
         }
         press1 = true;
     }
     bool flag1;
-    async UniTask GetItem_ut(DropItem dropItem, CancellationToken token)
-    {
-        await UniTask.Delay(110, cancellationToken: token);
-        prompt.Close(0);
-        await UniTask.Delay(110, cancellationToken: token);
-        dropItem.Run();
-        flag1 = false;
-    }
-    async UniTask RunInteractableObject(Interactable iobj, CancellationToken token)
+    async UniTask Run(Interactable iobj, CancellationToken token)
     {
         await UniTask.Delay(110, cancellationToken: token);
         prompt.Close(0);
@@ -129,11 +111,11 @@ public class PlayerInteraction : MonoBehaviour
         iobj.Run();
         flag1 = false;
     }
-    void CancelInteraction(InputAction.CallbackContext callback)
+    void CancelInteract(InputAction.CallbackContext callback)
     {
         press1 = false;
     }
-    void InputLantern(InputAction.CallbackContext callback)
+    void InputLanternInteract(InputAction.CallbackContext callback)
     {
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
@@ -147,7 +129,7 @@ public class PlayerInteraction : MonoBehaviour
         }
         press2 = true;
     }
-    void CancelLantern(InputAction.CallbackContext callback)
+    void CancelLanternInteract(InputAction.CallbackContext callback)
     {
         press2 = false;
         ctsLanternInteraction?.Cancel();
@@ -281,30 +263,46 @@ public class PlayerInteraction : MonoBehaviour
                     target1 = null;
                     prompt.Close(0);
                 }
+
                 // Sensor --> Lanternable Prompt Open / Close
                 find = -1;
-                for (int k = 0; k < sensorDatas.Count; k++)
+                if (GameManager.I.isLanternOn)
                 {
-                    var _lanternable = sensorDatas[k].lanternable;
-                    if (_lanternable == null) continue;
-                    if (!_lanternable.isAuto)
+                    for (int k = 0; k < sensorDatas.Count; k++)
                     {
-                        find = k;
-                        break;
+                        var _lanternable = sensorDatas[k].lanternable;
+                        if (_lanternable == null) continue;
+                        if (!_lanternable.isAuto)
+                        {
+                            find = k;
+                            break;
+                        }
+                    }
+                    if (find >= 0)
+                    {
+                        if (target2 != sensorDatas[find].lanternable)
+                        {
+                            target2 = sensorDatas[find].lanternable;
+                            prompt.OpenType2(target2);
+                        }
+                    }
+                    else if (target2 != null)
+                    {
+                        target2 = null;
+                        prompt.Close(1);
                     }
                 }
-                if (find >= 0)
+                else
                 {
-                    if (target2 != sensorDatas[find].lanternable)
+                    if (target2 != null)
                     {
-                        target2 = sensorDatas[find].lanternable;
-                        prompt.OpenType2(target2);
+                        prompt.Close(1);
+                        target2 = null;
                     }
-                }
-                else if (target2 != null)
-                {
-                    target2 = null;
-                    prompt.Close(1);
+                    if (prompt.lanternCanvas.gameObject.activeInHierarchy)
+                    {
+                        prompt.Close(1, true);
+                    }
                 }
             }
             else if (sensorDatas.Count == 0)
