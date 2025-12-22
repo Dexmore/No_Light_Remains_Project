@@ -4,21 +4,26 @@ public class PlayerStop : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerStop(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    float startTime = 0f;
+    float elapsed = 0f;
+    public float duration;
     public void Enter()
     {
-        startTime = Time.time;
+        elapsed = 0;
         ctx.animator.Play("Player_Idle");
-            
     }
     public void Exit()
     {
-
+        elapsed = 0;
+        duration = 0;
     }
     public void UpdateState()
     {
-        if (Time.time - startTime > 1.5f && !GameManager.I.isOpenPop && !GameManager.I.isOpenDialog)
+        elapsed += Time.deltaTime;
+        if (elapsed < 1f) return;
+        if (elapsed > duration && !GameManager.I.isOpenPop && !GameManager.I.isOpenDialog)
         {
+            elapsed = 0;
+            duration = 0;
             fsm.ChangeState(ctx.idle);
         }
     }
@@ -26,5 +31,4 @@ public class PlayerStop : IPlayerState
     {
 
     }
-
 }

@@ -16,11 +16,11 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
     }
     void OnEnable()
     {
-        GameManager.I.onSceneChangeAfter += SceneChangeHandler;
+        GameManager.I.onSceneChange += SceneChangeHandler;
     }
     void OnDisable()
     {
-        GameManager.I.onSceneChangeAfter -= SceneChangeHandler;
+        GameManager.I.onSceneChange -= SceneChangeHandler;
     }
     void Start()
     {

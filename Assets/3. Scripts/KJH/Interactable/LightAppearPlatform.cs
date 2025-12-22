@@ -26,8 +26,8 @@ public class LightAppearPlatform : Lanternable, ISavable
     public void SetCompletedState()
     {
         _isReady = false;
+        isComplete = true;
         platform?.SetActive(true);
-        Debug.Log("aa");
     }
     #endregion
 

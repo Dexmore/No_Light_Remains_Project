@@ -108,16 +108,16 @@ public class DialogUI : MonoBehaviour
         nextPageAction1.action.performed += InputButton;
         nextPageAction2.action.performed += InputButton;
         nextPageAction3.action.performed += InputButton;
-        GameManager.I.onDialogTriggerEnter += HandlerDialogTrigger;
+        GameManager.I.onDialog += HandlerDialogTrigger;
     }
     void OnDisable()
     {
         nextPageAction1.action.performed -= InputButton;
         nextPageAction2.action.performed -= InputButton;
         nextPageAction3.action.performed -= InputButton;
-        GameManager.I.onDialogTriggerEnter -= HandlerDialogTrigger;
+        GameManager.I.onDialog -= HandlerDialogTrigger;
     }
-    void HandlerDialogTrigger(int index, DialogTrigger dialogTrigger)
+    void HandlerDialogTrigger(int index, Transform sender)
     {
         Open(index);
     }

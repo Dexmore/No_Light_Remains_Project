@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using Steamworks;
 using UnityEngine.Events;
@@ -88,15 +89,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             dataToSave.sceneDatas[i] = sData;
         }
 
-
-
-
-
-
-
-
         savedData = dataToSave;
-
         if (currSlot >= 0 && currSlot <= 2)
         {
             if (allSaveDatasInSteam.characterDatas == null)
@@ -414,6 +407,9 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
         }
     }
+    /// <summary>
+    /// 아이템 습득 메소드
+    /// </summary>
     public void AddGear(string Name, int count = 1)
     {
         if (count == 0) return;
@@ -476,6 +472,31 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
         }
     }
+    /// <summary>
+    /// 아이템 소지여부 검사 메소드
+    /// </summary>
+    public bool HasItem(string Name, out int count)
+    {
+        count = currData.itemDatas.Count(x => x.Name == Name);
+        return count > 0;
+    }
+    public bool HasGear(string Name)
+    {
+        var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
+        return findItems != -1;
+    }
+    public bool HasLantern(string Name)
+    {
+        var findItems = currData.lanternDatas.FindIndex(x => x.Name == Name);
+        return findItems != -1;
+    }
+    public bool HasRecord(string Name)
+    {
+        var findItems = currData.recordDatas.FindIndex(x => x.Name == Name);
+        return findItems != -1;
+    }
+
+
 #if UNITY_EDITOR
     [Space(60)]
     [Header("-----아이템 습득 테스트용-----")]

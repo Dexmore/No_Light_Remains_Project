@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -175,6 +176,8 @@ public class LobbyStoryPanel : MonoBehaviour
         OpenLeftMonitor();
         ColorChangeSlot(index);
     }
+    [SerializeField] Sprite noImage;
+    [SerializeField] Sprite stage0;
     void OpenLeftMonitor()
     {
         leftMonitor.SetActive(true);
@@ -202,6 +205,35 @@ public class LobbyStoryPanel : MonoBehaviour
             data = DBManager.I.allSaveDatasInSteam.characterDatas[select];
         else
             data = DBManager.I.allSaveDatasInLocal.characterDatas[select];
+        // 썸네일  
+        Image thumbnail = wrap.Find("ThumbnailFrame/Thumbnail").GetComponent<Image>();
+        int _slotIndex = (isSteamSlot) ? select : select + 3;
+#if UNITY_STANDALONE_WIN
+        string fileLocation = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
+#else
+        string fileLocation = Path.Combine(Application.persistentDataPath, "REKINDLE_SaveData");
+#endif
+        fileLocation = Path.Combine(fileLocation, $"{_slotIndex}.png");
+        if (File.Exists(fileLocation))
+        {
+            byte[] fileData = File.ReadAllBytes(fileLocation);
+            Texture2D tex = new Texture2D(2, 2);
+            if (tex.LoadImage(fileData))
+            {
+                // 2. Texture2D를 기반으로 Sprite 생성
+                Rect rect = new Rect(0, 0, tex.width, tex.height);
+                thumbnail.sprite = Sprite.Create(tex, rect, new Vector2(0.5f, 0.5f));
+            }
+            else
+                thumbnail.sprite = noImage;
+        }
+        else
+        {
+            if (data.sceneName == "Stage0" || data.sceneName == "Cinematic")
+                thumbnail.sprite = stage0;
+            else
+                thumbnail.sprite = noImage;
+        }
         wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
         string diffText = "";
         switch (data.difficulty)
@@ -308,7 +340,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.maxPotionCount = 3;
         newData.currPotionCount = 3;
         newData.maxGearCost = 3;
-        
+
         System.DateTime now = System.DateTime.Now;
         string datePart = now.ToString("yyyy.MM.dd");
         int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;

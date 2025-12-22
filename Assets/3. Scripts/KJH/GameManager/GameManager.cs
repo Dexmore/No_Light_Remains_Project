@@ -61,8 +61,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<HitData> onAvoid = (x) => { };
     public UnityAction<HitData> onHitAfter = (x) => { };
     public UnityAction<HitData> onDie = (x) => { };
-    public UnityAction<int, DialogTrigger> onDialogTriggerEnter = (x, y) => { };
-    public UnityAction onSceneChangeAfter = () => { };
+    public UnityAction<int, Transform> onDialog = (x, y) => { };
+    public UnityAction onSceneChange = () => { };
     public UnityAction onSceneChangeBefore = () => { };
 
     void OnEnable()
@@ -109,7 +109,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         await Task.Delay(10);
         isSceneWaiting = false;
-        onSceneChangeAfter.Invoke();
+        onSceneChange.Invoke();
         await Task.Delay(500);
         FadeIn(0.4f);
         await Task.Delay(500);
@@ -145,7 +145,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         await Task.Delay(10);
         isSceneWaiting = false;
-        onSceneChangeAfter.Invoke();
+        onSceneChange.Invoke();
         await Task.Delay(500);
         FadeIn(0.4f);
         await Task.Delay(500);

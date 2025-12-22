@@ -26,6 +26,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
     public void SetCompletedState()
     {
         _isReady = false;
+        isComplete = true;
         platform?.SetActive(false);
     }
     #endregion
