@@ -131,6 +131,8 @@ public class PlayerControl : MonoBehaviour
             int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
             newData.lastTime = $"{datePart}-{secondsOfDay}";
             DBManager.I.currData = newData;
+            DBManager.I.savedData = newData;
+            //
             light0.SetActive(false);
             light1.SetActive(false);
             light3.SetActive(true);

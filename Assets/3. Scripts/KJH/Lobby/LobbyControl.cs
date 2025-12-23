@@ -74,9 +74,10 @@ public class LobbyControl : MonoBehaviour
         yield return null;
         DBManager.I.LoadLocal();
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
-        Brightness_p = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
-        float b = SettingManager.I.setting.brightness;
-        Brightness_p.color = new Color(0, 0, 0, 1 - b);
+        var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
+        float alpha = Mathf.Lerp(0.46f, 1f, 1 - SettingManager.I.setting.brightness);
+        brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
+
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         InitSteam();
     }

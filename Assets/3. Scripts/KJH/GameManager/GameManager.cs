@@ -88,6 +88,11 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             await SaveAllMonsterAndObject();
         }
+        else
+        {
+            // 죽어서 씬 이동하는 경우는 currData 에서 savedData로 롤백
+            DBManager.I.currData = DBManager.I.savedData;
+        }
         await Task.Delay(500);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
         onSceneChangeBefore.Invoke();
@@ -123,6 +128,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (!isDie)
         {
             await SaveAllMonsterAndObject();
+        }
+        else
+        {
+            DBManager.I.currData = DBManager.I.savedData;
         }
         await Task.Delay(500);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);

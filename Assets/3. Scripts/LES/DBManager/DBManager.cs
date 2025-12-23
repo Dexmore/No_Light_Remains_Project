@@ -14,7 +14,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     // 0,1,2 -> Steam Slot 
     // 3,4,5 -> Local Slot
     public int currSlot = 0;
-    CharacterData savedData;
+    [HideInInspector] public CharacterData savedData;
     public SaveData allSaveDatasInSteam;
     public SaveData allSaveDatasInLocal;
     private string saveDirectoryPath
@@ -52,43 +52,53 @@ public class DBManager : SingletonBehaviour<DBManager>
     [Space(60)]
     [Header("-----현재 플레이중인 캐릭터-----")]
     public CharacterData currData;
-    public void Save()
+    public void Save(bool OnlyDeathCountSave = false)
     {
-        CharacterData dataToSave = currData;
-        dataToSave.maxHealth = RoundToOneDecimal(dataToSave.maxHealth);
-        dataToSave.maxBattery = RoundToOneDecimal(dataToSave.maxBattery);
-        dataToSave.currHealth = RoundToOneDecimal(dataToSave.currHealth);
-        dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
-        dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
-        dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
-
-        for (int i = 0; i < dataToSave.sceneDatas.Count; i++)
+        CharacterData dataToSave;
+        if (!OnlyDeathCountSave)
         {
-            CharacterData.SceneData sData = dataToSave.sceneDatas[i];
-            if (sData.monsterPositionDatas != null)
-            {
-                for (int j = 0; j < sData.monsterPositionDatas.Count; j++)
-                {
-                    CharacterData.MonsterPositionData mData = sData.monsterPositionDatas[j];
-                    mData.lastHealth = RoundToOneDecimal(mData.lastHealth);
-                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
-                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
-                    sData.monsterPositionDatas[j] = mData;
-                }
-            }
-            if (sData.objectPositionDatas != null)
-            {
-                for (int j = 0; j < sData.objectPositionDatas.Count; j++)
-                {
-                    CharacterData.ObjectPositionData mData = sData.objectPositionDatas[j];
-                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
-                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
-                    sData.objectPositionDatas[j] = mData;
-                }
-            }
-            dataToSave.sceneDatas[i] = sData;
-        }
+            dataToSave = currData;
+            dataToSave.maxHealth = RoundToOneDecimal(dataToSave.maxHealth);
+            dataToSave.maxBattery = RoundToOneDecimal(dataToSave.maxBattery);
+            dataToSave.currHealth = RoundToOneDecimal(dataToSave.currHealth);
+            dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
+            dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
+            dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
 
+            for (int i = 0; i < dataToSave.sceneDatas.Count; i++)
+            {
+                CharacterData.SceneData sData = dataToSave.sceneDatas[i];
+                if (sData.monsterPositionDatas != null)
+                {
+                    for (int j = 0; j < sData.monsterPositionDatas.Count; j++)
+                    {
+                        CharacterData.MonsterPositionData mData = sData.monsterPositionDatas[j];
+                        mData.lastHealth = RoundToOneDecimal(mData.lastHealth);
+                        mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                        mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                        sData.monsterPositionDatas[j] = mData;
+                    }
+                }
+                if (sData.objectPositionDatas != null)
+                {
+                    for (int j = 0; j < sData.objectPositionDatas.Count; j++)
+                    {
+                        CharacterData.ObjectPositionData mData = sData.objectPositionDatas[j];
+                        mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                        mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                        sData.objectPositionDatas[j] = mData;
+                    }
+                }
+                dataToSave.sceneDatas[i] = sData;
+            }
+
+        }
+        // 죽었을경우 currData 에서 savedData 로 롤백한뒤. death 카운트만 갱신함
+        else
+        {
+            dataToSave = savedData;
+            dataToSave.death = currData.death;
+        }
         savedData = dataToSave;
         if (currSlot >= 0 && currSlot <= 2)
         {
