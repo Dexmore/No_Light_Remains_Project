@@ -2,15 +2,19 @@ using UnityEngine;
 
 public class TutorialTrigger : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public TutorialControl tutorialControl;
+    int playerLayer;
     void Start()
     {
-        
+        playerLayer = LayerMask.NameToLayer("Player");
     }
-
-    // Update is called once per frame
-    void Update()
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.gameObject.layer != playerLayer) return;
+        tutorialControl.TutorialTriggerEnter(transform.name);
     }
+    
+    
+
+
 }

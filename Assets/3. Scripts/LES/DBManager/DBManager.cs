@@ -507,6 +507,35 @@ public class DBManager : SingletonBehaviour<DBManager>
         var findItems = currData.recordDatas.FindIndex(x => x.Name == Name);
         return findItems != -1;
     }
+    public void SetProgress(string Name, int progress)
+    {
+        int find = currData.progressDatas.FindIndex(x => x.Name == Name);
+        if(find == -1)
+        {
+            CharacterData.ProgressData progressData = new CharacterData.ProgressData();
+            progressData.Name = Name;
+            progressData.progress = progress;
+            currData.progressDatas.Add(progressData);
+        }
+        else
+        {
+            var temp = currData.progressDatas[find];
+            temp.progress = progress;
+            currData.progressDatas[find] = temp;
+        }
+    }
+    public int GetProgress(string Name)
+    {
+        int find = currData.progressDatas.FindIndex(x => x.Name == Name);
+        if(find == -1)
+        {
+            return -1;
+        }
+        else
+        {
+            return currData.progressDatas[find].progress;
+        }
+    }
 
 
 #if UNITY_EDITOR

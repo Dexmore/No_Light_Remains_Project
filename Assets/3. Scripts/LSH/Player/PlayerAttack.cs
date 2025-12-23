@@ -14,8 +14,12 @@ public class PlayerAttack : IPlayerState
     bool flag1;
     private InputAction moveAction;
     Vector2 moveActionValue;
+    private const float duration = 0.77f;
+    public const int multiHitCount = 1;
+    private const float comboAvailableTime = 0.53f;
     float adjustedTime1;
     float adjustedTime2;
+    public float finishTime;
     public void Enter()
     {
         if (attackAction == null)
@@ -30,16 +34,16 @@ public class PlayerAttack : IPlayerState
         switch(DBManager.I.currData.difficulty)
         {
             case 0:
-            adjustedTime1 = duration - 0.2f;
-            adjustedTime2 = comboAvailableTime - 0.15f;
-            break;
-            case 1:
             adjustedTime1 = duration;
             adjustedTime2 = comboAvailableTime;
             break;
+            case 1:
+            adjustedTime1 = duration + 0.09f;
+            adjustedTime2 = comboAvailableTime + 0.11f;
+            break;
             case 2:
-            adjustedTime1 = duration + 0.2f;
-            adjustedTime2 = comboAvailableTime + 0.1f;
+            adjustedTime1 = duration + 0.16f;
+            adjustedTime2 = comboAvailableTime + 0.18f;
             break;
         }
         attacked.Clear();
@@ -47,11 +51,13 @@ public class PlayerAttack : IPlayerState
         flag1 = false;
         parryPressed = false;
         isSFX = false;
+        finishTime = 0f;
     }
     public void Exit()
     {
         attackAction.performed -= PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D -= TriggerHandler;
+        finishTime = Time.time;
     }
     bool isSFX;
     public void UpdateState()
@@ -59,7 +65,7 @@ public class PlayerAttack : IPlayerState
         _elapsedTime += Time.deltaTime;
         if (!parryPressed)
         {
-            if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.08f)
+            if (_elapsedTime > adjustedTime2 - 0.24f || _elapsedTime < 0.1f)
             {
                 parryPressed = parryAction.IsPressed();
             }
@@ -88,22 +94,22 @@ public class PlayerAttack : IPlayerState
             ctx.animator.Play("Player_Attack");
         }
         ///////////////////////////////////////////////////////////
-        if (_elapsedTime > comboAvailableTime)
+        if (!parryPressed) parryPressed = parryAction.IsPressed();
+        if (_elapsedTime > adjustedTime2)
         {
-            if (!parryPressed) parryPressed = parryAction.IsPressed();
             if (parryPressed)
             {
                 fsm.ChangeState(ctx.parry);
             }
         }
-        if(_elapsedTime > comboAvailableTime + 0.3f * (duration - comboAvailableTime))
+        if(_elapsedTime > adjustedTime2 + 0.3f * (adjustedTime1 - adjustedTime2))
         {
             if (ctx.isDash)
             {
                 fsm.ChangeState(ctx.dash);
             }
         }
-        if(_elapsedTime > comboAvailableTime + 0.6f * (duration - comboAvailableTime))
+        if(_elapsedTime > adjustedTime2 + 0.6f * (adjustedTime1 - adjustedTime2))
         {
             if (attackComboPressed)
             {
@@ -111,8 +117,9 @@ public class PlayerAttack : IPlayerState
             }
         }
         ///////////////////////////////////////////////////////////
-        if (_elapsedTime > duration)
+        if (_elapsedTime > adjustedTime1)
         {
+            finishTime = Time.time;
             fsm.ChangeState(ctx.idle);
         }
         //
@@ -126,22 +133,16 @@ public class PlayerAttack : IPlayerState
                 ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
     }
-    private const float duration = 0.75f;
-    public const int multiHitCount = 1;
-    private const float comboAvailableTime = 0.5f;
     public void UpdatePhysics()
     {
         
     }
     void PlayerAttackComboInput(InputAction.CallbackContext callback)
     {
-        if (_elapsedTime < comboAvailableTime - 0.24f) return;
+        if (_elapsedTime < adjustedTime2 - 0.24f) return;
         if (!ctx.Grounded) return;
         attackComboPressed = true;
     }
-    private const float duration = 0.78f;
-    public const int multiHitCount = 1;
-    private const float comboAvailableTime = 0.59f;
     List<Collider2D> attacked = new List<Collider2D>();
     void TriggerHandler(Collider2D coll)
     {
@@ -149,6 +150,8 @@ public class PlayerAttack : IPlayerState
         if (attacked.Count >= multiHitCount) return;
         if (!attacked.Contains(coll))
         {
+            float lanternOn = 1f;
+            if(GameManager.I.isLanternOn) lanternOn = 1.2f;
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             GameManager.I.onHit.Invoke
@@ -158,7 +161,7 @@ public class PlayerAttack : IPlayerState
                     "Attack",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(1f, 1.05f) * 35f,
+                    Random.Range(1f, 1.05f) * 34f * lanternOn,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )

@@ -43,7 +43,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
     {
 
         // 밝기 적용
-        float alpha = Mathf.Lerp(0.46f, 1f, 1 - setting.brightness);
+        float alpha = Mathf.Lerp(0f, 0.765f, 1 - setting.brightness);
         var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
         brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
 
@@ -136,9 +136,9 @@ public class SettingData
 {
     public int resolutionIndex = -1;
     public FullScreenMode fullscreenMode = FullScreenMode.FullScreenWindow;
-    public float brightness = 0.6f;
+    public float brightness = 0.55f;
     public float masterVolume = 1.0f;
-    public float bgmVolume = 1.0f;
+    public float bgmVolume = 0.7f;
     public float sfxVolume = 1.0f;
     public string keyBindingOverrides = "";
     public int locale;
@@ -146,9 +146,9 @@ public class SettingData
     {
         resolutionIndex = -1;
         fullscreenMode = FullScreenMode.FullScreenWindow;
-        brightness = 0.6f;
+        brightness = 0.55f;
         masterVolume = 1.0f;
-        bgmVolume = 1.0f;
+        bgmVolume = 0.7f;
         sfxVolume = 1.0f;
         keyBindingOverrides = "";
     }

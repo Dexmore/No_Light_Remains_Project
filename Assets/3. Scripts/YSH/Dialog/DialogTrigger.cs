@@ -28,13 +28,16 @@ public class DialogTrigger : MonoBehaviour, ISavable
     [Header("다이얼로그가 끝나고 다른 스크립트의 메소드 실행필요하면")]
     public UnityEvent onDialogFinished;
     Collider2D coll2D;
+    int playerLayer;
     void Awake()
     {
         TryGetComponent(out coll2D);
         coll2D.enabled = true;
+        playerLayer = LayerMask.NameToLayer("Player");
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.gameObject.layer != playerLayer) return;
         isComplete = true;
         GameManager.I.onDialog.Invoke(dialogIndex, transform);
         coll2D.enabled = false;

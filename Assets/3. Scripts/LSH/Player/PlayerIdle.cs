@@ -75,7 +75,17 @@ public class PlayerIdle : IPlayerState
         
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
-            fsm.ChangeState(ctx.attack);
+        {
+            if(Time.time - ctx.attack.finishTime < 0.24f)
+            {
+                Debug.Log(Time.time - ctx.attack.finishTime);
+                fsm.ChangeState(ctx.attackCombo);
+            }
+            else
+            {
+                fsm.ChangeState(ctx.attack);
+            }
+        }
 
         if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
             fsm.ChangeState(ctx.fall);

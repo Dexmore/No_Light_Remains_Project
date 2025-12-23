@@ -93,14 +93,14 @@ public class PopupUI : MonoBehaviour
         if (index == 3)
         {
             TMP_Text tMP_Text = allPopups[index].transform.Find("Difficulty/Text").GetComponent<TMP_Text>();
-            pop3Diff = 1;
+            pop3Diff = 0;
             switch (SettingManager.I.setting.locale)
             {
                 case 0:
-                    tMP_Text.text = "Normal";
+                    tMP_Text.text = "Easy";
                     break;
                 case 1:
-                    tMP_Text.text = "보통";
+                    tMP_Text.text = "쉬움";
                     break;
             }
             if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
@@ -206,7 +206,7 @@ public class PopupUI : MonoBehaviour
         Application.Quit();
 #endif
     }
-    int pop3Diff = 1;
+    int pop3Diff = 0;
     LobbyStoryPanel lobbyStoryPanel;
     public void Pop3Left()
     {

@@ -8,8 +8,6 @@ public class PlayerParry : IPlayerState
     private const float duration = 0.6f;   // 총 길이
     private const float parryTime = 0.25f;   // 패링 시간
     private float _elapsedTime;
-    private float adjustedParryTime1;
-    private float adjustedParryTime2;
     public void Enter()
     {
         _elapsedTime = 0f;
@@ -19,15 +17,15 @@ public class PlayerParry : IPlayerState
         {
             case 0:
             adjustedTime2 = duration;
-            adjustedTime1 = parryTime * 1.3f + 0.1f;
+            adjustedTime1 = parryTime * 1.2f + 0.1f;
             break;
             case 1:
-            adjustedTime2 = duration * 1.1f + 0.06f;
-            adjustedTime1 = parryTime * 0.85f + 0.05f;
+            adjustedTime2 = duration * 1.05f + 0.03f;
+            adjustedTime1 = parryTime * 0.8f + 0.05f;
             break;
             case 2:
-            adjustedTime2 = duration * 1.2f + 0.11f;
-            adjustedTime1 = parryTime * 0.6f;
+            adjustedTime2 = duration * 1.1f + 0.06f;
+            adjustedTime1 = parryTime * 0.7f;
             break;
         }
     }
@@ -35,7 +33,6 @@ public class PlayerParry : IPlayerState
     {
         ctx.Parred = false;
     }
-    private float _elapsedTime;
     private float adjustedTime1;
     private float adjustedTime2;
     public void UpdateState()
