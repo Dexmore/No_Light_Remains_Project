@@ -6,15 +6,32 @@ public class PlayerAttackCombo : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerAttackCombo(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 1.28f;   // 1타 총 길이
+    private const float duration = 0.85f;   // 1타 총 길이
     public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.62f; //콤보나 패링등으로 전환이 가능한 시간
+    private const float comboAvailableTime = 0.55f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;
     bool isSFX;
+    float adjustedDuration;
+    float adjustedComboAvailableTime;
     public void Enter()
     {
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedDuration = duration - 0.3f;
+            adjustedComboAvailableTime = comboAvailableTime - 0.3f;
+            break;
+            case 1:
+            adjustedDuration = duration;
+            adjustedComboAvailableTime = comboAvailableTime;
+            break;
+            case 2:
+            adjustedDuration = duration + 0.3f;
+            adjustedComboAvailableTime = comboAvailableTime + 0.1f;
+            break;
+        }
         if (parryAction == null)
             parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
@@ -85,11 +102,11 @@ public class PlayerAttackCombo : IPlayerState
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.65f, 1.38f);
-            float damage = 80.8f;
-            if(rnd >= 1.2f)
+            float damage = 61.8f;
+            if(rnd >= 1.22f)
             {
-                rnd = Random.Range(0.8f, 1f);
-                damage = 101f;
+                rnd = Random.Range(0.8f, 0.999f);
+                damage = 100f;
             }
             GameManager.I.onHit.Invoke
             (

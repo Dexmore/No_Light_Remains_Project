@@ -6,9 +6,9 @@ public class PlayerAttack : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerAttack(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.87f;   // 1타 총 길이
+    private const float duration = 0.82f;   // 1타 총 길이
     public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.67f; //콤보나 패링등으로 전환이 가능한 시간
+    private const float comboAvailableTime = 0.68f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction attackAction;
     bool attackComboPressed;
@@ -17,8 +17,25 @@ public class PlayerAttack : IPlayerState
     bool flag1;
     private InputAction moveAction;
     Vector2 moveActionValue;
+    float adjustedDuration;
+    float adjustedComboAvailableTime;
     public void Enter()
     {
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedDuration = duration - 0.2f;
+            adjustedComboAvailableTime = comboAvailableTime - 0.2f;
+            break;
+            case 1:
+            adjustedDuration = duration;
+            adjustedComboAvailableTime = comboAvailableTime;
+            break;
+            case 2:
+            adjustedDuration = duration + 0.2f;
+            adjustedComboAvailableTime = comboAvailableTime + 0.1f;
+            break;
+        }
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
         if (parryAction == null)
@@ -45,8 +62,10 @@ public class PlayerAttack : IPlayerState
         _elapsedTime += Time.deltaTime;
         if (!parryPressed)
         {
-            if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
+            if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.08f)
+            {
                 parryPressed = parryAction.IsPressed();
+            }
         }
         if (_elapsedTime > 0.25f)
         {
@@ -63,11 +82,10 @@ public class PlayerAttack : IPlayerState
         {
             if (parryPressed)
                 fsm.ChangeState(ctx.parry);
-
             if (!ctx.Grounded)
                 fsm.ChangeState(ctx.idle);
         }
-        else if (!flag1)
+        if (!flag1)
         {
             flag1 = true;
             ctx.animator.Play("Player_Attack");
@@ -75,12 +93,13 @@ public class PlayerAttack : IPlayerState
         ///////////////////////////////////////////////////////////
         if (_elapsedTime > comboAvailableTime)
         {
+            if (!parryPressed) parryPressed = parryAction.IsPressed();
             if (parryPressed)
             {
                 fsm.ChangeState(ctx.parry);
             }
         }
-        if(_elapsedTime > comboAvailableTime + 0.35f * (duration - comboAvailableTime))
+        if(_elapsedTime > comboAvailableTime + 0.3f * (duration - comboAvailableTime))
         {
             if (ctx.isDash)
             {
@@ -136,7 +155,7 @@ public class PlayerAttack : IPlayerState
                     "Attack",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(1f, 1.1f) * 40f,
+                    Random.Range(1f, 1.05f) * 39f,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )
