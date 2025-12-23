@@ -381,7 +381,7 @@ MonoBehaviour:
   currBattery: 100
   moveSpeed: 7.6
   airMoveMultiplier: 0.6
-  jumpForce: 18.32
+  jumpForce: 21.3
   inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   rb: {fileID: 0}
   animator: {fileID: 0}
@@ -391,6 +391,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
+  fallThroughPlatform: 0
   height: 0
   width: 0
   isDash: 0
@@ -512,9 +513,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   isNearSavePoint: 0
   startPosition: {x: 0, y: 0}
-  lanternDecreaseTick: -2.5
-  lanternParryAmount: 21
-  lanternAttackAmount: 3.5
+  lanternDecreaseTick: -3.5
+  lanternParryAmount: 20
+  lanternAttackAmount: 1.2
 --- !u!114 &3935313567020253974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,12 +590,36 @@ PrefabInstance:
       value: PlayerLight
       objectReference: {fileID: 0}
     - target: {fileID: 5800975667235395013, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: layerMask.m_Bits
-      value: 8
+      propertyPath: radius
+      value: 3.82
       objectReference: {fileID: 0}
     - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Intensity
-      value: 0.12
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_FalloffIntensity
+      value: 0.107
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_ShapeLightFalloffSize
+      value: 2.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Center.x
+      value: 1.1713996
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Center.y
+      value: 2.93195
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Extent.x
+      value: 9.3043995
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Extent.y
+      value: 6.02025
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -25,6 +25,7 @@ public class PlayerControl : MonoBehaviour
     [Header("Input (use bound actions)")]
     public InputActionAsset inputActionAsset;
     private InputAction lanternAction;
+    private InputAction jumpAction;
 
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Animator animator;
@@ -51,6 +52,7 @@ public class PlayerControl : MonoBehaviour
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
     [SerializeField] private LayerMask groundLayer;
+    [Tooltip("특정 플랫폼을 통과할 수 있는지 확인 여부")] public bool fallThroughPlatform;
     CapsuleCollider2D capsuleCollider2D;
     [HideInInspector] public float height;
     [HideInInspector] public float width;
@@ -160,6 +162,7 @@ public class PlayerControl : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashCancel;
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashCancel;
         inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled += JumpCancel;
+        jumpAction = inputActionAsset.FindActionMap("Player").FindAction("Jump");
         lanternAction = inputActionAsset.FindActionMap("Player").FindAction("Lantern");
         lanternAction.performed += LanternInput;
         GameManager.I.onHit += HitHandler;
@@ -172,6 +175,7 @@ public class PlayerControl : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashCancel;
         inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled -= JumpCancel;
         lanternAction.performed -= LanternInput;
+        jumpAction = null;
         GameManager.I.onHit -= HitHandler;
         fsm.OnDisable();
     }
@@ -181,6 +185,7 @@ public class PlayerControl : MonoBehaviour
         fsm.Update();
         CheckGroundedPrecise();
         FixBugPosition();
+        CheckPlatformFallThrough();
     }
     void FixedUpdate()
     {
@@ -230,6 +235,23 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+    void CheckPlatformFallThrough()
+    {
+        bool downPressed = Keyboard.current != null && Keyboard.current.downArrowKey.isPressed;
+        bool jumpBoundPressed = false;
+        if (jumpAction != null)
+        {
+            try
+            {
+                jumpBoundPressed = jumpAction.ReadValue<float>() > 0f;
+            }
+            catch
+            {
+                jumpBoundPressed = false;
+            }
+        }
+        fallThroughPlatform = downPressed && jumpBoundPressed;
+    }
     #region Dash
     int leftDashInputCount = 0;
     int rightDashInputCount = 0;
