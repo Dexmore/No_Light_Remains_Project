@@ -129,7 +129,7 @@ public class PlayerIdle : IPlayerState
     PopupUI PopupUI;
     void InputESC(InputAction.CallbackContext callbackContext)
     {
-        if (!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop)
+        if (!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory)
         {
             if (PopupUI == null)
                 PopupUI = GameManager.I.transform.GetComponent<PopupUI>();

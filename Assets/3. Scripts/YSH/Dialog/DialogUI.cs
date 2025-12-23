@@ -20,28 +20,42 @@ public class DialogUI : MonoBehaviour
                 //대사0
                 new string[]
                 {
-                    //1페이지
-                    "aaaaaaaaaa\nbbbbbbbbbbb",
-                    //2페이지
-                    "ccccccccc\nddddddddd\neeeeeeeee",
-                    //3페이지
-                    "fffffffffffffff",
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
                 //대사1
                 new string[]
                 {
-                    "aassd"
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
                 //대사2
                 new string[]
                 {
-                    "dialog2 page1"
+                    //1페이지
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    //2페이지
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    //3페이지
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
                 //대사3
                 new string[]
                 {
-                    "dialog3 page1 line1\ndialog 3-1 line2\ndialog 3-1 line3",
-                    "dialog3 page2 line1\ndialog 3-1 line2"
+                    //1페이지
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    //2페이지
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    //3페이지
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
             };
         }
@@ -60,18 +74,27 @@ public class DialogUI : MonoBehaviour
                 //대사1
                 new string[]
                 {
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다"
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                 },
                 //대사2
                 new string[]
                 {
-                    "대사2의 1페이지입니다 (단일 페이지 예시)"
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                 },
                 //대사3
                 new string[]
                 {
-                    "대사3의 1페이지입니다...\n..2번째줄..\n.3번째줄.",
-                    "대사3의 2페이지입니다...\n..2번째줄..\n.3번째줄.",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                 },
             };
         }
@@ -97,9 +120,9 @@ public class DialogUI : MonoBehaviour
         TypingComplete = 4
     }
     private DialogState currentState = DialogState.ReadyForAdvance;
-    float slowTypingSpeed = 0.1f; // 기본 속도 (입력 0)
-    float normalTypingSpeed = 0.07f; // 기본 속도 (입력 0)
-    float fastTypingSpeed = 0.01f; // 빠른 속도 (입력 1 이후)
+    float slowTypingSpeed = 0.13f; // 기본 속도 (입력 0)
+    float normalTypingSpeed = 0.08f; // 기본 속도 (입력 1)
+    float fastTypingSpeed = 0.04f; // 빠른 속도 (입력 2)
     void Awake()
     {
         playerControl = FindAnyObjectByType<PlayerControl>();
@@ -277,8 +300,6 @@ public class DialogUI : MonoBehaviour
     }
     IEnumerator ShowTextCoroutine(string text)
     {
-        StopCoroutine(nameof(SometimesGlitchTextLoop));
-        tweenTriangle?.Kill();
         triangle.gameObject.SetActive(false);
         currentState = DialogState.TypingSlow;
         contentText.text = text;
@@ -303,11 +324,11 @@ public class DialogUI : MonoBehaviour
                     break;
             }
             contentText.maxVisibleCharacters = i + 1;
-            if (currentState == DialogState.TypingSlow && i % 2 == 0)
+            if (currentState == DialogState.TypingSlow)
                 AudioManager.I.PlaySFX("Tick1");
-            else if (currentState == DialogState.TypingNormal && i % 3 == 0)
+            else if (currentState == DialogState.TypingNormal && i % 2 == 0)
                 AudioManager.I.PlaySFX("Tick1");
-            else if (currentState == DialogState.TypingFast && i % 6 == 0)
+            else if (currentState == DialogState.TypingFast && i % 4 == 0)
                 AudioManager.I.PlaySFX("Tick1");
             yield return new WaitForSeconds(currentSpeed);
         }
@@ -316,8 +337,11 @@ public class DialogUI : MonoBehaviour
         currentState = DialogState.TypingComplete;
         typingCoroutine = null;
         triangle.gameObject.SetActive(true);
+        tweenTriangle?.Kill();
+        triangle.color = new Color(triangle.color.r, triangle.color.g, triangle.color.b, 0.2f);
+        tweenTriangle = triangle.DOFade(1f, 0.15f).SetLoops(-1, LoopType.Yoyo).Play();
+        StopCoroutine(nameof(SometimesGlitchTextLoop));
         StartCoroutine(nameof(SometimesGlitchTextLoop));
-        tweenTriangle = triangle.DOFade(0.3f, 0.3f).SetLoops(-1, LoopType.Yoyo).Play();
     }
     Tween tweenTriangle;
     private void SkipTyping()

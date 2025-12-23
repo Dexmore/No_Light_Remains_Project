@@ -19,9 +19,9 @@ public class DialogObject : Interactable, ISavable
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         while (true)
         {
-            yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop);
+            yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
             yield return YieldInstructionCache.WaitForSeconds(0.2f);
-            if (!GameManager.I.isOpenDialog && !GameManager.I.isOpenPop) break;
+            if (!GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory) break;
         }
         onDialogFinished.Invoke();
 

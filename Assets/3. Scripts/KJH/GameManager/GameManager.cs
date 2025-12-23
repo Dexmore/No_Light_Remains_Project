@@ -52,6 +52,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public bool isLanternOn;
     [HideInInspector] public bool isOpenPop;
     [HideInInspector] public bool isOpenDialog;
+    [HideInInspector] public bool isOpenInventory;
     [HideInInspector] public bool isSceneWaiting;
     [HideInInspector] public bool isShowPop0;
 

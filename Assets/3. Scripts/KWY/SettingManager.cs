@@ -109,6 +109,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
             // 만약 index가 0이나 1로 들어오면 자동으로 인덱스 변환
             if (bindingIndex == 0) bindingIndex = 3;
             else if (bindingIndex == 1) bindingIndex = 4;
+            else if (bindingIndex == 2) bindingIndex = 2;
         }
 
         string path = action.bindings[bindingIndex].effectivePath;
