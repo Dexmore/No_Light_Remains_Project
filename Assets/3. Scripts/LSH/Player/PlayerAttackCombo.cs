@@ -6,38 +6,35 @@ public class PlayerAttackCombo : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerAttackCombo(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.85f;   // 1타 총 길이
-    public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.55f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;
     bool isSFX;
-    float adjustedDuration;
-    float adjustedComboAvailableTime;
+    float adjustedTime1;
+    float adjustedTime2;
     public void Enter()
     {
-        switch(DBManager.I.currData.difficulty)
-        {
-            case 0:
-            adjustedDuration = duration - 0.3f;
-            adjustedComboAvailableTime = comboAvailableTime - 0.3f;
-            break;
-            case 1:
-            adjustedDuration = duration;
-            adjustedComboAvailableTime = comboAvailableTime;
-            break;
-            case 2:
-            adjustedDuration = duration + 0.3f;
-            adjustedComboAvailableTime = comboAvailableTime + 0.1f;
-            break;
-        }
         if (parryAction == null)
             parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
         _elapsedTime = 0f;
         parryPressed = false;
         attacked.Clear();
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedTime1 = duration - 0.3f;
+            adjustedTime2 = comboAvailableTime - 0.3f;
+            break;
+            case 1:
+            adjustedTime1 = duration;
+            adjustedTime2 = comboAvailableTime;
+            break;
+            case 2:
+            adjustedTime1 = duration + 0.3f;
+            adjustedTime2 = comboAvailableTime + 0.1f;
+            break;
+        }
         ctx.animator.Play("Player_Attack2");
         isSFX = false;
     }
@@ -88,6 +85,9 @@ public class PlayerAttackCombo : IPlayerState
             fsm.ChangeState(ctx.idle);
         }
     }
+    private const float duration = 0.85f;
+    public const int multiHitCount = 1;
+    private const float comboAvailableTime = 0.55f;
     public void UpdatePhysics()
     {
 

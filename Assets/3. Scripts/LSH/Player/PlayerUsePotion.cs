@@ -5,12 +5,25 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 3.95f;   // 총 길이
+    private const float duration = 1.4f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
+    private float adjustedTime;
     public void Enter()
     {
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedTime = duration;
+            break;
+            case 1:
+            adjustedTime = duration * 1.5f + 0.3f;
+            break;
+            case 2:
+            adjustedTime = duration * 2.2f + 0.6f;
+            break;
+        }
         if (DBManager.I.currData.currPotionCount <= 0)
         {
             emptyTime = Time.time;
@@ -87,7 +100,7 @@ public class PlayerUsePotion : IPlayerState
                 }
             }
             // --- 가속 회복 로직 시작 ---
-            float t = (_elapsedTime - 1.4f) / (duration - 1.4f);
+            float t = (_elapsedTime - 1.4f) / (adjustedTime - 1.4f);
             t = Mathf.Clamp01(t);
             float acceleratedT = t * t * t * t * t;
             ctx.currHealth = Mathf.Lerp(startHealth, ctx.maxHealth, acceleratedT);
@@ -101,7 +114,7 @@ public class PlayerUsePotion : IPlayerState
             AudioManager.I.PlaySFX("Heal");
             ParticleManager.I.PlayParticle("PotionEffect", ctx.transform.position + 0.8f * Vector3.up, Quaternion.identity);
         }
-        if (_elapsedTime > duration)
+        if (_elapsedTime > adjustedTime)
         {
             //Debug.Log("Use Potion End");
             fsm.ChangeState(ctx.idle);

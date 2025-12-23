@@ -6,9 +6,7 @@ public class PlayerAttack : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerAttack(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.82f;   // 1타 총 길이
-    public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.68f; //콤보나 패링등으로 전환이 가능한 시간
+    
     private float _elapsedTime;
     private InputAction attackAction;
     bool attackComboPressed;
@@ -17,25 +15,10 @@ public class PlayerAttack : IPlayerState
     bool flag1;
     private InputAction moveAction;
     Vector2 moveActionValue;
-    float adjustedDuration;
-    float adjustedComboAvailableTime;
+    float adjustedTime1;
+    float adjustedTime2;
     public void Enter()
     {
-        switch(DBManager.I.currData.difficulty)
-        {
-            case 0:
-            adjustedDuration = duration - 0.2f;
-            adjustedComboAvailableTime = comboAvailableTime - 0.2f;
-            break;
-            case 1:
-            adjustedDuration = duration;
-            adjustedComboAvailableTime = comboAvailableTime;
-            break;
-            case 2:
-            adjustedDuration = duration + 0.2f;
-            adjustedComboAvailableTime = comboAvailableTime + 0.1f;
-            break;
-        }
         if (attackAction == null)
             attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
         if (parryAction == null)
@@ -45,6 +28,21 @@ public class PlayerAttack : IPlayerState
         attackAction.performed += PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
         _elapsedTime = 0f;
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedTime1 = duration - 0.2f;
+            adjustedTime2 = comboAvailableTime - 0.2f;
+            break;
+            case 1:
+            adjustedTime1 = duration;
+            adjustedTime2 = comboAvailableTime;
+            break;
+            case 2:
+            adjustedTime1 = duration + 0.2f;
+            adjustedTime2 = comboAvailableTime + 0.1f;
+            break;
+        }
         attacked.Clear();
         attackComboPressed = false;
         flag1 = false;
@@ -139,6 +137,9 @@ public class PlayerAttack : IPlayerState
         if (!ctx.Grounded) return;
         attackComboPressed = true;
     }
+    private const float duration = 0.82f;
+    public const int multiHitCount = 1;
+    private const float comboAvailableTime = 0.68f;
     List<Collider2D> attacked = new List<Collider2D>();
     void TriggerHandler(Collider2D coll)
     {
