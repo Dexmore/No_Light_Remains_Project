@@ -5,7 +5,7 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 1.4f;   // 총 길이
+    private const float duration = 1.34f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
