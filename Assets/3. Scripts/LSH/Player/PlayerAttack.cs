@@ -32,7 +32,7 @@ public class PlayerAttack : IPlayerState
         {
             case 0:
             adjustedTime1 = duration - 0.2f;
-            adjustedTime2 = comboAvailableTime - 0.2f;
+            adjustedTime2 = comboAvailableTime - 0.15f;
             break;
             case 1:
             adjustedTime1 = duration;
@@ -137,9 +137,9 @@ public class PlayerAttack : IPlayerState
         if (!ctx.Grounded) return;
         attackComboPressed = true;
     }
-    private const float duration = 0.82f;
+    private const float duration = 0.78f;
     public const int multiHitCount = 1;
-    private const float comboAvailableTime = 0.68f;
+    private const float comboAvailableTime = 0.59f;
     List<Collider2D> attacked = new List<Collider2D>();
     void TriggerHandler(Collider2D coll)
     {
@@ -156,7 +156,7 @@ public class PlayerAttack : IPlayerState
                     "Attack",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(1f, 1.05f) * 39f,
+                    Random.Range(1f, 1.05f) * 35f,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )

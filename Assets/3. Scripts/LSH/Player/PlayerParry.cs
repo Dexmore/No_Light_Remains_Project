@@ -15,16 +15,16 @@ public class PlayerParry : IPlayerState
         switch(DBManager.I.currData.difficulty)
         {
             case 0:
-            adjustedTime1 = parryTime * 1.3f + 0.12f;
-            adjustedTime2 = duration + 0.2f;
+            adjustedTime2 = duration;
+            adjustedTime1 = parryTime * 1.3f + 0.1f;
             break;
             case 1:
-            adjustedTime1 = parryTime * 0.8f + 0.05f;
-            adjustedTime2 = duration * 1.1f;
+            adjustedTime2 = duration * 1.1f + 0.06f;
+            adjustedTime1 = parryTime * 0.85f + 0.05f;
             break;
             case 2:
-            adjustedTime1 = parryTime * 0.55f;
-            adjustedTime2 = duration * 1.2f;
+            adjustedTime2 = duration * 1.2f + 0.11f;
+            adjustedTime1 = parryTime * 0.6f;
             break;
         }
     }

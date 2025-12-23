@@ -23,15 +23,15 @@ public class PlayerAttackCombo : IPlayerState
         switch(DBManager.I.currData.difficulty)
         {
             case 0:
-            adjustedTime1 = duration - 0.3f;
-            adjustedTime2 = comboAvailableTime - 0.3f;
+            adjustedTime1 = duration - 0.2f;
+            adjustedTime2 = comboAvailableTime - 0.15f;
             break;
             case 1:
             adjustedTime1 = duration;
             adjustedTime2 = comboAvailableTime;
             break;
             case 2:
-            adjustedTime1 = duration + 0.3f;
+            adjustedTime1 = duration + 0.2f;
             adjustedTime2 = comboAvailableTime + 0.1f;
             break;
         }
@@ -85,9 +85,9 @@ public class PlayerAttackCombo : IPlayerState
             fsm.ChangeState(ctx.idle);
         }
     }
-    private const float duration = 0.85f;
+    private const float duration = 0.68f;
     public const int multiHitCount = 1;
-    private const float comboAvailableTime = 0.55f;
+    private const float comboAvailableTime = 0.49f;
     public void UpdatePhysics()
     {
 
@@ -102,11 +102,11 @@ public class PlayerAttackCombo : IPlayerState
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.65f, 1.38f);
-            float damage = 61.8f;
+            float damage = 32.8f;
             if(rnd >= 1.22f)
             {
                 rnd = Random.Range(0.8f, 0.999f);
-                damage = 100f;
+                damage = 60f;
             }
             GameManager.I.onHit.Invoke
             (

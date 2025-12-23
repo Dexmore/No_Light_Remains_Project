@@ -5,7 +5,7 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 1.4f;   // 총 길이
+    private const float duration = 2.1f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
@@ -18,10 +18,10 @@ public class PlayerUsePotion : IPlayerState
             adjustedTime = duration;
             break;
             case 1:
-            adjustedTime = duration * 1.5f + 0.3f;
+            adjustedTime = duration * 1.2f + 0.3f;
             break;
             case 2:
-            adjustedTime = duration * 2.2f + 0.6f;
+            adjustedTime = duration * 1.4f + 0.6f;
             break;
         }
         if (DBManager.I.currData.currPotionCount <= 0)

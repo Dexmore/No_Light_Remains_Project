@@ -25,13 +25,13 @@ public class LobbyStoryPanel : MonoBehaviour
         DBManager.I.onReLogIn += HandlerChangeLogin;
         Opening();
         select = -1;
-        isaDisable = false;
+        isDisable = false;
     }
     void OnDisable()
     {
         DBManager.I.onLogOut -= HandlerChangeLogin;
         DBManager.I.onReLogIn -= HandlerChangeLogin;
-        isaDisable = true;
+        isDisable = true;
     }
     async void HandlerChangeLogin()
     {
@@ -460,7 +460,7 @@ public class LobbyStoryPanel : MonoBehaviour
     }
     TMP_Text[] texts1;
     Text[] texts2;
-    bool isaDisable;
+    bool isDisable;
     async void SometimesGlitchTextLoop()
     {
         await Task.Delay(1700);
@@ -496,7 +496,7 @@ public class LobbyStoryPanel : MonoBehaviour
                 }
             }
             await Task.Delay(Random.Range(200, 800));
-            if (isaDisable) return;
+            if (isDisable) return;
         }
     }
 

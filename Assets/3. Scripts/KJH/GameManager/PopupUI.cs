@@ -106,7 +106,10 @@ public class PopupUI : MonoBehaviour
             if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
             lobbyStoryPanel.diff = 1;
         }
+        if (tween == null)
+            tween = DOVirtual.DelayedCall(1f, () => { SometimesGlitchTextLoop(); });
     }
+    Tween tween;
     public void ClosePop(int index)
     {
         ClosePop(index, true);
@@ -130,11 +133,59 @@ public class PopupUI : MonoBehaviour
         {
             DBManager.I.GetComponent<LoginUI>().canvasGroup.enabled = true;
         }
-        if(index == 1)
+        if (index == 1)
         {
             Pop1UnInit();
         }
+        if (openPopCount == 0)
+        {
+            tween?.Kill();
+            tween = null;
+        }
     }
+    async void SometimesGlitchTextLoop()
+    {
+        Transform parent = canvasGo.transform;
+        await Task.Delay(600);
+        TMP_Text[] texts1 = parent.GetComponentsInChildren<TMP_Text>();
+        Text[] texts2 = parent.GetComponentsInChildren<Text>();
+        while (true)
+        {
+            await Task.Delay(50);
+            if (Random.value < 0.3f)
+            {
+                int rnd = Random.Range(0, texts1.Length + texts2.Length);
+                if (rnd >= texts1.Length)
+                {
+                    if (texts2.Length <= rnd - texts1.Length) continue;
+                    Text text2 = texts2[rnd - texts1.Length];
+                    if (text2 == null) continue;
+                    if (!text2.gameObject.activeInHierarchy) continue;
+                    if (text2.transform.name == "EmptyText") continue;
+                    GameManager.I.GlitchPartialText(text2, 6, 0.16f);
+                    if (Random.value < 0.73f)
+                        AudioManager.I.PlaySFX("Glitch1");
+                }
+                else
+                {
+                    if (texts1.Length <= rnd) continue;
+                    TMP_Text text1 = texts1[rnd];
+                    if (text1 == null) continue;
+                    if (!text1.gameObject.activeInHierarchy) continue;
+                    if (text1.transform.name == "EmptyText") continue;
+                    GameManager.I.GlitchPartialText(text1, 6, 0.16f);
+                    if (Random.value < 0.73f)
+                        AudioManager.I.PlaySFX("Glitch1");
+                }
+            }
+            await Task.Delay(Random.Range(200, 800));
+            if (!canvasGo.activeInHierarchy) return;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public async void GoMainMenu()
     {
         AudioManager.I.PlaySFX("UIClick");
@@ -327,7 +378,7 @@ public class PopupUI : MonoBehaviour
         {
             await LocalizationSettings.InitializationOperation.Task;
             var locales = LocalizationSettings.AvailableLocales.Locales;
-            
+
             // 1. 현재 인덱스 계산 및 순환(Loop) 로직 추가
             int currentLocaleIndex = SettingManager.I.setting.locale;
             currentLocaleIndex = (currentLocaleIndex + direction + locales.Count) % locales.Count;
@@ -336,7 +387,7 @@ public class PopupUI : MonoBehaviour
             if (currentLocaleIndex >= 0 && currentLocaleIndex < locales.Count)
             {
                 LocalizationSettings.SelectedLocale = locales[currentLocaleIndex];
-                
+
                 // UI 텍스트 업데이트 (English / Korean 등)
                 pop1LangText.text = locales[currentLocaleIndex].LocaleName.Split("(")[0];
             }
@@ -370,7 +421,7 @@ public class PopupUI : MonoBehaviour
     {
         audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20); // 오디오 믹서 연동 시
         SettingManager.I.setting.sfxVolume = value;
-        
+
     }
     public void ClickSound()
     {
