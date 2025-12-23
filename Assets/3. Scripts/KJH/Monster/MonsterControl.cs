@@ -23,7 +23,6 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public string Name;
     [ReadOnlyInspector] public MonsterType Type;
     [ReadOnlyInspector] public float MoveSpeed;
-    [ReadOnlyInspector] public float Attack;
     [HideInInspector] public float adjustedAttack;
 
     [Header("Pattern")]
@@ -59,29 +58,21 @@ public class MonsterControl : MonoBehaviour
         Name = data.Name;
         Type = data.Type;
         MoveSpeed = data.MoveSpeed;
-        
-        float diffMultiplier = 1f;
         switch (DBManager.I.currData.difficulty)
         {
             case 0:
-                diffMultiplier = 0.8f;
+                adjustedAttack = data.Attack * 0.9f;
+                maxHealth = data.HP;
+                break;
+            case 1:
+                adjustedAttack = data.Attack * 1.15f;
+                maxHealth = data.HP * 1.3f;
                 break;
             case 2:
-                diffMultiplier = 1.2f;
+                adjustedAttack = data.Attack * 1.3f;
+                maxHealth = data.HP * 1.6f;
                 break;
         }
-        Attack = data.Attack;
-        adjustedAttack = 0.5f * diffMultiplier * Attack +  0.5f * Attack;
-        switch (DBManager.I.currData.difficulty)
-        {
-            case 0:
-                diffMultiplier = 0.7f;
-                break;
-            case 2:
-                diffMultiplier = 1.33f;
-                break;
-        }
-        maxHealth = data.HP * diffMultiplier;
         currHealth = maxHealth;
         if (astar)
         {
