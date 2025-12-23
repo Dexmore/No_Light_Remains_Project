@@ -41,6 +41,12 @@ public class SettingManager : SingletonBehaviour<SettingManager>
     [SerializeField] AudioMixer audioMixer;
     public void ApplyAllSettings()
     {
+
+        // 밝기 적용
+        float alpha = Mathf.Lerp(0.46f, 1f, 1 - setting.brightness);
+        var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
+        brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
+
         // 1. 해상도 및 전체화면 적용
         if (setting.resolutionIndex != -1)
         {
@@ -130,7 +136,7 @@ public class SettingData
 {
     public int resolutionIndex = -1;
     public FullScreenMode fullscreenMode = FullScreenMode.FullScreenWindow;
-    public float brightness = 1.0f;
+    public float brightness = 0.6f;
     public float masterVolume = 1.0f;
     public float bgmVolume = 1.0f;
     public float sfxVolume = 1.0f;
@@ -140,7 +146,7 @@ public class SettingData
     {
         resolutionIndex = -1;
         fullscreenMode = FullScreenMode.FullScreenWindow;
-        brightness = 1.0f;
+        brightness = 0.6f;
         masterVolume = 1.0f;
         bgmVolume = 1.0f;
         sfxVolume = 1.0f;
