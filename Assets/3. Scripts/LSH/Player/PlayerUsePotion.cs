@@ -5,25 +5,13 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 2.1f;   // 총 길이
+    private const float duration = 1.8f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
     private float adjustedTime;
     public void Enter()
     {
-        switch(DBManager.I.currData.difficulty)
-        {
-            case 0:
-            adjustedTime = duration;
-            break;
-            case 1:
-            adjustedTime = duration * 1.2f + 0.3f;
-            break;
-            case 2:
-            adjustedTime = duration * 1.4f + 0.6f;
-            break;
-        }
         if (DBManager.I.currData.currPotionCount <= 0)
         {
             emptyTime = Time.time;
@@ -43,6 +31,18 @@ public class PlayerUsePotion : IPlayerState
         sfxFlag2 = false;
         sfxFlag3 = false;
         aniFlag1 = false;
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedTime = duration;
+            break;
+            case 1:
+            adjustedTime = duration * 1.2f + 0.3f;
+            break;
+            case 2:
+            adjustedTime = duration * 1.4f + 0.6f;
+            break;
+        }
     }
     public void Exit()
     {

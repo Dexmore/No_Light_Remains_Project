@@ -6,7 +6,10 @@ public class PlayerParry : IPlayerState
     private readonly PlayerStateMachine fsm;
     public PlayerParry(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.6f;   // 총 길이
-    private const float parryTime = 0.3f;   // 패링 시간
+    private const float parryTime = 0.25f;   // 패링 시간
+    private float _elapsedTime;
+    private float adjustedParryTime1;
+    private float adjustedParryTime2;
     public void Enter()
     {
         _elapsedTime = 0f;

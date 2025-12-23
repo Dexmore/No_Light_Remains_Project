@@ -6,7 +6,6 @@ public class PlayerAttack : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerAttack(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    
     private float _elapsedTime;
     private InputAction attackAction;
     bool attackComboPressed;
@@ -127,6 +126,9 @@ public class PlayerAttack : IPlayerState
                 ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
     }
+    private const float duration = 0.75f;
+    public const int multiHitCount = 1;
+    private const float comboAvailableTime = 0.5f;
     public void UpdatePhysics()
     {
         

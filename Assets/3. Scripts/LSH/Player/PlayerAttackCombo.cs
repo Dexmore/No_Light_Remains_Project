@@ -85,7 +85,7 @@ public class PlayerAttackCombo : IPlayerState
             fsm.ChangeState(ctx.idle);
         }
     }
-    private const float duration = 0.68f;
+    private const float duration = 0.66f;
     public const int multiHitCount = 1;
     private const float comboAvailableTime = 0.49f;
     public void UpdatePhysics()
