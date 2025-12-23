@@ -49,6 +49,13 @@ public class MonsterMovingAttack : MonsterState
         bool condition = dist < 0.9f * range - 0.1f;
         bool once = false;
         bool isAnimation = false;
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, target.position, control.groundLayer);
+        if(raycastHit.collider != null)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         // 너무 가까우면 살짝 뒤로 이동
         if (condition)
         {

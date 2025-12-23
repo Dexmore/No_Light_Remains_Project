@@ -48,6 +48,15 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         else if (moveDirection.x < 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
+
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, target.position, control.groundLayer);
+        if (raycastHit.collider != null)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
+
         // 1번 공격
         attackIndex = 0;
         anim.Play("JumpAttack");
@@ -97,7 +106,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
                 coll.transform,
                 control.data.Attack,
                 hitPoint,
-                new string[1]{"Hit2"},
+                new string[1] { "Hit2" },
                 staggerType
             );
             switch (attackIndex)

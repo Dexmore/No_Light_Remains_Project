@@ -50,6 +50,13 @@ public class MonsterShortAttack : MonsterState
         moveDirection.Normalize();
         startTime = Time.time;
         float dist = Mathf.Abs(target.position.x - transform.position.x);
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, target.position, control.groundLayer);
+        if(raycastHit.collider != null)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         if (range < dist)
         {
             once = false;
