@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SpriteEmission(PromptText2)
-  m_Shader: {fileID: -6465566751694194690, guid: cec37c6e15b2bb24aaaea5337a802cda, type: 3}
+  m_Name: Shader Graphs_New Shader Graph
+  m_Shader: {fileID: -6465566751694194690, guid: f1506eb9b5b2bea4180baf72ab2bb4e0, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -18,15 +18,12 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -40,13 +37,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors:
-    - _EmissionColor: {r: 18, g: 18, b: 18, a: 0.9}
-    - _TintColor: {r: 23.968624, g: 23.968624, b: 23.968624, a: 1}
+    - _Color: {r: 16.94838, g: 16.94838, b: 16.94838, a: 0.101960786}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &2395461903273757283
+--- !u!114 &2847850213028495634
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
