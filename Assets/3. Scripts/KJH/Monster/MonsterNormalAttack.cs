@@ -43,6 +43,13 @@ public class MonsterNormalAttack : MonsterState
             control.ChangeNextState();
             return;
         }
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, (Vector2)target.position, control.groundLayer);
+        if(raycastHit.collider != null)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         Vector2 moveDirection;
         float startTime;
         startTime = Time.time;

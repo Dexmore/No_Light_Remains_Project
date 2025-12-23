@@ -647,7 +647,7 @@ public class MonsterControl : MonoBehaviour
     public Dictionary<Collider2D, float> memories = new Dictionary<Collider2D, float>();
     [ReadOnlyInspector] public float findRadius;
     public float closeRadius;
-    Transform eye;
+    [HideInInspector] public Transform eye;
     [HideInInspector] bool isTemporalFight;
     float temporalFightTime;
     async UniTask Sensor(CancellationToken token)

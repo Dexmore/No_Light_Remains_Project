@@ -8792,6 +8792,10 @@ PrefabInstance:
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
       objectReference: {fileID: 1740324645}
+    - target: {fileID: 4933104194866658789, guid: 519278ddb23203d49823921e1e3c2856, type: 3}
+      propertyPath: m_SortingOrder
+      value: -100
+      objectReference: {fileID: 0}
     - target: {fileID: 4994227485657439157, guid: 519278ddb23203d49823921e1e3c2856, type: 3}
       propertyPath: m_Name
       value: Level_1
@@ -9211,9 +9215,12 @@ MonoBehaviour:
   maxDepth: 0
   layerType: 0
   parallaxFactor: 0.93
+  autoMoveSpeedX: 0
   lockYAxis: 0
   infiniteLoop: 1
-  customLoopWidth: 0
+  singleImageWidth: 0
+  cloneCount: 3
+  loopThreshold: 16
   layerColor: {r: 0.69803923, g: 0.69803923, b: 0.69803923, a: 1}
   applyColorToChildren: 1
 --- !u!212 &1870465626
@@ -9268,7 +9275,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 15.84, y: 6.72}
+  m_Size: {x: 30.079998, y: 14.082462}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
