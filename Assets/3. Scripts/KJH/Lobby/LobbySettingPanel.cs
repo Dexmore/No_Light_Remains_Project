@@ -39,7 +39,6 @@ public class LobbySettingPanel : MonoBehaviour
         fullscreenToggle = content.Find("Screen/FullScreen").GetComponentInChildren<Toggle>(true);
         resolutionDropdown = content.Find("Screen/Resolution").GetComponentInChildren<TMP_Dropdown>(true);
         tipText = content.Find("Screen/TipText(TMP)").GetComponent<TMP_Text>();
-        Debug.Log(tipText);
     }
     void OnEnable()
     {

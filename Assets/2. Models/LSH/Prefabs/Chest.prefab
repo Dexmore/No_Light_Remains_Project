@@ -82,12 +82,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -5816584715198327469, guid: 8da00a7c890d0444599d1564a7c8204d, type: 3}
+  m_Sprite: {fileID: 1532406625, guid: 8da00a7c890d0444599d1564a7c8204d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.22, y: 0.55}
+  m_Size: {x: 2.55, y: 1.25}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -149,12 +149,12 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.1, y: 0.25}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.22, y: 0.55}
-    newSize: {x: 1.22, y: 0.55}
+    pivot: {x: 0.45, y: 0.02}
+    oldSize: {x: 2.125, y: 1.0416666}
+    newSize: {x: 2.55, y: 1.25}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -173,6 +173,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b2cf0b36c6278449952d96ae27bb78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChestInteractable_LSH
-  animator: {fileID: 1148845177294387522}
-  dropTable: {fileID: 11400000, guid: 6186ed87fa9f3294187da7d2c44aaae1, type: 2}
+  canReplay: 0
+  replayWaitTimeSecond: 0
+  dropTables:
+  - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
+    gold: 3
+    countRange: {x: 2, y: 3}
+    probability: 1
+  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+    gold: 0
+    countRange: {x: 1, y: 1}
+    probability: 1
   openTriggerName: Open
+  animator: {fileID: 1148845177294387522}
