@@ -4,115 +4,154 @@ namespace Game.Visuals
 {
     public class ParallaxMaster : MonoBehaviour
     {
-        public enum LayerType
-        {
-            Custom = 0, SkyFixed, BackgroundFar, BackgroundMid, Foreground
-        }
+        public enum LayerType { Custom = 0, SkyFixed, BackgroundFar, BackgroundMid, Foreground }
 
         [Header("1. Movement Settings")]
-        [Tooltip("체크하면 Z축 깊이에 따라 Parallax Factor가 자동 결정됩니다.")]
         public bool useZCoordinate = false;
         public float maxDepth = 10f; 
-
         public LayerType layerType = LayerType.Custom;
-        
-        [Range(-1f, 1f)]
-        public float parallaxFactor;
-        
-        [Tooltip("구름/달 처럼 카메라와 상관없이 스스로 움직이는 속도")]
-        public float autoMoveSpeedX = 0f; // [New] 자동 이동 기능 추가
-
+        [Range(-1f, 1f)] public float parallaxFactor;
+        public float autoMoveSpeedX = 0f; 
         public bool lockYAxis = true;
 
-        [Header("2. Infinite Loop Settings")]
+        [Header("2. Activation Settings (개별 사용 시)")]
+        [Tooltip("그룹 관리자를 쓸 때는 체크 해제하세요!")]
+        public bool useActivationRange = false;
+        public float activationRange = 20f;
+
+        [Header("3. Limit Settings")]
+        public bool limitMovement = false;
+        public Vector2 maxMoveRange = new Vector2(5f, 2f);
+
+        [Header("4. Infinite Loop Settings")]
         public bool infiniteLoop = false;
-        
-        [Tooltip("이미지 1개의 가로 길이 (필수 입력)")]
         public float singleImageWidth = 0f; 
-
-        [Tooltip("배경 3개를 쓸 경우: 3을 입력 (점프 거리 계산용)")]
         public int cloneCount = 3; 
+        public float loopThreshold = 0f; 
 
-        [Tooltip("카메라 중심에서 이 거리만큼 멀어지면 점프합니다. (이미지 너비보다 약간 크게 설정 권장)")]
-        public float loopThreshold = 16f;
-
-        [Header("3. Visual Settings")]
+        [Header("5. Visual Settings")]
         public Color layerColor = Color.white;
         public bool applyColorToChildren = true;
 
         private Transform cameraTransform;
         private Vector3 lastCameraPosition;
+        private Vector3 initialPosition;
+
+        // [핵심 업데이트] 스크립트가 다시 켜질 때, 카메라 위치를 재설정하여 '순간이동' 방지
+        private void OnEnable()
+        {
+            if (Camera.main != null)
+            {
+                cameraTransform = Camera.main.transform;
+                lastCameraPosition = cameraTransform.position;
+            }
+        }
 
         private void OnValidate()
         {
             if (!useZCoordinate) ApplyPreset();
             ApplyColor();
+            if (infiniteLoop && loopThreshold == 0 && singleImageWidth > 0) loopThreshold = singleImageWidth; 
         }
 
         void Start()
         {
-            if (Camera.main != null)
-                cameraTransform = Camera.main.transform;
-            
+            if (Camera.main != null) cameraTransform = Camera.main.transform;
             lastCameraPosition = cameraTransform.position;
-
-            // 자동 계산: 0이면 스프라이트 렌더러에서 가져옴
-            if (infiniteLoop && singleImageWidth == 0)
-            {
-                SpriteRenderer sprite = GetComponent<SpriteRenderer>();
-                if (sprite != null)
-                    singleImageWidth = sprite.bounds.size.x;
-            }
+            initialPosition = transform.position;
             
+            CalculateSize(); // 자동 계산
             ApplyColor();
+        }
+
+        [ContextMenu("Auto Calculate Size")]
+        public void CalculateSize()
+        {
+            SpriteRenderer sprite = GetComponent<SpriteRenderer>();
+            if (sprite == null)
+            {
+                SpriteRenderer[] children = GetComponentsInChildren<SpriteRenderer>();
+                foreach(var child in children)
+                {
+                    if(child.bounds.size.x > singleImageWidth) singleImageWidth = child.bounds.size.x;
+                }
+            }
+            else singleImageWidth = sprite.bounds.size.x;
+
+            if (loopThreshold <= 0.1f) loopThreshold = singleImageWidth;
         }
 
         void LateUpdate()
         {
             if (cameraTransform == null) return;
 
-            // 1. Z축 기반 Parallax Factor 계산
-            if (useZCoordinate)
-            {
-                parallaxFactor = Mathf.Clamp01(Mathf.Abs(transform.position.z) / maxDepth);
-                if (transform.position.z < 0) parallaxFactor = -0.2f; 
-            }
-
-            // 2. 카메라 이동에 따른 Parallax 이동
-            Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
-            float parallaxX = deltaMovement.x * parallaxFactor;
-            float parallaxY = lockYAxis ? 0 : deltaMovement.y * parallaxFactor;
-
-            // 3. 자동 이동 (구름, 달) 추가 [New]
-            float autoMoveX = autoMoveSpeedX * Time.deltaTime;
-
-            // 최종 이동 적용
-            transform.position += new Vector3(parallaxX + autoMoveX, parallaxY, 0);
-
-            // 4. 무한 루프 로직 (개선됨)
-            // 핵심: "카메라와의 거리"가 "Threshold"를 넘으면 "전체 길이(Width * Count)"만큼 점프
-            if (infiniteLoop && singleImageWidth > 0)
-            {
-                float offsetPosX = cameraTransform.position.x - transform.position.x;
-
-                // 왼쪽이나 오른쪽으로 너무 멀어지면
-                if (Mathf.Abs(offsetPosX) >= loopThreshold)
-                {
-                    // 전체 루프 길이 (이미지 1개 너비 * 개수)
-                    float totalLoopSize = singleImageWidth * cloneCount;
-                    
-                    // 방향 결정 (카메라가 오른쪽으로 갔으면 배경은 오른쪽 끝으로 보내야 함)
-                    float direction = offsetPosX > 0 ? 1 : -1;
-                    
-                    // 점프!
-                    transform.position += new Vector3(totalLoopSize * direction, 0, 0);
+            // 개별 Activation Range는 여기서 처리되지만, 그룹 관리자를 쓸 땐 꺼두는 게 좋음
+            if (useActivationRange) {
+                if (Mathf.Abs(cameraTransform.position.x - transform.position.x) > activationRange) {
+                    lastCameraPosition = cameraTransform.position; return; 
                 }
             }
 
+            // --- 이동 로직 ---
+            if (useZCoordinate) {
+                parallaxFactor = Mathf.Clamp01(Mathf.Abs(transform.position.z) / maxDepth);
+                if (transform.position.z < 0) parallaxFactor = -0.2f; 
+            }
+            Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
+            float parallaxX = deltaMovement.x * parallaxFactor;
+            float parallaxY = lockYAxis ? 0 : deltaMovement.y * parallaxFactor;
+            transform.position += new Vector3(parallaxX + (autoMoveSpeedX * Time.deltaTime), parallaxY, 0);
+            
+            if (limitMovement && !infiniteLoop) {
+                 float distFromOriginX = transform.position.x - initialPosition.x;
+                float distFromOriginY = transform.position.y - initialPosition.y;
+                transform.position = new Vector3(initialPosition.x + Mathf.Clamp(distFromOriginX, -maxMoveRange.x, maxMoveRange.x), initialPosition.y + Mathf.Clamp(distFromOriginY, -maxMoveRange.y, maxMoveRange.y), transform.position.z);
+            }
+
+            if (infiniteLoop && singleImageWidth > 0 && !limitMovement)
+            {
+                float offsetPosX = cameraTransform.position.x - transform.position.x;
+                if (Mathf.Abs(offsetPosX) >= loopThreshold)
+                {
+                    float totalLoopSize = singleImageWidth * cloneCount;
+                    float direction = offsetPosX > 0 ? 1 : -1;
+                    transform.position += new Vector3(totalLoopSize * direction, 0, 0);
+                }
+            }
             lastCameraPosition = cameraTransform.position;
         }
 
-        private void ApplyPreset() { /* 기존과 동일 */ }
-        private void ApplyColor() { /* 기존과 동일 */ }
+        private void OnDrawGizmosSelected()
+        {
+            /* 기존 Gizmos 유지 */
+            if (singleImageWidth > 0) { Gizmos.color = Color.cyan; Gizmos.DrawWireCube(transform.position, new Vector3(singleImageWidth, 10f, 0)); }
+            if (infiniteLoop) { Gizmos.color = Color.yellow; float th = loopThreshold > 0 ? loopThreshold : singleImageWidth; Gizmos.DrawLine(new Vector3(transform.position.x - th, transform.position.y - 10, 0), new Vector3(transform.position.x - th, transform.position.y + 10, 0)); Gizmos.DrawLine(new Vector3(transform.position.x + th, transform.position.y - 10, 0), new Vector3(transform.position.x + th, transform.position.y + 10, 0)); }
+            if (useActivationRange) { Gizmos.color = Color.green; Gizmos.DrawWireCube(transform.position, new Vector3(activationRange * 2, 20f, 0)); }
+        }
+    
+        private void ApplyPreset()
+        {
+            switch (layerType)
+            {
+                case LayerType.SkyFixed: parallaxFactor = 1.0f; break;
+                case LayerType.BackgroundFar: parallaxFactor = 0.9f; break;
+                case LayerType.BackgroundMid: parallaxFactor = 0.5f; break;
+                case LayerType.Foreground: parallaxFactor = -0.5f; break;
+            }
+        }
+
+        private void ApplyColor()
+        {
+            if (applyColorToChildren)
+            {
+                SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
+                foreach (var sprite in renderers) sprite.color = layerColor;
+            }
+            else
+            {
+                SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
+                if (mySprite != null) mySprite.color = layerColor;
+            }
+        }
     }
 }
