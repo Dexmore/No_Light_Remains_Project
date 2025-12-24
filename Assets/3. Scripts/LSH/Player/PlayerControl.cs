@@ -117,7 +117,7 @@ public class PlayerControl : MonoBehaviour
             newData.maxPotionCount = 3;
             newData.currPotionCount = 3;
             newData.maxGearCost = 3;
-            newData.difficulty = 1;
+            newData.difficulty = 0;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
@@ -131,6 +131,8 @@ public class PlayerControl : MonoBehaviour
             int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
             newData.lastTime = $"{datePart}-{secondsOfDay}";
             DBManager.I.currData = newData;
+            DBManager.I.savedData = newData;
+            //
             light0.SetActive(false);
             light1.SetActive(false);
             light3.SetActive(true);

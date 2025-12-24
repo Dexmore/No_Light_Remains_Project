@@ -391,9 +391,13 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 9
-  fallThroughPlatform: 0
   height: 0
   width: 0
+  fallThroughPlatform: 0
+  _Grounded: 0
+  _Parred: 0
+  _Avoided: 0
+  _Dead: 0
   isDash: 0
   Jumped: 0
   inventoryUI: {fileID: 0}
@@ -588,38 +592,6 @@ PrefabInstance:
     - target: {fileID: 5128489353773589176, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Name
       value: PlayerLight
-      objectReference: {fileID: 0}
-    - target: {fileID: 5800975667235395013, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: radius
-      value: 3.82
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_Intensity
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_FalloffIntensity
-      value: 0.107
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_ShapeLightFalloffSize
-      value: 2.48
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_LocalBounds.m_Center.x
-      value: 1.1713996
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_LocalBounds.m_Center.y
-      value: 2.93195
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_LocalBounds.m_Extent.x
-      value: 9.3043995
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_LocalBounds.m_Extent.y
-      value: 6.02025
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
