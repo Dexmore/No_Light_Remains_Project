@@ -20,12 +20,9 @@ public class DialogUI : MonoBehaviour
                 //대사0
                 new string[]
                 {
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    "Darkness is spreading from the outskirts of the city.\nIt is corrupting living things and machines, turning them into monsters.",
+                    "After long, hidden research, I succeeded in creating a device that emits\nimmense light energy, 'Ilios.' With this, I can purify the 'Caligo,'\nthe monsters that have shrouded the city.",
+                    "...It is time to depart. Let's move."
                 },
                 //대사1
                 new string[]
@@ -60,8 +57,8 @@ public class DialogUI : MonoBehaviour
                 //대사4
                 new string[]
                 {
-                    //1페이지
-                    "이 문은 잠겨있다.",
+                    //Page 1
+                    "This door is locked.",
                 },
             };
         }
@@ -153,6 +150,7 @@ public class DialogUI : MonoBehaviour
         nextPageAction2.action.performed += InputButton;
         nextPageAction3.action.performed += InputButton;
         GameManager.I.onDialog += HandlerDialogTrigger;
+        Close(false);
     }
     void OnDisable()
     {
@@ -163,6 +161,7 @@ public class DialogUI : MonoBehaviour
         StopCoroutine(nameof(SometimesGlitchTextLoop));
         tweenTriangle?.Kill();
         triangle.gameObject.SetActive(false);
+        Close(false);
     }
     IEnumerator SometimesGlitchTextLoop()
     {
@@ -299,17 +298,20 @@ public class DialogUI : MonoBehaviour
         if (playerControl != null && playerControl.fsm.currentState != playerControl.stop)
             playerControl.fsm.ChangeState(playerControl.stop);
     }
-    public void Close()
+    public void Close(bool isSFX = true)
     {
         // 종료 전 타이핑 강제 완료
-        if (typingCoroutine != null) SkipTyping();
+        if (typingCoroutine != null) SkipTyping(isSFX);
         // 닫는 연출 (Scale Out)
         canvasObject.transform.GetChild(0).DOScale(0f, 0.15f).SetEase(Ease.InSine).OnComplete(() =>
         {
             canvasObject.SetActive(false);
             GameManager.I.isOpenDialog = false;
         });
-        AudioManager.I.PlaySFX("UIClick");
+        if (isSFX)
+        {
+            AudioManager.I.PlaySFX("UIClick");
+        }
         currentDialogIndex = -1;
         currentPageIndex = 0;
         currentState = DialogState.ReadyForAdvance; // 상태 초기화
@@ -360,12 +362,16 @@ public class DialogUI : MonoBehaviour
         StartCoroutine(nameof(SometimesGlitchTextLoop));
     }
     Tween tweenTriangle;
-    private void SkipTyping()
+    private void SkipTyping(bool isSFX = true)
     {
         if (typingCoroutine != null)
         {
             StopCoroutine(typingCoroutine);
             typingCoroutine = null;
+        }
+        if (isSFX)
+        {
+            AudioManager.I.PlaySFX("Tick1");
         }
         contentText.maxVisibleCharacters = int.MaxValue;
         currentState = DialogState.TypingComplete;

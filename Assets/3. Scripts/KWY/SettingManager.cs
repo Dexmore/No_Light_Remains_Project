@@ -139,7 +139,7 @@ public class SettingData
     public FullScreenMode fullscreenMode = FullScreenMode.FullScreenWindow;
     public float brightness = 0.55f;
     public float masterVolume = 1.0f;
-    public float bgmVolume = 0.7f;
+    public float bgmVolume = 0.55f;
     public float sfxVolume = 1.0f;
     public string keyBindingOverrides = "";
     public int locale;
@@ -149,7 +149,7 @@ public class SettingData
         fullscreenMode = FullScreenMode.FullScreenWindow;
         brightness = 0.55f;
         masterVolume = 1.0f;
-        bgmVolume = 0.7f;
+        bgmVolume = 0.55f;
         sfxVolume = 1.0f;
         keyBindingOverrides = "";
     }
