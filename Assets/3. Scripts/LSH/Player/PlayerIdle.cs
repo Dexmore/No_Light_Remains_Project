@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 public class PlayerIdle : IPlayerState
 {
     private readonly PlayerControl ctx;
@@ -40,13 +41,16 @@ public class PlayerIdle : IPlayerState
         escAction.performed += InputESC;
         escAction.canceled += CancelESC;
         isESC = false;
+        tween?.Kill();
     }
     public void Exit()
     {
         escAction.performed -= InputESC;
         escAction.canceled -= CancelESC;
         isESC = false;
+        tween?.Kill();
     }
+    Tween tween;
     public void UpdateState()
     {
         moveActionValue = moveAction.ReadValue<Vector2>();
@@ -56,10 +60,19 @@ public class PlayerIdle : IPlayerState
         jumpPressed = jumpAction.IsPressed();
         if (jumpPressed && !ctx.Jumped && ctx.Grounded)
         {
-            ctx.Jumped = true;
-            fsm.ChangeState(ctx.jump);
+            if (moveActionValue.x == 0 && moveActionValue.y < 0)
+            {
+                ctx.fallThroughPlatform = true;
+                tween = DOVirtual.DelayedCall(0.1f, () => {ctx.fallThroughPlatform = false;}).Play();
+                ctx.rb.AddForce(Vector2.down);
+            }
+            else if(!ctx.fallThroughPlatform)
+            {
+                ctx.Jumped = true;
+                fsm.ChangeState(ctx.jump);
+            }
         }
-
+        
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);

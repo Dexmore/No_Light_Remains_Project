@@ -6,9 +6,6 @@ public class PlayerAttack : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerAttack(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 0.87f;   // 1타 총 길이
-    public const int multiHitCount = 1; // 동시타격 가능한 적의 수
-    private const float comboAvailableTime = 0.67f; //콤보나 패링등으로 전환이 가능한 시간
     private float _elapsedTime;
     private InputAction attackAction;
     bool attackComboPressed;
@@ -43,11 +40,7 @@ public class PlayerAttack : IPlayerState
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if (!parryPressed)
-        {
-            if (_elapsedTime > comboAvailableTime - 0.24f || _elapsedTime < 0.05f)
-                parryPressed = parryAction.IsPressed();
-        }
+        if (!parryPressed) parryPressed = parryAction.IsPressed();
         if (_elapsedTime > 0.25f)
         {
             if(!isSFX)
@@ -110,6 +103,9 @@ public class PlayerAttack : IPlayerState
                 ctx.childTR.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
     }
+    private const float duration = 0.75f;
+    public const int multiHitCount = 1;
+    private const float comboAvailableTime = 0.5f;
     public void UpdatePhysics()
     {
         

@@ -13,6 +13,7 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public bool isGround;
     [HideInInspector] public bool isStagger;
     public LayerMask groundLayer;
+    [ReadOnlyInspector] public float maxHealth;
     public float currHealth;
     [Range(0f, 1f)] public float aggressive = 0.2f;
 
@@ -22,8 +23,7 @@ public class MonsterControl : MonoBehaviour
     [ReadOnlyInspector] public string Name;
     [ReadOnlyInspector] public MonsterType Type;
     [ReadOnlyInspector] public float MoveSpeed;
-    [ReadOnlyInspector] public float Attack;
-    [ReadOnlyInspector] public float maxHP;
+    [HideInInspector] public float adjustedAttack;
 
     [Header("Pattern")]
     public Pattern[] patterns;
@@ -58,19 +58,22 @@ public class MonsterControl : MonoBehaviour
         Name = data.Name;
         Type = data.Type;
         MoveSpeed = data.MoveSpeed;
-        Attack = data.Attack;
-        float diffMultiplier = 1f;
         switch (DBManager.I.currData.difficulty)
         {
             case 0:
-                diffMultiplier = 0.7f;
+                adjustedAttack = data.Attack * 0.9f;
+                maxHealth = data.HP;
+                break;
+            case 1:
+                adjustedAttack = data.Attack * 1.15f;
+                maxHealth = data.HP * 1.3f;
                 break;
             case 2:
-                diffMultiplier = 1.33f;
+                adjustedAttack = data.Attack * 1.3f;
+                maxHealth = data.HP * 1.6f;
                 break;
         }
-        maxHP = data.HP * diffMultiplier;
-        currHealth = maxHP;
+        currHealth = maxHealth;
         if (astar)
         {
             astar.height = height;
@@ -350,8 +353,8 @@ public class MonsterControl : MonoBehaviour
         Peaceful = 1 << 0,
         FindPlayer = 1 << 1,
         ClosePlayer = 1 << 2,
-        Phase2 = 1 << 4,
-        Phase3 = 1 << 5,
+        Phase2 = 1 << 3,
+        Phase3 = 1 << 4,
     }
     [System.Serializable]
     public struct Pattern
@@ -635,7 +638,7 @@ public class MonsterControl : MonoBehaviour
     public Dictionary<Collider2D, float> memories = new Dictionary<Collider2D, float>();
     [ReadOnlyInspector] public float findRadius;
     public float closeRadius;
-    Transform eye;
+    [HideInInspector] public Transform eye;
     [HideInInspector] bool isTemporalFight;
     float temporalFightTime;
     async UniTask Sensor(CancellationToken token)
@@ -643,8 +646,8 @@ public class MonsterControl : MonoBehaviour
         await UniTask.Yield(token);
         findRadius = 4.1f * ((width + height) * 0.58f + 0.55f);
         if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
-            findRadius = 20.1f * ((width + height) * 0.58f + 0.55f);
-        
+            findRadius = 30.1f * ((width + height) * 0.58f + 0.55f);
+
         if (closeRadius == 0) closeRadius = 1.2f * (width * 0.61f + 0.7f);
         int count = 0;
         bool canPhase2 = false;
@@ -661,12 +664,21 @@ public class MonsterControl : MonoBehaviour
                 canPhase3 = true;
                 break;
             }
+        bool isSetTarget = false;
         while (!token.IsCancellationRequested)
         {
             int timeDelta = Random.Range(150, 500);
             await UniTask.Delay(timeDelta, cancellationToken: token);
             //nearPlayers = Physics2D.OverlapCircleAll((Vector2)transform.position, findRadius, LayerMask.GetMask("Player"));
             count = Physics2D.OverlapCircleNonAlloc(transform.position, findRadius, nearPlayers, LayerMask.GetMask("Player"));
+            if (count > 0)
+            {
+                if (bossHUD && !isSetTarget)
+                {
+                    isSetTarget = true;
+                    bossHUD.SetTarget(this);
+                }
+            }
             // visibilites
             float minDist = 999;
             for (int i = 0; i < count; i++)
@@ -695,7 +707,15 @@ public class MonsterControl : MonoBehaviour
                     minDist = dist;
                 if (dist <= closeRadius)
                     if (!HasCondition(Condition.ClosePlayer))
+                    {
                         AddCondition(Condition.ClosePlayer);
+                        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+                            if (bossHUD.target != this)
+                            {
+                                bossHUD.SetTarget(this);
+                            }
+                    }
+
             }
             if (minDist > closeRadius)
                 if (HasCondition(Condition.ClosePlayer))
@@ -759,8 +779,6 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
-                                    if (bossHUD != null)
-                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -772,8 +790,6 @@ public class MonsterControl : MonoBehaviour
                                     isTemporalFight = true;
                                     temporalFightTime = Time.time;
                                     RemoveCondition(Condition.Peaceful);
-                                    if (bossHUD != null)
-                                        bossHUD.SetTarget(this);
                                     break;
                                 }
                             }
@@ -799,7 +815,7 @@ public class MonsterControl : MonoBehaviour
                 }
             }
             // Injury
-            float ratio = (currHealth / maxHP);
+            float ratio = currHealth / maxHealth;
             if (canPhase2)
             {
                 if (ratio <= 0.7f && ratio > 0.4f && !HasCondition(Condition.Phase2))
@@ -919,7 +935,7 @@ public class MonsterControl : MonoBehaviour
                     staggerFactor1 = 0.81f;
                     break;
                 case MonsterType.Large:
-                    staggerFactor1 = 0.69f;
+                    staggerFactor1 = 0.65f;
                     break;
                 case MonsterType.Boss:
                     staggerFactor1 = 0.43f;
@@ -1136,7 +1152,6 @@ public class MonsterControl : MonoBehaviour
 
     [Space(50)]
     public Vector2 startPosition;
-    public int index;
     [Range(0, 1)] public float homeValue = 1f;
 
 

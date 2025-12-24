@@ -1,96 +1,186 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using System.Linq; // 가중치 계산을 위해 추가
+
 public class AudioManager : SingletonBehaviour<AudioManager>
 {
     protected override bool IsDontDestroy() => true;
+
     [System.Serializable]
     public struct MyStruct1
     {
         public string scneneName;
         public List<MyStruct2> list;
     }
+
     [System.Serializable]
     public struct MyStruct2
-    {        
+    {
         public AudioClip audioClip;
         public int weight;
     }
+
     [SerializeField] List<MyStruct1> autoBGM;
     [Space(50)]
     [SerializeField] List<AudioClip> bgmList = new List<AudioClip>();
     [SerializeField] List<AudioClip> sfxList = new List<AudioClip>();
-    //[SerializeField] List<AudioClip> ambienceList = new List<AudioClip>();
     [SerializeField] SFX sfxPrefab;
+
     AudioSource ausBGM0;
     AudioSource ausBGM1;
-    AudioSource ausAmbience;
-    AudioClip lastBGMclip;
+
+    // 현재 활성화된 오디오 소스를 추적 (크로스페이드를 위함)
+    AudioSource currentAus;
+    Coroutine autoBGMCoroutine;
+
     [ReadOnlyInspector][SerializeField] float volumeBGM = 1f;
     [ReadOnlyInspector][SerializeField] float volumeSFX = 1f;
-    
+
     protected override void Awake()
     {
         base.Awake();
         transform.GetChild(0).TryGetComponent(out ausBGM0);
         transform.GetChild(1).TryGetComponent(out ausBGM1);
-        ausAmbience = transform.Find("Ambience").GetComponent<AudioSource>();
+        currentAus = ausBGM0;
     }
-    public void PlayBGM(string Name, float crossFadeTime = 0f)
+
+    void OnEnable()
     {
-        AudioClip clip;
-        if(Name != "")
+        if (GameManager.I != null)
+            GameManager.I.onSceneChange += HandlerSceneChange;
+    }
+
+    void OnDisable()
+    {
+        if (GameManager.I != null)
+            GameManager.I.onSceneChange -= HandlerSceneChange;
+    }
+
+    void HandlerSceneChange()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        int find = autoBGM.FindIndex(x => x.scneneName == sceneName);
+
+        // 1 & 2. 씬 등록이 없거나 리스트가 비어있는 경우
+        if (find == -1 || autoBGM[find].list.Count == 0)
         {
-            int find = -1;
-            for (int i = 0; i < bgmList.Count; i++)
-            {
-                if (bgmList[i].name == Name)
-                {
-                    //Debug.Log(bgmList[i].name);
-                    find = i;
-                    break;
-                }
-            }
-            if (find == -1) return;
-            clip = bgmList[find];
+            StopAutoBGM();
+            FadeOutBGM(2.0f); // 2초간 페이드 아웃
+            return;
         }
-        else clip = null;
-        if (crossFadeTime == 0f)
+
+        var sceneBGMList = autoBGM[find].list;
+
+        // 현재 재생 중인 클립 확인
+        AudioClip currentClip = currentAus.clip;
+        bool isAlreadyPlaying = sceneBGMList.Any(x => x.audioClip == currentClip);
+
+        if (isAlreadyPlaying && currentAus.isPlaying)
         {
-            ausBGM0.clip = clip;
-            ausBGM0.Play();
+            // 3. 이미 현재 씬의 음악 중 하나가 재생 중인 경우
+            // 아무것도 안 함 (현재 곡이 끝나면 다음 곡을 고르도록 루프 코루틴만 체크)
+            if (autoBGMCoroutine == null)
+                autoBGMCoroutine = StartCoroutine(Co_AutoBGMNextTrack(sceneBGMList));
         }
         else
         {
-            StopCoroutine("PlayBGM_co");
-            lastBGMclip = ausBGM0.clip;
-            float lastTime = ausBGM0.time;
-            ausBGM0.clip = clip;
-            ausBGM1.clip = lastBGMclip;
-            ausBGM0.Play();
-            ausBGM1.Play();
-            ausBGM1.time = lastTime;
-            StartCoroutine("PlayBGM_co", crossFadeTime);
+            // 4. 새로운 씬 음악으로 교체해야 하는 경우
+            AudioClip nextClip = GetRandomClipByWeight(sceneBGMList);
+            PlayBGMWithFade(nextClip, 2.0f);
+
+            if (autoBGMCoroutine != null) StopCoroutine(autoBGMCoroutine);
+            autoBGMCoroutine = StartCoroutine(Co_AutoBGMNextTrack(sceneBGMList));
         }
     }
-    public void PlayAmbience(string Name)
+
+    // 가중치 기반 랜덤 선택 로직
+    AudioClip GetRandomClipByWeight(List<MyStruct2> list)
     {
-        
+        int totalWeight = list.Sum(x => x.weight);
+        int randomValue = Random.Range(0, totalWeight);
+        int currentWeight = 0;
+
+        foreach (var item in list)
+        {
+            currentWeight += item.weight;
+            if (randomValue < currentWeight)
+                return item.audioClip;
+        }
+        return list[0].audioClip;
     }
-    IEnumerator PlayBGM_co(float crossFadeTime)
+
+    // 자동 재생 루프 관리 코루틴
+    IEnumerator Co_AutoBGMNextTrack(List<MyStruct2> list)
+    {
+        while (true)
+        {
+            // 현재 곡이 거의 끝나갈 때 (약 0.5초 전) 다음 곡 준비
+            if (currentAus.clip != null && currentAus.time >= currentAus.clip.length - 0.5f)
+            {
+                AudioClip nextClip = GetRandomClipByWeight(list);
+                PlayBGMWithFade(nextClip, 1.5f);
+            }
+            yield return new WaitForSeconds(1.0f);
+        }
+    }
+
+    void StopAutoBGM()
+    {
+        if (autoBGMCoroutine != null)
+        {
+            StopCoroutine(autoBGMCoroutine);
+            autoBGMCoroutine = null;
+        }
+    }
+
+    public void PlayBGMWithFade(AudioClip clip, float duration)
+    {
+        StopCoroutine("PlayBGM_co");
+
+        // 소스 스위칭 (0 -> 1, 1 -> 0)
+        AudioSource nextAus = (currentAus == ausBGM0) ? ausBGM1 : ausBGM0;
+
+        nextAus.clip = clip;
+        nextAus.Play();
+
+        StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
+        currentAus = nextAus;
+    }
+
+    IEnumerator PlayBGM_co(AudioSource fadeOutAus, AudioSource fadeInAus, float duration)
     {
         float startTime = Time.time;
-        float startVolume = ausBGM0.volume * 0.8f;
-        while (Time.time - startTime < crossFadeTime)
+        float startVol = fadeOutAus.volume;
+
+        while (Time.time - startTime < duration)
         {
+            float t = (Time.time - startTime) / duration;
+            fadeInAus.volume = Mathf.Lerp(0f, volumeBGM, t);
+            fadeOutAus.volume = Mathf.Lerp(startVol, 0f, t);
             yield return null;
-            float t = (Time.time - startTime) / crossFadeTime;
-            ausBGM0.volume = Mathf.Lerp(0f, volumeBGM, t);
-            ausBGM1.volume = Mathf.Lerp(startVolume, 0f, t * 2.5f);
         }
-        ausBGM0.volume = volumeBGM;
-        ausBGM1.volume = 0f;
-        ausBGM1.Stop();
+
+        fadeInAus.volume = volumeBGM;
+        fadeOutAus.volume = 0f;
+        fadeOutAus.Stop();
+    }
+
+    public void FadeOutBGM(float duration)
+    {
+        StartCoroutine(Co_FadeOut(currentAus, duration));
+    }
+
+    IEnumerator Co_FadeOut(AudioSource aus, float duration)
+    {
+        float startVol = aus.volume;
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            aus.volume = Mathf.Lerp(startVol, 0, t / duration);
+            yield return null;
+        }
+        aus.volume = 0;
+        aus.Stop();
     }
     public SFX PlaySFX(string Name, Vector3 pos, Transform parent = null, float spatialBlend = 0f, float vol = 1f)
     {
@@ -114,33 +204,14 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     }
     public SFX PlaySFX(string Name, Transform parent = null)
     {
-       return PlaySFX(Name, Vector3.zero,null);
+        return PlaySFX(Name, Vector3.zero, null);
     }
     void Start()
     {
-        // volumeBGM = PlayerPrefs.GetFloat("volumeBGM", 1f);
-        // volumeSFX = PlayerPrefs.GetFloat("volumeSFX", 1f);
         ausBGM0.loop = true;
         ausBGM1.loop = true;
     }
-    // // 볼륨조절 슬라이더 드래그시 아래 실행
-    // public void SetVolumeBGM(float ratio)
-    // {
-    //     volumeBGM = ratio;
-    //     ausBGM0.volume = volumeBGM;
-    //     ausBGM1.volume = volumeBGM;
-    // }
-    // // 볼륨조절 슬라이더 드래그시 아래 실행
-    // public void SetVolumeSFX(float ratio)
-    // {
-    //     volumeSFX = ratio;
-    // }
-    // // 볼륨조절 슬라이더 포인터 업(End, 릴리즈시) 아래 실행
-    // public void SetVolumeEnd()
-    // {
-    //     PlayerPrefs.SetFloat("volumeBGM", volumeBGM);
-    //     PlayerPrefs.SetFloat("volumeSFX", volumeSFX);
-    //     PlayerPrefs.Save();
-    // }
+
+
 
 }

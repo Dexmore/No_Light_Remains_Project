@@ -111,22 +111,29 @@ public class WaveManager : MonoBehaviour
                 }
             }
 
-            // 2. 클리어 조건 확인 (기존과 동일)
+            // 2. 클리어 조건 확인 (파괴/비활성화 모두 대응)
             if (wave.waitForClear)
             {
                 if (currentActiveMonsters.Count > 0)
                 {
                     while (true)
                     {
+                        // 1. 이미 파괴(Destroy)되어 null이 된 참조들을 리스트에서 먼저 제거합니다.
                         currentActiveMonsters.RemoveAll(m => m == null);
-                        if (currentActiveMonsters.Count == 0) break;
+
+                        // 2. 리스트에 남은 객체 중 하이라키에서 '활성화'된 몬스터가 있는지 확인합니다.
+                        // 리스트가 비어있거나, 남은 몬스터가 모두 비활성화 상태라면 false가 됩니다.
+                        bool isAnyMonsterActive = currentActiveMonsters.Any(m => m.activeInHierarchy);
+
+                        if (!isAnyMonsterActive)
+                        {
+                            currentActiveMonsters.Clear(); // 다음 웨이브를 위해 리스트 청소
+                            break;
+                        }
+
                         yield return new WaitForSeconds(0.5f);
                     }
                 }
-            }
-            else
-            {
-                yield return new WaitForSeconds(wave.waveDuration);
             }
 
             Debug.Log($"=== Wave {currentWaveIndex} Ended ===");
@@ -143,6 +150,12 @@ public class WaveManager : MonoBehaviour
     {
         if (spawnPoint == null) return;
         GameObject mon = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+        mon.transform.name = prefab.transform.name;
+        MonsterControl monsterControl = mon.GetComponent<MonsterControl>();
+        if (monsterControl)
+        {
+            if (monsterControl.homeValue >= 0.5f) monsterControl.homeValue = 0.5f * monsterControl.homeValue;
+        }
         currentActiveMonsters.Add(mon);
     }
 

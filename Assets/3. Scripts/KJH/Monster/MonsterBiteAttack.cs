@@ -46,6 +46,13 @@ public class MonsterBiteAttack : MonsterState
         float dist = Mathf.Abs(target.position.x - transform.position.x);
         bool condition = dist < 0.9f * range - 0.1f;
         bool once = false;
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, target.position, control.groundLayer);
+        if(raycastHit.collider != null)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         // 너무 가까우면 살짝 뒤로 이동
         if (condition)
         {
@@ -53,7 +60,7 @@ public class MonsterBiteAttack : MonsterState
             {
 
                 // 낭떠러지 체크
-                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
                 rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
@@ -62,7 +69,7 @@ public class MonsterBiteAttack : MonsterState
                 if (CheckRayHit.collider == null)
                 {
                     break;
-                }  
+                }
 
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
                 moveDirection = transform.position - target.position;
@@ -135,7 +142,7 @@ public class MonsterBiteAttack : MonsterState
             if (Time.time - startTime > 0.55f && !once)
             {
                 // 낭떠러지 체크
-                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
                 rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
@@ -183,7 +190,7 @@ public class MonsterBiteAttack : MonsterState
                 }
 
                 // 낭떠러지 체크
-                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
                 rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
@@ -192,7 +199,7 @@ public class MonsterBiteAttack : MonsterState
                 if (CheckRayHit.collider == null)
                 {
                     stopWall = true;
-                }  
+                }
 
                 // AddForce방식으로 캐릭터 이동
                 if (!stopWall)
@@ -206,7 +213,17 @@ public class MonsterBiteAttack : MonsterState
         if (Time.time - startTime > 0.55f && !once)
         {
             once = true;
-            rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
+
+            rayOrigin = transform.position + 2.6f * control.width * model.right + 0.2f * control.height * Vector3.up;
+            rayDirection = Vector3.down;
+            rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
+            checkRay.origin = rayOrigin;
+            checkRay.direction = rayDirection;
+            CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+            if (CheckRayHit.collider != null)
+            {
+                rb.AddForce(model.right * Random.Range(1.1f, 7.8f), ForceMode2D.Impulse);
+            }
         }
         if (Time.time - startTime > 1f) chafe?.SetActive(true);
         await UniTask.Delay((int)(1000f * (duration - 0.5f)), cancellationToken: token);
@@ -234,9 +251,9 @@ public class MonsterBiteAttack : MonsterState
                     "BiteAttack",
                     transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
                     hitPoint,
-                    new string[1]{"Hit2"},
+                    new string[1] { "Hit2" },
                     staggerType
                 )
             );

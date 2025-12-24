@@ -52,19 +52,22 @@ public class PlayerControl : MonoBehaviour
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
     [SerializeField] private LayerMask groundLayer;
-    [Tooltip("특정 플랫폼을 통과할 수 있는지 확인 여부")] public bool fallThroughPlatform;
     CapsuleCollider2D capsuleCollider2D;
     [HideInInspector] public float height;
     [HideInInspector] public float width;
     private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
-    [HideInInspector] public Dictionary<Collider2D, Vector2> contactPts = new Dictionary<Collider2D, Vector2>();
     [HideInInspector] public Dictionary<Collider2D, Vector2> collisions = new Dictionary<Collider2D, Vector2>();
-
     // Runtime
-    [ReadOnlyInspector] public bool Grounded { get; private set; }
-    [ReadOnlyInspector] public bool Parred { get; set; }
-    [ReadOnlyInspector] public bool Avoided { get; set; }
-    [ReadOnlyInspector] public bool Dead { get; set; }
+    [Tooltip("특정 플랫폼을 통과할 수 있는지 확인 여부")] public bool fallThroughPlatform;
+    [HideInInspector] public bool Grounded { get { return _Grounded; } set { _Grounded = value; } }
+    [ReadOnlyInspector][SerializeField] private bool _Grounded;
+    [HideInInspector]  public bool Parred { get { return _Parred; } set { _Parred = value; } }
+    [ReadOnlyInspector][SerializeField] private bool _Parred;
+    [HideInInspector]  public bool Avoided { get { return _Avoided; } set { _Avoided = value; } }
+    [ReadOnlyInspector][SerializeField] private bool _Avoided;
+    [HideInInspector] public bool Dead { get { return _Dead; } set { _Dead = value; } }
+    [ReadOnlyInspector][SerializeField] private bool _Dead;
+
     void Awake()
     {
         TryGetComponent(out rb);
@@ -101,6 +104,7 @@ public class PlayerControl : MonoBehaviour
         CharacterData characterData = DBManager.I.currData;
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
+            // 테스트 플레이어 시작 영역 (정상적인 로비-캐릭터 선택씬을 거친 게임흐름과 무관함)
             CharacterData newData = new CharacterData();
             newData.gold = 0;
             newData.death = 0;
@@ -113,6 +117,7 @@ public class PlayerControl : MonoBehaviour
             newData.maxPotionCount = 3;
             newData.currPotionCount = 3;
             newData.maxGearCost = 3;
+            newData.difficulty = 1;
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
@@ -160,7 +165,7 @@ public class PlayerControl : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled += DashCancel;
         inputActionAsset.FindActionMap("Player").FindAction("LeftDash").canceled += DashCancel;
         inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled += JumpCancel;
-        jumpAction = inputActionAsset.FindActionMap("Player").FindAction("Jump");
+        // jumpAction = inputActionAsset.FindActionMap("Player").FindAction("Jump");
         lanternAction = inputActionAsset.FindActionMap("Player").FindAction("Lantern");
         lanternAction.performed += LanternInput;
         GameManager.I.onHit += HitHandler;
@@ -173,7 +178,7 @@ public class PlayerControl : MonoBehaviour
         inputActionAsset.FindActionMap("Player").FindAction("RightDash").canceled -= DashCancel;
         inputActionAsset.FindActionMap("Player").FindAction("Jump").canceled -= JumpCancel;
         lanternAction.performed -= LanternInput;
-        jumpAction = null;
+        // jumpAction = null;
         GameManager.I.onHit -= HitHandler;
         fsm.OnDisable();
     }
@@ -183,7 +188,7 @@ public class PlayerControl : MonoBehaviour
         fsm.Update();
         CheckGroundedPrecise();
         FixBugPosition();
-        CheckPlatformFallThrough();
+        //CheckPlatformFallThrough();
     }
     void FixedUpdate()
     {
@@ -192,7 +197,8 @@ public class PlayerControl : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D collision)
     {
-        if ((collision.collider.gameObject.layer & groundLayer) != 0)
+        //if ((collision.collider.gameObject.layer & groundLayer) != 0)
+        if ((groundLayer.value & (1 << collision.gameObject.layer)) != 0)
             if (!collisions.ContainsKey(collision.collider))
                 collisions.Add(collision.collider, collision.contacts[0].point);
             else
@@ -200,7 +206,7 @@ public class PlayerControl : MonoBehaviour
     }
     void OnCollisionExit2D(Collision2D collision)
     {
-        if ((collision.collider.gameObject.layer & groundLayer) != 0)
+        if ((groundLayer.value & (1 << collision.gameObject.layer)) != 0)
             if (collisions.ContainsKey(collision.collider))
                 collisions.Remove(collision.collider);
     }
@@ -209,15 +215,15 @@ public class PlayerControl : MonoBehaviour
     float groundCheckTime;
     void CheckGroundedPrecise()
     {
-        Grounded = false;
+        _Grounded = false;
         if (collisions.Count > 0)
             foreach (var element in collisions)
                 if (Mathf.Abs(element.Value.y - transform.position.y) < 0.1f * capsuleCollider2D.size.y)
                 {
-                    Grounded = true;
+                    _Grounded = true;
                     break;
                 }
-        if (!Grounded)
+        if (!_Grounded)
         {
             if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
             {
@@ -227,35 +233,36 @@ public class PlayerControl : MonoBehaviour
                 groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
                 if (groundRayHit)
                 {
-                    Grounded = true;
+                    _Grounded = true;
                 }
             }
         }
     }
 
-    void CheckPlatformFallThrough()
-    {
-        bool downPressed = Keyboard.current != null && Keyboard.current.downArrowKey.isPressed;
-        bool jumpBoundPressed = false;
-        if (jumpAction != null)
-        {
-            try
-            {
-                jumpBoundPressed = jumpAction.ReadValue<float>() > 0f;
-            }
-            catch
-            {
-                jumpBoundPressed = false;
-            }
-        }
-        fallThroughPlatform = downPressed && jumpBoundPressed;
-    }
+    // void CheckPlatformFallThrough()
+    // {
+    //     bool downPressed = Keyboard.current != null && Keyboard.current.downArrowKey.isPressed;
+    //     bool jumpBoundPressed = false;
+    //     if (jumpAction != null)
+    //     {
+    //         try
+    //         {
+    //             jumpBoundPressed = jumpAction.ReadValue<float>() > 0f;
+    //         }
+    //         catch
+    //         {
+    //             jumpBoundPressed = false;
+    //         }
+    //     }
+    //     fallThroughPlatform = downPressed && jumpBoundPressed;
+    // }
+
     #region Dash
     int leftDashInputCount = 0;
     int rightDashInputCount = 0;
     void DashInput(InputAction.CallbackContext callback)
     {
-        if (!Grounded) return;
+        if (!_Grounded) return;
         if (fsm.currentState == dash) return;
         if (callback.action.name == "LeftDash")
         {
@@ -297,7 +304,7 @@ public class PlayerControl : MonoBehaviour
     [ReadOnlyInspector] public bool isDash;
     void DashCancel(InputAction.CallbackContext callback)
     {
-        if (!Grounded) return;
+        if (!_Grounded) return;
         if (leftDashInputCount == 1)
             leftDashInputCount = 2;
         if (rightDashInputCount == 1)
@@ -365,7 +372,7 @@ public class PlayerControl : MonoBehaviour
             run.isStagger = true;
             StopCoroutine(nameof(HitCoolTime1));
             StartCoroutine(nameof(HitCoolTime1));
-            if (Avoided)
+            if (_Avoided)
             {
                 //Debug.Log("회피 성공");
                 return;
@@ -401,14 +408,16 @@ public class PlayerControl : MonoBehaviour
             isHit2 = true;
             StopCoroutine(nameof(HitCoolTime2));
             StartCoroutine(nameof(HitCoolTime2));
-            if (Avoided)
+            if (_Avoided)
             {
                 GameManager.I.onAvoid.Invoke(hData);
                 ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                 AudioManager.I.PlaySFX("Woosh1");
+                hitCoolTime1speed = 5f;
+                hitCoolTime2speed = 5f;
                 return;
             }
-            if (Parred)
+            if (_Parred)
             {
                 if (!hData.isCannotParry)
                 {
@@ -423,6 +432,8 @@ public class PlayerControl : MonoBehaviour
                     currBattery += lanternParryAmount;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
+                    hitCoolTime1speed = 5f;
+                    hitCoolTime2speed = 5f;
                     StartCoroutine(nameof(ReleaseParred));
                     return;
                 }
@@ -555,25 +566,40 @@ public class PlayerControl : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         run.isStagger = false;
-        yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.5f, 0.7f));
+        float elapsed = 0;
+        float rnd = Random.Range(0.5f, 0.7f);
+        while (elapsed < rnd)
+        {
+            elapsed += hitCoolTime1speed * Time.deltaTime;
+            yield return null;
+        }
+        hitCoolTime1speed = 1f;
         isHit1 = false;
     }
+    float hitCoolTime1speed = 1f;
+    float hitCoolTime2speed = 1f;
     IEnumerator HitCoolTime2()
     {
-        yield return YieldInstructionCache.WaitForSeconds(1.12f);
+        float elapsed = 0;
+        while (elapsed < 1.12f)
+        {
+            elapsed += hitCoolTime2speed * Time.deltaTime;
+            yield return null;
+        }
         isHit2 = false;
+        hitCoolTime2speed = 1f;
     }
     IEnumerator ReleaseParred()
     {
         yield return YieldInstructionCache.WaitForSeconds(0.13f);
-        Parred = false;
+        _Parred = false;
     }
     #region Turn ON/OFF Lantern
     PlayerLight PlayerLight;
     float batteryTextCooltime;
     void LanternInput(InputAction.CallbackContext callback)
     {
-        if (Dead) return;
+        if (_Dead) return;
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;

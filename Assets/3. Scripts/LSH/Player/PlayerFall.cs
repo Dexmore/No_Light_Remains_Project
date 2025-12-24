@@ -13,6 +13,7 @@ public class PlayerFall : IPlayerState
             moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
         ctx.animator.Play("Player_Fall");
         startTime = Time.time;
+        //;
     }
     float startTime;
     public void Exit()
@@ -23,6 +24,10 @@ public class PlayerFall : IPlayerState
     {
         moveActionValue = moveAction.ReadValue<Vector2>();
         moveActionValue.y = 0f;
+        if(Time.time - startTime > 0.1f && ctx.fallThroughPlatform)
+        {
+            ctx.fallThroughPlatform = false;
+        }
         if (ctx.Grounded)
         {
             if (Mathf.Abs(moveActionValue.x) > 0.01f)

@@ -25,14 +25,29 @@ public class MonsterRangeAttack : MonsterState
     {
         Transform target;
         target = control.memories.First().Key.transform;
-        float dist = Mathf.Abs(target.position.x - transform.position.x);
+        float dist = Vector3.Distance(target.position, transform.position);
+        float distX = Mathf.Abs(target.position.x - transform.position.x);
+        float distY = Mathf.Abs(target.position.y - transform.position.y);
         if (dist > 1.1f * range + 2f)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }
-        if (dist > 1.1f * range + 2f)
+        if (distY > 0.26 * range)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
+        if (distX > 1.1f * range + 2f)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, target.position, control.groundLayer);
+        if(raycastHit.collider != null)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -71,9 +86,9 @@ public class MonsterRangeAttack : MonsterState
                     "RangeAttack",
                     transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
                     hitPoint,
-                    new string[1]{"Hit2"},
+                    new string[1] { "Hit2" },
                     staggerType
                 )
             );

@@ -76,7 +76,7 @@ public class PlayerDeathUI : MonoBehaviour
     IEnumerator ProcessDeathSequence()
     {
         yield return new WaitForSeconds(2.5f);
-        
+
         // 1. UI 캔버스 켜기
         if (deathScreenUI != null) deathScreenUI.SetActive(true);
 
@@ -107,9 +107,17 @@ public class PlayerDeathUI : MonoBehaviour
             DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
         }
 
-        // 6. 현재 씬 재시작
+        // 6. 마지막으로 저장된 씬으로 재시작 (포션,배터리,체력 회복상태로)
+
+        if (playerControl == null) playerControl = FindAnyObjectByType<PlayerControl>();
+        if (playerControl) playerControl.currHealth = DBManager.I.currData.maxHealth;
+        DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
+        DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
+        DBManager.I.currData.currBattery = DBManager.I.currData.maxBattery;
+
+        yield return null;
         string currentSceneName = DBManager.I.currData.sceneName;
         GameManager.I.SetSceneFromDB();
-        GameManager.I.LoadSceneAsync(currentSceneName, false);
+        GameManager.I.LoadSceneAsync(currentSceneName, false, true);
     }
 }

@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 334bb3c8fd607204db2bc13e091aa920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DBManager
-  currSlot: 0
+  currSlot: -1
   allSaveDatasInSteam:
     characterDatas: []
   allSaveDatasInLocal:
@@ -75,12 +75,10 @@ MonoBehaviour:
     currBattery: 0
     gold: 0
     maxGearCost: 3
-    maxPotionCount: 0
+    maxPotionCount: 3
     currPotionCount: 0
-    difficulty: 1
-    language: 0
+    difficulty: 0
     sceneName: 
-    level: 0
     death: 0
     lastTime: 
     lastPos: {x: 0, y: 0}
@@ -90,7 +88,7 @@ MonoBehaviour:
     recordDatas: []
     sceneDatas: []
     progressDatas: []
-  testGold: 0
+  testGold: 23
   testItemDatas:
   - data: {fileID: 11400000, guid: 3b431443ba3b1f24497789d005593fa8, type: 2}
     quantity: 3
@@ -100,10 +98,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 03ee74203aeb5244ba4d7511b14d0d5f, type: 2}
   - {fileID: 11400000, guid: 09dedba5b6ca71d4b93e5a4c2f5f49a7, type: 2}
   testLanternDatas: []
-  testRecordDatas:
-  - {fileID: 11400000, guid: d2c104e110f0fd849aa85a413a00b3ff, type: 2}
-  - {fileID: 11400000, guid: e7d46243d356f3f4eaf45067a4bc5e34, type: 2}
-  - {fileID: 11400000, guid: 88b298cecfbfd4e458a8993c5f681439, type: 2}
+  testRecordDatas: []
 --- !u!1 &1724289129567571845
 GameObject:
   m_ObjectHideFlags: 0

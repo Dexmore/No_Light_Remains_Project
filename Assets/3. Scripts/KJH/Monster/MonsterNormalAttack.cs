@@ -43,6 +43,13 @@ public class MonsterNormalAttack : MonsterState
             control.ChangeNextState();
             return;
         }
+        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, (Vector2)target.position, control.groundLayer);
+        if(raycastHit.collider != null)
+        {
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         Vector2 moveDirection;
         float startTime;
         startTime = Time.time;
@@ -96,7 +103,7 @@ public class MonsterNormalAttack : MonsterState
                 }
 
                 // 낭떠러지 체크
-                rayOrigin = transform.position + control.width * 0.6f * model.right + 0.2f * control.height * Vector3.up;
+                rayOrigin = transform.position + 1.3f * control.width * model.right + 0.2f * control.height * Vector3.up;
                 rayDirection = Vector3.down;
                 rayLength = 0.9f * control.jumpLength + 0.1f * control.height;
                 checkRay.origin = rayOrigin;
@@ -154,7 +161,7 @@ public class MonsterNormalAttack : MonsterState
                     "NormalAttack",
                     transform,
                     coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.data.Attack,
+                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
                     hitPoint,
                     new string[1]{"Hit2"},
                     staggerType

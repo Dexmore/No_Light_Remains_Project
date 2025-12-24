@@ -637,7 +637,8 @@ MonoBehaviour:
   isStagger: 0
   groundLayer:
     serializedVersion: 2
-    m_Bits: 9
+    m_Bits: 521
+  maxHealth: 0
   currHealth: 0
   aggressive: 0.6
   data: {fileID: 11400000, guid: b0133309c753d9748b8174d916f3d80d, type: 2}
@@ -646,7 +647,7 @@ MonoBehaviour:
   Type: 0
   MoveSpeed: 0
   Attack: 0
-  maxHP: 0
+  adjustedAttack: 0
   patterns:
   - condition: 1
     frequencies:
@@ -682,10 +683,10 @@ MonoBehaviour:
   coolTimeList: []
   cannotList: []
   findRadius: 0
-  closeRadius: 5.5
+  closeRadius: 3
+  eye: {fileID: 0}
   parryCount: 0
   startPosition: {x: 0, y: 0}
-  index: 0
   homeValue: 1
 --- !u!114 &7568115688032531983
 MonoBehaviour:
@@ -793,7 +794,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterRangeAttack
   coolTime: 0
-  range: 10
+  range: 4
   damageMultiplier: 0.9
   staggerType: 1
   durationRange: {x: 2.8, y: 3.4}

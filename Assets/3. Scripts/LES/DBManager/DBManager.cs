@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using Steamworks;
 using UnityEngine.Events;
@@ -60,8 +61,35 @@ public class DBManager : SingletonBehaviour<DBManager>
         dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
         dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
         dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
-        savedData = dataToSave;
 
+        for (int i = 0; i < dataToSave.sceneDatas.Count; i++)
+        {
+            CharacterData.SceneData sData = dataToSave.sceneDatas[i];
+            if (sData.monsterPositionDatas != null)
+            {
+                for (int j = 0; j < sData.monsterPositionDatas.Count; j++)
+                {
+                    CharacterData.MonsterPositionData mData = sData.monsterPositionDatas[j];
+                    mData.lastHealth = RoundToOneDecimal(mData.lastHealth);
+                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                    sData.monsterPositionDatas[j] = mData;
+                }
+            }
+            if (sData.objectPositionDatas != null)
+            {
+                for (int j = 0; j < sData.objectPositionDatas.Count; j++)
+                {
+                    CharacterData.ObjectPositionData mData = sData.objectPositionDatas[j];
+                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                    sData.objectPositionDatas[j] = mData;
+                }
+            }
+            dataToSave.sceneDatas[i] = sData;
+        }
+
+        savedData = dataToSave;
         if (currSlot >= 0 && currSlot <= 2)
         {
             if (allSaveDatasInSteam.characterDatas == null)
@@ -379,6 +407,9 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
         }
     }
+    /// <summary>
+    /// 아이템 습득 메소드
+    /// </summary>
     public void AddGear(string Name, int count = 1)
     {
         if (count == 0) return;
@@ -441,6 +472,33 @@ public class DBManager : SingletonBehaviour<DBManager>
             }
         }
     }
+    /// <summary>
+    /// 아이템 소지여부 (+몇개 소지하고있는지 +장착중인지도) 검사해주는 메소드
+    /// </summary>
+    public bool HasItem(string Name, out int count)
+    {
+        count = currData.itemDatas.Count(x => x.Name == Name);
+        return count > 0;
+    }
+    public bool HasGear(string Name, out bool isEquip)
+    {
+        var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
+        isEquip = currData.gearDatas[findItems].isEquipped;
+        return findItems != -1;
+    }
+    public bool HasLantern(string Name, out bool isEquip)
+    {
+        var findItems = currData.lanternDatas.FindIndex(x => x.Name == Name);
+        isEquip = currData.gearDatas[findItems].isEquipped;
+        return findItems != -1;
+    }
+    public bool HasRecord(string Name)
+    {
+        var findItems = currData.recordDatas.FindIndex(x => x.Name == Name);
+        return findItems != -1;
+    }
+
+
 #if UNITY_EDITOR
     [Space(60)]
     [Header("-----아이템 습득 테스트용-----")]
@@ -487,7 +545,7 @@ public class DBManager : SingletonBehaviour<DBManager>
 
     private float RoundToOneDecimal(float value)
     {
-        return Mathf.Round(value * 10f) * 0.1f;
+        return Mathf.Round(value * 100f) * 0.01f;
     }
 
 }
@@ -508,9 +566,7 @@ public struct CharacterData
     public int maxPotionCount;
     public int currPotionCount;
     public int difficulty;
-    public int language;
     public string sceneName;
-    public int level;
     public int death;
     public string lastTime;
     public Vector2 lastPos;
@@ -579,9 +635,10 @@ public struct CharacterData
         public string Name;
         public int progress;
         public bool isComplete;
+        public int replayWaitTimeSecond;
     }
 
-    
+
 
 
 
