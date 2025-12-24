@@ -5,7 +5,7 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 1.34f;   // 총 길이
+    private const float duration = 1.37f;   // 총 길이
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
@@ -66,7 +66,7 @@ public class PlayerUsePotion : IPlayerState
             aniFlag1 = true;
             ctx.animator.Play("Player_UsePotion");
         }
-        if (_elapsedTime > 1.4f)
+        if (_elapsedTime > 1.2f)
         {
             float startHealth = ctx.currHealth;
             if (!sfxFlag2)
@@ -87,7 +87,7 @@ public class PlayerUsePotion : IPlayerState
                 }
             }
             // --- 가속 회복 로직 시작 ---
-            float t = (_elapsedTime - 1.4f) / (duration - 1.4f);
+            float t = (_elapsedTime - 1.2f) / (duration - 1.2f);
             t = Mathf.Clamp01(t);
             float acceleratedT = t * t * t * t * t;
             ctx.currHealth = Mathf.Lerp(startHealth, ctx.maxHealth, acceleratedT);
@@ -95,7 +95,7 @@ public class PlayerUsePotion : IPlayerState
             DBManager.I.currData.currHealth = ctx.currHealth;
             // --- 가속 회복 로직 끝 ---
         }
-        if (_elapsedTime > 1.32f && !sfxFlag3)
+        if (_elapsedTime > 1.12f && !sfxFlag3)
         {
             sfxFlag3 = true;
             AudioManager.I.PlaySFX("Heal");
