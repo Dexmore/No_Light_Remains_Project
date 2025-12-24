@@ -289,15 +289,18 @@ public class MonsterControl : MonoBehaviour
         RangeAttack,
         ShortAttack,
         MovingAttack,
+        ReturnHome,
         SequenceAttack1,
+        //
+        ShootingAttack1,
+        Heal,
+        ShootingAttack2,
         SequenceAttack2,
         SequenceAttack3,
-        BeamAttack,
-        Heal,
-        ReturnHome,
-        Shooting1,
-        Shooting2,
-        Shooting3,
+        DoubleAttack,
+        Revive,
+        Explosion,
+        /////////////////////
 
 
 

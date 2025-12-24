@@ -75,9 +75,9 @@ public class TutorialTrigger : MonoBehaviour
     //SettingManager.I.GetBindingName("LanternInteraction")
     IEnumerator RunWait()
     {
-        Debug.Log("aaa2");
+        //Debug.Log("aaa2");
         yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory && ready);
-        Debug.Log("aaa3");
+        //Debug.Log("aaa3");
         tutorialControl.TutorialTrigger(transform.name);
         canvasObject.SetActive(true);
         tween?.Kill();

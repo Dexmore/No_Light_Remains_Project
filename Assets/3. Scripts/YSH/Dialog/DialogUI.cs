@@ -57,6 +57,12 @@ public class DialogUI : MonoBehaviour
                     //3페이지
                     "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
+                //대사4
+                new string[]
+                {
+                    //1페이지
+                    "이 문은 잠겨있다.",
+                },
             };
         }
         // 한국어
@@ -95,6 +101,16 @@ public class DialogUI : MonoBehaviour
                     "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                     "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                     "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                },
+                //대사4
+                new string[]
+                {
+                    //1페이지
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    //2페이지
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    //3페이지
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
             };
         }
@@ -353,6 +369,12 @@ public class DialogUI : MonoBehaviour
         }
         contentText.maxVisibleCharacters = int.MaxValue;
         currentState = DialogState.TypingComplete;
+        triangle.gameObject.SetActive(true);
+        tweenTriangle?.Kill();
+        triangle.color = new Color(triangle.color.r, triangle.color.g, triangle.color.b, 0.2f);
+        tweenTriangle = triangle.DOFade(1f, 0.15f).SetLoops(-1, LoopType.Yoyo).Play();
+        StopCoroutine(nameof(SometimesGlitchTextLoop));
+        StartCoroutine(nameof(SometimesGlitchTextLoop));
     }
     private void StartTyping(string text)
     {

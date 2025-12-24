@@ -78,7 +78,6 @@ public class PlayerIdle : IPlayerState
         {
             if(Time.time - ctx.attack.finishTime < 0.24f)
             {
-                Debug.Log(Time.time - ctx.attack.finishTime);
                 fsm.ChangeState(ctx.attackCombo);
             }
             else
