@@ -52,6 +52,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public bool isLanternOn;
     [HideInInspector] public bool isOpenPop;
     [HideInInspector] public bool isOpenDialog;
+    [HideInInspector] public bool isOpenInventory;
     [HideInInspector] public bool isSceneWaiting;
     [HideInInspector] public bool isShowPop0;
 
@@ -88,6 +89,11 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             await SaveAllMonsterAndObject();
         }
+        else
+        {
+            // 죽어서 씬 이동하는 경우는 currData 에서 savedData로 롤백
+            DBManager.I.currData = DBManager.I.savedData;
+        }
         await Task.Delay(500);
         AsyncOperation ao = SceneManager.LoadSceneAsync(index);
         onSceneChangeBefore.Invoke();
@@ -123,6 +129,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (!isDie)
         {
             await SaveAllMonsterAndObject();
+        }
+        else
+        {
+            DBManager.I.currData = DBManager.I.savedData;
         }
         await Task.Delay(500);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
@@ -416,6 +426,125 @@ public class GameManager : SingletonBehaviour<GameManager>
                 sb.Append(originalChar);
             }
         }
+        return sb.ToString();
+    }
+    public async void GlitchPartialText(TMPro.TMP_Text tMP_Text, int glitchCharCount = 2, float glitchDuration = 0.4f)
+    {
+        if (tMP_Text == null || string.IsNullOrEmpty(tMP_Text.text)) return;
+
+        string originalText = tMP_Text.text;
+        int totalIterations = (int)(glitchDuration * 1000f / glitchDelayMs);
+
+        for (int i = 0; i < totalIterations; i++)
+        {
+            await Task.Delay(glitchDelayMs);
+            tMP_Text.text = GeneratePartialGlitchString(originalText, tMP_Text.color, glitchCharCount);
+        }
+
+        tMP_Text.text = originalText;
+    }
+
+    // UI.Text용 메서드
+    public async void GlitchPartialText(UnityEngine.UI.Text text, int glitchCharCount = 2, float glitchDuration = 0.4f)
+    {
+        if (text == null || string.IsNullOrEmpty(text.text)) return;
+
+        string originalText = text.text;
+        int totalIterations = (int)(glitchDuration * 1000f / glitchDelayMs);
+
+        for (int i = 0; i < totalIterations; i++)
+        {
+            await Task.Delay(glitchDelayMs);
+            text.text = GeneratePartialGlitchString(originalText, text.color, glitchCharCount);
+        }
+
+        text.text = originalText;
+    }
+
+    private string GeneratePartialGlitchString(string original, Color originalColor, int glitchCount)
+    {
+        if (string.IsNullOrEmpty(original)) return "";
+
+        // 글리치할 글자 수가 전체 길이를 넘지 않도록 제한
+        glitchCount = Mathf.Clamp(glitchCount, 1, original.Length);
+
+        // 글리치가 시작될 무작위 인덱스 선정
+        int startIndex = Random.Range(0, original.Length - glitchCount + 1);
+        int endIndex = startIndex + glitchCount;
+
+        StringBuilder sb = new StringBuilder(original.Length * 2);
+
+        for (int i = 0; i < original.Length; i++)
+        {
+            // 현재 인덱스가 정해진 글자 수 범위 안에 있을 때만 변형
+            if (i >= startIndex && i < endIndex)
+            {
+                if (Random.value < 0.5f)
+                {
+                    // 글리치 문자로 교체
+                    sb.Append(glitchChars[Random.Range(0, glitchChars.Length)]);
+                }
+                else
+                {
+                    // 색상만 변경
+                    Color randomColor = 0.5f * originalColor + 0.5f * new Color(Random.value, Random.value, Random.value);
+                    string colorHex = ColorUtility.ToHtmlStringRGB(randomColor);
+                    sb.Append($"<color=#{colorHex}>{original[i]}</color>");
+                }
+            }
+            else
+            {
+                // 그 외에는 원본 유지
+                sb.Append(original[i]);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private string GeneratePartialGlitchString(string original, Color originalColor, float intensity)
+    {
+        StringBuilder sb = new StringBuilder(original.Length * 2);
+
+        // 글리치가 시작될 지점과 범위를 랜덤하게 설정
+        // intensity(0.0~1.0)에 따라 글리치가 일어날 확률적 길이를 정함
+        int glitchLength = Random.Range(1, Mathf.Max(2, (int)(original.Length * intensity)));
+        int startIndex = Random.Range(0, Mathf.Max(1, original.Length - glitchLength));
+        int endIndex = startIndex + glitchLength;
+
+        for (int i = 0; i < original.Length; i++)
+        {
+            // 현재 인덱스가 랜덤하게 정해진 글리치 범위 안에 있다면
+            if (i >= startIndex && i < endIndex)
+            {
+                // 80% 확률로 글리치 문자 혹은 색상 변경 적용
+                if (Random.value < 0.8f)
+                {
+                    if (Random.value < 0.5f)
+                    {
+                        // 1. 글리치 문자로 대체
+                        sb.Append(glitchChars[Random.Range(0, glitchChars.Length)]);
+                    }
+                    else
+                    {
+                        // 2. 색상만 변경 (원본 글자는 유지)
+                        Color randomColor = 0.5f * originalColor + 0.5f * new Color(Random.value, Random.value, Random.value);
+                        string colorHex = ColorUtility.ToHtmlStringRGB(randomColor);
+                        sb.Append($"<color=#{colorHex}>{original[i]}</color>");
+                    }
+                }
+                else
+                {
+                    sb.Append(original[i]);
+                }
+            }
+            else
+            {
+                // 범위 밖은 원본 그대로 유지
+                sb.Append(original[i]);
+            }
+        }
+
         return sb.ToString();
     }
     #endregion

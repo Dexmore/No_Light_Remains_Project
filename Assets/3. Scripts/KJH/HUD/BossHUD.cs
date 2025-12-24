@@ -42,38 +42,36 @@ public class BossHUD : MonoBehaviour
         {
             canvas.gameObject.SetActive(false);
         }
-        if (this.target != target)
+        if (this.target == target) return;
+        this.target = target;
+        if (isFirst)
         {
-            this.target = target;
-            if (isFirst)
-            {
-                isFirst = false;
-                StartCoroutine(nameof(Opening));
-            }
-            //
-            float ratio = target.currHealth / target.maxHealth;
-            slicedLiquidBar.Value = ratio;
-            textName.text = target.data.Name;
-            if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
-            {
-                currColor = phase1Color;
-                barImage.color = currColor;
-            }
-            else if (slicedLiquidBar.Value > 0.4f && slicedLiquidBar.Value <= 0.7f && currColor != phase2Color)
-            {
-                currColor = phase2Color;
-                barImage.color = currColor;
-            }
-            else if (slicedLiquidBar.Value > 0.23f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
-            {
-                currColor = phase3Color;
-                barImage.color = currColor;
-            }
-            else if (slicedLiquidBar.Value <= 0.23f && currColor != moribundColor)
-            {
-                currColor = moribundColor;
-                barImage.color = currColor;
-            }
+            isFirst = false;
+            StartCoroutine(nameof(Opening));
+        }
+        //
+        float ratio = target.currHealth / target.maxHealth;
+        slicedLiquidBar.Value = ratio;
+        textName.text = target.data.Name;
+        if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
+        {
+            currColor = phase1Color;
+            barImage.color = currColor;
+        }
+        else if (slicedLiquidBar.Value > 0.4f && slicedLiquidBar.Value <= 0.7f && currColor != phase2Color)
+        {
+            currColor = phase2Color;
+            barImage.color = currColor;
+        }
+        else if (slicedLiquidBar.Value > 0.23f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
+        {
+            currColor = phase3Color;
+            barImage.color = currColor;
+        }
+        else if (slicedLiquidBar.Value <= 0.23f && currColor != moribundColor)
+        {
+            currColor = moribundColor;
+            barImage.color = currColor;
         }
     }
     Color currColor;
@@ -88,11 +86,12 @@ public class BossHUD : MonoBehaviour
     Transform hPBarFill;
     IEnumerator Opening()
     {
-        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        Debug.Log("Opening");
         canvas.gameObject.SetActive(true);
         canvas.Find("Opening").gameObject.SetActive(true);
         canvas.Find("Wrap").gameObject.SetActive(false);
-        yield return YieldInstructionCache.WaitForSeconds(2f);
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
         canvas.Find("Opening").gameObject.SetActive(false);
         canvas.Find("Wrap").gameObject.SetActive(true);
     }

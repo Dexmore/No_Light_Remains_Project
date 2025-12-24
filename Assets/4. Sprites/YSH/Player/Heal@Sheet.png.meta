@@ -201,7 +201,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 48
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -222,7 +222,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -246,6 +246,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -255,10 +281,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -275,12 +301,12 @@ TextureImporter:
       name: Heal@Sheet_1
       rect:
         serializedVersion: 2
-        x: 159
+        x: 55
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -297,12 +323,12 @@ TextureImporter:
       name: Heal@Sheet_2
       rect:
         serializedVersion: 2
-        x: 318
+        x: 110
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.44, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -319,12 +345,12 @@ TextureImporter:
       name: Heal@Sheet_3
       rect:
         serializedVersion: 2
-        x: 477
+        x: 165
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -341,12 +367,12 @@ TextureImporter:
       name: Heal@Sheet_4
       rect:
         serializedVersion: 2
-        x: 636
+        x: 220
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -363,12 +389,12 @@ TextureImporter:
       name: Heal@Sheet_5
       rect:
         serializedVersion: 2
-        x: 795
+        x: 275
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.52, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -385,12 +411,12 @@ TextureImporter:
       name: Heal@Sheet_6
       rect:
         serializedVersion: 2
-        x: 954
+        x: 330
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.52, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -407,12 +433,12 @@ TextureImporter:
       name: Heal@Sheet_7
       rect:
         serializedVersion: 2
-        x: 1113
+        x: 385
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -429,12 +455,12 @@ TextureImporter:
       name: Heal@Sheet_8
       rect:
         serializedVersion: 2
-        x: 1272
+        x: 440
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -451,12 +477,12 @@ TextureImporter:
       name: Heal@Sheet_9
       rect:
         serializedVersion: 2
-        x: 1431
+        x: 495
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -473,12 +499,12 @@ TextureImporter:
       name: Heal@Sheet_10
       rect:
         serializedVersion: 2
-        x: 1590
+        x: 550
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -495,12 +521,12 @@ TextureImporter:
       name: Heal@Sheet_11
       rect:
         serializedVersion: 2
-        x: 1749
+        x: 605
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -517,12 +543,12 @@ TextureImporter:
       name: Heal@Sheet_12
       rect:
         serializedVersion: 2
-        x: 1908
+        x: 660
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -539,12 +565,12 @@ TextureImporter:
       name: Heal@Sheet_13
       rect:
         serializedVersion: 2
-        x: 2067
+        x: 715
         y: 0
-        width: 159
-        height: 135
+        width: 55
+        height: 46
       alignment: 9
-      pivot: {x: 0.43, y: 0}
+      pivot: {x: 0.42, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -571,7 +597,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":14.0,"y":1.0},"gridSpriteSize":{"x":159.0,"y":135.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.4300000071525574,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":14.0,"y":1.0},"gridSpriteSize":{"x":55.0,"y":46.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.41999998688697817,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Heal@Sheet_0: 6041689287274404058
       Heal@Sheet_1: -3087353915043936667

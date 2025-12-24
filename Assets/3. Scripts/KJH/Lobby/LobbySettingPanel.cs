@@ -8,6 +8,7 @@ using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.Localization.Settings;
+using NUnit.Framework.Interfaces;
 
 public class LobbySettingPanel : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class LobbySettingPanel : MonoBehaviour
     private Button[] keymapButtons;
     private Toggle fullscreenToggle;
     private TMP_Dropdown resolutionDropdown;
-
+    TMP_Text tipText;
     void Awake()
     {
         content = transform.Find("ScrollView/Viewport/Content");
@@ -37,6 +38,8 @@ public class LobbySettingPanel : MonoBehaviour
         keymapButtons = content.Find("Keymap").GetComponentsInChildren<Button>(true);
         fullscreenToggle = content.Find("Screen/FullScreen").GetComponentInChildren<Toggle>(true);
         resolutionDropdown = content.Find("Screen/Resolution").GetComponentInChildren<TMP_Dropdown>(true);
+        tipText = content.Find("Screen/TipText(TMP)").GetComponent<TMP_Text>();
+        Debug.Log(tipText);
     }
     void OnEnable()
     {
@@ -68,6 +71,7 @@ public class LobbySettingPanel : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         if (brightnessPanel == null)
             brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
+        
     }
     public void ApplyAndSaveChanges()
     {
@@ -86,6 +90,7 @@ public class LobbySettingPanel : MonoBehaviour
     {
         SetupResolutions();
         SettingData settings = SettingManager.I.setting;
+        tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b , 0.5f * Mathf.Clamp01(settings.brightness - 0.75f));
         SetMasterVolume(settings.masterVolume);
         SetBGMVolume(settings.bgmVolume);
         SetSFXVolume(settings.sfxVolume);
@@ -181,7 +186,10 @@ public class LobbySettingPanel : MonoBehaviour
     {
         if (brightnessPanel != null)
         {
-            brightnessPanel.color = new Color(0, 0, 0, Mathf.Clamp(1 - value, 0, 1 - MIN_BRIGHTNESS));
+            float _value = Mathf.Clamp(1 - value, 0, 1 - MIN_BRIGHTNESS);
+            float alpha = Mathf.Lerp(0f, 0.765f, _value);
+            brightnessPanel.color = new Color(0, 0, 0, alpha);
+            tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b , 0.5f * Mathf.Clamp01(value - 0.75f));
         }
         SettingManager.I.setting.brightness = Mathf.Clamp(value, MIN_BRIGHTNESS, 1f);
     }
@@ -285,7 +293,7 @@ public class LobbySettingPanel : MonoBehaviour
     {
         string[] actionNames = {
             "Move", "Move", "Attack", "Jump", "Lantern",
-            "Parry", "Potion", "Interaction", "Inventory"
+            "Parry", "Potion", "Interaction", "Inventory", "Move"
         };
 
         var action = inputActions.FindAction(actionNames[index]);
@@ -305,7 +313,18 @@ public class LobbySettingPanel : MonoBehaviour
         int bindingIndex = 0;
         if (action.name == "Move")
         {
-            bindingIndex = (index == 0) ? 3 : 4;
+            if (index == 0)
+            {
+                bindingIndex = 3;
+            }
+            else if (index == 1)
+            {
+                bindingIndex = 4;
+            }
+            else if (index == 9)
+            {
+                bindingIndex = 2;
+            }
         }
         else
         {
@@ -334,10 +353,10 @@ public class LobbySettingPanel : MonoBehaviour
                     {
                         bool dashWasEnabled = dashAction.enabled;
                         if (dashWasEnabled) dashAction.Disable();
-                        
+
                         // 이동 키와 동일한 경로로 대시 키 덮어쓰기
                         dashAction.ApplyBindingOverride(0, newPath);
-                        
+
                         if (dashWasEnabled) dashAction.Enable();
                     }
                 }
@@ -401,14 +420,33 @@ public class LobbySettingPanel : MonoBehaviour
     public void UpdateKeymapTexts()
     {
         if (keymapButtons == null || keymapButtons.Length == 0) return;
-        string[] actionNames = { "Move", "Move", "Attack", "Jump", "Lantern", "Parry", "Potion", "Interaction", "Inventory" };
+        string[] actionNames = { "Move", "Move", "Attack", "Jump", "Lantern", "Parry", "Potion", "Interaction", "Inventory", "Move" };
 
         for (int i = 0; i < keymapButtons.Length; i++)
         {
             var action = inputActions.FindAction(actionNames[i]);
             if (action == null) continue;
 
-            int bIndex = (action.name == "Move") ? (i == 0 ? 3 : 4) : action.bindings.ToList().FindIndex(b => !b.isComposite);
+            int bIndex = 0;
+            if (action.name == "Move")
+            {
+                if (i == 0)
+                {
+                    bIndex = 3;
+                }
+                else if (i == 1)
+                {
+                    bIndex = 4;
+                }
+                else if (i == 9)
+                {
+                    bIndex = 2;
+                }
+            }
+            else
+            {
+                bIndex = action.bindings.ToList().FindIndex(b => !b.isComposite);
+            }
 
             var txt = keymapButtons[i].GetComponentInChildren<TextMeshProUGUI>();
             if (txt != null)

@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class LobbyControl : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class LobbyControl : MonoBehaviour
 
     private Stack<GameObject> uiPanelStack = new Stack<GameObject>();
     LobbySettingPanel lobbySettingPanel;
-
+    Image titleText;
 
     private void Awake()
     {
@@ -43,13 +44,17 @@ public class LobbyControl : MonoBehaviour
             ESC_i.SetActive(false);
         lobbySettingPanel = FindAnyObjectByType<LobbySettingPanel>(FindObjectsInactive.Include);
     }
-
+    Tween tweenTitle;
     private void OnEnable()
     {
         if (cancelAction != null)
         {
             cancelAction.action.performed += OnCancelPerformed;
         }
+        tweenTitle?.Kill();
+        titleText = Title_p.transform.Find("REKINDLE").GetComponent<Image>();
+        titleText.color = new Color(titleText.color.r, titleText.color.g, titleText.color.b, 0.7f);
+        tweenTitle = titleText.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo).Play();
     }
 
     private void OnDisable()
@@ -58,6 +63,7 @@ public class LobbyControl : MonoBehaviour
         {
             cancelAction.action.performed -= OnCancelPerformed;
         }
+        tweenTitle?.Kill();
     }
 
     private void OnCancelPerformed(InputAction.CallbackContext context)
@@ -74,9 +80,10 @@ public class LobbyControl : MonoBehaviour
         yield return null;
         DBManager.I.LoadLocal();
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
-        Brightness_p = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
-        float b = SettingManager.I.setting.brightness;
-        Brightness_p.color = new Color(0, 0, 0, 1 - b);
+        var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
+        float alpha = Mathf.Lerp(0f, 0.765f, 1 - SettingManager.I.setting.brightness);
+        brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
+
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         InitSteam();
     }
@@ -118,7 +125,7 @@ public class LobbyControl : MonoBehaviour
                 LobbySettingPanel settingManager = Setting_p.GetComponent<LobbySettingPanel>();
                 if (settingManager != null)
                 {
-                    
+
                 }
             }
             AudioManager.I.PlaySFX("Tick1");

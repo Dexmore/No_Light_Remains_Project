@@ -50,7 +50,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoBGM:
   - scneneName: Lobby
-    list: []
+    list:
+    - audioClip: {fileID: 8300000, guid: 80d3a6bdb7eff494286a62b5da2f32cb, type: 3}
+      weight: 10
+    - audioClip: {fileID: 8300000, guid: 061e8fffce2731347a78cc4e5ac4df22, type: 3}
+      weight: 10
   - scneneName: Cinematic
     list: []
   - scneneName: Stage0
@@ -61,37 +65,56 @@ MonoBehaviour:
       weight: 6
   - scneneName: Stage1
     list:
-    - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
-      weight: 11
     - audioClip: {fileID: 8300000, guid: a475e4fff01a65c40b651b0a711bd5fd, type: 3}
       weight: 6
+    - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
+      weight: 5
+    - audioClip: {fileID: 8300000, guid: 396b86deb16710541bb488be24697ea9, type: 3}
+      weight: 5
   - scneneName: Stage2
     list:
     - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
       weight: 11
     - audioClip: {fileID: 8300000, guid: a475e4fff01a65c40b651b0a711bd5fd, type: 3}
       weight: 6
+    - audioClip: {fileID: 8300000, guid: a313079f13416ec48aa00f2e2b08331d, type: 3}
+      weight: 6
   - scneneName: Stage3
     list:
-    - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
-      weight: 11
     - audioClip: {fileID: 8300000, guid: a475e4fff01a65c40b651b0a711bd5fd, type: 3}
-      weight: 6
+      weight: 4
+    - audioClip: {fileID: 8300000, guid: 396b86deb16710541bb488be24697ea9, type: 3}
+      weight: 4
+    - audioClip: {fileID: 8300000, guid: a313079f13416ec48aa00f2e2b08331d, type: 3}
+      weight: 15
   - scneneName: Stage4
     list:
     - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
       weight: 11
     - audioClip: {fileID: 8300000, guid: a475e4fff01a65c40b651b0a711bd5fd, type: 3}
       weight: 6
+    - audioClip: {fileID: 8300000, guid: 396b86deb16710541bb488be24697ea9, type: 3}
+      weight: 6
   - scneneName: Stage5
     list:
-    - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
-      weight: 11
     - audioClip: {fileID: 8300000, guid: a475e4fff01a65c40b651b0a711bd5fd, type: 3}
+      weight: 6
+    - audioClip: {fileID: 8300000, guid: a313079f13416ec48aa00f2e2b08331d, type: 3}
+      weight: 6
+    - audioClip: {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
+      weight: 6
+    - audioClip: {fileID: 8300000, guid: 396b86deb16710541bb488be24697ea9, type: 3}
       weight: 6
   - scneneName: Stage6
     list: []
-  bgmList: []
+  bgmList:
+  - {fileID: 8300000, guid: 3381326eedadd644a9a478b75f55898b, type: 3}
+  - {fileID: 8300000, guid: a475e4fff01a65c40b651b0a711bd5fd, type: 3}
+  - {fileID: 8300000, guid: 80d3a6bdb7eff494286a62b5da2f32cb, type: 3}
+  - {fileID: 8300000, guid: 061e8fffce2731347a78cc4e5ac4df22, type: 3}
+  - {fileID: 8300000, guid: 396b86deb16710541bb488be24697ea9, type: 3}
+  - {fileID: 8300000, guid: a313079f13416ec48aa00f2e2b08331d, type: 3}
+  - {fileID: 8300000, guid: e236ebdf6a8bce949a5b87e40c87ebdf, type: 3}
   sfxList:
   - {fileID: 8300000, guid: 6cd2fc652aac1ec4b9f4eaabe72de377, type: 3}
   - {fileID: 8300000, guid: d038ab56985dec0458e4767d742c3fab, type: 3}

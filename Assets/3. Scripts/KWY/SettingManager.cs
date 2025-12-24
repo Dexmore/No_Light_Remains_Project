@@ -41,6 +41,12 @@ public class SettingManager : SingletonBehaviour<SettingManager>
     [SerializeField] AudioMixer audioMixer;
     public void ApplyAllSettings()
     {
+
+        // 밝기 적용
+        float alpha = Mathf.Lerp(0f, 0.765f, 1 - setting.brightness);
+        var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
+        brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
+
         // 1. 해상도 및 전체화면 적용
         if (setting.resolutionIndex != -1)
         {
@@ -103,6 +109,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
             // 만약 index가 0이나 1로 들어오면 자동으로 인덱스 변환
             if (bindingIndex == 0) bindingIndex = 3;
             else if (bindingIndex == 1) bindingIndex = 4;
+            else if (bindingIndex == 2) bindingIndex = 2;
         }
 
         string path = action.bindings[bindingIndex].effectivePath;
@@ -130,9 +137,9 @@ public class SettingData
 {
     public int resolutionIndex = -1;
     public FullScreenMode fullscreenMode = FullScreenMode.FullScreenWindow;
-    public float brightness = 1.0f;
+    public float brightness = 0.55f;
     public float masterVolume = 1.0f;
-    public float bgmVolume = 1.0f;
+    public float bgmVolume = 0.55f;
     public float sfxVolume = 1.0f;
     public string keyBindingOverrides = "";
     public int locale;
@@ -140,9 +147,9 @@ public class SettingData
     {
         resolutionIndex = -1;
         fullscreenMode = FullScreenMode.FullScreenWindow;
-        brightness = 1.0f;
+        brightness = 0.55f;
         masterVolume = 1.0f;
-        bgmVolume = 1.0f;
+        bgmVolume = 0.55f;
         sfxVolume = 1.0f;
         keyBindingOverrides = "";
     }

@@ -19,11 +19,13 @@ public class PlayerOpenInventory : IPlayerState
         ctx.inventoryUI.Open();
         flagInt = 0;
         AudioManager.I.PlaySFX("Pocket1");
+        GameManager.I.isOpenInventory = true;
     }
     public void Exit()
     {
         ctx.inventoryUI.Close();
         AudioManager.I.PlaySFX("Pocket1");
+        GameManager.I.isOpenInventory = false;
     }
     public void UpdateState()
     {
