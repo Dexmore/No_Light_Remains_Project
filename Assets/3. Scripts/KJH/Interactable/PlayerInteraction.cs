@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using Cysharp.Threading.Tasks;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+
 public class PlayerInteraction : MonoBehaviour
 {
     #region UniTask Setting
@@ -82,6 +84,17 @@ public class PlayerInteraction : MonoBehaviour
         lanternAction.performed += InputLanternInteract;
         lanternAction.canceled += CancelLanternInteract;
         flag1 = false;
+
+        // 초기화 로직
+        lanternFreeform = playerControl.transform.Find("PlayerLight/Lantern/FreeformLight").GetComponent<Light2D>();
+        float s = 0.12f; // 두께 설정
+        float val = 0f;  // 초기 길이는 0
+        Vector3[] path = new Vector3[4];
+        path[0] = new Vector3(0, s, 0);
+        path[1] = new Vector3(0, -s, 0);
+        path[2] = new Vector3(val, -s, 0);
+        path[3] = new Vector3(val, s, 0);
+
     }
     public bool press1;
     public bool press2;
@@ -127,8 +140,12 @@ public class PlayerInteraction : MonoBehaviour
             ctsLanternInteraction = new CancellationTokenSource();
             var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternInteraction.Token);
             LanternInteraction(ctsLink.Token).Forget();
-            sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
             target2.PromptFill();
+            ctsLanternAnimationStart?.Cancel();
+            ctsLanternAnimationExit?.Cancel();
+            ctsLanternAnimationStart = new CancellationTokenSource();
+            ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationStart.Token);
+            LanternAnimationStart(ctsLink.Token).Forget();
         }
         press2 = true;
     }
@@ -138,18 +155,149 @@ public class PlayerInteraction : MonoBehaviour
         ctsLanternInteraction?.Cancel();
         DOTween.Kill(prompt.lanternCanvas.transform.Find("Wrap/PressFill"));
         DOTween.Kill(prompt.lanternCanvas.transform.Find("Wrap/PressRing"));
-        sfxLanternInteraction?.Despawn();
         target2?.PromptCancel();
+        ctsLanternAnimationStart?.Cancel();
+        ctsLanternAnimationExit?.Cancel();
+        ctsLanternAnimationExit = new CancellationTokenSource();
+        var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+        LanternAnimationExit(ctsLink.Token).Forget();
+        sfxLanternInteraction?.Despawn();
+        sfxLanternInteraction = null;
+        target2 = null;
     }
     CancellationTokenSource ctsLanternAnimationStart;
     CancellationTokenSource ctsLanternAnimationExit;
+    Transform playerLightTr;
+
+    private Transform lanternGroup;     // playerLightTr/Lantern
+    private SpriteRenderer lanternSprite;
+    private LineRenderer lanternLine;
+    private Light2D lanternFreeform;    // 사각형 프리폼 라이트
+
+    // 1. 애니메이션 시작 (Start)
     async UniTask LanternAnimationStart(CancellationToken token)
     {
-        
+        if (playerLightTr == null)
+            playerLightTr = playerControl.transform.Find("PlayerLight");
+
+        // 컴포넌트 캐싱
+        if (lanternGroup == null)
+        {
+            lanternGroup = playerLightTr.Find("Lantern");
+            lanternSprite = lanternGroup.GetChild(0).GetComponent<SpriteRenderer>();
+            lanternLine = lanternGroup.GetComponent<LineRenderer>();
+            lanternFreeform = lanternGroup.Find("FreeformLight").GetComponent<Light2D>();
+        }
+        // 모든 진행 중인 트윈 중지
+        DOTween.Kill(playerLightTr);
+        DOTween.Kill(lanternGroup);
+        DOTween.Kill(lanternSprite);
+
+        lanternGroup.gameObject.SetActive(true);
+        // [초기화] 랜턴 중심을 둘러싸는 작은 정사각형 (길이 0)
+        Vector3[] initPath = new Vector3[4];
+        float s = 0.12f; // 두께 설정
+        initPath[0] = new Vector3(0, s, 0);   // 좌상
+        initPath[1] = new Vector3(0, -s, 0);  // 좌하
+        initPath[2] = new Vector3(0.01f, -s, 0); // 우하 (미세한 간격)
+        initPath[3] = new Vector3(0.01f, s, 0);  // 우상
+        lanternFreeform.SetShapePath(initPath);
+
+        float duration = 0.13f;
+        Vector3 targetBasePos = target2.transform.Find("LightPoint").position;
+        Vector3 midPoint = Vector3.Lerp(playerControl.transform.position, targetBasePos, 0.3f);
+        Vector3 floatPosWorld = midPoint + Vector3.up * 1.2f;
+        if (Vector3.Distance(floatPosWorld, targetBasePos) <= 0.9f)
+        {
+            //Debug.Log("너무 가까워서 뒤로 조금 밈");
+            Vector3 outerDir = playerControl.transform.position - targetBasePos;
+            outerDir.y = 0f;
+            outerDir.Normalize();
+            floatPosWorld += 2f * outerDir;
+        }
+        Vector3 floatPosLo = playerLightTr.parent.InverseTransformPoint(floatPosWorld);
+
+
+        await UniTask.Delay(10, cancellationToken: token);
+
+        sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
+
+
+        // 단계 1: 부상 및 활성화
+        playerLightTr.DOLocalMove(floatPosLo, duration).SetEase(Ease.OutCubic);
+        lanternSprite.DOFade(1f, duration);
+        DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 3f, duration);
+
+        await UniTask.Delay((int)(duration * 0.5f * 1000), cancellationToken: token);
+
+        // 단계 2: 회전 조준
+        Quaternion targetRot = Quaternion.FromToRotation(Vector3.right, (targetBasePos - floatPosWorld).normalized);
+        lanternGroup.DORotateQuaternion(targetRot, duration * 0.5f).SetEase(Ease.OutBack);
+
+        await UniTask.Delay((int)(duration * 0.4f * 1000), cancellationToken: token);
+
+        // 단계 3: 빛 발사 (WaitUntil 방식)
+        // 기준점을 lanternGroup(실제 랜턴 위치)으로 변경하여 오차 제거
+        float distance = Vector3.Distance(lanternGroup.position, targetBasePos);
+        s = 0.12f;
+        bool isTweenFinished = false;
+
+        // 1. 라인 렌더러 끝점 설정 (X축 로컬 좌표로 늘림)
+        // 시작점(0,0,0)에서 끝점(distance,0,0)까지
+        DOTween.To(() => lanternLine.GetPosition(1), x => lanternLine.SetPosition(1, x), new Vector3(distance, 0, 0), 0.06f);
+
+        // 2. 프리폼 라이트 노드 설정
+        DOTween.To(() => 0f, (val) =>
+        {
+            Vector3[] path = new Vector3[4];
+            path[0] = new Vector3(0, s, 0);
+            path[1] = new Vector3(0, -s, 0);
+            path[2] = new Vector3(val, -s, 0); // val이 distance까지 도달함
+            path[3] = new Vector3(val, s, 0);
+            lanternFreeform.SetShapePath(path);
+        }, distance, 0.06f) // 목표값을 정확히 위에서 계산한 distance로 설정
+        .SetEase(Ease.OutCubic)
+        .OnComplete(() => isTweenFinished = true);
+
+        await UniTask.WaitUntil(() => isTweenFinished, cancellationToken: token);
+
     }
+
+    // 2. 애니메이션 종료 (Exit)
     async UniTask LanternAnimationExit(CancellationToken token)
     {
-        
+
+        if (playerLightTr == null)
+            playerLightTr = playerControl.transform.Find("PlayerLight");
+
+        // 컴포넌트 캐싱
+        if (lanternGroup == null)
+        {
+            lanternGroup = playerLightTr.Find("Lantern");
+            lanternSprite = lanternGroup.GetChild(0).GetComponent<SpriteRenderer>();
+            lanternLine = lanternGroup.GetComponent<LineRenderer>();
+            lanternFreeform = lanternGroup.Find("FreeformLight").GetComponent<Light2D>();
+        }
+        // 모든 진행 중인 트윈 중지
+        DOTween.Kill(playerLightTr);
+        DOTween.Kill(lanternGroup);
+        DOTween.Kill(lanternSprite);
+
+        float exitDuration = 0.5f;
+        lanternSprite.DOFade(0f, exitDuration);
+        DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 0f, exitDuration);
+
+        // 라인 및 프리폼 즉시 초기화 (필요시 트윈으로 변경 가능)
+        lanternLine.SetPosition(1, Vector3.zero);
+        lanternFreeform.SetShapePath(new Vector3[4]);
+
+        bool isExitFinished = false;
+        lanternGroup.DOLocalRotateQuaternion(Quaternion.identity, exitDuration);
+        playerLightTr.DOLocalMove(new Vector3(0f, 0.5f, 0f), exitDuration)
+            .SetEase(Ease.InCubic)
+            .OnComplete(() => { isExitFinished = true; lanternGroup.gameObject.SetActive(false); });
+
+        await UniTask.WaitUntil(() => isExitFinished, cancellationToken: token);
     }
     CancellationTokenSource ctsLanternInteraction;
     SFX sfxLanternInteraction;
@@ -182,7 +330,13 @@ public class PlayerInteraction : MonoBehaviour
             target2.Run();
             prompt.Close(1);
             target2?.PromptCancel();
+            ctsLanternAnimationStart?.Cancel();
+            ctsLanternAnimationExit?.Cancel();
+            ctsLanternAnimationExit = new CancellationTokenSource();
+            var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+            LanternAnimationExit(ctsLink.Token).Forget();
             sfxLanternInteraction?.Despawn();
+            sfxLanternInteraction = null;
             target2 = null;
         }
     }
@@ -200,7 +354,13 @@ public class PlayerInteraction : MonoBehaviour
                 target1 = null;
                 prompt.Close(1);
                 target2?.PromptCancel();
+                ctsLanternAnimationStart?.Cancel();
+                ctsLanternAnimationExit?.Cancel();
+                ctsLanternAnimationExit = new CancellationTokenSource();
+                var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                LanternAnimationExit(ctsLink.Token).Forget();
                 sfxLanternInteraction?.Despawn();
+                sfxLanternInteraction = null;
                 target2 = null;
                 continue;
             }
@@ -210,7 +370,13 @@ public class PlayerInteraction : MonoBehaviour
                 target1 = null;
                 prompt.Close(1);
                 target2?.PromptCancel();
+                ctsLanternAnimationStart?.Cancel();
+                ctsLanternAnimationExit?.Cancel();
+                ctsLanternAnimationExit = new CancellationTokenSource();
+                var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                LanternAnimationExit(ctsLink.Token).Forget();
                 sfxLanternInteraction?.Despawn();
+                sfxLanternInteraction = null;
                 target2 = null;
                 continue;
             }
@@ -317,7 +483,13 @@ public class PlayerInteraction : MonoBehaviour
                     {
                         prompt.Close(1);
                         target2?.PromptCancel();
+                        ctsLanternAnimationStart?.Cancel();
+                        ctsLanternAnimationExit?.Cancel();
+                        ctsLanternAnimationExit = new CancellationTokenSource();
+                        var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                        LanternAnimationExit(ctsLink.Token).Forget();
                         sfxLanternInteraction?.Despawn();
+                        sfxLanternInteraction = null;
                         target2 = null;
                     }
                 }
@@ -327,14 +499,26 @@ public class PlayerInteraction : MonoBehaviour
                     {
                         prompt.Close(1);
                         target2?.PromptCancel();
+                        ctsLanternAnimationStart?.Cancel();
+                        ctsLanternAnimationExit?.Cancel();
+                        ctsLanternAnimationExit = new CancellationTokenSource();
+                        var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                        LanternAnimationExit(ctsLink.Token).Forget();
                         sfxLanternInteraction?.Despawn();
+                        sfxLanternInteraction = null;
                         target2 = null;
                     }
                     if (prompt.lanternCanvas.gameObject.activeInHierarchy)
                     {
                         prompt.Close(1, true);
                         target2?.PromptCancel();
+                        ctsLanternAnimationStart?.Cancel();
+                        ctsLanternAnimationExit?.Cancel();
+                        ctsLanternAnimationExit = new CancellationTokenSource();
+                        var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                        LanternAnimationExit(ctsLink.Token).Forget();
                         sfxLanternInteraction?.Despawn();
+                        sfxLanternInteraction = null;
                         target2 = null;
                     }
                 }
@@ -349,9 +533,18 @@ public class PlayerInteraction : MonoBehaviour
                 if (target2 != null)
                 {
                     prompt.Close(1);
-                    target2?.PromptCancel();
                     sfxLanternInteraction?.Despawn();
-                    target2 = null;
+                    sfxLanternInteraction = null;
+                    if (target2 != null)
+                    {
+                        target2?.PromptCancel();
+                        ctsLanternAnimationStart?.Cancel();
+                        ctsLanternAnimationExit?.Cancel();
+                        ctsLanternAnimationExit = new CancellationTokenSource();
+                        var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                        LanternAnimationExit(ctsLink.Token).Forget();
+                        target2 = null;
+                    }
                 }
                 if (prompt.itrctCanvas.gameObject.activeInHierarchy)
                 {
@@ -361,9 +554,18 @@ public class PlayerInteraction : MonoBehaviour
                 if (prompt.lanternCanvas.gameObject.activeInHierarchy)
                 {
                     prompt.Close(1);
-                    target2?.PromptCancel();
                     sfxLanternInteraction?.Despawn();
-                    target2 = null;
+                    sfxLanternInteraction = null;
+                    if (target2 != null)
+                    {
+                        target2?.PromptCancel();
+                        ctsLanternAnimationStart?.Cancel();
+                        ctsLanternAnimationExit?.Cancel();
+                        ctsLanternAnimationExit = new CancellationTokenSource();
+                        var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+                        LanternAnimationExit(ctsLink.Token).Forget();
+                        target2 = null;
+                    }
                 }
             }
         }

@@ -35,14 +35,13 @@ public class ChestInteractable_LSH : Interactable, ISavable
         public Vector2Int countRange;
         [Range(0f, 1f)] public float probability;
     }
-    [Space(40)]
-    [Header("Settings")]
-    [SerializeField] private string openTriggerName = "Open";
+    //[Space(20)]
+    //[Header("Settings")]
+    private string openTriggerName = "Open";
     private bool opened = false;
     Collider2D col;
-    [Header("Animator")]
-    [SerializeField] private Animator animator;
-
+    //[Header("Animator")]
+    private Animator animator;
     private void Awake()
     {
         if (!animator) animator = GetComponentInChildren<Animator>();

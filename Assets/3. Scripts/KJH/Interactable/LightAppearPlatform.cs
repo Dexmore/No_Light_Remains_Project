@@ -99,9 +99,9 @@ public class LightAppearPlatform : Lanternable, ISavable
         lp.DOFade(1f, 0.5f).SetEase(Ease.InSine);
         tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
         light2?.gameObject.SetActive(true);
-        tweenLight2?.Kill();
         light2.intensity = 0f;
-        tweenLight2 = DOTween.To(() => light2.intensity, x => light2.intensity = x, 1.8f, 1.8f);
+        tweenLight2?.Kill();
+        tweenLight2 = DOTween.To(() => light2.intensity, x => light2.intensity = x, 1.8f, 4f);
         ps?.gameObject.SetActive(true);
         ps.Play();
         int maxCount = ps.main.maxParticles;
@@ -122,7 +122,7 @@ public class LightAppearPlatform : Lanternable, ISavable
         bool step3Flag = false;
         while (ps != null && (ps.isPlaying || ps.particleCount > 0))
         {
-            if (!step3Flag && Time.time - _startTime > 2.4f)
+            if (!step3Flag && Time.time - _startTime > 1.8f)
             {
                 step3Flag = true;
                 Step3();
@@ -218,8 +218,8 @@ public class LightAppearPlatform : Lanternable, ISavable
         {
             int individualSeed = baseSeed + i;
             float seedRatio = (Mathf.Abs(individualSeed * 15485863) % 1000000) / 1000000f;
-            delays[i] = seedRatio * 0.5f;
-            float speedVar = 0.9f + (seedRatio * 0.7f);
+            delays[i] = seedRatio * 0.3f;
+            float speedVar = 0.9f + (seedRatio * 0.8f);
             speeds[i] = (1f / (1f - (delays[i] / 1.0f))) * speedVar;
             if (light2Ds[i] != null) light2Ds[i].gameObject.SetActive(true);
         }
@@ -272,6 +272,7 @@ public class LightAppearPlatform : Lanternable, ISavable
         ps?.gameObject.SetActive(false);
         lp?.gameObject.SetActive(false);
         light2?.gameObject.SetActive(true);
+        tweenLight2?.Kill();
         light2.intensity = 1.8f;
         int lineCount = lineRenderers.Length;
         float s = 0.08f;

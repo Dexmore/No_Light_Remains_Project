@@ -9,7 +9,6 @@ public class DarkVanishPlatform : Lanternable, ISavable
     bool _isReady;
     ParticleSystem ps;
     SpriteRenderer lp;
-    Light2D light2;
     [SerializeField] GameObject platform;
     void Awake()
     {
@@ -17,11 +16,10 @@ public class DarkVanishPlatform : Lanternable, ISavable
         isComplete = false;
         platform?.SetActive(true);
         ps = transform.GetComponentInChildren<ParticleSystem>(true);
-        ps?.gameObject.SetActive(false);
+        ps?.gameObject.SetActive(true);
+        ps?.Play();
         lp = transform.Find("LightPoint").GetComponent<SpriteRenderer>();
         lp?.gameObject.SetActive(false);
-        light2 = transform.Find("Light(2)").GetComponent<Light2D>();
-        light2?.gameObject.SetActive(false);
     }
     public override void PromptFill()
     {

@@ -102,12 +102,8 @@ public class DialogUI : MonoBehaviour
                 //대사4
                 new string[]
                 {
-                    //1페이지
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
-                    //2페이지
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    //3페이지
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    //Page 1
+                    "문이 잠겨있다.",
                 },
             };
         }

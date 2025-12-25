@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1254265389951420350
 Transform:
   m_ObjectHideFlags: 0
@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3293112212930921855}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -84,10 +84,10 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.07
+    widthMultiplier: 0.06
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -106,10 +106,10 @@ LineRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 0}
-      key1: {r: 0.5613208, g: 0.8504868, b: 1, a: 0.019607844}
-      key2: {r: 0, g: 0, b: 0, a: 0}
-      key3: {r: 0, g: 0, b: 0, a: 0}
-      key4: {r: 0, g: 0, b: 0, a: 0}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0.039215688}
+      key3: {r: 0, g: 0, b: 0, a: 0.3764706}
+      key4: {r: 0, g: 0, b: 0, a: 0.03529412}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
@@ -122,21 +122,21 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
-      atime3: 0
-      atime4: 0
+      atime1: 32768
+      atime2: 65535
+      atime3: 65535
+      atime4: 65535
       atime5: 0
       atime6: 0
       atime7: 0
       m_Mode: 0
       m_ColorSpace: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 2
+      m_NumAlphaKeys: 3
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 0
+    textureMode: 4
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
@@ -169,9 +169,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4386317085509916404}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1.5, z: 1}
+  m_LocalScale: {x: 0.6, y: 1.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1254265389951420350}
@@ -502,7 +502,7 @@ GameObject:
   - component: {fileID: 7395443677729985884}
   - component: {fileID: 4382478145906651148}
   m_Layer: 0
-  m_Name: Light2D
+  m_Name: FreeformLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -538,9 +538,9 @@ MonoBehaviour:
   m_ComponentVersion: 2
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.713
+  m_FalloffIntensity: 0.6
   m_Color: {r: 0.53333336, g: 0.9098039, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 4.5
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -559,8 +559,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.017049998, y: -0.007250011, z: 0}
-    m_Extent: {x: 0.88594997, y: 0.78655, z: 0}
+    m_Center: {x: 0.044750005, y: 0.012249991, z: 0}
+    m_Extent: {x: 0.74125004, y: 0.50415, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -568,13 +568,13 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 0.66
+  m_ShapeLightFalloffSize: 0.4
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: -0.03259301, y: -0.1331298, z: 0}
-  - {x: 0.2442497, y: -0.0037845373, z: 0}
-  - {x: 0.006136298, y: 0.119019434, z: 0}
-  - {x: -0.20897329, y: 0.0014327368, z: 0}
+  - {x: 0.3862338, y: -0.09093413, z: 0}
+  - {x: 0.34816074, y: 0.097329214, z: 0}
+  - {x: -0.29635334, y: 0.115891896, z: 0}
+  - {x: -0.2800759, y: -0.0871809, z: 0}
 --- !u!1 &7623348665942367131
 GameObject:
   m_ObjectHideFlags: 0
