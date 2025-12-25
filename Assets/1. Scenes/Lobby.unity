@@ -1135,15 +1135,15 @@ RectTransform:
   m_GameObject: {fileID: 973666354}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1496723998}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -340.7}
-  m_SizeDelta: {x: 830, y: 229.7}
+  m_AnchoredPosition: {x: 0, y: -240}
+  m_SizeDelta: {x: 830, y: 196}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &973666356
 MonoBehaviour:
@@ -1158,14 +1158,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.8}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -901236443, guid: a0083312cef3ff443a7731f7eea9e192, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 09b519836435d5643b0a2eebbb5e3dea, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3730,8 +3730,67 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2740901462201538981, guid: 6a626f3712aa4e147b8d9b086ba4f367, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1305668502807051709}
   m_SourcePrefab: {fileID: 100100000, guid: 6a626f3712aa4e147b8d9b086ba4f367, type: 3}
+--- !u!114 &1305668502807051707 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3788386004749357956, guid: 6a626f3712aa4e147b8d9b086ba4f367, type: 3}
+  m_PrefabInstance: {fileID: 1305668502807051706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1305668502807051708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &1305668502807051708 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2740901462201538981, guid: 6a626f3712aa4e147b8d9b086ba4f367, type: 3}
+  m_PrefabInstance: {fileID: 1305668502807051706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1305668502807051709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1305668502807051708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Components.LocalizeStringEvent
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:59f6a763860e4ee40abd1e516422d048
+    m_TableEntryReference:
+      m_KeyId: 3639445739814912
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1305668502807051707}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
+  references:
+    version: 2
+    RefIds: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

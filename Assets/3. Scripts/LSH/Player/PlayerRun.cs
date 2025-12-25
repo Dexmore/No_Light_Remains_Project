@@ -25,6 +25,7 @@ public class PlayerRun : IPlayerState
             potionAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Potion");
         ctx.animator.Play("Player_Run");
         ctx.PlayFootStep();
+        ctx.attack.finishTime = 0;
     }
     public void Exit()
     {

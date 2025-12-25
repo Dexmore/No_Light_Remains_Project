@@ -61,7 +61,7 @@ public class MonsterControl : MonoBehaviour
         switch (DBManager.I.currData.difficulty)
         {
             case 0:
-                adjustedAttack = data.Attack * 0.9f;
+                adjustedAttack = data.Attack * 0.85f;
                 maxHealth = data.HP;
                 break;
             case 1:
@@ -97,6 +97,21 @@ public class MonsterControl : MonoBehaviour
         GameManager.I.onHit += HitHandler;
         GameManager.I.onParry += ParryHandler;
         Sensor(cts.Token).Forget();
+        InitAfter(cts.Token).Forget();
+    }
+    public string bgmName;
+    async UniTask InitAfter(CancellationToken token)
+    {
+        await UniTask.Delay(1000, cancellationToken: token);
+        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
+        {
+            bossHUD.SetTarget(this);
+            AudioManager.I.PlayBGMWithFade(bgmName);
+            await UniTask.Delay(1000 * 180, cancellationToken: token);
+            AudioManager.I.PlayBGMWithFade(bgmName);
+            await UniTask.Delay(1000 * 180, cancellationToken: token);
+            AudioManager.I.PlayBGMWithFade(bgmName);
+        }
     }
     #region UniTask Setting
     [HideInInspector] public CancellationTokenSource cts;
@@ -289,15 +304,18 @@ public class MonsterControl : MonoBehaviour
         RangeAttack,
         ShortAttack,
         MovingAttack,
+        ReturnHome,
         SequenceAttack1,
+        //
+        ShootingAttack1,
+        Heal,
+        ShootingAttack2,
         SequenceAttack2,
         SequenceAttack3,
-        BeamAttack,
-        Heal,
-        ReturnHome,
-        Shooting1,
-        Shooting2,
-        Shooting3,
+        DoubleAttack,
+        Revive,
+        Explosion,
+        /////////////////////
 
 
 
@@ -925,7 +943,7 @@ public class MonsterControl : MonoBehaviour
         HitChangeColor(Color.white);
 
         // Stagger
-        if (Random.value <= 0.35f)
+        if (Random.value <= 0.25f)
         {
             float staggerForce = 4.4f;
             float staggerFactor1 = 1f;
@@ -975,15 +993,15 @@ public class MonsterControl : MonoBehaviour
         if (state == State.RangeAttack) pass = false;
         if (state == State.BiteAttack) pass = false;
         if (state == State.MovingAttack) pass = false;
-        if (!pass && Random.value <= 0.78f)
+        if (!pass && Random.value <= 0.63f)
         {
             curHitAmount += hData.damage;
-            if (maxHitAmount == 0) maxHitAmount = Random.Range(0.11f, 0.26f) * Mathf.Clamp(data.HP, 270, 1100);
+            if (maxHitAmount == 0) maxHitAmount = 1.5f * Random.Range(0.11f, 0.26f) * Mathf.Clamp(data.HP, 270, 1100);
             if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.6f);
             if (hitCoolTime >= 0.5f) hitCoolTime = Random.Range(0.2f, 1f);
             if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
             {
-                if (Random.value < 0.78f)
+                if (Random.value < 0.63f)
                 {
                     monsterHit.type = 1;
                     monsterHit.prevState = state;

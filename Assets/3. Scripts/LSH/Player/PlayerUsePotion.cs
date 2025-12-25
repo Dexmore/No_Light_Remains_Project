@@ -9,6 +9,7 @@ public class PlayerUsePotion : IPlayerState
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
+    private float adjustedTime;
     public void Enter()
     {
         if (DBManager.I.currData.currPotionCount <= 0)
@@ -30,6 +31,18 @@ public class PlayerUsePotion : IPlayerState
         sfxFlag2 = false;
         sfxFlag3 = false;
         aniFlag1 = false;
+        switch(DBManager.I.currData.difficulty)
+        {
+            case 0:
+            adjustedTime = duration;
+            break;
+            case 1:
+            adjustedTime = duration * 1.3f + 0.5f;
+            break;
+            case 2:
+            adjustedTime = duration * 1.6f + 0.9f;
+            break;
+        }
     }
     public void Exit()
     {
@@ -56,7 +69,7 @@ public class PlayerUsePotion : IPlayerState
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > 0.08f && !sfxFlag1)
+        if (_elapsedTime > 0.02f && !sfxFlag1)
         {
             sfxFlag1 = true;
             AudioManager.I.PlaySFX("Pocket1");
@@ -66,7 +79,7 @@ public class PlayerUsePotion : IPlayerState
             aniFlag1 = true;
             ctx.animator.Play("Player_UsePotion");
         }
-        if (_elapsedTime > 1.2f)
+        if (_elapsedTime > 1.1f)
         {
             float startHealth = ctx.currHealth;
             if (!sfxFlag2)
@@ -87,7 +100,7 @@ public class PlayerUsePotion : IPlayerState
                 }
             }
             // --- 가속 회복 로직 시작 ---
-            float t = (_elapsedTime - 1.2f) / (duration - 1.2f);
+            float t = (_elapsedTime - 1.1f) / (adjustedTime - 1.1f);
             t = Mathf.Clamp01(t);
             float acceleratedT = t * t * t * t * t;
             ctx.currHealth = Mathf.Lerp(startHealth, ctx.maxHealth, acceleratedT);
@@ -95,13 +108,13 @@ public class PlayerUsePotion : IPlayerState
             DBManager.I.currData.currHealth = ctx.currHealth;
             // --- 가속 회복 로직 끝 ---
         }
-        if (_elapsedTime > 1.12f && !sfxFlag3)
+        if (_elapsedTime > 1.32f && !sfxFlag3)
         {
             sfxFlag3 = true;
             AudioManager.I.PlaySFX("Heal");
             ParticleManager.I.PlayParticle("PotionEffect", ctx.transform.position + 0.8f * Vector3.up, Quaternion.identity);
         }
-        if (_elapsedTime > duration)
+        if (_elapsedTime > adjustedTime)
         {
             //Debug.Log("Use Potion End");
             fsm.ChangeState(ctx.idle);

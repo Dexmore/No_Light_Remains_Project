@@ -75,7 +75,16 @@ public class PlayerIdle : IPlayerState
         
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
-            fsm.ChangeState(ctx.attack);
+        {
+            if(Time.time - ctx.attack.finishTime < 0.24f)
+            {
+                fsm.ChangeState(ctx.attackCombo);
+            }
+            else
+            {
+                fsm.ChangeState(ctx.attack);
+            }
+        }
 
         if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
             fsm.ChangeState(ctx.fall);
@@ -119,7 +128,7 @@ public class PlayerIdle : IPlayerState
     PopupUI PopupUI;
     void InputESC(InputAction.CallbackContext callbackContext)
     {
-        if (!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop)
+        if (!isESC && !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory)
         {
             if (PopupUI == null)
                 PopupUI = GameManager.I.transform.GetComponent<PopupUI>();

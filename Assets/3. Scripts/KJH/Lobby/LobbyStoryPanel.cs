@@ -25,13 +25,13 @@ public class LobbyStoryPanel : MonoBehaviour
         DBManager.I.onReLogIn += HandlerChangeLogin;
         Opening();
         select = -1;
-        isaDisable = false;
+        isDisable = false;
     }
     void OnDisable()
     {
         DBManager.I.onLogOut -= HandlerChangeLogin;
         DBManager.I.onReLogIn -= HandlerChangeLogin;
-        isaDisable = true;
+        isDisable = true;
     }
     async void HandlerChangeLogin()
     {
@@ -320,7 +320,7 @@ public class LobbyStoryPanel : MonoBehaviour
         GameManager.I.SetSceneFromDB();
         GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
     }
-    [HideInInspector] public int diff;
+    [ReadOnlyInspector] public int diff;
     public async void StartNewGameButton()
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
@@ -331,6 +331,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.gold = 0;
         newData.death = 0;
         newData.difficulty = diff;
+        Debug.Log(diff);
         newData.sceneName = "Cinematic";
         newData.lastPos = Vector2.zero;
         newData.maxHealth = 400;
@@ -460,7 +461,7 @@ public class LobbyStoryPanel : MonoBehaviour
     }
     TMP_Text[] texts1;
     Text[] texts2;
-    bool isaDisable;
+    bool isDisable;
     async void SometimesGlitchTextLoop()
     {
         await Task.Delay(1700);
@@ -496,7 +497,7 @@ public class LobbyStoryPanel : MonoBehaviour
                 }
             }
             await Task.Delay(Random.Range(200, 800));
-            if (isaDisable) return;
+            if (isDisable) return;
         }
     }
 

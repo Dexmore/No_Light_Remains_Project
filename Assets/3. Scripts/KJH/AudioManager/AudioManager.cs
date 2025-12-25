@@ -134,19 +134,29 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         }
     }
 
-    public void PlayBGMWithFade(AudioClip clip, float duration)
+    public void PlayBGMWithFade(AudioClip clip, float duration = 1f)
     {
         StopCoroutine("PlayBGM_co");
-
         // 소스 스위칭 (0 -> 1, 1 -> 0)
         AudioSource nextAus = (currentAus == ausBGM0) ? ausBGM1 : ausBGM0;
-
         nextAus.clip = clip;
         nextAus.Play();
-
         StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
         currentAus = nextAus;
     }
+    public void PlayBGMWithFade(string bgmName, float duration = 1f)
+    {
+        StopCoroutine("PlayBGM_co");
+        // 소스 스위칭 (0 -> 1, 1 -> 0)
+        int find = bgmList.FindIndex(x => x.name == bgmName);
+        if(find == -1) return;
+        AudioSource nextAus = (currentAus == ausBGM0) ? ausBGM1 : ausBGM0;
+        nextAus.clip = bgmList[find];
+        nextAus.Play();
+        StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
+        currentAus = nextAus;
+    }
+
 
     IEnumerator PlayBGM_co(AudioSource fadeOutAus, AudioSource fadeInAus, float duration)
     {

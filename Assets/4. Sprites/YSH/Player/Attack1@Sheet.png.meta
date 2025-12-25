@@ -108,7 +108,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 48
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -129,7 +129,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -153,6 +153,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -162,10 +188,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -182,12 +208,12 @@ TextureImporter:
       name: Attack1@Sheet_1
       rect:
         serializedVersion: 2
-        x: 237
+        x: 81
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -204,12 +230,12 @@ TextureImporter:
       name: Attack1@Sheet_2
       rect:
         serializedVersion: 2
-        x: 474
+        x: 162
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -226,12 +252,12 @@ TextureImporter:
       name: Attack1@Sheet_3
       rect:
         serializedVersion: 2
-        x: 711
+        x: 243
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -248,12 +274,12 @@ TextureImporter:
       name: Attack1@Sheet_4
       rect:
         serializedVersion: 2
-        x: 948
+        x: 324
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -270,12 +296,12 @@ TextureImporter:
       name: Attack1@Sheet_5
       rect:
         serializedVersion: 2
-        x: 1185
+        x: 405
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -292,12 +318,12 @@ TextureImporter:
       name: Attack1@Sheet_6
       rect:
         serializedVersion: 2
-        x: 1422
+        x: 486
         y: 0
-        width: 237
-        height: 93
+        width: 81
+        height: 32
       alignment: 9
-      pivot: {x: 0.46, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -324,7 +350,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":7.0,"y":1.0},"gridSpriteSize":{"x":237.0,"y":93.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.46000000834465029,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":7.0,"y":1.0},"gridSpriteSize":{"x":81.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.4699999988079071,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Attack1@Sheet_0: 8375707987605065265
       Attack1@Sheet_1: 1072986313081665654
