@@ -16,11 +16,17 @@ public class SavePoint_LSH : Interactable
         DBManager.I.currData.lastPos = pos2D;
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
         Vector3 dir = Vector3.zero;
-        if (playerControl)
+        if (!_activatedOnce)
         {
-            playerControl.currHealth = DBManager.I.currData.maxHealth;
-            dir = (playerControl.transform.position - transform.position).normalized;
+            if (playerControl)
+                playerControl.currHealth = DBManager.I.currData.maxHealth;
+
+            DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
+
+            PlayActivateOnce();
+            _activatedOnce = true;
         }
+
         ParticleManager.I.PlayText("Save", transform.position + 1.2f * Vector3.up + 0.8f * dir, ParticleManager.TextType.PlayerNotice);
         DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
         DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
@@ -92,7 +98,7 @@ public class SavePoint_LSH : Interactable
     int pixelHeight = 160;
     public void CaptureArea()
     {
-        if(DBManager.I.currSlot == -1) return;
+        if (DBManager.I.currSlot == -1) return;
 #if UNITY_STANDALONE_WIN
         string fileLocation = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
 #else

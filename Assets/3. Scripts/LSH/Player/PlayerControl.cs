@@ -59,11 +59,20 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public Dictionary<Collider2D, Vector2> collisions = new Dictionary<Collider2D, Vector2>();
     // Runtime
     [Tooltip("특정 플랫폼을 통과할 수 있는지 확인 여부")] public bool fallThroughPlatform;
+
+    [Header("Parry 성공 시 나오는 FX 및 TimeFreeze 효과")]
+    [SerializeField] private string parryParticle = "ParrySuccess";
+    [SerializeField] private float parryHitStopDuration = 0.08f;
+    [SerializeField, Range(0f, 1f)] private float parryHitStopTimeScale = 0.05f;
+    private float _hitStopEndRealtime = -1f;
+    [SerializeField] private float baseTimeScale = 1f;
+    private Coroutine _parryHitStopCo;
+    private float _defaultFixedDeltaTime;
     [HideInInspector] public bool Grounded { get { return _Grounded; } set { _Grounded = value; } }
     [ReadOnlyInspector][SerializeField] private bool _Grounded;
-    [HideInInspector]  public bool Parred { get { return _Parred; } set { _Parred = value; } }
+    [HideInInspector] public bool Parred { get { return _Parred; } set { _Parred = value; } }
     [ReadOnlyInspector][SerializeField] private bool _Parred;
-    [HideInInspector]  public bool Avoided { get { return _Avoided; } set { _Avoided = value; } }
+    [HideInInspector] public bool Avoided { get { return _Avoided; } set { _Avoided = value; } }
     [ReadOnlyInspector][SerializeField] private bool _Avoided;
     [HideInInspector] public bool Dead { get { return _Dead; } set { _Dead = value; } }
     [ReadOnlyInspector][SerializeField] private bool _Dead;
@@ -95,6 +104,8 @@ public class PlayerControl : MonoBehaviour
         InitMatInfo();
         sfxFootStep = GetComponentInChildren<AudioSource>();
         hUDBinder = FindAnyObjectByType<HUDBinder>();
+
+        _defaultFixedDeltaTime = Time.fixedDeltaTime;
     }
     void Start()
     {
@@ -426,6 +437,9 @@ public class PlayerControl : MonoBehaviour
                     AudioManager.I.PlaySFX("Parry");
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData);
+
+                    OnParrySuccess(hData);
+
                     if (_mainCamera == null) _mainCamera = Camera.main;
                     UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
                     AttractParticle ap = upa.GetComponent<AttractParticle>();
@@ -710,5 +724,40 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float lanternParryAmount = 31f;
     [SerializeField] float lanternAttackAmount = 3f;
 
+    private void OnParrySuccess(HitData hData)
+    {
+        if (!string.IsNullOrEmpty(parryParticle))
+        {
+            ParticleManager.I.PlayParticle(parryParticle, hData.hitPoint, Quaternion.identity, null);
+        }
+
+        StartOrExtendHitStop(parryHitStopDuration, parryHitStopTimeScale);
+    }
+
+
+    private void StartOrExtendHitStop(float duration, float timeScale)
+    {
+        float end = Time.realtimeSinceStartup + duration;
+        if (end > _hitStopEndRealtime)
+            _hitStopEndRealtime = end;
+
+        if (_parryHitStopCo != null) return;
+
+        _parryHitStopCo = StartCoroutine(HitStopRoutine(timeScale));
+    }
+
+    private IEnumerator HitStopRoutine(float timeScale)
+    {
+        Time.timeScale = Mathf.Clamp01(timeScale);
+        Time.fixedDeltaTime = _defaultFixedDeltaTime * Time.timeScale;
+
+        while (Time.realtimeSinceStartup < _hitStopEndRealtime)
+            yield return null;
+
+        Time.timeScale = baseTimeScale;
+        Time.fixedDeltaTime = _defaultFixedDeltaTime * Time.timeScale;
+
+        _parryHitStopCo = null;
+    }
 
 }
