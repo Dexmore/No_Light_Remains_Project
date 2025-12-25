@@ -93,6 +93,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (target1 != null)
             {
+                if (target1.type != Interactable.Type.DropItem && !playerControl.Grounded) return;
                 if (flag1) return;
                 flag1 = true;
                 AudioManager.I.PlaySFX("UIClick2");
@@ -126,6 +127,8 @@ public class PlayerInteraction : MonoBehaviour
             ctsLanternInteraction = new CancellationTokenSource();
             var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternInteraction.Token);
             LanternInteraction(ctsLink.Token).Forget();
+            sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
+            target2.PromptFill();
         }
         press2 = true;
     }
@@ -135,8 +138,21 @@ public class PlayerInteraction : MonoBehaviour
         ctsLanternInteraction?.Cancel();
         DOTween.Kill(prompt.lanternCanvas.transform.Find("Wrap/PressFill"));
         DOTween.Kill(prompt.lanternCanvas.transform.Find("Wrap/PressRing"));
+        sfxLanternInteraction?.Despawn();
+        target2?.PromptCancel();
+    }
+    CancellationTokenSource ctsLanternAnimationStart;
+    CancellationTokenSource ctsLanternAnimationExit;
+    async UniTask LanternAnimationStart(CancellationToken token)
+    {
+        
+    }
+    async UniTask LanternAnimationExit(CancellationToken token)
+    {
+        
     }
     CancellationTokenSource ctsLanternInteraction;
+    SFX sfxLanternInteraction;
     async UniTask LanternInteraction(CancellationToken token)
     {
         Transform tr1 = prompt.lanternCanvas.transform.Find("Wrap/PressFill");
@@ -156,7 +172,7 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             if (target2 == null)
                 return;
-            target2.promptFill += Time.deltaTime;
+            target2.promptFill += 0.6f * Time.deltaTime;
             target2.promptFill = Mathf.Clamp01(target2.promptFill);
             prompt.lanternFill.fillAmount = target2.promptFill;
             if (target2.promptFill == 1f) break;
@@ -165,6 +181,9 @@ public class PlayerInteraction : MonoBehaviour
         {
             target2.Run();
             prompt.Close(1);
+            target2?.PromptCancel();
+            sfxLanternInteraction?.Despawn();
+            target2 = null;
         }
     }
     async UniTask Sensor(CancellationToken token)
@@ -178,13 +197,21 @@ public class PlayerInteraction : MonoBehaviour
             if (playerControl.fsm.currentState == playerControl.openInventory)
             {
                 prompt.Close(0);
+                target1 = null;
                 prompt.Close(1);
+                target2?.PromptCancel();
+                sfxLanternInteraction?.Despawn();
+                target2 = null;
                 continue;
             }
             if (playerControl.fsm.currentState == playerControl.die)
             {
                 prompt.Close(0);
+                target1 = null;
                 prompt.Close(1);
+                target2?.PromptCancel();
+                sfxLanternInteraction?.Despawn();
+                target2 = null;
                 continue;
             }
             distancePivot = transform.position + (0.4f * playerControl.height * Vector3.up) + (0.4f * interactDistance * (camTR.position - transform.position).normalized);
@@ -288,8 +315,10 @@ public class PlayerInteraction : MonoBehaviour
                     }
                     else if (target2 != null)
                     {
-                        target2 = null;
                         prompt.Close(1);
+                        target2?.PromptCancel();
+                        sfxLanternInteraction?.Despawn();
+                        target2 = null;
                     }
                 }
                 else
@@ -297,11 +326,16 @@ public class PlayerInteraction : MonoBehaviour
                     if (target2 != null)
                     {
                         prompt.Close(1);
+                        target2?.PromptCancel();
+                        sfxLanternInteraction?.Despawn();
                         target2 = null;
                     }
                     if (prompt.lanternCanvas.gameObject.activeInHierarchy)
                     {
                         prompt.Close(1, true);
+                        target2?.PromptCancel();
+                        sfxLanternInteraction?.Despawn();
+                        target2 = null;
                     }
                 }
             }
@@ -315,15 +349,21 @@ public class PlayerInteraction : MonoBehaviour
                 if (target2 != null)
                 {
                     prompt.Close(1);
+                    target2?.PromptCancel();
+                    sfxLanternInteraction?.Despawn();
                     target2 = null;
                 }
                 if (prompt.itrctCanvas.gameObject.activeInHierarchy)
                 {
                     prompt.Close(0, true);
+                    target1 = null;
                 }
                 if (prompt.lanternCanvas.gameObject.activeInHierarchy)
                 {
-                    prompt.Close(1, true);
+                    prompt.Close(1);
+                    target2?.PromptCancel();
+                    sfxLanternInteraction?.Despawn();
+                    target2 = null;
                 }
             }
         }

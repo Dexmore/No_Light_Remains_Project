@@ -28,8 +28,9 @@ public class DialogTrigger : MonoBehaviour, ISavable
     public RecordData recordData;
     public int gold;
     [Space(30)]
-    [Header("다이얼로그가 끝나고 다른 스크립트의 메소드 실행필요하면")]
-    public UnityEvent onDialogFinished;
+    public UnityEvent onDialogStart;
+    [Header("다이얼로그가 끝나고 다른 스크립트 메소드 실행필요하면")]
+    public UnityEvent onDialogFinish;
     Collider2D coll2D;
     int playerLayer;
     void Awake()
@@ -38,9 +39,14 @@ public class DialogTrigger : MonoBehaviour, ISavable
         coll2D.enabled = true;
         playerLayer = LayerMask.NameToLayer("Player");
     }
+    PlayerControl playerControl;
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer != playerLayer) return;
+        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
+        if (playerControl == null) playerControl = collision.gameObject.GetComponentInParent<PlayerControl>();
+        if (playerControl == null) return;
+        if (!playerControl.Grounded) return;
         isComplete = true;
         GameManager.I.onDialog.Invoke(dialogIndex, transform);
         coll2D.enabled = false;
@@ -53,7 +59,8 @@ public class DialogTrigger : MonoBehaviour, ISavable
     }
     IEnumerator WaitDialogFinish()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        yield return YieldInstructionCache.WaitForSeconds(0.37f);
+        onDialogStart.Invoke();
         yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         if (itemData != null || gearData != null || lanternData != null || recordData != null || gold != 0)
@@ -80,7 +87,7 @@ public class DialogTrigger : MonoBehaviour, ISavable
         {
             DBManager.I.currData.gold += gold;
         }
-
+        onDialogFinish.Invoke();
     }
     [Header("한번만 할수있는지or씬이동시 반복가능한지 여부")]
     [SerializeField] bool canReplay;

@@ -45,6 +45,7 @@ public class DialogObject : Interactable, ISavable
     }
     public override void Run()
     {
+        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         isReady = false;
         coll2D.enabled = false;
         GameManager.I.onDialog.Invoke(dialogIndex, transform);
@@ -57,7 +58,7 @@ public class DialogObject : Interactable, ISavable
     }
     IEnumerator WaitDialogFinish()
     {
-        yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        yield return YieldInstructionCache.WaitForSeconds(0.37f);
         yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         if (itemData != null || gearData != null || lanternData != null || recordData != null || gold != 0)

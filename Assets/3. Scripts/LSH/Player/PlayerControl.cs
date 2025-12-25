@@ -100,7 +100,7 @@ public class PlayerControl : MonoBehaviour
     {
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+        GameObject light2 = PlayerLight.transform.GetChild(2).gameObject;
         CharacterData characterData = DBManager.I.currData;
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
@@ -135,7 +135,7 @@ public class PlayerControl : MonoBehaviour
             //
             light0.SetActive(false);
             light1.SetActive(false);
-            light3.SetActive(true);
+            light2.SetActive(true);
             // 신규캐릭터 시작 아이템
             DBManager.I.AddLantern("BasicLantern");
             int find = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == "BasicLantern");
@@ -152,7 +152,7 @@ public class PlayerControl : MonoBehaviour
             currBattery = DBManager.I.currData.currBattery;
             light0.SetActive(GameManager.I.isLanternOn);
             light1.SetActive(GameManager.I.isLanternOn);
-            light3.SetActive(!GameManager.I.isLanternOn);
+            light2.SetActive(!GameManager.I.isLanternOn);
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
@@ -605,12 +605,12 @@ public class PlayerControl : MonoBehaviour
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+        GameObject light2 = PlayerLight.transform.GetChild(2).gameObject;
         if (light0.activeSelf)
         {
             light0.SetActive(false);
             light1.SetActive(false);
-            light3.SetActive(true);
+            light2.SetActive(true);
             GameManager.I.isLanternOn = false;
         }
         else
@@ -626,7 +626,7 @@ public class PlayerControl : MonoBehaviour
             }
             light0.SetActive(true);
             light1.SetActive(true);
-            light3.SetActive(false);
+            light2.SetActive(false);
             GameManager.I.isLanternOn = true;
         }
     }
@@ -662,10 +662,10 @@ public class PlayerControl : MonoBehaviour
                         ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
                         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
                         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-                        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+                        GameObject light2 = PlayerLight.transform.GetChild(2).gameObject;
                         light0.SetActive(false);
                         light1.SetActive(false);
-                        light3.SetActive(true);
+                        light2.SetActive(true);
                         hUDBinder.RefreshBattery();
                         GameManager.I.isLanternOn = false;
                     }
