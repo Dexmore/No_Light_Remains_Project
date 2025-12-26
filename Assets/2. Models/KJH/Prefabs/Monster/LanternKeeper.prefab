@@ -1345,7 +1345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterControl
   height: 3
   width: 1.6
-  jumpLength: 1.3
+  jumpLength: 0.1
   isDie: 0
   isGround: 0
   isStagger: 0
@@ -1354,7 +1354,7 @@ MonoBehaviour:
     m_Bits: 521
   maxHealth: 0
   currHealth: 0
-  aggressive: 0.9
+  aggressive: 0.955
   data: {fileID: 11400000, guid: 67ffca1b65334b84dbdea82a62f6cd5b, type: 2}
   ID: 
   Name: 
@@ -1385,7 +1385,7 @@ MonoBehaviour:
       coolTime: 1
     - state: 10
       weight: 2000
-      coolTime: 1
+      coolTime: 0.7
   - condition: 8
     frequencies:
     - state: 16
