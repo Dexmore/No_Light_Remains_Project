@@ -14,8 +14,7 @@ namespace Game.Visuals
         public float autoMoveSpeedX = 0f; 
         public bool lockYAxis = true;
 
-        [Header("2. Activation Settings (개별 사용 시)")]
-        [Tooltip("그룹 관리자를 쓸 때는 체크 해제하세요!")]
+        [Header("2. Activation Settings")]
         public bool useActivationRange = false;
         public float activationRange = 20f;
 
@@ -23,7 +22,7 @@ namespace Game.Visuals
         public bool limitMovement = false;
         public Vector2 maxMoveRange = new Vector2(5f, 2f);
 
-        [Header("4. Infinite Loop Settings")]
+        [Header("4. Infinite Loop Settings (Visualized)")]
         public bool infiniteLoop = false;
         public float singleImageWidth = 0f; 
         public int cloneCount = 3; 
@@ -37,7 +36,6 @@ namespace Game.Visuals
         private Vector3 lastCameraPosition;
         private Vector3 initialPosition;
 
-        // [핵심 업데이트] 스크립트가 다시 켜질 때, 카메라 위치를 재설정하여 '순간이동' 방지
         private void OnEnable()
         {
             if (Camera.main != null)
@@ -51,7 +49,13 @@ namespace Game.Visuals
         {
             if (!useZCoordinate) ApplyPreset();
             ApplyColor();
-            if (infiniteLoop && loopThreshold == 0 && singleImageWidth > 0) loopThreshold = singleImageWidth; 
+            // 에디터에서 값 수정 시 최소한의 안전장치
+            // (여기서는 강제하지 않고 사용자의 입력을 존중하되, 0일 때만 자동 적용)
+            if (infiniteLoop && loopThreshold == 0 && singleImageWidth > 0)
+            {
+                 // 안전하게 1.5배로 자동 설정
+                 loopThreshold = singleImageWidth * 1.5f; 
+            }
         }
 
         void Start()
@@ -60,7 +64,7 @@ namespace Game.Visuals
             lastCameraPosition = cameraTransform.position;
             initialPosition = transform.position;
             
-            CalculateSize(); // 자동 계산
+            CalculateSize();
             ApplyColor();
         }
 
@@ -71,28 +75,38 @@ namespace Game.Visuals
             if (sprite == null)
             {
                 SpriteRenderer[] children = GetComponentsInChildren<SpriteRenderer>();
+                float maxWidth = 0f;
                 foreach(var child in children)
                 {
-                    if(child.bounds.size.x > singleImageWidth) singleImageWidth = child.bounds.size.x;
+                    if(child.bounds.size.x > maxWidth) maxWidth = child.bounds.size.x;
                 }
+                singleImageWidth = maxWidth;
             }
-            else singleImageWidth = sprite.bounds.size.x;
+            else
+            {
+                singleImageWidth = sprite.bounds.size.x;
+            }
 
-            if (loopThreshold <= 0.1f) loopThreshold = singleImageWidth;
+            // [핵심 수정] 점프 타이밍을 이미지 너비보다 50% 더 넓게 잡아서
+            // 양옆에 붙어있는 친구들이 시작하자마자 점프하는 참사를 방지함
+            loopThreshold = singleImageWidth * 1.5f; 
+            
+            #if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            #endif
         }
 
         void LateUpdate()
         {
             if (cameraTransform == null) return;
 
-            // 개별 Activation Range는 여기서 처리되지만, 그룹 관리자를 쓸 땐 꺼두는 게 좋음
             if (useActivationRange) {
                 if (Mathf.Abs(cameraTransform.position.x - transform.position.x) > activationRange) {
                     lastCameraPosition = cameraTransform.position; return; 
                 }
             }
 
-            // --- 이동 로직 ---
+            // Move
             if (useZCoordinate) {
                 parallaxFactor = Mathf.Clamp01(Mathf.Abs(transform.position.z) / maxDepth);
                 if (transform.position.z < 0) parallaxFactor = -0.2f; 
@@ -108,9 +122,12 @@ namespace Game.Visuals
                 transform.position = new Vector3(initialPosition.x + Mathf.Clamp(distFromOriginX, -maxMoveRange.x, maxMoveRange.x), initialPosition.y + Mathf.Clamp(distFromOriginY, -maxMoveRange.y, maxMoveRange.y), transform.position.z);
             }
 
+            // Infinite Loop
             if (infiniteLoop && singleImageWidth > 0 && !limitMovement)
             {
                 float offsetPosX = cameraTransform.position.x - transform.position.x;
+                
+                // loopThreshold(노란선)를 넘어가면 점프
                 if (Mathf.Abs(offsetPosX) >= loopThreshold)
                 {
                     float totalLoopSize = singleImageWidth * cloneCount;
@@ -123,12 +140,22 @@ namespace Game.Visuals
 
         private void OnDrawGizmosSelected()
         {
-            /* 기존 Gizmos 유지 */
-            if (singleImageWidth > 0) { Gizmos.color = Color.cyan; Gizmos.DrawWireCube(transform.position, new Vector3(singleImageWidth, 10f, 0)); }
-            if (infiniteLoop) { Gizmos.color = Color.yellow; float th = loopThreshold > 0 ? loopThreshold : singleImageWidth; Gizmos.DrawLine(new Vector3(transform.position.x - th, transform.position.y - 10, 0), new Vector3(transform.position.x - th, transform.position.y + 10, 0)); Gizmos.DrawLine(new Vector3(transform.position.x + th, transform.position.y - 10, 0), new Vector3(transform.position.x + th, transform.position.y + 10, 0)); }
-            if (useActivationRange) { Gizmos.color = Color.green; Gizmos.DrawWireCube(transform.position, new Vector3(activationRange * 2, 20f, 0)); }
+            if (singleImageWidth > 0) { 
+                Gizmos.color = Color.cyan; 
+                Gizmos.DrawWireCube(transform.position, new Vector3(singleImageWidth, 10f, 0)); 
+            }
+            if (infiniteLoop) { 
+                Gizmos.color = Color.yellow; 
+                // 임계값이 0이면 시각적으로 1.5배로 보여줌 (안전을 위해)
+                float th = loopThreshold > 0 ? loopThreshold : singleImageWidth * 1.5f; 
+                Gizmos.DrawLine(new Vector3(transform.position.x - th, transform.position.y - 10, 0), new Vector3(transform.position.x - th, transform.position.y + 10, 0)); 
+                Gizmos.DrawLine(new Vector3(transform.position.x + th, transform.position.y - 10, 0), new Vector3(transform.position.x + th, transform.position.y + 10, 0)); 
+            }
+            if (useActivationRange) { 
+                Gizmos.color = Color.green; 
+                Gizmos.DrawWireCube(transform.position, new Vector3(activationRange * 2, 20f, 0)); 
+            }
         }
-    
         private void ApplyPreset()
         {
             switch (layerType)
