@@ -62,14 +62,11 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-    /// <summary>
     /// 패널 전체를 현재 데이터 기준으로 새로고침합니다.
-    /// </summary>
     private void RefreshPanel()
     {
         //if (InventoryDataManager.Instance == null) return; // 매니저가 없으면 중단
 
-        //////////
         List<LanternFunctionData> playerFunctions = new List<LanternFunctionData>();
         for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
@@ -82,9 +79,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             d.isNew = cd.isNew;
             playerFunctions.Add(d);
         }
-        //////////
         
-
         for (int i = 0; i < functionSlots.Count; i++)
         {
             if (i < playerFunctions.Count && playerFunctions[i] != null && !string.IsNullOrEmpty(playerFunctions[i].functionName.GetLocalizedString()))
@@ -104,9 +99,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         ShowFunctionDetails(firstAvailableFunc);
     }
 
-    /// <summary>
-    /// [공개] 슬롯에서 호출. 선택된 기능 정보를 오른쪽에 표시 (3번 요청)
-    /// </summary>
+    // [공개] 슬롯에서 호출. 선택된 기능 정보를 오른쪽에 표시 (3번 요청)
     public void ShowFunctionDetails(LanternFunctionData data)
     {
         if (data != null)
@@ -122,53 +115,67 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             detailDescriptionText.text = "기능을 선택하세요.";
         }
     }
-
-    /// <summary>
-    /// [공개] 슬롯에서 호출. 기능 장착/해제 토글
-    /// </summary>
+    
+    /// [공개] 슬롯에서 호출. 기능 장착/해제 토글   
     public void ToggleEquipFunction(LanternFunctionData dataToToggle)
     {
+        // -----------------------------------------------------------
+        // [추가된 로직] 현재 장착 중인 랜턴이 "탈부착 불가"인지 확인
+        // -----------------------------------------------------------
+        
+        // 1. DB에서 현재 장착된(isEquipped == true) 데이터 찾기
+        var dbLanterns = DBManager.I.currData.lanternDatas;
+        int equippedIndex = dbLanterns.FindIndex(x => x.isEquipped);
+
+        if (equippedIndex != -1)
+        {
+            string equippedName = dbLanterns[equippedIndex].Name;
+            
+            // 2. 해당 랜턴의 원본 데이터(.asset)를 가져와서 설정 확인
+            LanternFunctionData equippedAsset = DBManager.I.itemDatabase.allLanterns.Find(x => x.name == equippedName);
+            
+            // 3. 만약 현재 장착된 놈이 '고정형(isRemovable == false)'이라면?
+            if (equippedAsset != null && !equippedAsset.isRemovable)
+            {
+                Debug.Log($"[Lantern] '{equippedAsset.name}'은 해제할 수 없는 기본 아이템 입니다.");
+                // (필요하다면 여기에 "해제할 수 없습니다" 팝업 띄우는 코드 추가)
+                return; 
+            }
+        }
+        
         bool wasEquipped = dataToToggle.isEquipped;
 
-        // 1. [DB 동기화] 모든 랜턴 장착 해제 (중복 장착 방지)
+        // 1. [DB 동기화] 모든 랜턴 장착 해제
         for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
             CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
-            cd.isEquipped = false; // 일단 다 끕니다.
+            cd.isEquipped = false; 
             DBManager.I.currData.lanternDatas[i] = cd;
         }
 
         // 2. [DB 동기화] 선택한 랜턴이 원래 꺼져있었다면 -> 켭니다.
         if (!wasEquipped)
         {
-            // UI 데이터 갱신
             dataToToggle.isEquipped = true;
-
-            // 실제 DB 데이터 찾아서 갱신
             int findIndex = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == dataToToggle.name);
             if (findIndex != -1)
             {
                 CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[findIndex];
-                cd.isEquipped = true; // 장착!
+                cd.isEquipped = true;
                 DBManager.I.currData.lanternDatas[findIndex] = cd;
             }
         }
         else
         {
-            // 원래 켜져있던 걸 눌렀으면 꺼진 상태 유지 (Toggle Off)
             dataToToggle.isEquipped = false;
         }
 
         // 3. UI 시각적 갱신
-        // (RefreshPanel을 다시 부르면 비효율적이므로 슬롯들만 업데이트)
         foreach (var slot in functionSlots)
         {
-            // 슬롯이 가진 데이터가 '방금 누른 그 놈'이면 상태 반영, 아니면 false(위에서 다 껐으므로)
             if (slot.MyData != null)
             {
-                // UI용 데이터도 다 꺼버림 (중복 방지 시각화)
                 if (slot.MyData != dataToToggle) slot.MyData.isEquipped = false;
-                
                 slot.UpdateEquipVisual();
             }
         }
@@ -176,9 +183,6 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         UpdateMainEquippedImage();
     }
 
-    /// <summary>
-    /// (2번 요청) 메인 장착부(빨간 원)의 이미지를 갱신합니다.
-    /// </summary>
     private void UpdateMainEquippedImage()
     {
         // 1. DB에서 현재 장착 중인(isEquipped == true) 랜턴 데이터를 찾습니다.
@@ -195,8 +199,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             return;
         }
 
-        // 3. 아이템 데이터베이스에서 원본 데이터(.asset)를 찾습니다.
-        // [수정] functionName이 아니라 .name(파일 이름)으로 찾아야 정확합니다.
+        // 3. 아이템 데이터베이스에서 원본 데이터(.asset)를 찾는다.
         int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
         
         if(find != -1)
@@ -220,9 +223,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
     }
 
-    /// <summary>
-    /// 3칸 슬롯의 좌/우/위 내비게이션을 설정합니다. (1번 요청)
-    /// </summary>
+    // 3칸 슬롯의 좌/우/위 내비게이션을 설정합니다. (1번 요청)
     private void SetupNavigation()
     {
         // 1. 활성화된 슬롯 리스트 생성
