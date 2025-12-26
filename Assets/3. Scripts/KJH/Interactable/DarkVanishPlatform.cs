@@ -80,9 +80,27 @@ public class DarkVanishPlatform : Lanternable, ISavable
         tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
         lpParticle.gameObject.SetActive(true);
         lpParticle.Play();
+        SubParticleOnFill();
     }
+    async void SubParticleOnFill()
+    {
+        float subParticleInterval = Random.Range(0.6f, 1.8f);
+        float _time = Time.time;
+        while (!isCancel)
+        {
+            if (Time.time - _time > subParticleInterval)
+            {
+                _time = Time.time;
+                subParticleInterval = Random.Range(0.6f, 1.8f);
+                ParticleManager.I.PlayParticle("DarkDust", lp.transform.position, Quaternion.identity, null);
+            }
+            await Task.Yield();
+        }
+    }
+    bool isCancel;
     public override void PromptCancel()
     {
+        isCancel = true;
         DOTween.Kill(lp);
         tweenLpLight?.Kill();
         lp.DOFade(0f, 1.1f).SetEase(Ease.InSine);
@@ -95,6 +113,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
     ParticleSystem dvParticle;
     public async void Step1()
     {
+        isCancel = true;
         lp.gameObject.SetActive(true);
         lpParticle.Play();
         dvParticle.gameObject.SetActive(true);
@@ -124,7 +143,13 @@ public class DarkVanishPlatform : Lanternable, ISavable
         emission.enabled = false;
         ParticleSystem.Particle[] particles = new ParticleSystem.Particle[fogParticle.main.maxParticles];
         float elapsed = 0f;
-        float fadeDuration = 7.0f;
+        float fadeDuration = 6.0f;
+        SpriteRenderer spr = platform.GetComponent<SpriteRenderer>();
+        float xLength = spr.bounds.size.x;
+        float yLength = spr.bounds.size.y;
+        float subParticleInterval = Random.Range(0.1f, 0.6f);
+        float _time;
+        _time = Time.time;
         while (elapsed < fadeDuration)
         {
             if (this == null) return;
@@ -144,6 +169,15 @@ public class DarkVanishPlatform : Lanternable, ISavable
             }
             fogParticle.SetParticles(particles, numParticlesAlive);
             await Task.Yield();
+            if (Time.time - _time > subParticleInterval && elapsed < fadeDuration * 0.5f)
+            {
+                _time = Time.time;
+                subParticleInterval = Random.Range(0.1f, 0.6f);
+                float rnd = Random.value;
+                Vector2 pivot = rnd * fogParticle.transform.position + (1 - rnd) * transform.position + Random.Range(-0.5f, 0.5f) * Vector3.up;
+                Vector2 jitter = new Vector2(Random.Range(-0.4f, 0.4f) * xLength, Random.Range(-0.4f, 0.4f) * yLength);
+                ParticleManager.I.PlayParticle("DarkDust", pivot + jitter, Quaternion.identity, null);
+            }
         }
     }
     void Step99()

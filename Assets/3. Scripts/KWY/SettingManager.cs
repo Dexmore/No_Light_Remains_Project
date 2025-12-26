@@ -43,7 +43,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
     {
 
         // 밝기 적용
-        float alpha = Mathf.Lerp(0f, 0.765f, 1 - setting.brightness);
+        float alpha = Mathf.Lerp(0f, 0.66511f, 1 - setting.brightness);
         var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
         brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
 

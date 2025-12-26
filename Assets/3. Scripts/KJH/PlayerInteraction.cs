@@ -347,21 +347,49 @@ public class PlayerInteraction : MonoBehaviour
         tr2.gameObject.SetActive(true);
         tr1.DOScale(1f, 2f);
         tr2.DOScale(1f, 2f);
+        bool isCancel = false;
         while (!token.IsCancellationRequested)
         {
             await UniTask.Yield(token);
             if (playerControl.fsm.currentState == playerControl.openInventory)
-                return;
+            {
+                isCancel = true;
+                break;
+            }
             if (playerControl.fsm.currentState == playerControl.die)
-                return;
+            {
+                isCancel = true;
+                break;
+            }
             if (target2 == null)
-                return;
+            {
+                isCancel = true;
+                break;
+            }
+            if (playerControl.fsm.currentState != playerControl.idle)
+            {
+                isCancel = true;
+                break;
+            }
             target2.promptFill += 0.3f * Time.deltaTime;
             target2.promptFill = Mathf.Clamp01(target2.promptFill);
             prompt.lanternFill.fillAmount = target2.promptFill;
             if (target2.promptFill == 1f) break;
         }
-        if (target2 != null)
+        if (isCancel)
+        {
+            prompt.Close(1);
+            target2?.PromptCancel();
+            ctsLanternAnimationStart?.Cancel();
+            ctsLanternAnimationExit?.Cancel();
+            ctsLanternAnimationExit = new CancellationTokenSource();
+            var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
+            LanternAnimationExit(ctsLink.Token).Forget();
+            sfxLanternInteraction?.Despawn();
+            sfxLanternInteraction = null;
+            target2 = null;
+        }
+        else if (target2 != null)
         {
             target2.Run();
             prompt.Close(1);

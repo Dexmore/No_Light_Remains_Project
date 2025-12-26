@@ -186,7 +186,7 @@ public class LobbySettingPanel : MonoBehaviour
         if (brightnessPanel != null)
         {
             float _value = Mathf.Clamp(1 - value, 0, 1 - MIN_BRIGHTNESS);
-            float alpha = Mathf.Lerp(0f, 0.765f, _value);
+            float alpha = Mathf.Lerp(0f, 0.66511f, _value);
             brightnessPanel.color = new Color(0, 0, 0, alpha);
             tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b , 0.5f * Mathf.Clamp01(value - 0.75f));
         }
