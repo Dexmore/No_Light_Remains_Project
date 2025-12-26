@@ -50,13 +50,22 @@ public class MonsterShortAttack : MonsterState
         moveDirection.Normalize();
         startTime = Time.time;
         float dist = Mathf.Abs(target.position.x - transform.position.x);
-        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, target.position, control.groundLayer);
-        if(raycastHit.collider != null)
+
+        RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position, control.groundLayer);
+        bool isBlocked = false;
+        for (int i = 0; i < raycastHits.Length; i++)
+        {
+            if(raycastHits[i].collider.isTrigger) continue;
+            isBlocked = true;
+            break;
+        }
+        if(isBlocked)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }
+
         if (range < dist)
         {
             once = false;
