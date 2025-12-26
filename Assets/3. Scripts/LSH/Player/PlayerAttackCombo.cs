@@ -102,14 +102,14 @@ public class PlayerAttackCombo : IPlayerState
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.78f, 1.38f);
-            float damage = 40.8f;
+            float damage = 36.8f;
             if(rnd >= 1.22f)
             {
                 rnd = Random.Range(0.8f, 0.999f);
                 damage = 45f;
             }
             float lanternOn = 1f;
-            if(GameManager.I.isLanternOn) lanternOn = 1.28f;
+            if(GameManager.I.isLanternOn) lanternOn = 1.33f;
             GameManager.I.onHit.Invoke
             (
                 new HitData

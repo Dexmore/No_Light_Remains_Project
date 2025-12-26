@@ -51,7 +51,7 @@ public class PlayerControl : MonoBehaviour
 
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
-    [SerializeField] private LayerMask groundLayer;
+    public LayerMask groundLayer;
     CapsuleCollider2D capsuleCollider2D;
     [HideInInspector] public float height;
     [HideInInspector] public float width;
@@ -647,6 +647,20 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public bool isNearSavePoint;
     IEnumerator DecreaseBattery()
     {
+        float diffMultiplier = 1f;
+        switch (DBManager.I.currData.difficulty)
+        {
+            case 0:
+                diffMultiplier = 0.8f;
+                break;
+            case 1:
+                diffMultiplier = 0.9f;
+                break;
+            case 2:
+                diffMultiplier = 1f;
+                break;
+        }
+
         float interval = 0.08f;
         while (true)
         {
@@ -666,7 +680,7 @@ public class PlayerControl : MonoBehaviour
             {
                 if (GameManager.I.isLanternOn)
                 {
-                    currBattery += lanternDecreaseTick * interval;
+                    currBattery += lanternDecreaseTick * diffMultiplier * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();

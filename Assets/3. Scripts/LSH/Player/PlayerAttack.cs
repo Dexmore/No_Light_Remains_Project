@@ -151,7 +151,7 @@ public class PlayerAttack : IPlayerState
         if (!attacked.Contains(coll))
         {
             float lanternOn = 1f;
-            if(GameManager.I.isLanternOn) lanternOn = 1.28f;
+            if(GameManager.I.isLanternOn) lanternOn = 1.32f;
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             GameManager.I.onHit.Invoke
@@ -161,7 +161,7 @@ public class PlayerAttack : IPlayerState
                     "Attack",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(1f, 1.05f) * 34f * lanternOn,
+                    Random.Range(1f, 1.05f) * 32f * lanternOn,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )

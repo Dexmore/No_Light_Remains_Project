@@ -133,6 +133,8 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
+        if (playerControl.fsm.currentState != playerControl.idle) return;
+        if (!playerControl.Grounded) return;
         if (target2 == null) return;
         if (!press2)
         {
@@ -207,24 +209,58 @@ public class PlayerInteraction : MonoBehaviour
         Vector3 targetBasePos = target2.transform.Find("LightPoint").position;
         Vector3 midPoint = Vector3.Lerp(playerControl.transform.position, targetBasePos, 0.3f);
         Vector3 floatPosWorld = midPoint + Vector3.up * 1.2f;
-        if (Vector3.Distance(floatPosWorld, targetBasePos) <= 0.9f)
+        for (int j = 0; j < 10; j++)
         {
-            //Debug.Log("너무 가까워서 뒤로 조금 밈");
-            Vector3 outerDir = playerControl.transform.position - targetBasePos;
-            outerDir.y = 0f;
-            outerDir.Normalize();
-            floatPosWorld += 2f * outerDir;
+            if (Vector3.Distance(floatPosWorld, targetBasePos) <= 0.8f)
+            {
+                //Debug.Log("물체랑 너무 가까워서 뒤로 조금 밈");
+                Vector3 outerDir = playerControl.transform.position - targetBasePos;
+                outerDir.y = 0f;
+                outerDir.Normalize();
+                floatPosWorld += 2f * outerDir;
+            }
+            if (Vector3.Distance(floatPosWorld, playerControl.transform.position + Vector3.up) <= 0.9f)
+            {
+                //Debug.Log("플레이어랑 너무 가까워서 뒤로 조금 밈");
+                Vector3 outerDir = floatPosWorld - targetBasePos;
+                outerDir.y *= 0.2f;
+                outerDir.Normalize();
+                outerDir = outerDir - playerControl.childTR.right;
+                outerDir.Normalize();
+                floatPosWorld += 1f * outerDir;
+            }
+            //Debug.Log("랜턴 위치가 어떤 콜라이더의 속이라면 위치 재조정");
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(floatPosWorld, 0.2f, playerControl.groundLayer);
+            bool isBlocked = false;
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].isTrigger) continue;
+                isBlocked = true;
+                break;
+            }
+            if (!isBlocked)
+            {
+                // 최종 랜턴 위치 확정
+                break;
+            }
+            // [4] 랜덤하게 재조정 (등 뒤 탐색)
+            float playerYRot = playerControl.childTR.localRotation.eulerAngles.y;
+            float backDirX = (Mathf.Abs(playerYRot - 0f) < 1f) ? -1f : 1f;
+            float searchRange = 1f + (j * 0.2f);
+            Vector3 randomOffset = new Vector3(
+                Random.Range(0.5f, searchRange) * backDirX,
+                Random.Range(-0.5f, 0.5f),
+                0f
+            );
+            floatPosWorld += randomOffset;
         }
-        Vector3 floatPosLo = playerLightTr.parent.InverseTransformPoint(floatPosWorld);
 
-
+        Vector3 floatPosLocal = playerLightTr.parent.InverseTransformPoint(floatPosWorld);
         await UniTask.Delay(10, cancellationToken: token);
-
         sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
 
-
         // 단계 1: 부상 및 활성화
-        playerLightTr.DOLocalMove(floatPosLo, duration).SetEase(Ease.OutCubic);
+        playerLightTr.DOLocalMove(floatPosLocal, duration).SetEase(Ease.OutCubic);
         lanternSprite.DOFade(1f, duration);
         DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 3f, duration);
 
@@ -320,7 +356,7 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             if (target2 == null)
                 return;
-            target2.promptFill += 0.6f * Time.deltaTime;
+            target2.promptFill += 0.3f * Time.deltaTime;
             target2.promptFill = Mathf.Clamp01(target2.promptFill);
             prompt.lanternFill.fillAmount = target2.promptFill;
             if (target2.promptFill == 1f) break;
