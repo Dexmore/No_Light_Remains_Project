@@ -66,6 +66,8 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 
     public void OnSelect(BaseEventData eventData)
     {
+        AudioManager.I?.PlaySFX("InventoryUI_button1");
+        
         if (_myData != null && _controller != null)
         {
             _controller.ShowFunctionDetails(_myData);
@@ -77,6 +79,8 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 
     private void HandleInteraction()
     {
+        AudioManager.I?.PlaySFX("InventoryUI_button1");
+        
         if (_myData == null || _controller == null) return;
 
         if (_myData.isNew)

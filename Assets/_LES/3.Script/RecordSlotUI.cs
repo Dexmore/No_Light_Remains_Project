@@ -48,6 +48,7 @@ public class RecordSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     // [추가] 키보드/컨트롤러로 슬롯이 선택되었을 때 호출
     public void OnSelect(BaseEventData eventData)
     {
+        AudioManager.I?.PlaySFX("InventoryUI_button1");
         ShowDetails();
     }
 
@@ -76,6 +77,8 @@ public class RecordSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     // 이 슬롯이 클릭되었을 때의 동작 (Enter 키 포함)
     public void OnSlotClicked()
     {
+        AudioManager.I?.PlaySFX("InventoryUI_button1");
+
         // 정보 표시는 이미 OnPointerEnter/OnSelect가 처리했으므로,
         // 여기서는 'New' 마크 제거만 처리합니다.
         if (_currentRecord != null && _controller != null)
@@ -89,7 +92,6 @@ public class RecordSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                     newIndicator.SetActive(false);
                 }
 
-                /////
                 int find = DBManager.I.currData.recordDatas.FindIndex(x => x.Name == _currentRecord.name);
                 if (find != -1)
                 {
@@ -97,7 +99,6 @@ public class RecordSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                     cd.isNew = false;
                     DBManager.I.currData.recordDatas[find] = cd;
                 }
-                /////
                 
             }
         }
