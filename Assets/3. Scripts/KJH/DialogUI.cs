@@ -17,32 +17,24 @@ public class DialogUI : MonoBehaviour
         {
             allDialogTexts = new List<string[]>()
             {
-                //대사0
+                //대사0 (게임시작 (이 대사 이후 바로 튜토리얼 시작))
                 new string[]
                 {
-                    "Darkness is spreading from the outskirts of the city.\nIt is corrupting living things and machines, turning them into monsters.",
-                    "After long, hidden research, I succeeded in creating a device that emits\nimmense light energy, 'Ilios.' With this, I can purify the 'Caligo,'\nthe monsters that have shrouded the city.",
-                    "...It is time to depart. Let's move."
+                    "....\n...011101....\n.0x0010110",
+                    "....11001100...\n..110111..\n..\n..Exiting hibernation mode.",
+                    "..0x01111011...\n....System active."
                 },
-                //대사1
+                //대사1 (튜토리얼 씬 중앙의 컴퓨터 대사)
                 new string[]
                 {
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    "0x01111011...\n(Scanning data logs...)",
+                    "Based on this data... 'that phenomenon' is escalating.\nNo time to waste. I have to get to the 'Core' now."
                 },
-                //대사2
+                //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
                 new string[]
                 {
-                    //1페이지
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
-                    //2페이지
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    //3페이지
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    //Page 1
+                    "The door is locked tight."
                 },
                 //대사3
                 new string[]
@@ -57,9 +49,14 @@ public class DialogUI : MonoBehaviour
                 //대사4
                 new string[]
                 {
-                    //Page 1
-                    "This door is locked.",
+                    //1페이지
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    //2페이지
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    //3페이지
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
+                
             };
         }
         // 한국어
@@ -67,30 +64,24 @@ public class DialogUI : MonoBehaviour
         {
             allDialogTexts = new List<string[]>()
             {
-                //대사0
+                //대사0 (게임시작 (이 대사 이후 바로 튜토리얼 시작))
                 new string[]
                 {
-                    "도시 외곽 지역을 중심으로 어둠이 퍼지고 있다.\n어둠은 생명체와 기계들을 오염시켜서 점점 괴물로 만들고 있다.",
-                    "나는 숨어서 오래 연구한 끝에 막대한 빛 에너지 '일리오스'를\n방출하는 장치를 만드는 데 성공했다. 이것만 있으면 도시를\n뒤덮은 괴물 '칼리고'들을 정화할 수 있을 것이다.",
-                    "...슬슬 출발할 시간이 되었다. 움직여보자."
+                    "....\n...0x011101....\n.0x0010110",
+                    "....11001100...\n..0111..\n..\n..휴면상태 해제",
+                    "..0x01111011...\n....시스템 가동"
                 },
-                //대사1
+                //대사1  (튜토리얼 씬 중앙의 컴퓨터 대사)
                 new string[]
                 {
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "0x01111011...\n(장치로부터 데이터 확인 중)",
+                    "이 자료에 따르면... 최근 '그 현상'이 더 심화되고 있는 것으로 보인다.\n서둘러 '코어' 시설로 향해야한다."
                 },
-                //대사2
+                //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
                 new string[]
                 {
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    //Page 1
+                    "문이 단단히 잠겨있다.",
                 },
                 //대사3
                 new string[]
@@ -98,13 +89,19 @@ public class DialogUI : MonoBehaviour
                     "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                     "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                     "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                 },
                 //대사4
                 new string[]
                 {
-                    //Page 1
-                    "문이 잠겨있다.",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
                 },
+                
             };
         }
     }

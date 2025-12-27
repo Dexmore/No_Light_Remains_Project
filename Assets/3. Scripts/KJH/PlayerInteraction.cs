@@ -107,6 +107,59 @@ public class PlayerInteraction : MonoBehaviour
             if (target1 != null)
             {
                 if (target1.type != Interactable.Type.DropItem && !playerControl.Grounded) return;
+                if (target1.type != Interactable.Type.DropItem)
+                {
+                    Vector2 targetCenter = target1.transform.position + Vector3.up;
+                    SpriteRenderer spriteRenderer = target1.GetComponent<SpriteRenderer>();
+                    Collider2D collider2D = target1.GetComponent<Collider2D>();
+                    if (spriteRenderer != null)
+                    {
+                        targetCenter = spriteRenderer.bounds.center;
+                    }
+                    else if (collider2D != null)
+                    {
+                        targetCenter = collider2D.bounds.center;
+                    }
+                    else if (target1.transform.childCount > 1)
+                    {
+                        spriteRenderer = target1.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                        collider2D = target1.transform.GetChild(0).GetComponent<Collider2D>();
+                        if (spriteRenderer != null)
+                        {
+                            targetCenter = spriteRenderer.bounds.center;
+                        }
+                        else if (collider2D != null)
+                        {
+                            targetCenter = collider2D.bounds.center;
+                        }
+                        else
+                        {
+                            targetCenter = target1.transform.position + Vector3.up;
+                        }
+                    }
+                    else
+                    {
+                        targetCenter = target1.transform.position + Vector3.up;
+                    }
+                    RaycastHit2D[] raycastHits = Physics2D.LinecastAll
+                    (
+                        (Vector2)playerControl.transform.position + 1.2f * Vector2.up,
+                        (Vector2)targetCenter,
+                        playerControl.groundLayer
+                    );
+                    bool isBlocked = false;
+                    for (int i = 0; i < raycastHits.Length; i++)
+                    {
+                        if (raycastHits[i].collider.isTrigger) continue;
+                        if (raycastHits[i].collider.transform.Root() == target1.transform.Root()) continue;
+                        isBlocked = true;
+                        break;
+                    }
+                    if (isBlocked)
+                    {
+                        return;
+                    }
+                }
                 if (flag1) return;
                 flag1 = true;
                 AudioManager.I.PlaySFX("UIClick2");

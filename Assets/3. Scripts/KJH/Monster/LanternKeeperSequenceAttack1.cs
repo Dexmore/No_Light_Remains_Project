@@ -49,7 +49,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
 
-        RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position, control.groundLayer);
+        RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position + Vector2.up, control.groundLayer);
         bool isBlocked = false;
         for (int i = 0; i < raycastHits.Length; i++)
         {

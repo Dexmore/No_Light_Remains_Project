@@ -118,20 +118,19 @@ public class DarkVanishPlatform : Lanternable, ISavable
         lpParticle.Play();
         dvParticle.gameObject.SetActive(true);
         dvParticle.Play();
-        await Task.Delay(200);
-        var mainModule = lpParticle.main;
-        mainModule.loop = false;
-        await Task.Delay(1500);
         if (platform != null)
         {
             var renderer = platform.GetComponent<SpriteRenderer>();
             if (renderer != null)
             {
                 renderer.material.SetFloat("_DissolveAmount", 1f);
-                renderer.material.DOFloat(0f, "_DissolveAmount", 1.5f).SetEase(Ease.InSine);
+                renderer.material.DOFloat(0f, "_DissolveAmount", 3.2f).SetEase(Ease.InSine);
             }
         }
-        await Task.Delay(1500);
+        await Task.Delay(200);
+        var mainModule = lpParticle.main;
+        mainModule.loop = false;
+        await Task.Delay(3000);
         platform.SetActive(false);
         _isReady = false;
         isComplete = true;

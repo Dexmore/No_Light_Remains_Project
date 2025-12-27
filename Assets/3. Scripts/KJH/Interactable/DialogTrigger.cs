@@ -48,8 +48,12 @@ public class DialogTrigger : MonoBehaviour, ISavable
         if (playerControl == null) return;
         if (!playerControl.Grounded) return;
         isComplete = true;
-        GameManager.I.onDialog.Invoke(dialogIndex, transform);
+        if (canReplay)
+        {
+            DBManager.I.SetLastTimeReplayObject(this);
+        }
         coll2D.enabled = false;
+        GameManager.I.onDialog.Invoke(dialogIndex, transform);
         if (sfxName != null && sfxName != "")
         {
             AudioManager.I.PlaySFX(sfxName, transform.position, null, 0.2f);

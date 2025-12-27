@@ -655,16 +655,16 @@ public class GameManager : SingletonBehaviour<GameManager>
                     objectPositionData.Name = allSavableObjects[i].transform.name.Split("(")[0];
                     objectPositionData.index = result;
                     objectPositionData.lastPos = allSavableObjects[i].transform.position;
-                    if (allSavableObjects[i].transform.gameObject.activeInHierarchy)
-                    {
-                        objectPositionData.lastCompleteTime = "";
-                    }
-                    else
+                    if (allSavableObjects[i].CanReplay)
                     {
                         System.DateTime now = System.DateTime.Now;
                         string datePart = now.ToString("yyyy.MM.dd");
                         int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
                         objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
+                    }
+                    else
+                    {
+                        objectPositionData.lastCompleteTime = "";
                     }
                     sceneData.objectPositionDatas.Add(objectPositionData);
                 }
@@ -741,16 +741,16 @@ public class GameManager : SingletonBehaviour<GameManager>
                         objectPositionData.Name = allSavableObjects[i].transform.name.Split("(")[0];
                         objectPositionData.index = result;
                         objectPositionData.lastPos = allSavableObjects[i].transform.position;
-                        if (allSavableObjects[i].transform.gameObject.activeInHierarchy)
-                        {
-                            objectPositionData.lastCompleteTime = "";
-                        }
-                        else
+                        if (allSavableObjects[i].CanReplay)
                         {
                             System.DateTime now = System.DateTime.Now;
                             string datePart = now.ToString("yyyy.MM.dd");
                             int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
                             objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
+                        }
+                        else
+                        {
+                            objectPositionData.lastCompleteTime = "";
                         }
                         sceneData.objectPositionDatas.Add(objectPositionData);
                     }
@@ -759,16 +759,23 @@ public class GameManager : SingletonBehaviour<GameManager>
                         CharacterData.ObjectPositionData objectPositionData = sceneData.objectPositionDatas[find2];
                         objectPositionData.index = result;
                         objectPositionData.lastPos = allSavableObjects[i].transform.position;
-                        if (allSavableObjects[i].transform.gameObject.activeInHierarchy)
+                        if (allSavableObjects[i].CanReplay)
+                        {
+                            if (objectPositionData.lastCompleteTime != "")
+                            {
+                                //그대로 유지
+                            }
+                            else
+                            {
+                                System.DateTime now = System.DateTime.Now;
+                                string datePart = now.ToString("yyyy.MM.dd");
+                                int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                                objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
+                            }
+                        }
+                        else
                         {
                             objectPositionData.lastCompleteTime = "";
-                        }
-                        else if (objectPositionData.lastCompleteTime == "")
-                        {
-                            System.DateTime now = System.DateTime.Now;
-                            string datePart = now.ToString("yyyy.MM.dd");
-                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                            objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
                         }
                         sceneData.objectPositionDatas[find2] = objectPositionData;
                     }

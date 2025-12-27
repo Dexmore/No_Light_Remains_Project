@@ -20,12 +20,15 @@ public class PlayerOpenInventory : IPlayerState
         flagInt = 0;
         AudioManager.I.PlaySFX("Pocket1");
         GameManager.I.isOpenInventory = true;
+        Debug.Log("착용중인 모든 기어 검사후 멤버변수에 저장");
     }
     public void Exit()
     {
         ctx.inventoryUI.Close();
         AudioManager.I.PlaySFX("Pocket1");
         GameManager.I.isOpenInventory = false;
+        Debug.Log("착용중인 모든 기어 검사후 인벤토리 열었을때 멤버변수에 저장했던 착용상태와 비교");
+        Debug.Log("바뀐 기어들이 있다면 기어 체인지드 텍스트와 파워업 전기 지지직 연출 시작");
     }
     public void UpdateState()
     {

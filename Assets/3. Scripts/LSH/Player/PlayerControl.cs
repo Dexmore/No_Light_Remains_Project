@@ -680,7 +680,10 @@ public class PlayerControl : MonoBehaviour
             {
                 if (GameManager.I.isLanternOn)
                 {
-                    currBattery += lanternDecreaseTick * diffMultiplier * interval;
+                    float isOpenUI = 1f;
+                    if(GameManager.I.isOpenDialog) isOpenUI = 0.2f;
+                    if(GameManager.I.isOpenPop) isOpenUI = 0.4f;
+                    currBattery += lanternDecreaseTick * diffMultiplier * isOpenUI * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();

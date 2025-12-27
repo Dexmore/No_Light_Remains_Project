@@ -507,6 +507,24 @@ public class DBManager : SingletonBehaviour<DBManager>
         var findItems = currData.recordDatas.FindIndex(x => x.Name == Name);
         return findItems != -1;
     }
+    public void SetLastTimeReplayObject(ISavable savable)
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        string Name = savable.transform.name.Split("(")[0];
+        if(Name == "") return;
+        if(currData.sceneDatas.Count == 0) return;
+        int find = currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+        if(find == -1) return;
+        if(currData.sceneDatas[find].objectPositionDatas.Count == 0) return;
+        int find2 = currData.sceneDatas[find].objectPositionDatas.FindIndex(x => x.Name == Name);
+        if(find2 == -1) return;
+        System.DateTime now = System.DateTime.Now;
+        string datePart = now.ToString("yyyy.MM.dd");
+        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+        var objectPositionData = currData.sceneDatas[find].objectPositionDatas[find2];
+        objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
+        currData.sceneDatas[find].objectPositionDatas[find2] = objectPositionData;
+    }
     public void SetProgress(string Name, int progress)
     {
         int find = currData.progressDatas.FindIndex(x => x.Name == Name);

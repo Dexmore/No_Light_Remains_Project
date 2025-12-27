@@ -7,8 +7,10 @@ public class TutorialControl : MonoBehaviour
     [ReadOnlyInspector][SerializeField] int currentProgress = -1;
     IEnumerator Start()
     {
+        yield return null;
         if (DBManager.I.GetProgress("Tutorial") < 0)
         {
+            DBManager.I.Save();
             playerControl.stop.duration = 9999999;
             playerControl.fsm.ChangeState(playerControl.stop);
             yield return YieldInstructionCache.WaitForSeconds(1f);
@@ -22,6 +24,12 @@ public class TutorialControl : MonoBehaviour
             yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
             playerControl.fsm.ChangeState(playerControl.idle);
             StartCoroutine(nameof(TutorialParryLoop));
+        }
+        yield return YieldInstructionCache.WaitForSeconds(1.5f);
+        Transform tutParryTr = transform.Find("TutorialParry");
+        if(slicer == null || !slicer.gameObject.activeInHierarchy)
+        {
+            tutParryTr.gameObject.SetActive(false);
         }
     }
     void OnEnable()
