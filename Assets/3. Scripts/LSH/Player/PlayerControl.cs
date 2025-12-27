@@ -682,7 +682,7 @@ public class PlayerControl : MonoBehaviour
             }
             else if(isNearSconceLight)
             {
-                if (currBattery <= 37)
+                if (currBattery <= 41)
                 {
                     if (fsm.currentState == die) continue;
                     currBattery += 5.7f * interval;

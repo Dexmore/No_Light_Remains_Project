@@ -502,7 +502,7 @@ public class PlayerInteraction : MonoBehaviour
             sensorDatas.Clear();
             // Auto Interaction
             playerControl.isNearSavePoint = false;
-            playerControl.isNearSavePoint = false;
+            playerControl.isNearSconceLight = false;
             for (int i = 0; i < colliders.Length; i++)
             {
                 int find = sensorDatas.FindIndex(x => x.collider == colliders[i]);
@@ -531,7 +531,7 @@ public class PlayerInteraction : MonoBehaviour
                     SconceLight sconceLight = lanternable as SconceLight;
                     if (sconceLight != null)
                     {
-                        playerControl.isNearSavePoint = true;
+                        playerControl.isNearSconceLight = true;
                     }
                     if (!lanternable.isReady) continue;
                     SensorData data = new SensorData();

@@ -37,7 +37,7 @@ public class ElectricCableType2 : MonoBehaviour, ISavable
     {
         if (isBreak) return;
         if (hitData.target != transform) return;
-        Debug.Log("이 오브젝트가 공격당함");
+        //Debug.Log("이 오브젝트가 공격당함");
         if (!isBreak)
         {
             isBreak = true;
@@ -53,7 +53,7 @@ public class ElectricCableType2 : MonoBehaviour, ISavable
         if (firstBreakJoint != null)
         {
             firstBreakJoint.enabled = false;
-            Debug.Log(firstBreakJoint);
+            //Debug.Log(firstBreakJoint);
         }
         yield return new WaitForSeconds(secondBreakDelay);
         isComplete = true;
@@ -62,7 +62,7 @@ public class ElectricCableType2 : MonoBehaviour, ISavable
         if (secondBreakJoint != null)
         {
             secondBreakJoint.enabled = false;
-            Debug.Log(secondBreakJoint);
+            //Debug.Log(secondBreakJoint);
         }
         yield return new WaitForSeconds(secondBreakDelay * 0.3f);
         AudioManager.I.PlaySFX("Tick1");

@@ -41,11 +41,13 @@ public class PlayerAttackCombo2 : IPlayerState
         }
         ctx.animator.Play("Player_Attack2");
         isSFX = false;
+        ctx.attack.finishTime = 0;
     }
     public void Exit()
     {
         ctx.attackRange.onTriggetStay2D -= TriggerHandler;
         attacked.Clear();
+        ctx.attack.finishTime = 0;
     }
     public void UpdateState()
     {
