@@ -8,64 +8,71 @@ namespace Game.Visuals
     public class ParallaxZoneController : MonoBehaviour
     {
         [Header("1. Target Group")]
-        [Tooltip("제어할 배경 그룹의 부모 오브젝트")]
         public GameObject backgroundRoot;
 
         [Header("2. Settings")]
-        [Tooltip("시작 구역 여부 (체크하면 처음부터 켜짐)")]
         public bool isStartingZone = false;
-
-        [Tooltip("감지할 플레이어 태그")]
         public string targetTag = "Player";
 
         [Header("3. Transition Timing")]
-        [Tooltip("체크 해제하면 페이드 효과 없이 즉시(0초) 전환됩니다.")]
-        public bool enableTransitions = true; // [New] 트랜지션 ON/OFF 버튼
-
-        [Tooltip("켜지는 시간 (Fade In)")]
+        public bool enableTransitions = true;
         public float fadeInDuration = 0.5f;
-
-        [Tooltip("꺼지는 시간 (Fade Out)")]
         public float fadeOutDuration = 1.0f;
 
         private List<SpriteRenderer> targetSprites = new List<SpriteRenderer>();
         private List<ParallaxMaster> targetScripts = new List<ParallaxMaster>();
         private Coroutine currentFadeRoutine;
 
-        private void Start()
+        private void Awake()
         {
             if (backgroundRoot == null) return;
-
-            // 최적화: 제어 대상 미리 캐싱
+            // 최적화: 캐싱
             backgroundRoot.GetComponentsInChildren<SpriteRenderer>(true, targetSprites);
             backgroundRoot.GetComponentsInChildren<ParallaxMaster>(true, targetScripts);
-
             GetComponent<BoxCollider2D>().isTrigger = true;
+        }
 
+        private void Start()
+        {
+            // 시작 구역 설정
             if (isStartingZone)
             {
-                backgroundRoot.SetActive(true);
-                ToggleScripts(true);
-                SetAlpha(1f);
+                ForceState(true, 1f);
             }
             else
             {
-                SetAlpha(0f);
-                ToggleScripts(false);
-                backgroundRoot.SetActive(false);
+                ForceState(false, 0f);
+            }
+        }
+
+        // [핵심 수정 1] 오브젝트가 꺼질 때(스테이지 이동 등) 상태를 강제로 정리함
+        private void OnDisable()
+        {
+            if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
+            currentFadeRoutine = null;
+            
+            // 꺼질 때는 배경도 같이 확실하게 꺼줌 (다시 켜질 때 꼬임 방지)
+            // 단, isStartingZone 로직과 충돌하지 않게 주의 (보통 스테이지 꺼지면 배경도 꺼지는게 맞음)
+            if (backgroundRoot != null)
+            {
+                // 페이드 없이 즉시 끔
+                ForceState(false, 0f); 
             }
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
+            // [안전 장치] 내가 켜져있을 때만 로직 수행
+            if (!isActiveAndEnabled) return;
+
             if (collision.CompareTag(targetTag) && backgroundRoot != null)
             {
+                // 일단 켜고 본다
                 backgroundRoot.SetActive(true);
                 ToggleScripts(true);
 
                 if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
                 
-                // [핵심 변경] 버튼이 꺼져있으면 시간 0초 적용
                 float duration = enableTransitions ? fadeInDuration : 0f;
                 currentFadeRoutine = StartCoroutine(FadeRoutine(1f, duration));
             }
@@ -73,28 +80,40 @@ namespace Game.Visuals
 
         private void OnTriggerExit2D(Collider2D collision)
         {
+            // [핵심 수정 2] 오류 해결 부분
+            // 만약 나가는 순간 오브젝트가 꺼졌다면, 코루틴 시작하지 말고 그냥 즉시 꺼버림
+            if (!isActiveAndEnabled) 
+            {
+                ForceState(false, 0f);
+                return;
+            }
+
             if (collision.CompareTag(targetTag) && backgroundRoot != null)
             {
                 if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
 
-                // [핵심 변경] 버튼이 꺼져있으면 시간 0초 적용
                 float duration = enableTransitions ? fadeOutDuration : 0f;
                 currentFadeRoutine = StartCoroutine(FadeRoutine(0f, duration, true));
             }
         }
 
+        // 상태 강제 적용 함수 (코루틴 없이 즉시 적용)
+        private void ForceState(bool isActive, float alpha)
+        {
+            if (backgroundRoot == null) return;
+
+            SetAlpha(alpha);
+            ToggleScripts(isActive);
+            backgroundRoot.SetActive(isActive);
+        }
+
         private IEnumerator FadeRoutine(float targetAlpha, float duration, bool disableAfter = false)
         {
-            // 시간이 0 이하라면 즉시 처리 (깜빡임 방지)
             if (duration <= 0f)
             {
                 SetAlpha(targetAlpha);
-                if (disableAfter)
-                {
-                    ToggleScripts(false);
-                    backgroundRoot.SetActive(false);
-                }
-                yield break; // 코루틴 즉시 종료
+                if (disableAfter) ForceState(false, targetAlpha);
+                yield break;
             }
 
             float timer = 0f;
@@ -112,8 +131,7 @@ namespace Game.Visuals
 
             if (disableAfter)
             {
-                ToggleScripts(false);
-                backgroundRoot.SetActive(false);
+                ForceState(false, targetAlpha);
             }
         }
 

@@ -42,6 +42,13 @@ namespace Game.Visuals
             {
                 cameraTransform = Camera.main.transform;
                 lastCameraPosition = cameraTransform.position;
+
+                // [핵심 해결책] 켜지자마자 카메라 근처로 즉시 이동 (스냅)
+                // 이것이 없으면 멀리서 돌아왔을 때 배경이 따라오는데 한참 걸림
+                if (infiniteLoop)
+                {
+                    SnapToCamera();
+                }
             }
         }
 
@@ -49,11 +56,8 @@ namespace Game.Visuals
         {
             if (!useZCoordinate) ApplyPreset();
             ApplyColor();
-            // 에디터에서 값 수정 시 최소한의 안전장치
-            // (여기서는 강제하지 않고 사용자의 입력을 존중하되, 0일 때만 자동 적용)
             if (infiniteLoop && loopThreshold == 0 && singleImageWidth > 0)
             {
-                 // 안전하게 1.5배로 자동 설정
                  loopThreshold = singleImageWidth * 1.5f; 
             }
         }
@@ -66,6 +70,28 @@ namespace Game.Visuals
             
             CalculateSize();
             ApplyColor();
+
+            // 시작할 때도 스냅 한 번 실행
+            if (infiniteLoop) SnapToCamera();
+        }
+
+        // [New] 카메라 위치로 배경을 즉시 소환하는 함수
+        private void SnapToCamera()
+        {
+            if (singleImageWidth <= 0 || cloneCount <= 0) return;
+
+            float totalLoopSize = singleImageWidth * cloneCount;
+            float dist = cameraTransform.position.x - transform.position.x;
+
+            // 카메라와의 거리가 너무 멀면, 루프 사이즈 단위로 계산해서 한 번에 이동
+            if (Mathf.Abs(dist) >= totalLoopSize / 2f) // 대략 절반 이상 멀어지면
+            {
+                // 몇 바퀴(몇 번의 점프)를 돌아야 하는지 정수로 계산
+                int numJumps = Mathf.RoundToInt(dist / totalLoopSize);
+                
+                // 해당 횟수만큼 좌표 이동
+                transform.position += new Vector3(numJumps * totalLoopSize, 0, 0);
+            }
         }
 
         [ContextMenu("Auto Calculate Size")]
@@ -87,8 +113,6 @@ namespace Game.Visuals
                 singleImageWidth = sprite.bounds.size.x;
             }
 
-            // [핵심 수정] 점프 타이밍을 이미지 너비보다 50% 더 넓게 잡아서
-            // 양옆에 붙어있는 친구들이 시작하자마자 점프하는 참사를 방지함
             loopThreshold = singleImageWidth * 1.5f; 
             
             #if UNITY_EDITOR
@@ -127,7 +151,6 @@ namespace Game.Visuals
             {
                 float offsetPosX = cameraTransform.position.x - transform.position.x;
                 
-                // loopThreshold(노란선)를 넘어가면 점프
                 if (Mathf.Abs(offsetPosX) >= loopThreshold)
                 {
                     float totalLoopSize = singleImageWidth * cloneCount;
@@ -146,7 +169,6 @@ namespace Game.Visuals
             }
             if (infiniteLoop) { 
                 Gizmos.color = Color.yellow; 
-                // 임계값이 0이면 시각적으로 1.5배로 보여줌 (안전을 위해)
                 float th = loopThreshold > 0 ? loopThreshold : singleImageWidth * 1.5f; 
                 Gizmos.DrawLine(new Vector3(transform.position.x - th, transform.position.y - 10, 0), new Vector3(transform.position.x - th, transform.position.y + 10, 0)); 
                 Gizmos.DrawLine(new Vector3(transform.position.x + th, transform.position.y - 10, 0), new Vector3(transform.position.x + th, transform.position.y + 10, 0)); 
