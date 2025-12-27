@@ -4,15 +4,10 @@ using UnityEngine;
 public class ElectricCable : MonoBehaviour
 {
     private Rigidbody2D[] rbs;
-
-    [Header("Idle Settings")]
-    [SerializeField] private bool useIdleSway = true;
-    [SerializeField] private float swayForce = 0.5f; // 흔들림 강도
-    [SerializeField] private float swayInterval = 2.0f; // 흔들림 주기
-
-    [Header("Collision Settings")]
-    [SerializeField] private float impactForce = 2.0f; // 충돌 시 튕겨나가는 강도
-
+    private bool useIdleSway = true;
+    private float swayForce = 0.7f;
+    private float swayInterval = 1.5f;
+    private float impactForce = 3.0f;
     void Awake()
     {
         Rigidbody2D[] _rbs = GetComponentsInChildren<Rigidbody2D>();

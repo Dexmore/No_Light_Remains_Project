@@ -10,6 +10,7 @@ public abstract class Lanternable : MonoBehaviour
     public abstract void PromptCancel();
     public abstract ParticleSystem particle {get;}
     public abstract SpriteRenderer lightPoint {get;}
+    public float fillSpeed = 1f;
 
 
 }

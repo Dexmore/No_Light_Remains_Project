@@ -100,8 +100,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2004259723791649163}
   - component: {fileID: 2813568934152683122}
+  - component: {fileID: -4856176997232454425}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: ExampleBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,6 +161,28 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-4856176997232454425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8001757980239108842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 547c337605726bf4b9f688bcd8fbd797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExampleBullet
+  poolManager: {fileID: 0}
+  owner: {fileID: 0}
+  damage: 10
+  staggerType: 1
+  canParry: 1
+  canAvoid: 1
+  animator: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 521
 --- !u!1001 &3004351825557735584
 PrefabInstance:
   m_ObjectHideFlags: 0

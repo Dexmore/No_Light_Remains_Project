@@ -52,13 +52,14 @@ public class PlayerAttack : IPlayerState
         flag1 = false;
         parryPressed = false;
         isSFX = false;
-        finishTime = 0f;
+        finishTime = Time.time;
     }
     public void Exit()
     {
         attackAction.performed -= PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D -= TriggerHandler;
         finishTime = Time.time;
+        attacked.Clear();
     }
     bool isSFX;
     public void UpdateState()
@@ -148,11 +149,11 @@ public class PlayerAttack : IPlayerState
     void TriggerHandler(Collider2D coll)
     {
         if (coll.gameObject.layer != LayerMask.NameToLayer("Monster") && coll.gameObject.layer != LayerMask.NameToLayer("Interactable")) return;
-        //if (attacked.Count >= multiHitCount) return;
-        int mCount = attacked.Count(x => x.gameObject.layer == LayerMask.NameToLayer("Monster"));
-        int iCount = attacked.Count(x => x.gameObject.layer == LayerMask.NameToLayer("Interactable"));
-        if (mCount >= multiHitCount) return;
-        if (iCount >= multiHitCount) return;
+        if (attacked.Count > 0)
+        {
+            int mCount = attacked.Count(x => x.gameObject.layer == LayerMask.NameToLayer("Monster"));
+            if (mCount >= multiHitCount) return;
+        }
         if (!attacked.Contains(coll))
         {
             float lanternOn = 1f;

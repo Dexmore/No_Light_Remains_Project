@@ -135,6 +135,8 @@ public class PlayerControl : MonoBehaviour
             newData.recordDatas = new List<CharacterData.RecordData>();
             newData.sceneDatas = new List<CharacterData.SceneData>();
             newData.progressDatas = new List<CharacterData.ProgressData>();
+            newData.killCounts = new List<CharacterData.KillCount>();
+            
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
             System.DateTime now = System.DateTime.Now;

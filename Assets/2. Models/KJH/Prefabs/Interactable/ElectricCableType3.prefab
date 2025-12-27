@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.09459353, w: 0.99551606}
   m_LocalPosition: {x: -0.38399982, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -135,7 +135,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.01599993, y: 0}
+  m_ConnectedAnchor: {x: 0.016002655, y: 0}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -174,7 +174,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.09105371, w: 0.99584603}
   m_LocalPosition: {x: -0.34356785, y: -3.9109344, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -280,7 +280,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.0069589484, y: -0.99439293}
+  m_ConnectedAnchor: {x: 0.007653869, y: -0.9943931}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -319,7 +319,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.056685288, w: 0.9983921}
   m_LocalPosition: {x: -0.58041096, y: -0.97162056, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -425,7 +425,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.009004017, y: -0.99122536}
+  m_ConnectedAnchor: {x: -0.0099035725, y: -0.9912249}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -464,7 +464,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.99165046, w: 0.12895499}
   m_LocalPosition: {x: 0.08787346, y: -5.202366, z: 0}
-  m_LocalScale: {x: 1.1, y: 0.3837, z: 1}
+  m_LocalScale: {x: 1, y: 0.3837, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -570,7 +570,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.00037662682, y: -0.94177467}
+  m_ConnectedAnchor: {x: -0.00041459376, y: -0.94175285}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -608,7 +608,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 63.637, y: 12.9, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4836872746924068401}
@@ -627,6 +627,7 @@ Transform:
   - {fileID: 3666650692430944037}
   - {fileID: 148544128851700244}
   - {fileID: 7842777079978878708}
+  - {fileID: 2246383802003386544}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &6813206966141101593
@@ -687,10 +688,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79e2454cb3dd4b24ebdb57264f849bb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElectricCable
-  useIdleSway: 1
-  swayForce: 0.2
-  swayInterval: 2.5
-  impactForce: 1.5
 --- !u!1 &2070098169745535494
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +717,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.054071706, y: -0.07273608, z: -0.9958226, w: 0.011098384}
   m_LocalPosition: {x: 0.4156437, y: -0.9922762, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -826,7 +823,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.0010593174, y: -1.013842}
+  m_ConnectedAnchor: {x: -0.001164215, y: -1.0138425}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -865,7 +862,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.07577699, w: 0.99712485}
   m_LocalPosition: {x: -0.6748743, y: -1.9518216, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -971,7 +968,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.015537663, y: -0.98459303}
+  m_ConnectedAnchor: {x: 0.017089706, y: -0.9845938}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1010,7 +1007,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.089520685, w: 0.995985}
   m_LocalPosition: {x: -0.5284252, y: -2.933844, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -1116,7 +1113,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.0033016135, y: -0.99287665}
+  m_ConnectedAnchor: {x: -0.0036307795, y: -0.99287605}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1214,7 +1211,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0.9965957, w: -0.08244519}
   m_LocalPosition: {x: 0.046878815, y: -2.9701543, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -1320,7 +1317,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.0066203517, y: -0.9974191}
+  m_ConnectedAnchor: {x: 0.0072823185, y: -0.9974193}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1359,7 +1356,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0.768365, w: -0.6400119}
   m_LocalPosition: {x: -0.26760387, y: -5.2672806, z: 0}
-  m_LocalScale: {x: 1.1, y: 0.3837, z: 1}
+  m_LocalScale: {x: 1, y: 0.3837, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -1465,7 +1462,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.0004515923, y: -0.9986481}
+  m_ConnectedAnchor: {x: 0.0005033985, y: -0.9986395}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1504,7 +1501,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.99078363, w: 0.1354544}
   m_LocalPosition: {x: 0.3216114, y: -3.9290183, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -1610,7 +1607,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.021581419, y: -0.93767804}
+  m_ConnectedAnchor: {x: -0.023742257, y: -0.93767846}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1649,7 +1646,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.12448795, w: -0.9922212}
   m_LocalPosition: {x: -0.17342949, y: -4.895854, z: 0}
-  m_LocalScale: {x: 1.1, y: 0.3837, z: 1}
+  m_LocalScale: {x: 1, y: 0.3837, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -1755,7 +1752,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.010269358, y: -0.99944305}
+  m_ConnectedAnchor: {x: -0.011295488, y: -0.9994436}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1794,7 +1791,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.99893415, w: 0.046157826}
   m_LocalPosition: {x: 0.21150208, y: -4.8605113, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -1900,7 +1897,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.029168831, y: -0.94371444}
+  m_ConnectedAnchor: {x: -0.032084845, y: -0.9437137}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1998,7 +1995,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0.9946275, w: -0.103519455}
   m_LocalPosition: {x: 0.20572853, y: -1.9841499, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1230101725035815280}
@@ -2104,7 +2101,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.0048539834, y: -0.998704}
+  m_ConnectedAnchor: {x: 0.005338536, y: -0.9987044}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -2114,6 +2111,96 @@ HingeJoint2D:
   m_AngleLimits:
     m_LowerAngle: 0
     m_UpperAngle: 50
+--- !u!1 &8486942882342067370
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2246383802003386544}
+  - component: {fileID: 5474633680117967242}
+  m_Layer: 8
+  m_Name: Sprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2246383802003386544
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8486942882342067370}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.68, y: -1.103, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1230101725035815280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &5474633680117967242
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8486942882342067370}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -10
+  m_Sprite: {fileID: 21300000, guid: d40b66275cc3ff0478800e277912dc65, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &8713533644524785511
 GameObject:
   m_ObjectHideFlags: 0
@@ -2191,7 +2278,7 @@ HingeJoint2D:
   m_BreakAction: 0
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -0.005884674, y: -0.9923781}
+  m_ConnectedAnchor: {x: -0.0064785792, y: -0.99237746}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:

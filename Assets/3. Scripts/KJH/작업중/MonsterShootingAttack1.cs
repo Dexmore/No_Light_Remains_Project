@@ -5,10 +5,13 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 public class MonsterShootingAttack1 : MonsterState
 {
+    BulletControl bulletControl;
+    
     int multiHitCount = 1;
     public override MonsterControl.State mapping => MonsterControl.State.ShootingAttack1;
     public override async UniTask Enter(CancellationToken token)
     {
+        if(bulletControl == null) bulletControl = FindAnyObjectByType<BulletControl>();
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
         await UniTask.Yield(token);
         Activate(token).Forget();
@@ -30,7 +33,7 @@ public class MonsterShootingAttack1 : MonsterState
         if (attackedColliders.Count >= multiHitCount) return;
         if (!attackedColliders.Contains(coll))
         {
-            
+
         }
     }
 

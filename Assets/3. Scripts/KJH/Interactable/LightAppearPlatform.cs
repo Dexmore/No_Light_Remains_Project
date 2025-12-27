@@ -56,17 +56,6 @@ public class LightAppearPlatform : Lanternable, ISavable
         AudioManager.I.PlaySFX("UIClick2");
         AudioManager.I.PlaySFX("LightApper", platform.transform.position, spatialBlend: 0.35f);
     }
-
-    // 단계적 작업.
-
-    // PlayerInteraction.cs에서 전부 처리 할일) 
-    // 1. PlayerLight/Lantern 스프라이트가. 플레이어-상호작용오브젝트 사이 적당한 위치에 서서히 붕 뜨면서.
-    // 2. PlayerLight/Lantern 스프라이트의 투명도와 PlayerLight/Lantern/Intensity 가 0 에서 적절한값으로 서서히 올라가면서
-    // 3. 라인 랜더러를 서서히 목표물에 닿게하고
-    // 4. PlayerLight/Lantern/전용 Freeform Light를 특정 물체에 빛을 모으고 집중하는 형태로 만들기
-    // ------------
-    // PlayerInteraction.cs에서 실행) 단. 메소드는 여기에서 제공
-    // 5. 상호작용오브젝트(Lanternable) 에서 LightPoint를 서서히 켜주면서
     public override void PromptFill()
     {
         lp?.gameObject.SetActive(true);
@@ -85,6 +74,18 @@ public class LightAppearPlatform : Lanternable, ISavable
         tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0f, 2.2f).SetEase(Ease.InSine)
         .OnComplete(() => lp.gameObject.SetActive(false)).Play();
     }
+
+    // 단계적 작업.
+
+    // PlayerInteraction.cs에서 전부 처리 할일) 
+    // 1. PlayerLight/Lantern 스프라이트가. 플레이어-상호작용오브젝트 사이 적당한 위치에 서서히 붕 뜨면서.
+    // 2. PlayerLight/Lantern 스프라이트의 투명도와 PlayerLight/Lantern/Intensity 가 0 에서 적절한값으로 서서히 올라가면서
+    // 3. 라인 랜더러를 서서히 목표물에 닿게하고
+    // 4. PlayerLight/Lantern/전용 Freeform Light를 특정 물체에 빛을 모으고 집중하는 형태로 만들기
+    // ------------
+    // PlayerInteraction.cs에서 실행) 단. 메소드는 여기에서 제공
+    // 5. 상호작용오브젝트(Lanternable) 에서 LightPoint를 서서히 켜주면서
+    
     Light2D childLight;
     Tween tweenChildLight;
     Light2D light2;

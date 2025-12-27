@@ -17,7 +17,7 @@ public class TutorialControl : MonoBehaviour
             yield return new WaitUntil(() => !GameManager.I.isSceneWaiting);
             yield return YieldInstructionCache.WaitForSeconds(1f);
             GameManager.I.onDialog.Invoke(0, transform);
-            Debug.Log("튜토리얼 : Step1. 시작스토리 다이얼로그 출력");
+            Debug.Log("튜토리얼 시작 : 스토리 첫 대사 출력");
             DBManager.I.SetProgress("Tutorial", 1);
             currentProgress = 1;
             yield return YieldInstructionCache.WaitForSeconds(1f);

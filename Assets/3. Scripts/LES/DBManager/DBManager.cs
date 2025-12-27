@@ -493,13 +493,21 @@ public class DBManager : SingletonBehaviour<DBManager>
     public bool HasGear(string Name, out bool isEquip)
     {
         var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
-        isEquip = currData.gearDatas[findItems].isEquipped;
+        isEquip = false;
+        if (findItems != -1)
+        {
+            isEquip = currData.gearDatas[findItems].isEquipped;
+        }
         return findItems != -1;
     }
     public bool HasLantern(string Name, out bool isEquip)
     {
         var findItems = currData.lanternDatas.FindIndex(x => x.Name == Name);
-        isEquip = currData.gearDatas[findItems].isEquipped;
+        isEquip = false;
+        if (findItems != -1)
+        {
+            isEquip = currData.gearDatas[findItems].isEquipped;
+        }
         return findItems != -1;
     }
     public bool HasRecord(string Name)
@@ -511,13 +519,13 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         string Name = savable.transform.name.Split("(")[0];
-        if(Name == "") return;
-        if(currData.sceneDatas.Count == 0) return;
+        if (Name == "") return;
+        if (currData.sceneDatas.Count == 0) return;
         int find = currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
-        if(find == -1) return;
-        if(currData.sceneDatas[find].objectPositionDatas.Count == 0) return;
+        if (find == -1) return;
+        if (currData.sceneDatas[find].objectPositionDatas.Count == 0) return;
         int find2 = currData.sceneDatas[find].objectPositionDatas.FindIndex(x => x.Name == Name);
-        if(find2 == -1) return;
+        if (find2 == -1) return;
         System.DateTime now = System.DateTime.Now;
         string datePart = now.ToString("yyyy.MM.dd");
         int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
@@ -528,7 +536,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     public void SetProgress(string Name, int progress)
     {
         int find = currData.progressDatas.FindIndex(x => x.Name == Name);
-        if(find == -1)
+        if (find == -1)
         {
             CharacterData.ProgressData progressData = new CharacterData.ProgressData();
             progressData.Name = Name;
@@ -545,7 +553,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     public int GetProgress(string Name)
     {
         int find = currData.progressDatas.FindIndex(x => x.Name == Name);
-        if(find == -1)
+        if (find == -1)
         {
             return -1;
         }
@@ -598,13 +606,10 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
 
 #endif
-
-
     private float RoundToOneDecimal(float value)
     {
         return Mathf.Round(value * 100f) * 0.01f;
     }
-
 }
 [System.Serializable]
 public struct SaveData
@@ -633,6 +638,7 @@ public struct CharacterData
     public List<RecordData> recordDatas;
     public List<SceneData> sceneDatas;
     public List<ProgressData> progressDatas;
+    public List<KillCount> killCounts;
     [System.Serializable]
     public struct ItemData
     {
@@ -693,6 +699,12 @@ public struct CharacterData
         public int progress;
         public bool isComplete;
         public int replayWaitTimeSecond;
+    }
+    // 업적용
+    public struct KillCount
+    {
+        public string Name;
+        public int count;
     }
 
 

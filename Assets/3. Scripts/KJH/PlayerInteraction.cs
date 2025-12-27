@@ -424,7 +424,7 @@ public class PlayerInteraction : MonoBehaviour
                 isCancel = true;
                 break;
             }
-            target2.promptFill += 0.3f * Time.deltaTime;
+            target2.promptFill += 0.3f * target2.fillSpeed * Time.deltaTime;
             target2.promptFill = Mathf.Clamp01(target2.promptFill);
             prompt.lanternFill.fillAmount = target2.promptFill;
             if (target2.promptFill == 1f) break;

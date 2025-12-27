@@ -76,6 +76,34 @@ public class ChestInteractable_LSH : Interactable, ISavable
         foreach (var element in dropTables)
         {
             if (Random.value > element.probability) continue;
+            DropItem dropInfo = element.dropItem;
+            if(dropInfo.gearData != null)
+            {
+                bool outValue;
+                if(DBManager.I.HasGear(dropInfo.gearData.name, out outValue))
+                {
+                    Debug.Log($"{dropInfo.gearData.name}는 이미 가지고 있습니다. 드롭불가");
+                    continue;
+                }
+            }
+            else if(dropInfo.lanternData != null)
+            {
+                bool outValue;
+                if(DBManager.I.HasLantern(dropInfo.lanternData.name, out outValue))
+                {
+                    Debug.Log($"{dropInfo.lanternData.name}는 이미 가지고 있습니다. 드롭불가");
+                    continue;
+                }
+            }
+            else if(dropInfo.recordData != null)
+            {
+                bool outValue;
+                if(DBManager.I.HasRecord(dropInfo.recordData.name))
+                {
+                    Debug.Log($"{dropInfo.recordData.name}는 이미 가지고 있습니다. 드롭불가");
+                    continue;
+                }
+            }
             AudioManager.I.PlaySFX("Tick1");
             int count = Random.Range(element.countRange.x, element.countRange.y + 1);
             for (int k = 0; k < count; k++)
