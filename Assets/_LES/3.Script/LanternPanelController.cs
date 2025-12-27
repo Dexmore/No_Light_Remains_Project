@@ -25,22 +25,9 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     [Tooltip("슬롯에서 위로 갔을 때 선택될 탭 버튼 (예: '랜턴' 탭 버튼)")]
     [SerializeField] private Selectable mainTabButton;
 
-    private void OnEnable()
-    {
-        // if (InventoryDataManager.Instance != null)
-        // {
-        //     InventoryDataManager.Instance.OnLanternsChanged += RefreshPanel;
-        // }
-    }
-
-    private void OnDisable()
-    {
-        // if (InventoryDataManager.Instance != null)
-        // {
-        //     InventoryDataManager.Instance.OnLanternsChanged -= RefreshPanel;
-        // }
-    }
-
+    [Header("알림 UI")]
+    [SerializeField] private NotificationUI notificationUI;
+    
     public void OnShow()
     {
         RefreshPanel();
@@ -62,14 +49,9 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-    /// <summary>
-    /// 패널 전체를 현재 데이터 기준으로 새로고침합니다.
-    /// </summary>
+    // 패널 전체를 현재 데이터 기준으로 새로고침합니다.
     private void RefreshPanel()
     {
-        //if (InventoryDataManager.Instance == null) return; // 매니저가 없으면 중단
-
-        //////////
         List<LanternFunctionData> playerFunctions = new List<LanternFunctionData>();
         for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
@@ -82,7 +64,6 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             d.isNew = cd.isNew;
             playerFunctions.Add(d);
         }
-        //////////
         
 
         for (int i = 0; i < functionSlots.Count; i++)
@@ -104,9 +85,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         ShowFunctionDetails(firstAvailableFunc);
     }
 
-    /// <summary>
-    /// [공개] 슬롯에서 호출. 선택된 기능 정보를 오른쪽에 표시 (3번 요청)
-    /// </summary>
+    // [공개] 슬롯에서 호출. 선택된 기능 정보를 오른쪽에 표시 (3번 요청)
     public void ShowFunctionDetails(LanternFunctionData data)
     {
         if (data != null)
@@ -123,11 +102,30 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
     }
 
-    /// <summary>
-    /// [공개] 슬롯에서 호출. 기능 장착/해제 토글
-    /// </summary>
+    // [공개] 슬롯에서 호출. 기능 장착/해제 토글
     public void ToggleEquipFunction(LanternFunctionData dataToToggle)
     {
+        // 1. DB에서 현재 장착된 랜턴 찾기
+        var dbLanterns = DBManager.I.currData.lanternDatas;
+        int equippedIndex = dbLanterns.FindIndex(x => x.isEquipped);
+
+        if (equippedIndex != -1)
+        {
+            string equippedName = dbLanterns[equippedIndex].Name;
+            
+            // 2. 해당 랜턴의 원본 데이터(.asset)를 가져와서 설정 확인
+            LanternFunctionData equippedAsset = DBManager.I.itemDatabase.allLanterns.Find(x => x.name == equippedName);
+            
+            if (equippedAsset != null && !equippedAsset.isRemovable)
+            {
+                // [차단] 해제 불가능한 아이템이 장착되어 있음
+                // 만약 끄려고 하거나(같은 아이템 클릭), 바꾸려고 하면(다른 아이템 클릭) 모두 차단
+                Debug.Log($"[Lantern] '{equippedAsset.name}'은 해제할 수 없는 아이템입니다.");
+                if (notificationUI != null) notificationUI.ShowMessage("기본 장착 아이템은 해제할 수 없습니다.");
+                return; 
+            }
+        }
+
         bool wasEquipped = dataToToggle.isEquipped;
 
         // 1. [DB 동기화] 모든 랜턴 장착 해제 (중복 장착 방지)
@@ -158,7 +156,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             // 원래 켜져있던 걸 눌렀으면 꺼진 상태 유지 (Toggle Off)
             dataToToggle.isEquipped = false;
         }
-
+        
         // 3. UI 시각적 갱신
         // (RefreshPanel을 다시 부르면 비효율적이므로 슬롯들만 업데이트)
         foreach (var slot in functionSlots)
@@ -176,9 +174,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         UpdateMainEquippedImage();
     }
 
-    /// <summary>
-    /// (2번 요청) 메인 장착부(빨간 원)의 이미지를 갱신합니다.
-    /// </summary>
+    // (2번 요청) 메인 장착부(빨간 원)의 이미지를 갱신합니다.
     private void UpdateMainEquippedImage()
     {
         // 1. DB에서 현재 장착 중인(isEquipped == true) 랜턴 데이터를 찾습니다.
@@ -220,10 +216,8 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
     }
 
-    /// <summary>
-    /// 3칸 슬롯의 좌/우/위 내비게이션을 설정합니다. (1번 요청)
-    /// </summary>
-    private void SetupNavigation()
+        // 3칸 슬롯의 좌/우/위 내비게이션을 설정합니다. (1번 요청)
+        private void SetupNavigation()
     {
         // 1. 활성화된 슬롯 리스트 생성
         List<Button> interactableSlots = new List<Button>();
@@ -242,13 +236,11 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             Navigation nav = currentButton.navigation;
             nav.mode = Navigation.Mode.Explicit;
 
-            // 'Up'은 탭으로 탈출
+            //'Up'은 탭으로 탈출
             nav.selectOnUp = mainTabButton;
             nav.selectOnDown = null; // 아래는 막음
 
-            // 'Left' (래핑)
             nav.selectOnLeft = interactableSlots[(i - 1 + interactableSlots.Count) % interactableSlots.Count];
-            // 'Right' (래핑)
             nav.selectOnRight = interactableSlots[(i + 1) % interactableSlots.Count];
 
             currentButton.navigation = nav;

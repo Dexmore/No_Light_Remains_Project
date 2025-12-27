@@ -18,8 +18,11 @@ public class LanternFunctionData : ScriptableObject // [수정] ScriptableObject
     [System.NonSerialized] public string localizedDescription;
     
     public bool isEquipped;
-
     public bool isNew;
+    
+    [Header("설정")]
+    [Tooltip("체크 해제 시, 장착하면 다시는 뺄 수 없게 됩니다.")]
+    public bool isRemovable = true;
 
     public void LoadStrings()
     {

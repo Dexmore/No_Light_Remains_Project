@@ -112,12 +112,8 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         if (newIndicator != null) newIndicator.SetActive(false);
         if (_button != null) _button.interactable = false;
     }
-    // --- (여기까지 동일) ---
-
-
-    /// <summary>
-    /// [추가] 2번 요청 - 슬롯에 '마우스가 진입'했을 때 호출됩니다.
-    /// </summary>
+    
+    // [추가] 2번 요청 - 슬롯에 '마우스가 진입'했을 때 호출됩니다.
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (_button != null && _button.interactable)
@@ -131,18 +127,15 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         ShowDetails();
     }
 
-    /// <summary>
-    /// 1번, 2번 - 슬롯이 '선택'될 때 (방향키/클릭) 호출됩니다.
-    /// </summary>
+    // 1번, 2번 - 슬롯이 '선택'될 때 (방향키/클릭) 호출됩니다.
     public void OnSelect(BaseEventData eventData)
     {
-        // 정보 표시 함수를 호출합니다.
+        // [소리] 커서 이동음
+        AudioManager.I?.PlaySFX("InventoryUI_button1");
         ShowDetails();
     }
 
-    /// <summary>
-    /// [추가] 중복되는 정보 표시 로직을 하나로 묶습니다.
-    /// </summary>
+    // [추가] 중복되는 정보 표시 로직을 하나로 묶습니다.
     private void ShowDetails()
     {
         if (_currentItem != null && _controller != null)
@@ -151,12 +144,12 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         }
     }
 
-    /// <summary>
-    /// 슬롯이 '클릭'될 때 (Enter/Space/마우스 클릭) 호출됩니다.
-    /// </summary>
+    // 슬롯이 '클릭'될 때 (Enter/Space/마우스 클릭) 호출됩니다.
     public void OnSlotClicked()
     {
-        // 정보 표시는 OnSelect/OnPointerEnter가 처리하므로, 여기서는 'New' 마크 제거만 합니다.
+        // [소리] 버튼 클릭음
+        AudioManager.I?.PlaySFX("InventoryUI_button1");
+
         if (_currentItem != null && _controller != null)
         {
             if (_currentItem.data.isNew)
@@ -164,7 +157,6 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                 _currentItem.data.isNew = false;
                 if (newIndicator != null) newIndicator.SetActive(false);
 
-                /////
                 int find = DBManager.I.currData.itemDatas.FindIndex(x => x.Name == _currentItem.data.name);
                 if(find != -1)
                 {
@@ -172,8 +164,6 @@ public class ItemSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                     cd.isNew = false;
                     DBManager.I.currData.itemDatas[find] = cd;
                 }
-                /////
-
             }
         }
     }
