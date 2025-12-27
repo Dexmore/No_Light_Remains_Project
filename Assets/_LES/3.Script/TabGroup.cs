@@ -59,10 +59,25 @@ namespace Project.UI
             for (int i = 0; i < tabButtons.Count; i++)
             {
                 int index = i;
-                tabButtons[i].onClick.AddListener(() => SelectTab(index));
+                // [소리] 탭 버튼 클릭음 추가
+                tabButtons[i].onClick.AddListener(() => 
+                {
+                    AudioManager.I?.PlaySFX("InventoryUI_button1");
+                    SelectTab(index);
+                });
             }
-            prevTabButton?.onClick.AddListener(SelectPreviousTab);
-            nextTabButton?.onClick.AddListener(SelectNextTab);
+            
+            // [소리] 좌우 전환 버튼 클릭음 추가
+            prevTabButton?.onClick.AddListener(() => 
+            {
+                AudioManager.I?.PlaySFX("InventoryUI_button1");
+                SelectPreviousTab();
+            });
+            nextTabButton?.onClick.AddListener(() => 
+            {
+                AudioManager.I?.PlaySFX("InventoryUI_button1");
+                SelectNextTab();
+            });
         }
         
         // OnEnable은 UI가 활성화될 때마다 호출됩니다.
@@ -98,8 +113,17 @@ namespace Project.UI
         private void Update()
         {
             if (Keyboard.current == null) return;
-            if (Keyboard.current[Key.Q].wasPressedThisFrame) SelectPreviousTab();
-            if (Keyboard.current[Key.E].wasPressedThisFrame) SelectNextTab();
+            // 키보드 입력 시에도 소리가 나게 하려면 여기서 PlaySFX 호출 가능
+            if (Keyboard.current[Key.Q].wasPressedThisFrame) 
+            {
+                AudioManager.I?.PlaySFX("InventoryUI_button1");
+                SelectPreviousTab();
+            }
+            if (Keyboard.current[Key.E].wasPressedThisFrame) 
+            {
+                AudioManager.I?.PlaySFX("InventoryUI_button1");
+                SelectNextTab();
+            }
         }
 
         public void SelectNextTab()

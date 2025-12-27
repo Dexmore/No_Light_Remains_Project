@@ -67,19 +67,21 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
         }
     }
 
+    // [수정] 키보드 이동(선택) 시 소리 재생
     public void OnSelect(BaseEventData eventData)
     {
+        // [소리] 커서 이동음 (InventoryUI_button1)
+        //AudioManager.I?.PlaySFX("InventoryUI_button1");
+
         if (_myData != null && _controller != null)
         {
             _controller.ShowSelectedGearDetails(_myData);
         }
     }
-    
-    // [삭제] OnSubmit 함수 전체 삭제 (중복 실행 원인)
-    // public void OnSubmit(BaseEventData eventData) { ... }
 
     private void HandleInteraction()
     {
+        //AudioManager.I?.PlaySFX("InventoryUI_button1");
         if (_myData != null && _controller != null)
         {
             if (_myData.isNew)
@@ -87,7 +89,7 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                 _myData.isNew = false;
                 if (newIndicator != null) newIndicator.SetActive(false);
 
-                /////
+                
                 int find = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == _myData.name);
                 if(find != -1)
                 {
@@ -95,7 +97,7 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
                     cd.isNew = false;
                     DBManager.I.currData.gearDatas[find] = cd;
                 }
-                /////
+                
                 
             }
             

@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 
 public class GearPanelController : MonoBehaviour, ITabContent
 {
-    // --- (인스펙터 변수들은 기존과 동일) ---
     [Header("그리드 설정 (12칸)")]
     [SerializeField] private List<GearSlotUI> gridSlots;
     [Header("총 코스트 (왼쪽 위)")]
@@ -21,6 +20,9 @@ public class GearPanelController : MonoBehaviour, ITabContent
     [SerializeField] private GameObject detailModulePanel;
     [Header("내비게이션")]
     [SerializeField] private Selectable mainTabButton;
+
+    [Header("알림 UI")]
+    [SerializeField] private NotificationUI notificationUI;
 
     private int _currentEquippedCost = 0;
 
@@ -53,7 +55,6 @@ public class GearPanelController : MonoBehaviour, ITabContent
 
         _currentEquippedCost = 0;
         
-        //////////
         List<GearData> playerGears = new List<GearData>();
         for(int i=0; i<DBManager.I.currData.gearDatas.Count; i++)
         {
@@ -66,8 +67,6 @@ public class GearPanelController : MonoBehaviour, ITabContent
             d.isEquipped = cd.isEquipped;
             playerGears.Add(d);
         }
-        //////////
-        
         
         // 1. 그리드 슬롯 채우기 (활성화/비활성화 결정)
         for (int i = 0; i < gridSlots.Count; i++)
@@ -99,9 +98,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         ShowSelectedGearDetails(firstAvailableGear);
     }
 
-    /// <summary>
-    /// [신규] 인덱스(0-11) 기반으로 활성화된 슬롯끼리 내비게이션을 연결합니다.
-    /// </summary>
+    // [신규] 인덱스(0-11) 기반으로 활성화된 슬롯끼리 내비게이션을 연결합니다.
     private void SetupIndexBasedNavigation()
     {
         if (gridSlots.Count != 12) return;
@@ -144,9 +141,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         }
     }
 
-    /// <summary>
-    /// [신규 헬퍼] 현재 인덱스(startIndex)에서 특정 방향으로 활성화된(map) 다음 타겟을 찾습니다.
-    /// </summary>
+    // [신규 헬퍼] 현재 인덱스(startIndex)에서 특정 방향으로 활성화된(map) 다음 타겟을 찾습니다.
     private Button FindTarget(int startIndex, bool[] map, Vector2 direction, bool wrap)
     {
         int row = startIndex / 4;
@@ -225,7 +220,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
     
     public void ToggleEquipGear(GearData gear)
     {
-        // 1. UI 상에서의 데이터 변경 (기존 로직)
+        // 1. 장착 시도
         if (!gear.isEquipped)
         {
             int newCost = _currentEquippedCost + gear.cost;
@@ -233,30 +228,26 @@ public class GearPanelController : MonoBehaviour, ITabContent
             {
                 gear.isEquipped = true;
                 _currentEquippedCost = newCost;
+                
+                // [소리] 기어 장착음
+                AudioManager.I?.PlaySFX("GearEquip");
             }
             else
             {
                 Debug.Log("코스트가 부족하여 장착할 수 없습니다!");
+                if (notificationUI != null) notificationUI.ShowMessage("코스트가 부족합니다.");
+                AudioManager.I?.PlaySFX("AccessDenied");
                 return;
             }
         }
+        // 2. 해제 시도
         else
         {
             gear.isEquipped = false;
             _currentEquippedCost -= gear.cost;
-        }
-
-        // 2. [추가] DBManager에 실제 장착 상태 저장 (동기화)
-        // 팀원 코드는 여기서 끝났기 때문에, 실제 DB 값이 안 바뀌는 문제가 있었습니다.
-        int findIndex = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == gear.name);
-        if (findIndex != -1)
-        {
-            CharacterData.GearData dbGear = DBManager.I.currData.gearDatas[findIndex];
-            dbGear.isEquipped = gear.isEquipped; // 상태 동기화
-            DBManager.I.currData.gearDatas[findIndex] = dbGear; // 구조체 다시 덮어쓰기
             
-            // (선택 사항) 즉시 저장하려면 아래 주석 해제
-            // DBManager.I.Save(); 
+            // [소리] 기어 해제음
+            AudioManager.I?.PlaySFX("GearUnequip");
         }
 
         // 3. UI 갱신
