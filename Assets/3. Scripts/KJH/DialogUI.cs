@@ -36,15 +36,13 @@ public class DialogUI : MonoBehaviour
                     //Page 1
                     "The door is locked tight."
                 },
-                //대사3
+                //대사3 (스테이지 1의 테스트 기어발견 & 기어 튜토리얼겸)
                 new string[]
                 {
                     //1페이지
-                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    "An old upgrade gear... Why is this here?",
                     //2페이지
-                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
-                    //3페이지
-                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                    "Gears can be equipped in the Gear tab of your inventory.\nWarning: Socket capacity varies by gear type."
                 },
                 //대사4
                 new string[]
@@ -83,16 +81,13 @@ public class DialogUI : MonoBehaviour
                     //Page 1
                     "문이 단단히 잠겨있다.",
                 },
-                //대사3
+                //대사3 (스테이지 1의 테스트 기어발견 & & 기어 튜토리얼겸)
                 new string[]
                 {
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
-                    "가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다\n가나다라마바사아가나다라마바사아가나다",
+                    //1페이지
+                    "낡은 업그레이드 기어다. 왜 이런곳에 떨어져 있지?",
+                    //2페이지
+                    "인벤토리 내 기어 탭을 통해 장착이 가능합니다.\n단, 기어별로 요구하는 소켓 공간이 다르므로 주의해야 합니다."
                 },
                 //대사4
                 new string[]

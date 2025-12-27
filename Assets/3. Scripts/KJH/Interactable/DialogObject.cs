@@ -20,6 +20,7 @@ public class DialogObject : Interactable, ISavable
         isReady = false;
         isComplete = true;
         coll2D.enabled = false;
+        onCompleteImmediately.Invoke();
     }
     #endregion
     [Header("나타날 DialogUI의 대사 번호")]
@@ -35,8 +36,10 @@ public class DialogObject : Interactable, ISavable
     public int gold;
     Collider2D coll2D;
     [Space(30)]
+    [Header("다이얼로그 켜짐과 함께 다른스크립트 메소드 실행필요하면")]
+    public UnityEvent onDialogStart;
     [Header("다이얼로그끝나고 다른 스크립트의 메소드 실행필요하면")]
-    public UnityEvent onDialogFinished;
+    public UnityEvent onDialogFinish;
     void Awake()
     {
         isReady = true;
@@ -59,6 +62,7 @@ public class DialogObject : Interactable, ISavable
     IEnumerator WaitDialogFinish()
     {
         yield return YieldInstructionCache.WaitForSeconds(0.37f);
+        onDialogStart.Invoke();
         yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
         if (itemData != null || gearData != null || lanternData != null || recordData != null || gold != 0)
@@ -85,13 +89,13 @@ public class DialogObject : Interactable, ISavable
         {
             DBManager.I.currData.gold += gold;
         }
-
+        onDialogFinish.Invoke();
     }
     [Header("한번만 할수있는지or씬이동시 반복가능한지 여부")]
     [SerializeField] bool canReplay;
     [ShowIf("canReplay")]
     [SerializeField] int replayWaitTimeSecond;
-
+    public UnityEvent onCompleteImmediately;
 
 
 

@@ -360,6 +360,7 @@ public class LobbyStoryPanel : MonoBehaviour
         int find = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == "BasicLantern");
         CharacterData.LanternData lanternData = DBManager.I.currData.lanternDatas[find];
         lanternData.isEquipped = true;
+        lanternData.isNew = false;
         DBManager.I.currData.lanternDatas[find] = lanternData;
 
 

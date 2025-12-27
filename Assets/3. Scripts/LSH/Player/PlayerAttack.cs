@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerAttack : IPlayerState
@@ -146,8 +147,12 @@ public class PlayerAttack : IPlayerState
     List<Collider2D> attacked = new List<Collider2D>();
     void TriggerHandler(Collider2D coll)
     {
-        if (coll.gameObject.layer != LayerMask.NameToLayer("Monster")) return;
-        if (attacked.Count >= multiHitCount) return;
+        if (coll.gameObject.layer != LayerMask.NameToLayer("Monster") && coll.gameObject.layer != LayerMask.NameToLayer("Interactable")) return;
+        //if (attacked.Count >= multiHitCount) return;
+        int mCount = attacked.Count(x => x.gameObject.layer == LayerMask.NameToLayer("Monster"));
+        int iCount = attacked.Count(x => x.gameObject.layer == LayerMask.NameToLayer("Interactable"));
+        if (mCount >= multiHitCount) return;
+        if (iCount >= multiHitCount) return;
         if (!attacked.Contains(coll))
         {
             float lanternOn = 1f;

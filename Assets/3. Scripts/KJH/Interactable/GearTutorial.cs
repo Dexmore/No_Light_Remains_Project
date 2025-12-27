@@ -1,0 +1,30 @@
+using UnityEngine;
+using DG.Tweening;
+public class GearTutorial : MonoBehaviour
+{
+    private float moveDistance = 0.2f;
+    private float duration = 1.9f;
+    Tween tween;
+    void Start()
+    {
+        //TryGetComponent(out spriteRenderer);
+        tween?.Kill();
+        tween = transform.DOLocalMoveY(transform.localPosition.y + moveDistance, duration).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).Play();
+    }
+    void OnDisable()
+    {
+        tween?.Kill();
+    }
+    //SpriteRenderer spriteRenderer;
+    public void Complete()
+    {
+        gameObject.SetActive(false);
+    }
+    public void CompleteImmediately()
+    {
+        gameObject.SetActive(false);
+    }
+
+
+    
+}

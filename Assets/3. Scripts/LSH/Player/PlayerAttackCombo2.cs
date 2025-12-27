@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerAttackCombo : IPlayerState
+public class PlayerAttackCombo2 : IPlayerState
 {
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
-    public PlayerAttackCombo(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+    public PlayerAttackCombo2(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;

@@ -28,8 +28,9 @@ public class DialogTrigger : MonoBehaviour, ISavable
     public RecordData recordData;
     public int gold;
     [Space(30)]
+    [Header("다이얼로그 켜짐과 함께 다른스크립트 메소드 실행필요하면")]
     public UnityEvent onDialogStart;
-    [Header("다이얼로그가 끝나고 다른 스크립트 메소드 실행필요하면")]
+    [Header("다이얼로그가 끝난뒤 다른스크립트 메소드 실행필요하면")]
     public UnityEvent onDialogFinish;
     Collider2D coll2D;
     int playerLayer;
