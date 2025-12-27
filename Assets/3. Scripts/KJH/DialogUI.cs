@@ -242,7 +242,7 @@ public class DialogUI : MonoBehaviour
         DOTween.Kill(canvasObject.transform.GetChild(0));
         DOTween.Kill(rt);
         canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
-        canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack);
+        canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
         rt.sizeDelta = new Vector2(800, 160);
         rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad);
     }
@@ -266,7 +266,7 @@ public class DialogUI : MonoBehaviour
             DOTween.Kill(canvasObject.transform.GetChild(0));
             DOTween.Kill(rt);
             canvasObject.transform.GetChild(0).localScale = 0.5f * Vector3.one;
-            canvasObject.transform.GetChild(0).DOScale(1f, 0.6f).SetEase(Ease.OutBack);
+            canvasObject.transform.GetChild(0).DOScale(1f, 0.6f).SetEase(Ease.OutBack).SetLink(gameObject).SetLink(gameObject);
             rt.sizeDelta = new Vector2(800, 80);
             rt.DOSizeDelta(new Vector2(800, 200), 1.4f).SetEase(Ease.OutQuad);
         }
@@ -276,7 +276,7 @@ public class DialogUI : MonoBehaviour
             DOTween.Kill(canvasObject.transform.GetChild(0));
             DOTween.Kill(rt);
             canvasObject.transform.GetChild(0).localScale = 0.6f * Vector3.one;
-            canvasObject.transform.GetChild(0).DOScale(1f, 0.19f).SetEase(Ease.OutBack);
+            canvasObject.transform.GetChild(0).DOScale(1f, 0.19f).SetEase(Ease.OutBack).SetLink(gameObject).SetLink(gameObject);
             rt.sizeDelta = new Vector2(800, 130);
             rt.DOSizeDelta(new Vector2(800, 200), 0.6f).SetEase(Ease.OutQuad);
         }
@@ -296,7 +296,7 @@ public class DialogUI : MonoBehaviour
         {
             canvasObject.SetActive(false);
             GameManager.I.isOpenDialog = false;
-        });
+        }).SetLink(gameObject);
         if (isSFX)
         {
             AudioManager.I.PlaySFX("UIClick");

@@ -82,7 +82,7 @@ public class PopupUI : MonoBehaviour
             AudioManager.I.PlaySFX("OpenPopup");
         DOTween.Kill(allPopups[index].transform);
         allPopups[index].transform.localScale = 0.7f * Vector3.one;
-        allPopups[index].transform.DOScale(1f, 0.5f).SetEase(Ease.OutBounce);
+        allPopups[index].transform.DOScale(1f, 0.5f).SetEase(Ease.OutBounce).SetLink(gameObject);
         isOpens[index] = true;
         openPopCount++;
         GameManager.I.isOpenPop = true;

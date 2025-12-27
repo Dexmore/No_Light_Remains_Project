@@ -10,7 +10,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
     bool isComplete;
     bool ISavable.CanReplay => canReplay;
     int ISavable.ReplayWaitTimeSecond => replayWaitTimeSecond;
-    public void SetCompletedState()
+    public void SetCompletedImmediately()
     {
         isComplete = true;
         col.enabled = false;

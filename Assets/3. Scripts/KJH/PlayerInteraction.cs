@@ -398,8 +398,8 @@ public class PlayerInteraction : MonoBehaviour
         DOTween.Kill(tr2);
         tr1.gameObject.SetActive(true);
         tr2.gameObject.SetActive(true);
-        tr1.DOScale(1f, 2f);
-        tr2.DOScale(1f, 2f);
+        tr1.DOScale(1f, 2f).SetLink(gameObject);
+        tr2.DOScale(1f, 2f).SetLink(gameObject);
         bool isCancel = false;
         while (!token.IsCancellationRequested)
         {
@@ -502,6 +502,7 @@ public class PlayerInteraction : MonoBehaviour
             sensorDatas.Clear();
             // Auto Interaction
             playerControl.isNearSavePoint = false;
+            playerControl.isNearSavePoint = false;
             for (int i = 0; i < colliders.Length; i++)
             {
                 int find = sensorDatas.FindIndex(x => x.collider == colliders[i]);
@@ -527,6 +528,11 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 else if (root.TryGetComponent(out Lanternable lanternable))
                 {
+                    SconceLight sconceLight = lanternable as SconceLight;
+                    if (sconceLight != null)
+                    {
+                        playerControl.isNearSavePoint = true;
+                    }
                     if (!lanternable.isReady) continue;
                     SensorData data = new SensorData();
                     data.collider = colliders[i];

@@ -187,7 +187,7 @@ public class LobbyStoryPanel : MonoBehaviour
         DOTween.Kill(rtFrame.transform);
         DOTween.Kill(imgFrame);
         rtFrame.transform.localScale = 0.5f * Vector3.one;
-        rtFrame.transform.DOScale(1f, 0.2f).SetEase(Ease.OutQuad);
+        rtFrame.transform.DOScale(1f, 0.2f).SetEase(Ease.OutQuad).SetLink(gameObject);
         Vector2 size = rtFrame.sizeDelta;
         Vector2 size2 = new Vector2(size.x, 100f);
         rtFrame.sizeDelta = size2;
@@ -279,7 +279,7 @@ public class LobbyStoryPanel : MonoBehaviour
     {
         DOTween.Kill(slots[index].transform);
         slots[index].transform.localScale = 1.5f * Vector3.one;
-        slots[index].transform.DOScale(1f, 0.8f).SetEase(Ease.OutBack);
+        slots[index].transform.DOScale(1f, 0.8f).SetEase(Ease.OutBack).SetLink(gameObject);
         Image imgFrame = slots[index].Find("Frame").GetComponent<Image>();
         DOTween.Kill(imgFrame);
         imgFrame.color = color1;
@@ -288,7 +288,7 @@ public class LobbyStoryPanel : MonoBehaviour
     void ColorRecoverSlot(int index)
     {
         DOTween.Kill(slots[index].transform);
-        slots[index].transform.DOScale(1f, 0.2f).SetEase(Ease.OutQuad);
+        slots[index].transform.DOScale(1f, 0.2f).SetEase(Ease.OutQuad).SetLink(gameObject);
         Image imgFrame = slots[index].Find("Frame").GetComponent<Image>();
         DOTween.Kill(imgFrame);
         imgFrame.DOColor(color1, 0.2f);

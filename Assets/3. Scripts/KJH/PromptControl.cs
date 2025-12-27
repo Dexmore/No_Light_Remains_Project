@@ -113,8 +113,8 @@ public class PromptControl : MonoBehaviour
             Close_ut(1, ctsLink.Token).Forget();
             DOTween.Kill(lanternCanvas.transform.Find("Wrap/PressFill"));
             DOTween.Kill(lanternCanvas.transform.Find("Wrap/PressRing"));
-            lanternCanvas.transform.Find("Wrap/PressFill").DOScale(0.2f, 0.5f);
-            lanternCanvas.transform.Find("Wrap/PressRing").DOScale(0.2f, 0.5f);
+            lanternCanvas.transform.Find("Wrap/PressFill").DOScale(0.2f, 0.5f).SetLink(gameObject);
+            lanternCanvas.transform.Find("Wrap/PressRing").DOScale(0.2f, 0.5f).SetLink(gameObject);
         }
     }
     public void ClickEffect(int type)
@@ -125,7 +125,7 @@ public class PromptControl : MonoBehaviour
             itrctCanvas.GetChild(0).Find("Text").TryGetComponent(out text);
             DOTween.Kill(text.transform);
             text.transform.localScale = 0.3f * Vector3.one;
-            text.transform.DOScale(1.2f, 0.3f).SetEase(Ease.OutSine);
+            text.transform.DOScale(1.2f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
             DOTween.Kill(text.material);
             text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             text.material.DOVector(new Vector4(180f, 180f, 180f, 0.9f), "_EmissionColor", 0.11f)
@@ -139,7 +139,7 @@ public class PromptControl : MonoBehaviour
             lanternCanvas.GetChild(0).Find("Text").TryGetComponent(out text);
             DOTween.Kill(text.transform);
             text.transform.localScale = 0.3f * Vector3.one;
-            text.transform.DOScale(1.2f, 0.3f).SetEase(Ease.OutSine);
+            text.transform.DOScale(1.2f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
             DOTween.Kill(text.material);
             text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             text.material.DOVector(new Vector4(180f, 180f, 180f, 0.9f), "_EmissionColor", 0.11f)

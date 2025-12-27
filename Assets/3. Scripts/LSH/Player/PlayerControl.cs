@@ -648,6 +648,7 @@ public class PlayerControl : MonoBehaviour
         }
     }
     [HideInInspector] public bool isNearSavePoint;
+    [HideInInspector] public bool isNearSconceLight;
     IEnumerator DecreaseBattery()
     {
         float diffMultiplier = 1f;
@@ -673,7 +674,18 @@ public class PlayerControl : MonoBehaviour
                 if (currBattery <= 100)
                 {
                     if (fsm.currentState == die) continue;
-                    currBattery += 9f * interval;
+                    currBattery += 10f * interval;
+                    currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                    DBManager.I.currData.currBattery = currBattery;
+                    hUDBinder.RefreshBattery();
+                }
+            }
+            else if(isNearSconceLight)
+            {
+                if (currBattery <= 37)
+                {
+                    if (fsm.currentState == die) continue;
+                    currBattery += 5.7f * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();

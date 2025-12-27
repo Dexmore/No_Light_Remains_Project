@@ -23,7 +23,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
     bool isComplete;
     bool ISavable.CanReplay => false;
     int ISavable.ReplayWaitTimeSecond => 0;
-    public void SetCompletedState()
+    public void SetCompletedImmediately()
     {
         _isReady = false;
         isComplete = true;

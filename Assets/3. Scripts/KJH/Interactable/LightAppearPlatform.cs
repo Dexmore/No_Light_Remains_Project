@@ -3,10 +3,10 @@ using UnityEngine;
 using Unity.Burst;
 using Unity.Jobs;
 using Unity.Collections;
-using UnityEngine.Rendering.Universal;
-using NaughtyAttributes;
 using System.Threading.Tasks;
+using UnityEngine.Rendering.Universal;
 using DG.Tweening;
+using NaughtyAttributes;
 using Random = UnityEngine.Random;
 public class LightAppearPlatform : Lanternable, ISavable
 {
@@ -22,7 +22,7 @@ public class LightAppearPlatform : Lanternable, ISavable
     bool isComplete;
     bool ISavable.CanReplay => false;
     int ISavable.ReplayWaitTimeSecond => 0;
-    public void SetCompletedState()
+    public void SetCompletedImmediately()
     {
         _isReady = false;
         isComplete = true;

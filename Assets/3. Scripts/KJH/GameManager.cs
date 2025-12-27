@@ -654,7 +654,6 @@ public class GameManager : SingletonBehaviour<GameManager>
                     CharacterData.ObjectPositionData objectPositionData = new CharacterData.ObjectPositionData();
                     objectPositionData.Name = allSavableObjects[i].transform.name.Split("(")[0];
                     objectPositionData.index = result;
-                    objectPositionData.lastPos = allSavableObjects[i].transform.position;
                     if (allSavableObjects[i].CanReplay)
                     {
                         System.DateTime now = System.DateTime.Now;
@@ -740,7 +739,6 @@ public class GameManager : SingletonBehaviour<GameManager>
                         CharacterData.ObjectPositionData objectPositionData = new CharacterData.ObjectPositionData();
                         objectPositionData.Name = allSavableObjects[i].transform.name.Split("(")[0];
                         objectPositionData.index = result;
-                        objectPositionData.lastPos = allSavableObjects[i].transform.position;
                         if (allSavableObjects[i].CanReplay)
                         {
                             System.DateTime now = System.DateTime.Now;
@@ -758,7 +756,6 @@ public class GameManager : SingletonBehaviour<GameManager>
                     {
                         CharacterData.ObjectPositionData objectPositionData = sceneData.objectPositionDatas[find2];
                         objectPositionData.index = result;
-                        objectPositionData.lastPos = allSavableObjects[i].transform.position;
                         if (allSavableObjects[i].CanReplay)
                         {
                             if (objectPositionData.lastCompleteTime != "")
@@ -894,13 +891,13 @@ public class GameManager : SingletonBehaviour<GameManager>
                             {
                                 // [아직 죽어있어야 함]
                                 // 몬스터때의 비활성화와 달리. 아래 메소드가 FX,효과음 작동 연출을 전부 무시한 즉시 완료상태임
-                                allSavableObjects[i].SetCompletedState();
+                                allSavableObjects[i].SetCompletedImmediately();
                             }
                         }
                     }
                     else
                     {
-                        allSavableObjects[i].SetCompletedState();
+                        allSavableObjects[i].SetCompletedImmediately();
                     }
                 }
                 else continue;

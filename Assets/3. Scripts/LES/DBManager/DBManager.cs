@@ -79,16 +79,6 @@ public class DBManager : SingletonBehaviour<DBManager>
                         sData.monsterPositionDatas[j] = mData;
                     }
                 }
-                if (sData.objectPositionDatas != null)
-                {
-                    for (int j = 0; j < sData.objectPositionDatas.Count; j++)
-                    {
-                        CharacterData.ObjectPositionData mData = sData.objectPositionDatas[j];
-                        mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
-                        mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
-                        sData.objectPositionDatas[j] = mData;
-                    }
-                }
                 dataToSave.sceneDatas[i] = sData;
             }
 
@@ -690,7 +680,6 @@ public struct CharacterData
         public string Name;
         public int index; // 이름이 동일한 오브젝트일시 구분 번호
         public string lastCompleteTime; // 빈문자열 ""일시 아직 작동완료 안된 상태
-        public Vector2 lastPos;
     }
     [System.Serializable]
     public struct ProgressData

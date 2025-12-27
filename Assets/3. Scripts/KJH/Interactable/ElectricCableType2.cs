@@ -8,7 +8,7 @@ public class ElectricCableType2 : MonoBehaviour, ISavable
     bool isComplete;
     bool ISavable.CanReplay => true;
     int ISavable.ReplayWaitTimeSecond => 103680;
-    public void SetCompletedState()
+    public void SetCompletedImmediately()
     {
         isComplete = true;
         col.enabled = false;
@@ -80,7 +80,7 @@ public class ElectricCableType2 : MonoBehaviour, ISavable
         {
             if (rb.transform.name == "ElectricCableB") rb.gameObject.SetActive(false);
         }
-        SetCompletedState();
+        SetCompletedImmediately();
     }
 
 

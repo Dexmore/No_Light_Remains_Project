@@ -15,7 +15,7 @@ public class DialogObject : Interactable, ISavable
     bool isComplete;
     bool ISavable.CanReplay => canReplay;
     int ISavable.ReplayWaitTimeSecond => replayWaitTimeSecond;
-    public void SetCompletedState()
+    public void SetCompletedImmediately()
     {
         isReady = false;
         isComplete = true;

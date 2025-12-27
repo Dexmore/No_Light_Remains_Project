@@ -10,7 +10,7 @@ public class DialogTrigger : MonoBehaviour, ISavable
     bool isComplete;
     bool ISavable.CanReplay => canReplay;
     int ISavable.ReplayWaitTimeSecond => replayWaitTimeSecond;
-    public void SetCompletedState()
+    public void SetCompletedImmediately()
     {
         isComplete = true;
         coll2D.enabled = false;

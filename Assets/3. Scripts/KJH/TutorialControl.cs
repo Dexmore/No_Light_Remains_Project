@@ -3,6 +3,7 @@ using UnityEngine;
 public class TutorialControl : MonoBehaviour
 {
     [SerializeField] PlayerControl playerControl;
+    [SerializeField] MonsterControl blob;
     [SerializeField] MonsterControl slicer;
     [ReadOnlyInspector][SerializeField] int currentProgress = -1;
     IEnumerator Start()
@@ -24,12 +25,20 @@ public class TutorialControl : MonoBehaviour
             yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
             playerControl.fsm.ChangeState(playerControl.idle);
             StartCoroutine(nameof(TutorialParryLoop));
+            StartCoroutine(nameof(TutorialAttackLoop));
         }
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         Transform tutParryTr = transform.Find("TutorialParry");
         if(slicer == null || !slicer.gameObject.activeInHierarchy)
         {
+            StopCoroutine(nameof(TutorialParryLoop));
             tutParryTr.gameObject.SetActive(false);
+        }
+        Transform tutAttackTr = transform.Find("TutorialAttack");
+        if(blob == null || !blob.gameObject.activeInHierarchy)
+        {
+            StopCoroutine(nameof(TutorialAttackLoop));
+            tutAttackTr.gameObject.SetActive(false);
         }
     }
     void OnEnable()
@@ -46,6 +55,21 @@ public class TutorialControl : MonoBehaviour
         if(hitData.target.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         if(hitData.attackType == HitData.AttackType.Chafe) return;
         // Time.timeScale = 1f;
+    }
+    IEnumerator TutorialAttackLoop()
+    {
+        Transform tutAttackTr = transform.Find("TutorialAttack");
+        while (true)
+        {
+            yield return null;
+            tutAttackTr.position = blob.transform.position;
+            yield return null;
+            if (blob == null || !blob.gameObject.activeInHierarchy)
+            {
+                tutAttackTr.gameObject.SetActive(false);
+                Time.timeScale = 1f;
+            }
+        }
     }
     IEnumerator TutorialParryLoop()
     {
