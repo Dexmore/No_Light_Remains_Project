@@ -118,6 +118,21 @@ public class PlayerAttackCombo2 : IPlayerState
             }
             float lanternOn = 1f;
             if (GameManager.I.isLanternOn) lanternOn = 1.33f;
+
+            //Gear 기어 (배수의 기어)
+            float gearMultiplier = 1f;
+            bool outValue = false;
+            if(DBManager.I.HasGear("LastStandGear",out outValue))
+            {
+                if(outValue)
+                {
+                    if(ctx.currHealth/ctx.maxHealth <= 0.25f)
+                    {
+                        gearMultiplier = 1.3f;
+                    }
+                }
+            }
+
             GameManager.I.onHit.Invoke
             (
                 new HitData
@@ -125,7 +140,7 @@ public class PlayerAttackCombo2 : IPlayerState
                     "AttackCombo",
                     ctx.transform,
                     coll.transform,
-                    rnd * damage * lanternOn,
+                    rnd * damage * gearMultiplier * lanternOn,
                     hitPoint,
                     new string[1] { "Hit3" }
                 )

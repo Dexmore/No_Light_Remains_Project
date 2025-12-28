@@ -45,27 +45,48 @@ public class BulletControl : MonoBehaviour
 
     public async UniTask PlayBullet(List<BulletPatern> bulletPaterns, Transform pivot, CancellationToken token)
     {
-        float _time = Time.time;
+        float elapsed = 0f;
         for (int i = 0; i < bulletPaterns.Count; i++)
         {
-            float t = bulletPaterns[i].startTime;
-            float sTime = Time.time - t;
-            while (sTime < t)
+            float targetTime = bulletPaterns[i].startTime;
+
+            while(true)
             {
-                sTime = Time.time - t;
-                await UniTask.Yield(cancellationToken: token);
+                elapsed += Time.time;
+                await UniTask.Yield(cancellationToken:token);
+                if(elapsed>=targetTime) break;
             }
 
-            for (int k = 0; k < bulletPaterns[i].count; k++)
+            for(int k=0; k<bulletPaterns[i].count; k++)
             {
-                PoolBehaviour pb = PoolManager.I.Spawn(bulletPaterns[i].bullet, pivot.position, Quaternion.identity);
+                PoolBehaviour pb = PoolManager.I.Spawn(bulletPaterns[i].bullet, pivot.position + Vector3.up, Quaternion.identity);
                 Bullet bullet = pb as Bullet;
-                bullet.rb.AddForce(bulletPaterns[i].force * Random.insideUnitCircle.normalized, ForceMode2D.Impulse);
+                bullet.rb.AddForce(18f * Vector2.left,ForceMode2D.Impulse);
             }
+            await UniTask.Yield(cancellationToken:token);
+
+
+            
+
+
+            // float t = bulletPaterns[i].startTime;
+            // float sTime = Time.time - t;
+            // while (sTime < t)
+            // {
+            //     sTime = Time.time - t;
+            //     await UniTask.Yield(cancellationToken: token);
+            // }
+
+            // for (int k = 0; k < bulletPaterns[i].count; k++)
+            // {
+            //     PoolBehaviour pb = PoolManager.I.Spawn(bulletPaterns[i].bullet, pivot.position, Quaternion.identity);
+            //     Bullet bullet = pb as Bullet;
+            //     //bullet.rb.AddForce(bulletPaterns[i].force * Random.insideUnitCircle.normalized, ForceMode2D.Impulse);
+            // }
 
 
         }
-
+        return;
     }
 
 

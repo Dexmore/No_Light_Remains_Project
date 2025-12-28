@@ -6,7 +6,7 @@ public class PlayerParry : IPlayerState
     private readonly PlayerStateMachine fsm;
     public PlayerParry(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.6f;   // 총 길이
-    private const float parryTime = 0.25f;   // 패링 시간
+    private const float parryTime = 0.23f;   // 패링 시간
     private float _elapsedTime;
     public void Enter()
     {
@@ -28,6 +28,16 @@ public class PlayerParry : IPlayerState
             adjustedTime1 = parryTime * 0.7f;
             break;
         }
+        //Gear 기어 (격퇴의 기어)
+            bool outValue = false;
+            if(DBManager.I.HasGear("DrainGear",out outValue))
+            {
+                if(outValue)
+                {
+                    adjustedTime1 *= 1.4f + 0.1f;
+
+                }
+            }
     }
     public void Exit()
     {

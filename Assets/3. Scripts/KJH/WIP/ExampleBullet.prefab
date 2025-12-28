@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5934209606472787237}
   - component: {fileID: 7903887208059672750}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 2813568934152683122}
   - component: {fileID: -4856176997232454425}
   - component: {fileID: 474636522651589471}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ExampleBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,6 +175,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExampleBullet
   poolManager: {fileID: 0}
+  rb: {fileID: 0}
+  coll: {fileID: 0}
   bulletType: 0
   owner: {fileID: 0}
   damage: 10
@@ -200,7 +202,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0.0001
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -210,7 +212,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!1001 &3004351825557735584
 PrefabInstance:

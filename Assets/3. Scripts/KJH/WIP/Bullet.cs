@@ -16,8 +16,8 @@ public abstract class Bullet : PoolBehaviour
         // Boomerang, //부메랑형
         // SineWave //사인파형
     }
-    public abstract Rigidbody2D rb {get; set;}
-    public abstract Collider2D coll {get; set;}
+    public Rigidbody2D rb;
+    public Collider2D coll;
     public BulletType bulletType;
     public MonsterControl owner;
     public float damage;
@@ -30,8 +30,10 @@ public abstract class Bullet : PoolBehaviour
     [SerializeField] LayerMask groundLayer;
     protected virtual void Awake()
     {
+        TryGetComponent(out rb);
         attackRange = GetComponentInChildren<AttackRange>(true);
         animator = GetComponentInChildren<Animator>(true);
+        coll = GetComponentInChildren<Collider2D>();
     }
     protected virtual void OnEnable()
     {

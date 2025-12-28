@@ -159,6 +159,22 @@ public class PlayerAttack : IPlayerState
             float lanternOn = 1f;
             if(GameManager.I.isLanternOn) lanternOn = 1.32f;
             attacked.Add(coll);
+
+            //Gear 기어 (배수의 기어)
+            float gearMultiplier = 1f;
+            bool outValue = false;
+            if(DBManager.I.HasGear("LastStandGear",out outValue))
+            {
+                if(outValue)
+                {
+                    if(ctx.currHealth/ctx.maxHealth <= 0.25f)
+                    {
+                        gearMultiplier = 1.3f;
+                    }
+                }
+            }
+
+
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             GameManager.I.onHit.Invoke
             (
@@ -167,7 +183,7 @@ public class PlayerAttack : IPlayerState
                     "Attack",
                     ctx.transform,
                     coll.transform,
-                    Random.Range(1f, 1.05f) * 32f * lanternOn,
+                    Random.Range(1f, 1.05f) * 32f * gearMultiplier * lanternOn,
                     hitPoint,
                     new string[1]{"Hit3"}
                 )
