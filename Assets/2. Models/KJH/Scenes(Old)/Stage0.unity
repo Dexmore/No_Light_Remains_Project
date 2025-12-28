@@ -1259,9 +1259,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 89389739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 242.5, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 130, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &271888477
@@ -10396,7 +10396,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.17
+  m_Intensity: 0.22
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -13391,7 +13391,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1704635445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13852,10 +13852,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3678214615861078514, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2027909021}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
 --- !u!4 &1831251960 stripped
 Transform:
@@ -13867,7 +13864,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3474385168794187013, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
   m_PrefabInstance: {fileID: 1831251959}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2027909017}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3082e64f8f53404c93c8c799a07e0e4, type: 3}
@@ -19342,9 +19339,9 @@ RectTransform:
   - {fileID: 2046813652}
   m_Father: {fileID: 89389739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372.5, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1972522214
@@ -19606,23 +19603,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2814080941952997068, guid: 144160d4b9ebf85478ba1654c4dc488a, type: 3}
   m_PrefabInstance: {fileID: 2017697199}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2027909017 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3678214615861078514, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
-  m_PrefabInstance: {fileID: 1831251959}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2027909021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2027909017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abdd105f555e8480b9bd71c134c8795c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerGearSkill
 --- !u!1 &2046813651
 GameObject:
   m_ObjectHideFlags: 0
@@ -32352,7 +32332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &7492231544991829836
 SpriteRenderer:
   m_ObjectHideFlags: 0

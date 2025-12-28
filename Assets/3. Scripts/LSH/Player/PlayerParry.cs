@@ -28,9 +28,9 @@ public class PlayerParry : IPlayerState
             adjustedTime1 = parryTime * 0.7f;
             break;
         }
-        //Gear 기어 (격퇴의 기어)
+        //Gear 기어 (격퇴의 기어) 009_ParryGear
             bool outValue = false;
-            if(DBManager.I.HasGear("DrainGear",out outValue))
+            if(DBManager.I.HasGear("009_ParryGear",out outValue))
             {
                 if(outValue)
                 {

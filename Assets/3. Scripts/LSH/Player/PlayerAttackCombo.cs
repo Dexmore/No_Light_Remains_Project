@@ -118,10 +118,10 @@ public class PlayerAttackCombo : IPlayerState
             float rnd = Random.Range(0.78f, 1.38f);
             float damage = 36.8f;
 
-            //Gear 기어 (배수의 기어)
+            //Gear 기어 (배수의 기어) 001_LastStandGear
             float gearMultiplier = 1f;
             bool outValue = false;
-            if(DBManager.I.HasGear("LastStandGear",out outValue))
+            if(DBManager.I.HasGear("001_LastStandGear",out outValue))
             {
                 if(outValue)
                 {

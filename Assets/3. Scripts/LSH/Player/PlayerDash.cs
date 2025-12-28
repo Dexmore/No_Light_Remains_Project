@@ -26,10 +26,10 @@ public class PlayerDash : IPlayerState
             adjustedAvoidTime = avoidTime * 0.7f;
             break;
         }
-        //Gear 기어 (섬광의 기어)
+        //Gear 기어 (섬광의 기어) 004_GlitchGear
             float gearMultiplier = 1f;
             bool outValue = false;
-            if(DBManager.I.HasGear("FlashGear",out outValue))
+            if(DBManager.I.HasGear("004_GlitchGear",out outValue))
             {
                 if(outValue)
                 {

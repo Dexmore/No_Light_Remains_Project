@@ -373,9 +373,9 @@ public class PlayerControl : MonoBehaviour
             MonsterControl monsterControl = hData.target.GetComponentInParent<MonsterControl>();
             if (monsterControl != null)
             {
-                //Gear 기어 (수복의 기어)
+                //Gear 기어 (수복의 기어) 005_RestorationGear
             bool outValue = false;
-            if(DBManager.I.HasGear("DrainGear",out outValue))
+            if(DBManager.I.HasGear("005_RestorationGear",out outValue))
             {
                 if(outValue)
                 {

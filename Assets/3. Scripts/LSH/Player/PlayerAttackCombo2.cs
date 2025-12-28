@@ -119,10 +119,10 @@ public class PlayerAttackCombo2 : IPlayerState
             float lanternOn = 1f;
             if (GameManager.I.isLanternOn) lanternOn = 1.33f;
 
-            //Gear 기어 (배수의 기어)
+            //Gear 기어 (배수의 기어) 001_LastStandGear
             float gearMultiplier = 1f;
             bool outValue = false;
-            if(DBManager.I.HasGear("LastStandGear",out outValue))
+            if(DBManager.I.HasGear("001_LastStandGear",out outValue))
             {
                 if(outValue)
                 {
