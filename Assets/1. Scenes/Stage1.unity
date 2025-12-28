@@ -2572,6 +2572,10 @@ PrefabInstance:
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
       objectReference: {fileID: 892741348}
+    - target: {fileID: -25556714751367484, guid: bc0c677b52d2a6848b72a7f8b49d7cf1, type: 3}
+      propertyPath: m_SortingOrder
+      value: -70
+      objectReference: {fileID: 0}
     - target: {fileID: 204562319862040550, guid: bc0c677b52d2a6848b72a7f8b49d7cf1, type: 3}
       propertyPath: m_ColliderPaths.Array.size
       value: 1
@@ -5678,7 +5682,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
-  m_Intensity: 4.3
+  m_Intensity: 0.46
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -7401,18 +7405,6 @@ PrefabInstance:
     - target: {fileID: 3107915724003839399, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3474385168794187013, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
-      propertyPath: parryParticle
-      value: Hit4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3474385168794187013, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
-      propertyPath: parryHitStopDuration
-      value: 0.29
-      objectReference: {fileID: 0}
-    - target: {fileID: 3474385168794187013, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
-      propertyPath: parryHitStopTimeScale
-      value: 0.23
       objectReference: {fileID: 0}
     - target: {fileID: 3678214615861078514, guid: 3eef9cb58d8698a4a9006bebad2f5578, type: 3}
       propertyPath: m_Name
@@ -10249,6 +10241,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3240383842773040484, guid: ad3d2083da8d7094bb626cf7f1d93167, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 13.214602
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240383842773040484, guid: ad3d2083da8d7094bb626cf7f1d93167, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 9.130929
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240383842773040484, guid: ad3d2083da8d7094bb626cf7f1d93167, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 112.9248
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240383842773040484, guid: ad3d2083da8d7094bb626cf7f1d93167, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 12.3307
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10491,6 +10499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614839aa6dd4cf54ca5d481661d7966c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SavePoint_LSH
+  interactionPriority: 0
   animator: {fileID: 6791111651874373717}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -12670,6 +12679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
+  interactionPriority: 0
   loadingPage: 0
   sceneName: Stage2
   targetPosition: {x: 0, y: 0}

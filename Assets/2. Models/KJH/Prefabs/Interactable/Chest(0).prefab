@@ -30,8 +30,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.185, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b2cf0b36c6278449952d96ae27bb78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChestInteractable_LSH
+  interactionPriority: 0
   canReplay: 0
   replayWaitTimeSecond: 0
   dropTables:
@@ -184,5 +185,3 @@ MonoBehaviour:
     gold: 0
     countRange: {x: 1, y: 1}
     probability: 1
-  openTriggerName: Open
-  animator: {fileID: 1148845177294387522}
