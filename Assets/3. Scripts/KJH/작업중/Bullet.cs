@@ -2,8 +2,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public abstract class Bullet : PoolBehaviour
 {
+    public enum BulletType
+    {
+        Line, // 완전 직선형
+        Radial, // 원형 방사
+        Homing, // 유도형
+        Firefly, // 반딫불형
+        Parabolic, // 포물선형
+        // Boomerang, //부메랑형
+        // SineWave //사인파형
+    }
+    public abstract Rigidbody2D rb {get; set;}
+    public abstract Collider2D coll {get; set;}
+    public BulletType bulletType;
     public MonsterControl owner;
     public float damage;
     // 0 , 1, 2, 3
