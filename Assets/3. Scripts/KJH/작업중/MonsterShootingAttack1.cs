@@ -15,7 +15,7 @@ public class MonsterShootingAttack1 : MonsterState
         await UniTask.Yield(token);
         Activate(token).Forget();
         attackedColliders.Clear();
-        
+
     }
     public override void Exit()
     {
@@ -25,12 +25,19 @@ public class MonsterShootingAttack1 : MonsterState
         particle = null;
     }
     Particle particle;
+    public List<BulletControl.BulletPatern> bulletPaterns = new List<BulletControl.BulletPatern>();
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(token);
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
+        await UniTask.Delay((int)(1000 * 0.9f), cancellationToken: token);
+
+
+        await bulletControl.PlayBullet(bulletPaterns, transform, token);
+        
+
         await UniTask.Delay((int)(1000f * 3.5f), cancellationToken: token);
         particle?.Despawn();
         particle = null;

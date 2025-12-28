@@ -7,9 +7,11 @@ public class SavePoint_LSH : Interactable
     public override bool isReady { get; set; }
     public override bool isAuto => false;
     public override Type type => Type.Normal;
+    float startTime = 0;
     public override void Run()
     {
-
+        if(Time.time - startTime < 1.5f) return;
+        startTime = Time.time;
         Vector2 pos2D = transform.position;
         string sceneName = SceneManager.GetActiveScene().name;
         DBManager.I.currData.sceneName = sceneName;

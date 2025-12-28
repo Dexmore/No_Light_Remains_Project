@@ -100,9 +100,9 @@ public class LightAppearPlatform : Lanternable, ISavable
         lp.DOFade(1f, 0.5f).SetEase(Ease.InSine);
         tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
         light2?.gameObject.SetActive(true);
-        light2.intensity = 0f;
         tweenLight2?.Kill();
-        tweenLight2 = DOTween.To(() => light2.intensity, x => light2.intensity = x, 1.8f, 4f);
+        light2.intensity = 0f;
+        tweenLight2 = DOTween.To(() => light2.intensity, x => light2.intensity = x, 1.8f, 5f).SetEase(Ease.InExpo).SetLink(gameObject).Play();
         ps?.gameObject.SetActive(true);
         ps.Play();
         int maxCount = ps.main.maxParticles;
@@ -273,8 +273,6 @@ public class LightAppearPlatform : Lanternable, ISavable
         ps?.gameObject.SetActive(false);
         lp?.gameObject.SetActive(false);
         light2?.gameObject.SetActive(true);
-        tweenLight2?.Kill();
-        light2.intensity = 1.8f;
         int lineCount = lineRenderers.Length;
         float s = 0.08f;
         for (int i = 0; i < lineCount; i++)
