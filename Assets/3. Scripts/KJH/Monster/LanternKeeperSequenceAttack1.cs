@@ -67,11 +67,11 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         // 1번 공격
         attackIndex = 0;
         anim.Play("JumpAttack");
-        await UniTask.Delay(1300, cancellationToken: token);
+        await UniTask.Delay(900, cancellationToken: token);
         rb.AddForce(Vector2.up * 26f + (Vector2)model.right * 6f, ForceMode2D.Impulse);
         await UniTask.Delay(180, cancellationToken: token);
         rb.gravityScale = 1.51f;
-        await UniTask.Delay(580, cancellationToken: token);
+        await UniTask.Delay(460, cancellationToken: token);
         rb.gravityScale = 2f;
         attackedColliders.Clear();
         await UniTask.Delay(140, cancellationToken: token);
@@ -82,7 +82,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
             model.localRotation = Quaternion.Euler(0f, 0f, 0f);
         else if (moveDirection.x < 0 && model.right.x > 0)
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        rb.AddForce(Vector2.down * 18f + (Vector2)(target.position - transform.position).normalized * 9.5f, ForceMode2D.Impulse);
+        rb.AddForce(Vector2.down * 27f + (Vector2)(target.position - transform.position).normalized * 9.5f, ForceMode2D.Impulse);
         await UniTask.WaitUntil(() => control.isGround, cancellationToken: token);
 
         // 2번 공격
