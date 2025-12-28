@@ -610,7 +610,7 @@ SpriteRenderer:
   m_Size: {x: 12.03, y: 3.67}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &211384093
@@ -729,7 +729,7 @@ SpriteRenderer:
   m_Size: {x: 20.91, y: 6.81}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &212501249
@@ -873,6 +873,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 66242418}
 --- !u!61 &237616506
 BoxCollider2D:
@@ -2258,7 +2259,7 @@ SpriteRenderer:
   m_Size: {x: 12.03, y: 3.67}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &531985053
@@ -2377,7 +2378,7 @@ SpriteRenderer:
   m_Size: {x: 20.91, y: 6.81}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &534846381
@@ -3373,7 +3374,7 @@ SpriteRenderer:
   m_Size: {x: 20.91, y: 6.23}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &706654475
@@ -3913,6 +3914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 615026479}
 --- !u!61 &829691298
 BoxCollider2D:
@@ -4219,7 +4221,7 @@ SpriteRenderer:
   m_Size: {x: 20.91, y: 6.23}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1035325794
@@ -7743,7 +7745,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
-  m_Intensity: 0.22
+  m_Intensity: 1.3
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -8330,6 +8332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 695224492}
 --- !u!61 &1383754894
 BoxCollider2D:
@@ -8650,7 +8653,7 @@ SpriteRenderer:
   m_Size: {x: 12.03, y: 3.67}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1406140787
@@ -9012,7 +9015,7 @@ SpriteRenderer:
   m_Size: {x: 20.91, y: 6.81}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1493603497
@@ -10137,6 +10140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1920324803}
 --- !u!61 &1792243133
 BoxCollider2D:
@@ -10924,7 +10928,7 @@ SpriteRenderer:
   m_Size: {x: 20.91, y: 6.23}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1929083850
@@ -15759,6 +15763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 8211780050555790604}
 --- !u!114 &3990659167354039109
 MonoBehaviour:
@@ -16174,6 +16179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 10802839114908717}
 --- !u!50 &5091228521021683551
 Rigidbody2D:
