@@ -1,19 +1,73 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 public class BulletControl : MonoBehaviour
 {
-
-    public enum ShootingType
+    #region UniTask Setting
+    [HideInInspector] public CancellationTokenSource cts;
+    protected virtual void OnEnable()
     {
-        Line, // 완전 직선형
-        Radial, // 원형 방사 ()
-        Homing, // 유도형
-        Firefly, // 반딫불형
-        Parabolic, // 포물선형
-        // Boomerang, //부메랑형
-        // SineWave //사인파형
+        cts = new CancellationTokenSource();
+        Application.quitting += UniTaskCancel;
     }
-    
+    protected virtual void OnDisable()
+    {
+        UniTaskCancel();
+    }
+    protected virtual void OnDestroy() { UniTaskCancel(); }
+    void UniTaskCancel()
+    {
+        cts?.Cancel();
+        try
+        {
+            cts?.Dispose();
+        }
+        catch (System.Exception e)
+        {
+
+            Debug.Log(e.Message);
+        }
+        cts = null;
+    }
+    #endregion
+
+    [System.Serializable]
+    public struct BulletPatern
+    {
+        public Bullet bullet;
+        public float startTime;
+        public float force;
+        public int count;
+        public Vector2 heuristic;
+    }
+
+    public async UniTask PlayBullet(List<BulletPatern> bulletPaterns, Transform pivot, CancellationToken token)
+    {
+        float _time = Time.time;
+        for (int i = 0; i < bulletPaterns.Count; i++)
+        {
+            float t = bulletPaterns[i].startTime;
+            float sTime = Time.time - t;
+            while (sTime < t)
+            {
+                sTime = Time.time - t;
+                await UniTask.Yield(cancellationToken: token);
+            }
+
+            for (int k = 0; k < bulletPaterns[i].count; k++)
+            {
+                PoolBehaviour pb = PoolManager.I.Spawn(bulletPaterns[i].bullet, pivot.position, Quaternion.identity);
+                Bullet bullet = pb as Bullet;
+                bullet.rb.AddForce(bulletPaterns[i].force * Random.insideUnitCircle.normalized, ForceMode2D.Impulse);
+            }
+
+
+        }
+
+    }
+
 
 
 
@@ -58,7 +112,7 @@ public class BulletControl : MonoBehaviour
 
 
 
-    
+
 
 
 }

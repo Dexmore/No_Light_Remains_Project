@@ -655,10 +655,10 @@ public class PlayerControl : MonoBehaviour
         switch (DBManager.I.currData.difficulty)
         {
             case 0:
-                diffMultiplier = 0.8f;
+                diffMultiplier = 0.7f;
                 break;
             case 1:
-                diffMultiplier = 0.9f;
+                diffMultiplier = 0.85f;
                 break;
             case 2:
                 diffMultiplier = 1f;
@@ -682,10 +682,10 @@ public class PlayerControl : MonoBehaviour
             }
             else if(isNearSconceLight)
             {
-                if (currBattery <= 41)
+                if (currBattery <= 53)
                 {
                     if (fsm.currentState == die) continue;
-                    currBattery += 5.7f * interval;
+                    currBattery += 6.3f * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
