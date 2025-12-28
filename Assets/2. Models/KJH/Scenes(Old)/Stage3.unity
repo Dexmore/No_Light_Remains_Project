@@ -366,6 +366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 235739253}
 --- !u!61 &127578948
 BoxCollider2D:
@@ -656,7 +657,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.17
+  m_Intensity: 0.22
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -938,6 +939,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1259902669}
 --- !u!61 &247473147
 BoxCollider2D:
@@ -1453,6 +1455,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1939792510}
 --- !u!61 &382865500
 BoxCollider2D:
@@ -1787,6 +1790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 648106634}
 --- !u!61 &544726754
 BoxCollider2D:
@@ -1940,6 +1944,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1895459910}
 --- !u!61 &573098406
 BoxCollider2D:
@@ -2685,6 +2690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 2080809025}
 --- !u!61 &803654719
 BoxCollider2D:
@@ -3073,6 +3079,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1047502174}
 --- !u!61 &942617236
 BoxCollider2D:
@@ -3487,6 +3494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1451433026}
 --- !u!61 &1047494791
 BoxCollider2D:
@@ -4485,6 +4493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 276316669}
 --- !u!61 &1302495956
 BoxCollider2D:
@@ -5181,6 +5190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1026826831}
 --- !u!61 &1520535900
 BoxCollider2D:
@@ -5309,7 +5319,7 @@ PrefabInstance:
     - target: {fileID: -8836384210421943399, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
-      objectReference: {fileID: 1540393200}
+      objectReference: {fileID: 0}
     - target: {fileID: -8366458299757860019, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_SortingOrder
       value: -200
@@ -5345,7 +5355,7 @@ PrefabInstance:
     - target: {fileID: -4867243147635399203, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
-      objectReference: {fileID: 1540393190}
+      objectReference: {fileID: 0}
     - target: {fileID: -4449793188176019001, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.size
       value: 1
@@ -5361,7 +5371,7 @@ PrefabInstance:
     - target: {fileID: -2819911007041761550, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
-      objectReference: {fileID: 1540393192}
+      objectReference: {fileID: 0}
     - target: {fileID: -1007444371948277629, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.size
       value: 1
@@ -5401,7 +5411,7 @@ PrefabInstance:
     - target: {fileID: 1130533663223062501, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.data[0].m_Collider
       value: 
-      objectReference: {fileID: 1540393189}
+      objectReference: {fileID: 0}
     - target: {fileID: 1918234267257045388, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
       propertyPath: m_ColliderPaths.Array.size
       value: 1
@@ -12828,24 +12838,9 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4141956324152712022, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
   m_PrefabInstance: {fileID: 1540393187}
   m_PrefabAsset: {fileID: 0}
---- !u!19719996 &1540393189 stripped
-TilemapCollider2D:
-  m_CorrespondingSourceObject: {fileID: 8870871008415118888, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
-  m_PrefabInstance: {fileID: 1540393187}
-  m_PrefabAsset: {fileID: 0}
---- !u!19719996 &1540393190 stripped
-TilemapCollider2D:
-  m_CorrespondingSourceObject: {fileID: -1241887882356142134, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
-  m_PrefabInstance: {fileID: 1540393187}
-  m_PrefabAsset: {fileID: 0}
 --- !u!19719996 &1540393191 stripped
 TilemapCollider2D:
   m_CorrespondingSourceObject: {fileID: 5229523681696479294, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
-  m_PrefabInstance: {fileID: 1540393187}
-  m_PrefabAsset: {fileID: 0}
---- !u!19719996 &1540393192 stripped
-TilemapCollider2D:
-  m_CorrespondingSourceObject: {fileID: 3583051550361276647, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
   m_PrefabInstance: {fileID: 1540393187}
   m_PrefabAsset: {fileID: 0}
 --- !u!19719996 &1540393193 stripped
@@ -12881,11 +12876,6 @@ TilemapCollider2D:
 --- !u!19719996 &1540393199 stripped
 TilemapCollider2D:
   m_CorrespondingSourceObject: {fileID: -7273187662260408691, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
-  m_PrefabInstance: {fileID: 1540393187}
-  m_PrefabAsset: {fileID: 0}
---- !u!19719996 &1540393200 stripped
-TilemapCollider2D:
-  m_CorrespondingSourceObject: {fileID: -5491301813923688555, guid: be2047cfe1e028144ba7c2082d3ccdce, type: 3}
   m_PrefabInstance: {fileID: 1540393187}
   m_PrefabAsset: {fileID: 0}
 --- !u!19719996 &1540393201 stripped
@@ -13127,6 +13117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DarkDestroyPlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 63704779}
 --- !u!61 &1741531843
 BoxCollider2D:
@@ -13342,6 +13333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 1910671741}
 --- !u!61 &1752968276
 BoxCollider2D:
@@ -13557,6 +13549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 716949869}
 --- !u!61 &1807863060
 BoxCollider2D:
@@ -14342,6 +14335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterShootBullet1
   coolTime: 0
+  bulletPaterns: []
 --- !u!1001 &1980592603
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16044,6 +16038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightCreatePlatform
   promptFill: 0
+  fillSpeed: 1
   platform: {fileID: 3448444579545558360}
 --- !u!114 &7848549592770186888
 MonoBehaviour:
