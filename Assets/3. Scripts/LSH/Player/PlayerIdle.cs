@@ -76,7 +76,7 @@ public class PlayerIdle : IPlayerState
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
         {
-            if(Time.time - ctx.attack.finishTime < 0.24f)
+            if(Time.time - ctx.attack.finishTime < 0.22f)
             {
                 fsm.ChangeState(ctx.attackCombo);
             }

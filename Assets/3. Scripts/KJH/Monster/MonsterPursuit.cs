@@ -114,6 +114,11 @@ public class MonsterPursuit : MonsterState
             {
                 stopWall = true;
             }
+            if (moveDirection.y > 0.1f && !control.isGround)
+            {
+                stopWall = true;
+            }
+
             if (stopWall)
             {
                 if (control.isDie) return;
@@ -126,6 +131,7 @@ public class MonsterPursuit : MonsterState
                     return;
                 }
             }
+
             // 버그 방지
             if (rb.linearVelocity.magnitude < 0.001f)
             {
@@ -265,15 +271,16 @@ public class MonsterPursuit : MonsterState
                     }
             }
 
-
-
             // 3. Astar상 땅 수직 아래로 파고들거나 하늘로 치솟는 경로가 나오는 경우
-            if (xLength <= 0.5f * astar.unit && yLength > 2.5f * astar.unit)
+            if (xLength <= 0.5f * astar.unit && yLength > 2.5f * astar.unit || moveDirection.y > 0.1f && !control.isGround)
             {
                 await UniTask.Delay(5, cancellationToken: token);
                 control.ChangeNextState();
                 return;
             }
+
+            moveDirection.y *= 0.5f;
+            moveDirection.Normalize();
 
             // 캐릭터 좌우 방향 설정
             if (moveDirection.x > 0 && model.right.x < 0)
@@ -295,7 +302,6 @@ public class MonsterPursuit : MonsterState
                 Vector2 normal = CheckRayHit.normal;
                 angle = Vector2.Angle(moveDirection, -normal);
             }
-
 
             // 여러 분기
             // 1. 전방에 급한 벽이 있는 경우
@@ -349,6 +355,7 @@ public class MonsterPursuit : MonsterState
                 }
             }
 
+
             // !! 가까움 상태일시 탈출 !!
             if (control.HasCondition(MonsterControl.Condition.ClosePlayer))
             {
@@ -398,7 +405,7 @@ public class MonsterPursuit : MonsterState
                 if (CheckRayHit.collider == null)
                 {
                     await UniTask.Yield(token);
-                    if (Random.value < 0.9999f)
+                    if (Random.value < 0.999f)
                     {
                         control.ChangeNextState();
                     }
@@ -408,6 +415,23 @@ public class MonsterPursuit : MonsterState
                     }
                     return;
                 }
+                //3. 하늘로 치솟는 버그 방지
+                if (xLength <= 0.5f * astar.unit && yLength > 2.5f * astar.unit || moveDirection.y > 0.1f && !control.isGround)
+                {
+                    await UniTask.Delay(5, cancellationToken: token);
+                    if (Random.value < 0.999f)
+                    {
+                        control.ChangeNextState();
+                    }
+                    else if (!control.IsCoolTime(MonsterControl.State.Wander))
+                    {
+                        control.ChangeState(MonsterControl.State.Wander);
+                    }
+                    return;
+                }
+
+
+
                 moveDirection.Normalize();
                 float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
                 // 이동

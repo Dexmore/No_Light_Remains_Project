@@ -30,6 +30,7 @@ public class PlayerRun : IPlayerState
     public void Exit()
     {
         ctx.StopFootStep();
+        ctx.attack.finishTime = 0;
     }
     public void UpdateState()
     {

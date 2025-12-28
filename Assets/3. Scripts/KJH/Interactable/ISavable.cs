@@ -7,7 +7,7 @@ public interface ISavable
     // 상속받는 각각의 오브젝트 스크립트에서 완료시 꼭 아래 값을 true로 할것
     public bool IsComplete { get; protected set; }
     // 바로 완료 되어있는 상태로 만드는 메소드를 만들것 (ex. 바로 아무것도 나오지않고 텅 열려있는 형태의 상자, 바로 열려져 있는 문 등등)
-    public void SetCompletedState();
+    public void SetCompletedImmediately();
 
     // 계정의 한 캐릭터당 한번 완료하면 '영원히 완료상태' 인 오브젝트의 경우 아래 것들은 필요 없음
     // 영원히 완료되는 1회한정 오브젝트들은 아래 값들을 CanReplay = false , ReplayWaitTimeSecond = 0 으로 하고.

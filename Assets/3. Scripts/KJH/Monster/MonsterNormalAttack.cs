@@ -43,8 +43,15 @@ public class MonsterNormalAttack : MonsterState
             control.ChangeNextState();
             return;
         }
-        RaycastHit2D raycastHit = Physics2D.Linecast((Vector2)control.eye.position, (Vector2)target.position, control.groundLayer);
-        if(raycastHit.collider != null)
+        RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position + Vector2.up, control.groundLayer);
+        bool isBlocked = false;
+        for (int i = 0; i < raycastHits.Length; i++)
+        {
+            if(raycastHits[i].collider.isTrigger) continue;
+            isBlocked = true;
+            break;
+        }
+        if(isBlocked)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -112,7 +119,7 @@ public class MonsterNormalAttack : MonsterState
                 if (CheckRayHit.collider == null)
                 {
                     stopWall = true;
-                }  
+                }
 
                 // AddForce방식으로 캐릭터 이동
                 if (!stopWall)
@@ -163,7 +170,7 @@ public class MonsterNormalAttack : MonsterState
                     coll.transform,
                     Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
                     hitPoint,
-                    new string[1]{"Hit2"},
+                    new string[1] { "Hit2" },
                     staggerType
                 )
             );

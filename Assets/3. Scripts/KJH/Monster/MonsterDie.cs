@@ -31,10 +31,9 @@ public class MonsterDie : MonsterState
             {
                 string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
                 int find1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+                string strimedName = transform.name.Split("(")[0];
                 if (find1 != -1)
                 {
-                    string strimedName = transform.name.Split("(")[0];
-
                     if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
                     {
                         int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
@@ -51,6 +50,20 @@ public class MonsterDie : MonsterState
                         }
                     }
                 }
+                find1 = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+                if (find1 != -1)
+                {
+                    var killCount = DBManager.I.currData.killCounts[find1];
+                    killCount.count++;
+                    DBManager.I.currData.killCounts[find1] = killCount;
+                }
+                else
+                {
+                    var killCount = new CharacterData.KillCount();
+                    killCount.Name = strimedName;
+                    killCount.count = 1;
+                    DBManager.I.currData.killCounts.Add(killCount);
+                }
             }
         }
     }
@@ -59,10 +72,48 @@ public class MonsterDie : MonsterState
         await UniTask.Yield(token);
         anim.Play("Die");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
+        string strimedName = transform.name.Split("(")[0];
+        int find = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+        int killCount = 0;
+        if (find != -1)
+        {
+            killCount = DBManager.I.currData.killCounts[find].count;
+        }
         // 아이템 드롭
         foreach (var element in dropTables)
         {
             if (Random.value > element.probability) continue;
+            // 0.001%같은 유니크 아이템이 한마리 잡고 바로 나오는 행위방지
+            float MinExpectation = (1 / element.probability) * 0.2717f;
+            if (killCount < MinExpectation) continue;
+            DropItem dropInfo = element.dropItem;
+            if (dropInfo.gearData != null)
+            {
+                bool outValue;
+                if (DBManager.I.HasGear(dropInfo.gearData.name, out outValue))
+                {
+                    //Debug.Log($"{dropInfo.gearData.name}는 이미 가지고 있습니다. 드롭불가");
+                    continue;
+                }
+            }
+            else if (dropInfo.lanternData != null)
+            {
+                bool outValue;
+                if (DBManager.I.HasLantern(dropInfo.lanternData.name, out outValue))
+                {
+                    //Debug.Log($"{dropInfo.lanternData.name}는 이미 가지고 있습니다. 드롭불가");
+                    continue;
+                }
+            }
+            else if (dropInfo.recordData != null)
+            {
+                bool outValue;
+                if (DBManager.I.HasRecord(dropInfo.recordData.name))
+                {
+                    //Debug.Log($"{dropInfo.recordData.name}는 이미 가지고 있습니다. 드롭불가");
+                    continue;
+                }
+            }
             AudioManager.I.PlaySFX("Tick1");
             int count = Random.Range(element.countRange.x, element.countRange.y + 1);
             for (int k = 0; k < count; k++)

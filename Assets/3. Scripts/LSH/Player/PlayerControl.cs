@@ -51,7 +51,7 @@ public class PlayerControl : MonoBehaviour
 
     // === Ground 체크 ===
     [Header("Ground Sensor (정교 판정)")]
-    [SerializeField] private LayerMask groundLayer;
+    public LayerMask groundLayer;
     CapsuleCollider2D capsuleCollider2D;
     [HideInInspector] public float height;
     [HideInInspector] public float width;
@@ -111,7 +111,7 @@ public class PlayerControl : MonoBehaviour
     {
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+        GameObject light2 = PlayerLight.transform.GetChild(2).gameObject;
         CharacterData characterData = DBManager.I.currData;
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
@@ -135,6 +135,8 @@ public class PlayerControl : MonoBehaviour
             newData.recordDatas = new List<CharacterData.RecordData>();
             newData.sceneDatas = new List<CharacterData.SceneData>();
             newData.progressDatas = new List<CharacterData.ProgressData>();
+            newData.killCounts = new List<CharacterData.KillCount>();
+            
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
             System.DateTime now = System.DateTime.Now;
@@ -146,12 +148,13 @@ public class PlayerControl : MonoBehaviour
             //
             light0.SetActive(false);
             light1.SetActive(false);
-            light3.SetActive(true);
+            light2.SetActive(true);
             // 신규캐릭터 시작 아이템
             DBManager.I.AddLantern("BasicLantern");
             int find = DBManager.I.currData.lanternDatas.FindIndex(x => x.Name == "BasicLantern");
             CharacterData.LanternData lanternData = DBManager.I.currData.lanternDatas[find];
             lanternData.isEquipped = true;
+            lanternData.isNew = false;
             DBManager.I.currData.lanternDatas[find] = lanternData;
             startPosition = transform.position;
         }
@@ -163,7 +166,7 @@ public class PlayerControl : MonoBehaviour
             currBattery = DBManager.I.currData.currBattery;
             light0.SetActive(GameManager.I.isLanternOn);
             light1.SetActive(GameManager.I.isLanternOn);
-            light3.SetActive(!GameManager.I.isLanternOn);
+            light2.SetActive(!GameManager.I.isLanternOn);
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
@@ -619,12 +622,12 @@ public class PlayerControl : MonoBehaviour
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+        GameObject light2 = PlayerLight.transform.GetChild(2).gameObject;
         if (light0.activeSelf)
         {
             light0.SetActive(false);
             light1.SetActive(false);
-            light3.SetActive(true);
+            light2.SetActive(true);
             GameManager.I.isLanternOn = false;
         }
         else
@@ -640,13 +643,28 @@ public class PlayerControl : MonoBehaviour
             }
             light0.SetActive(true);
             light1.SetActive(true);
-            light3.SetActive(false);
+            light2.SetActive(false);
             GameManager.I.isLanternOn = true;
         }
     }
     [HideInInspector] public bool isNearSavePoint;
+    [HideInInspector] public bool isNearSconceLight;
     IEnumerator DecreaseBattery()
     {
+        float diffMultiplier = 1f;
+        switch (DBManager.I.currData.difficulty)
+        {
+            case 0:
+                diffMultiplier = 0.8f;
+                break;
+            case 1:
+                diffMultiplier = 0.9f;
+                break;
+            case 2:
+                diffMultiplier = 1f;
+                break;
+        }
+
         float interval = 0.08f;
         while (true)
         {
@@ -656,7 +674,18 @@ public class PlayerControl : MonoBehaviour
                 if (currBattery <= 100)
                 {
                     if (fsm.currentState == die) continue;
-                    currBattery += 9f * interval;
+                    currBattery += 10f * interval;
+                    currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
+                    DBManager.I.currData.currBattery = currBattery;
+                    hUDBinder.RefreshBattery();
+                }
+            }
+            else if(isNearSconceLight)
+            {
+                if (currBattery <= 41)
+                {
+                    if (fsm.currentState == die) continue;
+                    currBattery += 5.7f * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
@@ -666,7 +695,10 @@ public class PlayerControl : MonoBehaviour
             {
                 if (GameManager.I.isLanternOn)
                 {
-                    currBattery += lanternDecreaseTick * interval;
+                    float isOpenUI = 1f;
+                    if(GameManager.I.isOpenDialog) isOpenUI = 0.2f;
+                    if(GameManager.I.isOpenPop) isOpenUI = 0.4f;
+                    currBattery += lanternDecreaseTick * diffMultiplier * isOpenUI * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
@@ -676,10 +708,10 @@ public class PlayerControl : MonoBehaviour
                         ParticleManager.I.PlayText("Empty Battery", transform.position + Vector3.up, ParticleManager.TextType.PlayerNotice);
                         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
                         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
-                        GameObject light3 = PlayerLight.transform.GetChild(3).gameObject;
+                        GameObject light2 = PlayerLight.transform.GetChild(2).gameObject;
                         light0.SetActive(false);
                         light1.SetActive(false);
-                        light3.SetActive(true);
+                        light2.SetActive(true);
                         hUDBinder.RefreshBattery();
                         GameManager.I.isLanternOn = false;
                     }

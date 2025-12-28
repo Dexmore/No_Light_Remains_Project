@@ -21,7 +21,7 @@ public class DropItem : Interactable
         TryGetComponent(out rb);
         player = FindAnyObjectByType<PlayerControl>();
     }
-    void OnEnable()
+    protected virtual void OnEnable()
     {
         isReady = false;
         isRun = false;
