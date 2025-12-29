@@ -65,7 +65,8 @@ public class ElectricCableType4 : MonoBehaviour
     {
         Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
         Vector2 adjustPos = col.bounds.center;
-        hitPoint = 0.6f * adjustPos + 0.4f * hitPoint;
+        hitPoint = 0.3f * adjustPos + 0.7f * hitPoint;
+        hitPoint.y = 0.3f * hitPoint.y + 0.7f * coll.transform.position.y;
         float damage = 10f;
         HitData hitData = new HitData();
         hitData.attackName = "ElectricCableType4";
