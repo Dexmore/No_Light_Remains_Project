@@ -32,20 +32,20 @@ public class PlayerAttack : IPlayerState
         attackAction.performed += PlayerAttackComboInput;
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
         _elapsedTime = 0f;
-        switch(DBManager.I.currData.difficulty)
+        switch (DBManager.I.currData.difficulty)
         {
             case 0:
-            adjustedTime1 = duration;
-            adjustedTime2 = comboAvailableTime;
-            break;
+                adjustedTime1 = duration;
+                adjustedTime2 = comboAvailableTime;
+                break;
             case 1:
-            adjustedTime1 = duration + 0.09f;
-            adjustedTime2 = comboAvailableTime + 0.11f;
-            break;
+                adjustedTime1 = duration + 0.09f;
+                adjustedTime2 = comboAvailableTime + 0.11f;
+                break;
             case 2:
-            adjustedTime1 = duration + 0.16f;
-            adjustedTime2 = comboAvailableTime + 0.18f;
-            break;
+                adjustedTime1 = duration + 0.16f;
+                adjustedTime2 = comboAvailableTime + 0.18f;
+                break;
         }
         attacked.Clear();
         attackComboPressed = false;
@@ -74,10 +74,10 @@ public class PlayerAttack : IPlayerState
         }
         if (_elapsedTime > 0.25f)
         {
-            if(!isSFX)
+            if (!isSFX)
             {
                 isSFX = true;
-                if(Random.value <= 0.7f)
+                if (Random.value <= 0.7f)
                     AudioManager.I.PlaySFX("Swoosh1");
                 else
                     AudioManager.I.PlaySFX("Swoosh2");
@@ -104,14 +104,14 @@ public class PlayerAttack : IPlayerState
                 fsm.ChangeState(ctx.parry);
             }
         }
-        if(_elapsedTime > adjustedTime2 + 0.3f * (adjustedTime1 - adjustedTime2))
+        if (_elapsedTime > adjustedTime2 + 0.3f * (adjustedTime1 - adjustedTime2))
         {
             if (ctx.isDash)
             {
                 fsm.ChangeState(ctx.dash);
             }
         }
-        if(_elapsedTime > adjustedTime2 + 0.6f * (adjustedTime1 - adjustedTime2))
+        if (_elapsedTime > adjustedTime2 + 0.6f * (adjustedTime1 - adjustedTime2))
         {
             if (attackComboPressed)
             {
@@ -137,7 +137,7 @@ public class PlayerAttack : IPlayerState
     }
     public void UpdatePhysics()
     {
-        
+
     }
     void PlayerAttackComboInput(InputAction.CallbackContext callback)
     {
@@ -151,23 +151,23 @@ public class PlayerAttack : IPlayerState
         if (coll.gameObject.layer != LayerMask.NameToLayer("Monster") && coll.gameObject.layer != LayerMask.NameToLayer("Interactable")) return;
         if (attacked.Count > 0)
         {
-            int mCount = attacked.Count(x => x.gameObject.layer == LayerMask.NameToLayer("Monster"));
+            int mCount = attacked.Count(x => x != null && x.gameObject.layer == LayerMask.NameToLayer("Monster"));
             if (mCount >= multiHitCount) return;
         }
         if (!attacked.Contains(coll))
         {
             float lanternOn = 1f;
-            if(GameManager.I.isLanternOn) lanternOn = 1.32f;
+            if (GameManager.I.isLanternOn) lanternOn = 1.32f;
             attacked.Add(coll);
 
             //Gear 기어 (배수의 기어) 001_LastStandGear
             float gearMultiplier = 1f;
             bool outValue = false;
-            if(DBManager.I.HasGear("001_LastStandGear",out outValue))
+            if (DBManager.I.HasGear("001_LastStandGear", out outValue))
             {
-                if(outValue)
+                if (outValue)
                 {
-                    if(ctx.currHealth/ctx.maxHealth <= 0.25f)
+                    if (ctx.currHealth / ctx.maxHealth <= 0.25f)
                     {
                         gearMultiplier = 1.3f;
                     }
@@ -185,7 +185,7 @@ public class PlayerAttack : IPlayerState
                     coll.transform,
                     Random.Range(1f, 1.05f) * 32f * gearMultiplier * lanternOn,
                     hitPoint,
-                    new string[1]{"Hit3"}
+                    new string[1] { "Hit3" }
                 )
             );
         }

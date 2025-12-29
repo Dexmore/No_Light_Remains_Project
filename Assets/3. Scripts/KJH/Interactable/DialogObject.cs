@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
+using System.Linq;
 public class DialogObject : Interactable, ISavable
 {
     #region Interactable Complement
@@ -28,11 +29,11 @@ public class DialogObject : Interactable, ISavable
     public string sfxName;
     [Space(30)]
     [Header("다이얼로그끝나고 아이템 습득이 일어나야하는 경우")]
-    public ItemData itemData;
-    public int itemCount = 0;
-    public GearData gearData;
-    public LanternFunctionData lanternData;
-    public RecordData recordData;
+    public ItemData[] itemDatas;
+    public int[] itemCounts;
+    public GearData[] gearDatas;
+    public LanternFunctionData[] lanternDatas;
+    public RecordData[] recordDatas;
     public int gold;
     Collider2D coll2D;
     [Space(30)]
@@ -40,15 +41,17 @@ public class DialogObject : Interactable, ISavable
     public UnityEvent onDialogStart;
     [Header("다이얼로그끝나고 다른 스크립트의 메소드 실행필요하면")]
     public UnityEvent onDialogFinish;
+    HUDBinder hUDBinder;
     void Awake()
     {
         isReady = true;
         TryGetComponent(out coll2D);
         coll2D.enabled = true;
+        hUDBinder = FindAnyObjectByType<HUDBinder>();
     }
     public override void Run()
     {
-        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
+        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         isReady = false;
         coll2D.enabled = false;
         GameManager.I.onDialog.Invoke(dialogIndex, transform);
@@ -65,25 +68,42 @@ public class DialogObject : Interactable, ISavable
         onDialogStart.Invoke();
         yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
-        if (itemData != null || gearData != null || lanternData != null || recordData != null || gold != 0)
+        if (itemDatas != null || gearDatas != null || lanternDatas != null || recordDatas != null || gold != 0)
         {
-            AudioManager.I.PlaySFX("GetItem");
+            if (itemDatas.Length > 0 || gearDatas.Length > 0 || lanternDatas.Length > 0 || recordDatas.Length > 0)
+                AudioManager.I.PlaySFX("GetItem");
         }
-        if (itemData != null)
+        if (itemDatas != null && itemDatas.Length > 0)
         {
-            DBManager.I.AddItem(itemData.name, itemCount);
+            for (int k = 0; k < itemDatas.Length; k++)
+            {
+                DBManager.I.AddItem(itemDatas[k].name, itemCounts[k]);
+                hUDBinder.PlayNoticeText(0);
+            }
         }
-        if (gearData != null)
+        if (gearDatas != null && gearDatas.Length > 0)
         {
-            DBManager.I.AddGear(gearData.name);
+            foreach (var element in gearDatas)
+            {
+                DBManager.I.AddGear(element.name);
+                hUDBinder.PlayNoticeText(1);
+            }
         }
-        if (lanternData != null)
+        if (lanternDatas != null && lanternDatas.Length > 0)
         {
-            DBManager.I.AddGear(lanternData.name);
+            foreach (var element in lanternDatas)
+            {
+                DBManager.I.AddLantern(element.name);
+                hUDBinder.PlayNoticeText(2);
+            }
         }
-        if (recordData != null)
+        if (recordDatas != null && recordDatas.Length > 0)
         {
-            DBManager.I.AddGear(recordData.name);
+            foreach (var element in recordDatas)
+            {
+                DBManager.I.AddRecord(element.name);
+                hUDBinder.PlayNoticeText(3);
+            }
         }
         if (gold != 0)
         {

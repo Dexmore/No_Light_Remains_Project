@@ -18,15 +18,17 @@ public class ElevatorUp : Interactable
     public override void Run()
     {
         sfx = AudioManager.I.PlaySFX("ElevatorUp");
-        platform.DOLocalMoveY(15f,5f).SetEase(Ease.Linear);
+        tween = platform.DOLocalMoveY(15f,5f).SetEase(Ease.Linear).Play().SetLink(gameObject);
         isReady = false;
         StartCoroutine(nameof(ReplayWait));
     }
+    Tween tween;
     SFX sfx;
     void OnDisable()
     {
         sfx?.Despawn();
         sfx = null;
+        tween.Kill();
     }
     Vector3 platfomrInitPos;
     IEnumerator ReplayWait()

@@ -20,7 +20,7 @@ public abstract class Bullet : PoolBehaviour
     public Collider2D coll;
     public BulletType bulletType;
     public MonsterControl owner;
-    public float damage;
+    [HideInInspector] public float damage;
     // 0 , 1, 2, 3
     public HitData.StaggerType staggerType;
     public bool canParry = true;
@@ -28,17 +28,25 @@ public abstract class Bullet : PoolBehaviour
     public Animator animator;
     AttackRange attackRange;
     [SerializeField] LayerMask groundLayer;
+    ParticleSystem particleSystem;
     protected virtual void Awake()
     {
         TryGetComponent(out rb);
         attackRange = GetComponentInChildren<AttackRange>(true);
         animator = GetComponentInChildren<Animator>(true);
         coll = GetComponentInChildren<Collider2D>();
+        transform.GetComponentInChildren<ParticleSystem>(true);
     }
     protected virtual void OnEnable()
     {
+        attackedColliders.Clear();
         if (attackRange)
             attackRange.onTriggetStay2D += AttackRangeHandler;
+        if (particleSystem)
+        {
+            particleSystem.gameObject.SetActive(true);
+            particleSystem.Play();
+        }
     }
     protected virtual void OnDisable()
     {

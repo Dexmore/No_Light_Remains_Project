@@ -337,26 +337,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         DOTween.Kill(camMainTr);
         await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).AsyncWaitForCompletion();
     }
-    // async void TimeSlow(float amount)
-    // {
-    //     float a = amount;
-    //     if (a <= 0.01f) a = 0.01f;
-    //     float slowTimeScale = 0.2f * (1f / a);
-    //     slowTimeScale = Mathf.Clamp01(slowTimeScale);
-    //     float slowDuration = 0.005f + 0.01f * amount;
-    //     float resetDuration = 0.008f + 0.015f * amount;
-    //     timeSlowTween?.Kill();
-    //     timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, slowTimeScale, 0.1f).SetUpdate(true);
-    //     await Task.Delay((int)(1000 * 0.1f)); // 감속 트윈이 완료될 때까지 대기
-    //     await Task.Delay((int)(1000 * slowDuration));
-    //     timeSlowTween = DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, resetDuration)
-    //         .SetUpdate(true)
-    //         .OnComplete(() =>
-    //         {
-    //             Time.timeScale = 1f; // 혹시 모를 오차를 위해 명확하게 1로 설정
-    //         });
-    //     await Task.Delay((int)(1000 * resetDuration)); // 복구 트윈이 완료될 때까지 대기
-    // }
     #endregion
     #region Glitch Effect
     private const int glitchDelayMs = 25;

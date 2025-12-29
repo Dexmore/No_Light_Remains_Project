@@ -1253,6 +1253,7 @@ GameObject:
   - component: {fileID: 4559949027452656385}
   - component: {fileID: 7881336599499377275}
   - component: {fileID: 4072911068462056517}
+  - component: {fileID: -6758503302409658705}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -1378,6 +1379,9 @@ MonoBehaviour:
     - state: 0
       weight: 15
       coolTime: 1
+    - state: 17
+      weight: 5
+      coolTime: 20
   - condition: 4
     frequencies:
     - state: 4
@@ -1455,6 +1459,7 @@ MonoBehaviour:
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
     gold: 19
+    record: {fileID: 0}
     countRange: {x: 12, y: 18}
     probability: 1
 --- !u!114 &969003863410519774
@@ -1565,6 +1570,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterReturnHome
   coolTime: 0
+--- !u!114 &-6758503302409658705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dcae2b06f6128d4b9af536d80cb612e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterShootingAttack1
+  coolTime: 0
+  range: 12
+  animationWaitSecond: 0.6
+  bulletPaterns:
+  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
+    startTime: 0
+    force: 6
+    damageMultiplier: 0.8
+    count: 1
+    heuristic: {x: 0, y: 0}
+  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
+    startTime: 2.3
+    force: 5
+    damageMultiplier: 0.8
+    count: 1
+    heuristic: {x: 0, y: 0}
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

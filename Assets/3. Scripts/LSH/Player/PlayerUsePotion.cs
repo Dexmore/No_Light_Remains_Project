@@ -13,10 +13,9 @@ public class PlayerUsePotion : IPlayerState
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
     private float adjustedTime;
-    float _time;
     public void Enter()
     {
-        
+
         if (DBManager.I.currData.currPotionCount <= 0)
         {
             emptyTime = Time.time;
@@ -29,15 +28,17 @@ public class PlayerUsePotion : IPlayerState
                 fsm.ChangeState(ctx.idle);
             return;
         }
-        if (Time.time - _time < 1f)
+        if (cts != null)
         {
-            if (prevState == ctx.run)
-                fsm.ChangeState(ctx.run);
-            else
-                fsm.ChangeState(ctx.idle);
-            return;
+            if (!cts.IsCancellationRequested && once)
+            {
+                if (prevState == ctx.run)
+                    fsm.ChangeState(ctx.run);
+                else
+                    fsm.ChangeState(ctx.idle);
+                return;
+            }
         }
-        _time = Time.time;
         once = false;
         cts?.Cancel();
         cts = new CancellationTokenSource();
@@ -87,12 +88,12 @@ public class PlayerUsePotion : IPlayerState
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > 0.02f && !sfxFlag1)
+        if (_elapsedTime > 0.2f && !sfxFlag1)
         {
             sfxFlag1 = true;
             AudioManager.I.PlaySFX("Pocket1");
         }
-        if (_elapsedTime > 0.26f && !aniFlag1)
+        if (_elapsedTime > 0.3f && !aniFlag1)
         {
             aniFlag1 = true;
             ctx.animator.Play("Player_UsePotion");
@@ -119,7 +120,7 @@ public class PlayerUsePotion : IPlayerState
         if (_elapsedTime > duration * 0.8f && !sfxFlag3)
         {
             sfxFlag3 = true;
-            AudioManager.I.PlaySFX("Heal");
+            sfx2 = AudioManager.I.PlaySFX("Heal");
             ParticleManager.I.PlayParticle("PotionEffect", ctx.transform.position + 0.8f * Vector3.up, Quaternion.identity);
         }
         if (_elapsedTime > adjustedTime)
@@ -150,14 +151,16 @@ public class PlayerUsePotion : IPlayerState
     }
     #endregion
     bool once = false;
+    [HideInInspector] public SFX sfx2;
     async UniTask Heal(CancellationToken token)
     {
+        await UniTask.Yield(token);
         if (once) return;
         once = true;
-        float du = 2f;
+        float du = 2.8f;
         float e = 0;
         float startHealth = DBManager.I.currData.currHealth;
-        ctx.hUDBinder.Refresh(du + 2f);
+        ctx.hUDBinder.Refresh(du + 1.5f);
         while (!token.IsCancellationRequested)
         {
             e += Time.deltaTime;
