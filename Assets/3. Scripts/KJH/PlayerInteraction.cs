@@ -546,12 +546,21 @@ public class PlayerInteraction : MonoBehaviour
                 }
             }
             //
-            sensorDatas.Sort
-            (
-                (x, y) =>
-                Vector3.SqrMagnitude(x.collider.transform.position - distancePivot)
-                .CompareTo(Vector3.SqrMagnitude(y.collider.transform.position - distancePivot))
-            );
+            sensorDatas.Sort((x, y) =>
+            {
+                int px = x.interactable != null ? x.interactable.Priority : 9999;
+                int py = y.interactable != null ? y.interactable.Priority : 9999;
+
+                // 1) 우선순위 먼저
+                int pComp = px.CompareTo(py);
+                if (pComp != 0) return pComp;
+
+                // 2) 우선순위 같으면 거리
+                float dx = Vector3.SqrMagnitude(x.collider.transform.position - distancePivot);
+                float dy = Vector3.SqrMagnitude(y.collider.transform.position - distancePivot);
+                return dx.CompareTo(dy);
+            });
+
             if (sensorDatas.Count > 0)
             {
                 // Sensor --> Interactable Prompt Open / Close

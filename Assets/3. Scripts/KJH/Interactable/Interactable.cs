@@ -1,6 +1,9 @@
 using UnityEngine;
 public abstract class Interactable : MonoBehaviour
 {
+    [SerializeField] private int interactionPriority = 0;
+    public virtual int Priority => interactionPriority;
+
     [System.Serializable]
     [System.Flags]
     public enum Type
