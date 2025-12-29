@@ -62,6 +62,10 @@ public class TutorialTrigger : MonoBehaviour
         {
             keyTexts[0].text = SettingManager.I.GetBindingName("Parry");
         }
+        if (transform.name == "TutorialHeal")
+        {
+            keyTexts[0].text = SettingManager.I.GetBindingName("Potion");
+        }
         yield return YieldInstructionCache.WaitForSeconds(1.8f);
         ready = true;
     }

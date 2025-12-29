@@ -373,6 +373,17 @@ public class PlayerControl : MonoBehaviour
             MonsterControl monsterControl = hData.target.GetComponentInParent<MonsterControl>();
             if (monsterControl != null)
             {
+                //Gear 기어 (수복의 기어) 005_RestorationGear
+            bool outValue = false;
+            if(DBManager.I.HasGear("005_RestorationGear",out outValue))
+            {
+                if(outValue)
+                {
+                    currHealth += 5f;
+                    currHealth = Mathf.Clamp(currHealth,0,maxHealth);
+
+                }
+            }
                 currBattery += lanternAttackAmount;
                 currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                 hUDBinder.RefreshBattery();
@@ -384,6 +395,7 @@ public class PlayerControl : MonoBehaviour
         {
             if (isHit2) return;
             if (isHit1) return;
+            usePotion.cts?.Cancel();
             isHit1 = true;
             run.isStagger = true;
             StopCoroutine(nameof(HitCoolTime1));
@@ -422,6 +434,7 @@ public class PlayerControl : MonoBehaviour
         {
             if (isHit2) return;
             isHit2 = true;
+            usePotion.cts?.Cancel();
             StopCoroutine(nameof(HitCoolTime2));
             StartCoroutine(nameof(HitCoolTime2));
             if (_Avoided)
@@ -649,6 +662,7 @@ public class PlayerControl : MonoBehaviour
     }
     [HideInInspector] public bool isNearSavePoint;
     [HideInInspector] public bool isNearSconceLight;
+    public AnimationCurve curve;
     IEnumerator DecreaseBattery()
     {
         float diffMultiplier = 1f;
@@ -674,7 +688,7 @@ public class PlayerControl : MonoBehaviour
                 if (currBattery <= 100)
                 {
                     if (fsm.currentState == die) continue;
-                    currBattery += 10f * interval;
+                    currBattery += 11f * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
@@ -682,10 +696,10 @@ public class PlayerControl : MonoBehaviour
             }
             else if(isNearSconceLight)
             {
-                if (currBattery <= 53)
+                if (currBattery <= 58)
                 {
                     if (fsm.currentState == die) continue;
-                    currBattery += 6.3f * interval;
+                    currBattery += 6.7f * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
