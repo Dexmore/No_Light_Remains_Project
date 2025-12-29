@@ -28228,6 +28228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
+  interactionPriority: 0
   loadingPage: 0
   sceneName: Stage6
   targetPosition: {x: 202, y: 9.99}
@@ -32081,7 +32082,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Visuals.ParallaxZoneController
   backgroundRoot: {fileID: 2094917451}
-  isStartingZone: 0
+  isStartingZone: 1
   targetTag: Player
   enableTransitions: 1
   fadeInDuration: 0.5
@@ -32120,7 +32121,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 28.23972, y: 0.7635479}
+  m_Offset: {x: 23.657478, y: 0.7635479}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -32130,7 +32131,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 116.753654, y: 19.422657}
+  m_Size: {x: 107.58917, y: 19.422657}
   m_EdgeRadius: 0
 --- !u!4 &1606200250
 Transform:
@@ -42143,6 +42144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b7f42e7957087418ca0ef792ac9362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractablePortal
+  interactionPriority: 0
   loadingPage: 1
   sceneName: Stage8
   targetPosition: {x: -23, y: 2.05}

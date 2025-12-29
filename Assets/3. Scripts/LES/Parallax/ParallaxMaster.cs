@@ -43,8 +43,7 @@ namespace Game.Visuals
                 cameraTransform = Camera.main.transform;
                 lastCameraPosition = cameraTransform.position;
 
-                // [핵심 해결책] 켜지자마자 카메라 근처로 즉시 이동 (스냅)
-                // 이것이 없으면 멀리서 돌아왔을 때 배경이 따라오는데 한참 걸림
+                // [핵심 기능] 켜질 때 카메라 위치로 즉시 스냅 (씬 이동 후 복귀 시 튀는 문제 해결)
                 if (infiniteLoop)
                 {
                     SnapToCamera();
@@ -71,25 +70,24 @@ namespace Game.Visuals
             CalculateSize();
             ApplyColor();
 
-            // 시작할 때도 스냅 한 번 실행
+            // 시작 시에도 스냅 실행
             if (infiniteLoop) SnapToCamera();
         }
 
-        // [New] 카메라 위치로 배경을 즉시 소환하는 함수
+        // [New] 배경을 카메라 근처로 강제 이동시키는 함수
         private void SnapToCamera()
         {
-            if (singleImageWidth <= 0 || cloneCount <= 0) return;
+            if (singleImageWidth <= 0 || cloneCount <= 0 || cameraTransform == null) return;
 
             float totalLoopSize = singleImageWidth * cloneCount;
             float dist = cameraTransform.position.x - transform.position.x;
 
-            // 카메라와의 거리가 너무 멀면, 루프 사이즈 단위로 계산해서 한 번에 이동
-            if (Mathf.Abs(dist) >= totalLoopSize / 2f) // 대략 절반 이상 멀어지면
+            // 카메라와 배경 사이의 거리가 루프 절반 이상 벌어지면
+            if (Mathf.Abs(dist) >= totalLoopSize / 2f)
             {
-                // 몇 바퀴(몇 번의 점프)를 돌아야 하는지 정수로 계산
+                // 필요한 점프 횟수 계산
                 int numJumps = Mathf.RoundToInt(dist / totalLoopSize);
-                
-                // 해당 횟수만큼 좌표 이동
+                // 즉시 이동
                 transform.position += new Vector3(numJumps * totalLoopSize, 0, 0);
             }
         }
@@ -113,6 +111,7 @@ namespace Game.Visuals
                 singleImageWidth = sprite.bounds.size.x;
             }
 
+            // 점프 타이밍을 넉넉하게 설정
             loopThreshold = singleImageWidth * 1.5f; 
             
             #if UNITY_EDITOR
@@ -130,7 +129,7 @@ namespace Game.Visuals
                 }
             }
 
-            // Move
+            // Move Logic
             if (useZCoordinate) {
                 parallaxFactor = Mathf.Clamp01(Mathf.Abs(transform.position.z) / maxDepth);
                 if (transform.position.z < 0) parallaxFactor = -0.2f; 
@@ -146,7 +145,7 @@ namespace Game.Visuals
                 transform.position = new Vector3(initialPosition.x + Mathf.Clamp(distFromOriginX, -maxMoveRange.x, maxMoveRange.x), initialPosition.y + Mathf.Clamp(distFromOriginY, -maxMoveRange.y, maxMoveRange.y), transform.position.z);
             }
 
-            // Infinite Loop
+            // Infinite Loop Logic
             if (infiniteLoop && singleImageWidth > 0 && !limitMovement)
             {
                 float offsetPosX = cameraTransform.position.x - transform.position.x;
