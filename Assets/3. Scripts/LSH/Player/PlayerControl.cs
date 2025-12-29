@@ -136,7 +136,7 @@ public class PlayerControl : MonoBehaviour
             newData.sceneDatas = new List<CharacterData.SceneData>();
             newData.progressDatas = new List<CharacterData.ProgressData>();
             newData.killCounts = new List<CharacterData.KillCount>();
-            
+
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
             System.DateTime now = System.DateTime.Now;
@@ -374,16 +374,16 @@ public class PlayerControl : MonoBehaviour
             if (monsterControl != null)
             {
                 //Gear 기어 (수복의 기어) 005_RestorationGear
-            bool outValue = false;
-            if(DBManager.I.HasGear("005_RestorationGear",out outValue))
-            {
-                if(outValue)
+                bool outValue = false;
+                if (DBManager.I.HasGear("005_RestorationGear", out outValue))
                 {
-                    currHealth += 5f;
-                    currHealth = Mathf.Clamp(currHealth,0,maxHealth);
+                    if (outValue)
+                    {
+                        currHealth += 5f;
+                        currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
 
+                    }
                 }
-            }
                 currBattery += lanternAttackAmount;
                 currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                 hUDBinder.RefreshBattery();
@@ -694,7 +694,7 @@ public class PlayerControl : MonoBehaviour
                     hUDBinder.RefreshBattery();
                 }
             }
-            else if(isNearSconceLight)
+            else if (isNearSconceLight)
             {
                 if (currBattery <= 58)
                 {
@@ -710,8 +710,8 @@ public class PlayerControl : MonoBehaviour
                 if (GameManager.I.isLanternOn)
                 {
                     float isOpenUI = 1f;
-                    if(GameManager.I.isOpenDialog) isOpenUI = 0.2f;
-                    if(GameManager.I.isOpenPop) isOpenUI = 0.4f;
+                    if (GameManager.I.isOpenDialog) isOpenUI = 0.2f;
+                    if (GameManager.I.isOpenPop) isOpenUI = 0.4f;
                     currBattery += lanternDecreaseTick * diffMultiplier * isOpenUI * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
@@ -800,8 +800,21 @@ public class PlayerControl : MonoBehaviour
         while (Time.realtimeSinceStartup < _hitStopEndRealtime)
             yield return null;
 
+
+
+        float recoveryDuration = 0.25f;
+        float elapsed = 0f;
+        while (elapsed < recoveryDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / recoveryDuration);
+            Time.timeScale = Mathf.Lerp(timeScale, baseTimeScale, t * t);
+            Time.fixedDeltaTime = _defaultFixedDeltaTime * Time.timeScale;
+            yield return null;
+        }
         Time.timeScale = baseTimeScale;
         Time.fixedDeltaTime = _defaultFixedDeltaTime * Time.timeScale;
+
 
         _parryHitStopCo = null;
     }

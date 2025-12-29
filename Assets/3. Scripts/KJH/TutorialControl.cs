@@ -1,5 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+
 public class TutorialControl : MonoBehaviour
 {
     [SerializeField] PlayerControl playerControl;
@@ -9,6 +12,7 @@ public class TutorialControl : MonoBehaviour
     IEnumerator Start()
     {
         yield return null;
+        playerLayer = LayerMask.NameToLayer("Player");
         if (DBManager.I.GetProgress("Tutorial") < 0)
         {
             DBManager.I.Save();
@@ -41,6 +45,7 @@ public class TutorialControl : MonoBehaviour
             tutAttackTr.gameObject.SetActive(false);
         }
     }
+    int playerLayer;
     void OnEnable()
     {
         GameManager.I.onHit += HitHandler;
@@ -71,51 +76,156 @@ public class TutorialControl : MonoBehaviour
             }
         }
     }
-    [SerializeField] float normalTime1;
-    [SerializeField] float normalTime2;
-    [SerializeField] float normalTime3;
+
+
     IEnumerator TutorialParryLoop()
     {
         Transform tutParryTr = transform.Find("TutorialParry");
         Animator animator = slicer.GetComponentInChildren<Animator>();
+        Transform childTr = slicer.transform.GetChild(0);
+        int flag = 0;
         while (true)
         {
             yield return null;
-            tutParryTr.position = slicer.transform.position;
-            yield return null;
+
+            // 2. 몹이 없으면 UI 끄고 대기
             if (slicer == null || !slicer.gameObject.activeInHierarchy)
             {
+                if (flag != 0) ResetParryTutorial(ref flag);
                 tutParryTr.gameObject.SetActive(false);
-                Time.timeScale = 1f;
-                yield break;
+                continue;
             }
-            if (slicer.state == MonsterControl.State.NormalAttack)
+
+            tutParryTr.position = slicer.transform.position;
+            float nt = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            Collider2D collider = Physics2D.OverlapCircle(slicer.transform.position + childTr.right, 2f, 1 << playerLayer);
+
+            // 1. 타임아웃 등으로 인해 외부에서 TimeScale이 복구되었다면 flag 리셋
+            if (flag == 1 && Time.timeScale == 1f) flag = 0;
+
+            // 3. [추가] 거리 체크: 몹과 너무 멀면 로직 실행 안 함
+            float dist = Vector2.Distance(playerControl.transform.position, slicer.transform.position);
+            if (dist > 15f) // 15미터 이상 멀면 대기
             {
-                Debug.Log($" nt : {animator.GetCurrentAnimatorStateInfo(0).normalizedTime} , ci : {animator.GetCurrentAnimatorClipInfo(0)} , as : {animator.GetCurrentAnimatorStateInfo(0)}");
-                
+                if (flag != 0) ResetParryTutorial(ref flag);
+                tutParryTr.gameObject.SetActive(false);
+                continue;
             }
-            else if (slicer.state == MonsterControl.State.MovingAttack)
+
+            bool isPlayerReady = playerControl.fsm.currentState == playerControl.idle ||
+                                 playerControl.fsm.currentState == playerControl.run ||
+                                 playerControl.fsm.currentState == playerControl.attack ||
+                                 playerControl.fsm.currentState == playerControl.attackCombo ||
+                                 playerControl.fsm.currentState == playerControl.hit;
+
+            bool condition = false;
+
+            // 4. 패링 타이밍 로직 (슬로우 중에는 거리만 체크)
+            if (flag == 1)
             {
-                Debug.Log($" nt : {animator.GetCurrentAnimatorStateInfo(0).normalizedTime} , ci : {animator.GetCurrentAnimatorClipInfo(0)} , as : {animator.GetCurrentAnimatorStateInfo(0)}");
-                
-                
+                condition = (collider != null); // 이미 슬로우 중이면 플레이어 상태 무관하게 유지
             }
-            else if (slicer.state == MonsterControl.State.ShortAttack)
+            else
             {
-                Debug.Log($" nt : {animator.GetCurrentAnimatorStateInfo(0).normalizedTime} , ci : {animator.GetCurrentAnimatorClipInfo(0)} , as : {animator.GetCurrentAnimatorStateInfo(0)}");
-                
-                
+                switch (slicer.state)
+                {
+                    case MonsterControl.State.NormalAttack:
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.42f, 0.49f, collider, isPlayerReady);
+                        break;
+                    case MonsterControl.State.MovingAttack:
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.46f, 0.53f, collider, isPlayerReady);
+                        break;
+                    case MonsterControl.State.ShortAttack:
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.45f, 0.51f, collider, isPlayerReady);
+                        break;
+                    default:
+                        condition = false;
+                        break;
+                }
             }
 
-
-
-
-
-
-
-
+            // 5. 실행 제어
+            if (flag == 1 && playerControl.fsm.currentState == playerControl.parry)
+            {
+                ResetParryTutorial(ref flag);
+            }
+            else if (condition && flag == 0)
+            {
+                flag = 1;
+                Time.timeScale = 0.03f;
+                StartCoroutine(nameof(BlinkParryNotice));
+            }
+            else if (!condition && flag != 0)
+            {
+                ResetParryTutorial(ref flag);
+            }
         }
     }
+
+    private bool IsInParryWindow(Animator anim, string clipName, float nt, float start, float end, Collider2D col, bool playerReady)
+    {
+        return col != null && anim.GetCurrentAnimatorStateInfo(0).IsName(clipName)
+               && nt >= start && nt <= end && playerReady;
+    }
+
+    private void ResetParryTutorial(ref int flag)
+    {
+        flag = 0;
+        Time.timeScale = 1f;
+        StopCoroutine(nameof(BlinkParryNotice));
+        RecoverColorParryNotice();
+    }
+
+    IEnumerator BlinkParryNotice()
+    {
+        Transform wrap = transform.Find("TutorialParry/Canvas/Wrap");
+        if (wrap == null) yield break;
+
+        Text noticeText = wrap.Find("Text").GetComponent<Text>();
+        Text buttonText = wrap.Find("Key/Text").GetComponent<Text>();
+        wrap.gameObject.SetActive(true);
+
+        Color defaultColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+        Color highlightColor = Color.white;
+        float blinkSpeed = 5.0f;
+        float elapsedUnscaledTime = 0;
+
+        while (elapsedUnscaledTime < 2.0f) // 2초 타임아웃 적용 (원하시는 대로 수정)
+        {
+            float timer = elapsedUnscaledTime * blinkSpeed;
+            float t = (Mathf.Sin(timer) + 1f) * 0.5f;
+            Color targetColor = Color.Lerp(defaultColor, highlightColor, t);
+            SetColor(noticeText, targetColor);
+            SetColor(buttonText, targetColor);
+
+            yield return null;
+            elapsedUnscaledTime += Time.unscaledDeltaTime;
+        }
+
+        // 2초 경과 시 강제 복구
+        Time.timeScale = 1f;
+        RecoverColorParryNotice();
+        wrap.gameObject.SetActive(false);
+    }
+
+    void RecoverColorParryNotice()
+    {
+        StopCoroutine(nameof(BlinkParryNotice));
+        Transform wrap = transform.Find("TutorialParry/Canvas/Wrap");
+        if (wrap)
+        {
+            Text noticeText = wrap.Find("Text").GetComponent<Text>();
+            Text buttonText = wrap.Find("Key/Text").GetComponent<Text>();
+            SetColor(noticeText, new Color(0.2f, 0.2f, 0.2f, 1f));
+            SetColor(buttonText, new Color(0.2f, 0.2f, 0.2f, 1f));
+        }
+    }
+
+    private void SetColor(Graphic graphic, Color targetColor)
+    {
+        if (graphic != null) graphic.color = targetColor;
+    }
+
     public void TutorialTrigger(string Name)
     {
         if (Name == "TutorialMove")

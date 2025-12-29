@@ -55,7 +55,7 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     public void UpdateEquipVisual()
     {
         if (_myData == null || gearIcon == null) return;
-        gearIcon.color = _myData.isEquipped ? _originalIconColor : (_originalIconColor * dimFactor);
+        gearIcon.color = _myData.isEquipped ? _originalIconColor * dimFactor : _originalIconColor;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
