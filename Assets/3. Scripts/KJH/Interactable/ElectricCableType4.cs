@@ -56,7 +56,8 @@ public class ElectricCableType4 : MonoBehaviour
             {
                 Vector2 pos = col.bounds.center;
                 Vector2 direction = ((Vector2)coll.transform.position + 1.2f * Vector2.up) - pos;
-                rb.AddForce(5f * direction.normalized, ForceMode2D.Impulse);
+                direction.y = 0f;
+                rb.AddForce(7f * direction.normalized +  0.5f * Vector2.up, ForceMode2D.Impulse);
             }
         }
     }

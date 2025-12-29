@@ -13,11 +13,10 @@ public class PlayerUsePotion : IPlayerState
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
     private float adjustedTime;
+    float _time;
     public void Enter()
     {
-        cts?.Cancel();
-        cts = new CancellationTokenSource();
-
+        
         if (DBManager.I.currData.currPotionCount <= 0)
         {
             emptyTime = Time.time;
@@ -30,6 +29,19 @@ public class PlayerUsePotion : IPlayerState
                 fsm.ChangeState(ctx.idle);
             return;
         }
+        if (Time.time - _time < 1f)
+        {
+            if (prevState == ctx.run)
+                fsm.ChangeState(ctx.run);
+            else
+                fsm.ChangeState(ctx.idle);
+            return;
+        }
+        _time = Time.time;
+        once = false;
+        cts?.Cancel();
+        cts = new CancellationTokenSource();
+        Heal(cts.Token).Forget();
         ctx.hUDBinder.Refresh(6f);
         _elapsedTime = 0f;
         ctx.animator.Play("Player_Idle");
@@ -37,19 +49,18 @@ public class PlayerUsePotion : IPlayerState
         sfxFlag2 = false;
         sfxFlag3 = false;
         aniFlag1 = false;
-        switch(DBManager.I.currData.difficulty)
+        switch (DBManager.I.currData.difficulty)
         {
             case 0:
-            adjustedTime = duration;
-            break;
+                adjustedTime = duration;
+                break;
             case 1:
-            adjustedTime = duration * 1.2f + 0.4f;
-            break;
+                adjustedTime = duration * 1.2f + 0.4f;
+                break;
             case 2:
-            adjustedTime = duration * 1.4f + 0.6f;
-            break;
+                adjustedTime = duration * 1.4f + 0.6f;
+                break;
         }
-        Heal(cts.Token).Forget();
     }
     public void Exit()
     {
@@ -141,13 +152,13 @@ public class PlayerUsePotion : IPlayerState
     bool once = false;
     async UniTask Heal(CancellationToken token)
     {
-        if(once) return;
+        if (once) return;
         once = true;
         float du = 2f;
         float e = 0;
         float startHealth = DBManager.I.currData.currHealth;
         ctx.hUDBinder.Refresh(du + 2f);
-        while(!token.IsCancellationRequested)
+        while (!token.IsCancellationRequested)
         {
             e += Time.deltaTime;
             float ratio = (e / du);
@@ -156,7 +167,7 @@ public class PlayerUsePotion : IPlayerState
             ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, ctx.maxHealth);
             DBManager.I.currData.currHealth = ctx.currHealth;
             await UniTask.Yield(token);
-            if(ratio >= 1) break;
+            if (ratio >= 1) break;
         }
     }
 
