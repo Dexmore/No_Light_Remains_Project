@@ -45,13 +45,12 @@ namespace Game.Visuals
             }
         }
 
-        // [핵심] 오브젝트가 꺼질 때 상태를 깔끔하게 정리 (오류 방지)
         private void OnDisable()
         {
             if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
             currentFadeRoutine = null;
             
-            // 꺼질 때는 배경도 같이 끔 (다시 켜질 때 초기화된 상태로 시작하기 위함)
+            // 꺼질 때는 배경도 같이 끔
             if (backgroundRoot != null)
             {
                 ForceState(false, 0f); 
@@ -60,7 +59,8 @@ namespace Game.Visuals
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (!isActiveAndEnabled) return;
+            // 들어올 때도 안전하게 검사
+            if (!this.isActiveAndEnabled) return;
 
             if (collision.CompareTag(targetTag) && backgroundRoot != null)
             {
@@ -70,14 +70,18 @@ namespace Game.Visuals
                 if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
                 
                 float duration = enableTransitions ? fadeInDuration : 0f;
-                currentFadeRoutine = StartCoroutine(FadeRoutine(1f, duration));
+                // 여기도 실행 직전 활성 상태라면 실행
+                if (this.gameObject.activeInHierarchy)
+                {
+                    currentFadeRoutine = StartCoroutine(FadeRoutine(1f, duration));
+                }
             }
         }
 
         private void OnTriggerExit2D(Collider2D collision)
         {
-            // 나가는 순간 씬 이동 등으로 내가 꺼졌다면 에러 없이 종료
-            if (!isActiveAndEnabled) 
+            // 1차 방어: 들어오자마자 꺼져있는지 확인
+            if (!this.isActiveAndEnabled) 
             {
                 ForceState(false, 0f);
                 return;
@@ -88,7 +92,18 @@ namespace Game.Visuals
                 if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
 
                 float duration = enableTransitions ? fadeOutDuration : 0f;
-                currentFadeRoutine = StartCoroutine(FadeRoutine(0f, duration, true));
+
+                // [핵심 수정] 2차 방어: 코루틴 시작 직전에 "진짜 켜져있니?" 한 번 더 물어봄
+                // 스테이지 이동 시, 위에서 검사 통과 후 여기까지 오는 사이에 꺼질 수 있음
+                if (this.gameObject.activeInHierarchy)
+                {
+                    currentFadeRoutine = StartCoroutine(FadeRoutine(0f, duration, true));
+                }
+                else
+                {
+                    // 꺼져있다면 코루틴 대신 강제로 끔
+                    ForceState(false, 0f);
+                }
             }
         }
 
