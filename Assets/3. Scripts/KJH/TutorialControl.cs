@@ -29,13 +29,13 @@ public class TutorialControl : MonoBehaviour
         }
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         Transform tutParryTr = transform.Find("TutorialParry");
-        if(slicer == null || !slicer.gameObject.activeInHierarchy)
+        if (slicer == null || !slicer.gameObject.activeInHierarchy)
         {
             StopCoroutine(nameof(TutorialParryLoop));
             tutParryTr.gameObject.SetActive(false);
         }
         Transform tutAttackTr = transform.Find("TutorialAttack");
-        if(blob == null || !blob.gameObject.activeInHierarchy)
+        if (blob == null || !blob.gameObject.activeInHierarchy)
         {
             StopCoroutine(nameof(TutorialAttackLoop));
             tutAttackTr.gameObject.SetActive(false);
@@ -51,9 +51,9 @@ public class TutorialControl : MonoBehaviour
     }
     void HitHandler(HitData hitData)
     {
-        if(hitData.attacker != slicer.transform) return;
-        if(hitData.target.gameObject.layer != LayerMask.NameToLayer("Player")) return;
-        if(hitData.attackType == HitData.AttackType.Chafe) return;
+        if (hitData.attacker != slicer.transform) return;
+        if (hitData.target.gameObject.layer != LayerMask.NameToLayer("Player")) return;
+        if (hitData.attackType == HitData.AttackType.Chafe) return;
         // Time.timeScale = 1f;
     }
     IEnumerator TutorialAttackLoop()
@@ -71,10 +71,13 @@ public class TutorialControl : MonoBehaviour
             }
         }
     }
+    [SerializeField] float normalTime1;
+    [SerializeField] float normalTime2;
+    [SerializeField] float normalTime3;
     IEnumerator TutorialParryLoop()
     {
-        bool isAttackStart = false;
         Transform tutParryTr = transform.Find("TutorialParry");
+        Animator animator = slicer.GetComponentInChildren<Animator>();
         while (true)
         {
             yield return null;
@@ -84,44 +87,31 @@ public class TutorialControl : MonoBehaviour
             {
                 tutParryTr.gameObject.SetActive(false);
                 Time.timeScale = 1f;
+                yield break;
             }
-            // if (!isAttackStart)
-            // {
-            //     if (slicer.state == MonsterControl.State.NormalAttack)
-            //     {
-            //         isAttackStart = true;
-            //         yield return YieldInstructionCache.WaitForSeconds(1f);
-            //         Time.timeScale = 0.1f;
-            //     }
-            //     else if (slicer.state == MonsterControl.State.MovingAttack)
-            //     {
-            //         isAttackStart = true;
-            //         yield return YieldInstructionCache.WaitForSeconds(1f);
-            //         Time.timeScale = 0.1f;
-            //     }
-            //     else if (slicer.state == MonsterControl.State.ShortAttack)
-            //     {
-            //         isAttackStart = true;
-            //         yield return YieldInstructionCache.WaitForSeconds(1f);
-            //         Time.timeScale = 0.1f;
-            //     }
-            // }
-            // else if(isAttackStart)
-            // {
-            //     if (
-            //         slicer.state == MonsterControl.State.Idle
-            //     || slicer.state == MonsterControl.State.Wander
-            //     || slicer.state == MonsterControl.State.Reposition
-            //     || slicer.state == MonsterControl.State.ReturnHome
-            //     || slicer.state == MonsterControl.State.Die
-            //     || slicer.state == MonsterControl.State.Hit
-            //     || slicer.state == MonsterControl.State.Pursuit
-            //     )
-            //     {
-            //         isAttackStart = false;
-            //         Time.timeScale = 1f;
-            //     }
-            // }
+            if (slicer.state == MonsterControl.State.NormalAttack)
+            {
+                Debug.Log($" nt : {animator.GetCurrentAnimatorStateInfo(0).normalizedTime} , ci : {animator.GetCurrentAnimatorClipInfo(0)} , as : {animator.GetCurrentAnimatorStateInfo(0)}");
+                
+            }
+            else if (slicer.state == MonsterControl.State.MovingAttack)
+            {
+                Debug.Log($" nt : {animator.GetCurrentAnimatorStateInfo(0).normalizedTime} , ci : {animator.GetCurrentAnimatorClipInfo(0)} , as : {animator.GetCurrentAnimatorStateInfo(0)}");
+                
+                
+            }
+            else if (slicer.state == MonsterControl.State.ShortAttack)
+            {
+                Debug.Log($" nt : {animator.GetCurrentAnimatorStateInfo(0).normalizedTime} , ci : {animator.GetCurrentAnimatorClipInfo(0)} , as : {animator.GetCurrentAnimatorStateInfo(0)}");
+                
+                
+            }
+
+
+
+
+
+
 
 
         }
