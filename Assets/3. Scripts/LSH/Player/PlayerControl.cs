@@ -466,7 +466,13 @@ public class PlayerControl : MonoBehaviour
                     AttractParticle ap = upa.GetComponent<AttractParticle>();
                     Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
                     ap.targetVector = pos;
-                    currBattery += lanternParryAmount;
+                    // MonsterControl monsterControl = hData.attacker.GetComponent<Monster>
+                    float tempFloat = 1f;
+                    if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
+                        if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
+                            tempFloat = 0.333f;
+                    
+                    currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
                     hitCoolTime1speed = 2.8f;

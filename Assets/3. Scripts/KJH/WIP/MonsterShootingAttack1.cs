@@ -36,7 +36,10 @@ public class MonsterShootingAttack1 : MonsterState
         float dist = Vector3.Distance(target.position, transform.position);
         float distX = Mathf.Abs(target.position.x - transform.position.x);
         float distY = Mathf.Abs(target.position.y - transform.position.y);
-        if (dist < Mathf.Max(0.333f * control.findRadius, 3f * control.width))
+        //float tempDist = Mathf.Clamp(0.333f * control.findRadius, 0f, 3f * control.width);
+        float tempDist = 0.5f * (Mathf.Clamp(control.findRadius, 0f, 10f) + (3f * control.width));
+        Debug.Log(0.3f * tempDist);
+        if (dist < 0.3f * tempDist)
         {
             // 너무 가까워서 취소
             await UniTask.Yield(token);
@@ -68,11 +71,11 @@ public class MonsterShootingAttack1 : MonsterState
         bool isBlocked = false;
         for (int i = 0; i < raycastHits.Length; i++)
         {
-            if(raycastHits[i].collider.isTrigger) continue;
+            if (raycastHits[i].collider.isTrigger) continue;
             isBlocked = true;
             break;
         }
-        if(isBlocked)
+        if (isBlocked)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -99,7 +102,7 @@ public class MonsterShootingAttack1 : MonsterState
         await UniTask.Delay((int)(1000f * (0.7f * animationWaitSecond)), cancellationToken: token);
 
         //
-        
+
 
         await bulletControl.PlayBullet(bulletPaterns, transform, target, token, control.data.Attack);
         await UniTask.Delay((int)(1000f * 4f), cancellationToken: token);
