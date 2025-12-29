@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22e32b5e4a747a34f848afebc23e517a, type: 3}
+  m_Name: Contaminated Flower
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundData
+  soundEntries:
+  - key: BiteAttack
+    settings:
+    - clip: {fileID: 8300000, guid: c2c27272a1d97784d81acdb21d2ed79c, type: 3}
+      volume: 0.6
+  - key: Crawl
+    settings:
+    - clip: {fileID: 8300000, guid: ad24c3f0eb3f40f46ab44fbbab00fc72, type: 3}
+      volume: 0.2
+  - key: Pump
+    settings:
+    - clip: {fileID: 8300000, guid: 27be1d7452dc3534e97bd276b9fc7c14, type: 3}
+      volume: 0.4
+  - key: GasAttack
+    settings:
+    - clip: {fileID: 8300000, guid: 45dfdeab351cef54c82b2ce4f0ba7564, type: 3}
+      volume: 0.4
+  - key: Die
+    settings:
+    - clip: {fileID: 8300000, guid: 0878e5353c2f219489caece82c43f2ee, type: 3}
+      volume: 0.7
+  - key: Stun
+    settings:
+    - clip: {fileID: 8300000, guid: 8dfa7f9cc66f6df49b167801e1761fb0, type: 3}
+      volume: 0.7
+  - key: Restart
+    settings:
+    - clip: {fileID: 8300000, guid: 238e20deb57010344aad3fc1d097b60a, type: 3}
+      volume: 0.7
