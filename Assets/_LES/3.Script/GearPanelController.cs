@@ -28,12 +28,12 @@ public class GearPanelController : MonoBehaviour, ITabContent
 
     public void OnShow()
     {
-        
+
         RefreshPanel(); // 패널 새로고침 (이 안에서 내비게이션도 설정됨)
-        
+
         // 활성화된 첫 번째 슬롯을 찾아 선택
         GearSlotUI firstInteractableSlot = gridSlots.FirstOrDefault(slot => slot.GetComponent<Button>().interactable);
-        
+
         if (firstInteractableSlot != null)
         {
             firstInteractableSlot.GetComponent<Button>().Select();
@@ -48,26 +48,26 @@ public class GearPanelController : MonoBehaviour, ITabContent
     {
         EventSystem.current.SetSelectedGameObject(null);
     }
-    
+
     private void RefreshPanel()
     {
         //if (InventoryDataManager.Instance == null) return;
 
         _currentEquippedCost = 0;
-        
+
         List<GearData> playerGears = new List<GearData>();
-        for(int i=0; i<DBManager.I.currData.gearDatas.Count; i++)
+        for (int i = 0; i < DBManager.I.currData.gearDatas.Count; i++)
         {
             CharacterData.GearData cd = DBManager.I.currData.gearDatas[i];
             int find = DBManager.I.itemDatabase.allGears.FindIndex(x => x.name == cd.Name);
-            if(find == -1) continue;
+            if (find == -1) continue;
             GearData d = Instantiate(DBManager.I.itemDatabase.allGears[find]);
             d.name = DBManager.I.itemDatabase.allGears[find].name;
             d.isNew = cd.isNew;
             d.isEquipped = cd.isEquipped;
             playerGears.Add(d);
         }
-        
+
         // 1. 그리드 슬롯 채우기 (활성화/비활성화 결정)
         for (int i = 0; i < gridSlots.Count; i++)
         {
@@ -85,7 +85,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
                 gridSlots[i].ClearSlot(); // 이 함수가 버튼을 not interactable로 만듦
             }
         }
-        
+
         // 2. 코스트 미터 업데이트
         totalCostMeter.SetMaxCost(DBManager.I.currData.maxGearCost);
         totalCostMeter.SetCost(_currentEquippedCost);
@@ -114,7 +114,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         for (int i = 0; i < 12; i++)
         {
             Button currentButton = gridSlots[i].GetComponent<Button>();
-            
+
             // 3. 비활성화된 슬롯이면, 내비게이션을 'None'으로 설정하고 건너뜀
             if (!interactableMap[i])
             {
@@ -123,7 +123,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
                 currentButton.navigation = nav;
                 continue;
             }
-            
+
             // 4. 활성화된 슬롯이면, 상/하/좌/우 대상을 검색
             Navigation newNav = currentButton.navigation;
             newNav.mode = Navigation.Mode.Explicit;
@@ -146,7 +146,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
     {
         int row = startIndex / 4;
         int col = startIndex % 4;
-        
+
         // 1. 한 칸씩 순차적으로 검색
         for (int j = 1; j < 12; j++)
         {
@@ -182,12 +182,12 @@ public class GearPanelController : MonoBehaviour, ITabContent
             {
                 return gridSlots[nextIndex].GetComponent<Button>();
             }
-            
+
             // 3. 한 줄/열을 다 돌았는데 래핑이 아니면 중지
             if (direction.y != 0 && j >= 2) break; // 상/하 (3줄)
             if (direction.x != 0 && j >= 3) break; // 좌/우 (4줄)
         }
-        
+
         // 4. 대상을 못 찾음
         return null;
     }
@@ -217,7 +217,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
             detailCostMeter.SetCost(0);
         }
     }
-    
+
     public void ToggleEquipGear(GearData gear)
     {
         // 1. 장착 시도
@@ -228,7 +228,15 @@ public class GearPanelController : MonoBehaviour, ITabContent
             {
                 gear.isEquipped = true;
                 _currentEquippedCost = newCost;
-                
+                int find = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == gear.name);
+                if (find != -1)
+                {
+                    var temp = DBManager.I.currData.gearDatas[find];
+                    temp.isEquipped = true;
+                    DBManager.I.currData.gearDatas[find] = temp;
+                }
+
+
                 // [소리] 기어 장착음
                 AudioManager.I?.PlaySFX("GearEquip");
             }
@@ -245,7 +253,14 @@ public class GearPanelController : MonoBehaviour, ITabContent
         {
             gear.isEquipped = false;
             _currentEquippedCost -= gear.cost;
-            
+            int find = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == gear.name);
+            if (find != -1)
+            {
+                var temp = DBManager.I.currData.gearDatas[find];
+                temp.isEquipped = false;
+                DBManager.I.currData.gearDatas[find] = temp;
+            }
+
             // [소리] 기어 해제음
             AudioManager.I?.PlaySFX("GearUnequip");
         }
@@ -261,5 +276,5 @@ public class GearPanelController : MonoBehaviour, ITabContent
     }
     #endregion
 
-    
+
 }

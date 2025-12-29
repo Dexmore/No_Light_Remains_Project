@@ -109,7 +109,7 @@ public class PlayerInteraction : MonoBehaviour
                 if (target1.type != Interactable.Type.DropItem && !playerControl.Grounded) return;
                 if (target1.type != Interactable.Type.DropItem)
                 {
-                    Vector2 targetCenter = target1.transform.position + Vector3.up;
+                    Vector2 targetCenter = target1.transform.position + 1.3f * Vector3.up;
                     SpriteRenderer spriteRenderer = target1.GetComponent<SpriteRenderer>();
                     Collider2D collider2D = target1.GetComponent<Collider2D>();
                     if (spriteRenderer != null)
@@ -143,7 +143,7 @@ public class PlayerInteraction : MonoBehaviour
                     }
                     RaycastHit2D[] raycastHits = Physics2D.LinecastAll
                     (
-                        (Vector2)playerControl.transform.position + 1.2f * Vector2.up,
+                        (Vector2)playerControl.transform.position + 1.4f * Vector2.up,
                         (Vector2)targetCenter,
                         playerControl.groundLayer
                     );
@@ -529,7 +529,7 @@ public class PlayerInteraction : MonoBehaviour
                 else if (root.TryGetComponent(out Lanternable lanternable))
                 {
                     SconceLight sconceLight = lanternable as SconceLight;
-                    if (sconceLight != null)
+                    if (sconceLight != null && !sconceLight.isReady)
                     {
                         playerControl.isNearSconceLight = true;
                     }

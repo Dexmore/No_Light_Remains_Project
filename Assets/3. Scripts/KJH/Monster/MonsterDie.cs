@@ -73,12 +73,32 @@ public class MonsterDie : MonsterState
         anim.Play("Die");
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         string strimedName = transform.name.Split("(")[0];
-        int find = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+
         int killCount = 0;
-        if (find != -1)
+        if (DBManager.I.currData.killCounts == null)
         {
-            killCount = DBManager.I.currData.killCounts[find].count;
+            DBManager.I.currData.killCounts = new System.Collections.Generic.List<CharacterData.KillCount>();
+            CharacterData.KillCount newData = new CharacterData.KillCount();
+            newData.Name = strimedName;
+            newData.count = 1;
+            DBManager.I.currData.killCounts.Add(newData);
         }
+        else
+        {
+            int find = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+            if (find != -1)
+            {
+                killCount = DBManager.I.currData.killCounts[find].count;
+            }
+            else
+            {
+                CharacterData.KillCount newData = new CharacterData.KillCount();
+                newData.Name = strimedName;
+                newData.count = 1;
+                DBManager.I.currData.killCounts.Add(newData);
+            }
+        }
+        
         // 아이템 드롭
         foreach (var element in dropTables)
         {

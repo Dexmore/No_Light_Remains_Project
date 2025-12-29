@@ -150,28 +150,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54c0390cabbcdf4cb788e9eeee2dd3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAndItemNPC
+  interactionPriority: 0
   dialogIndex: 1
   sfxName: 
   itemData: {fileID: 0}
   itemCount: 0
   gearData: {fileID: 0}
   lanternData: {fileID: 0}
-  recordData: {fileID: 0}
+  recordData: {fileID: 11400000, guid: b561adcf073dfea478fa8f5b1e0f2347, type: 2}
   gold: 0
-  onDialogFinished:
+  onDialogStart:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+  onDialogFinish:
+    m_PersistentCalls:
+      m_Calls: []
   canReplay: 1
   replayWaitTimeSecond: 60
+  onCompleteImmediately:
+    m_PersistentCalls:
+      m_Calls: []

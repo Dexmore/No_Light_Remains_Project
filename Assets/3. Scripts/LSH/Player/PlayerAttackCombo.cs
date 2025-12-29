@@ -117,6 +117,21 @@ public class PlayerAttackCombo : IPlayerState
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.78f, 1.38f);
             float damage = 36.8f;
+
+            //Gear 기어 (배수의 기어) 001_LastStandGear
+            float gearMultiplier = 1f;
+            bool outValue = false;
+            if(DBManager.I.HasGear("001_LastStandGear",out outValue))
+            {
+                if(outValue)
+                {
+                    if(ctx.currHealth/ctx.maxHealth <= 0.25f)
+                    {
+                        gearMultiplier = 1.3f;
+                    }
+                }
+            }
+
             if (rnd >= 1.22f)
             {
                 rnd = Random.Range(0.8f, 0.999f);
@@ -131,7 +146,7 @@ public class PlayerAttackCombo : IPlayerState
                     "AttackCombo",
                     ctx.transform,
                     coll.transform,
-                    rnd * damage * lanternOn,
+                    rnd * damage * gearMultiplier * lanternOn,
                     hitPoint,
                     new string[1] { "Hit3" }
                 )

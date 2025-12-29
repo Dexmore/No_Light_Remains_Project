@@ -87,7 +87,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
         CiriticalDamage,
         PlayerNotice,
     }
-    public TextEffect PlayText(string text, Vector3 pos, TextType type)
+    public TextEffect PlayText(string text, Vector3 pos, TextType type, float _duration = 0.6f)
     {
         if (type == TextType.PlayerNotice)
         {
@@ -99,7 +99,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             DOTween.Kill(_clone.txt);
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.5f);
-            float duration = Random.Range(0.62f, 0.75f);
+            float duration = _duration + Random.Range(0.2f, 0.15f);
             _clone.txt.DOFade(0f, duration).SetEase(Ease.OutSine);
             return _clone;
         }
@@ -117,7 +117,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             DOTween.Kill(_clone.txt);
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.2f);
-            float duration = Random.Range(0.59f, 0.68f);
+            float duration = _duration + Random.Range(0.01f, 0.09f);
             _clone.txt.DOFade(0f, duration - 0.3f).SetEase(Ease.OutQuad);
             return _clone;
         }
