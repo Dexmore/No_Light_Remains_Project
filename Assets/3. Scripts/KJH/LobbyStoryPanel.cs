@@ -89,6 +89,17 @@ public class LobbyStoryPanel : MonoBehaviour
         if (DBManager.I.IsSteamInit() && DBManager.I.IsSteam())
         {
             isSteamSlot = true;
+            if( DBManager.I.allSaveDatasInSteam.characterDatas == null
+            || DBManager.I.allSaveDatasInSteam.characterDatas.Count == 0)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    slots[i].Find("Empty").gameObject.SetActive(true);
+                    slots[i].Find("Slot").gameObject.SetActive(false);
+                    slots[i].Find("Frame").GetComponent<Image>().color = color1;
+                }
+                return;
+            }
             for (int i = 0; i < 3; i++)
             {
                 if (i < DBManager.I.allSaveDatasInSteam.characterDatas.Count
@@ -118,6 +129,17 @@ public class LobbyStoryPanel : MonoBehaviour
         else
         {
             isSteamSlot = false;
+            if( DBManager.I.allSaveDatasInLocal.characterDatas == null
+            || DBManager.I.allSaveDatasInLocal.characterDatas.Count == 0)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    slots[i].Find("Empty").gameObject.SetActive(true);
+                    slots[i].Find("Slot").gameObject.SetActive(false);
+                    slots[i].Find("Frame").GetComponent<Image>().color = color1;
+                }
+                return;
+            }
             for (int i = 0; i < 3; i++)
             {
                 if (i < DBManager.I.allSaveDatasInLocal.characterDatas.Count
@@ -368,6 +390,12 @@ public class LobbyStoryPanel : MonoBehaviour
         if (isSteamSlot)
         {
             DBManager.I.currSlot = select;
+
+            if(DBManager.I.allSaveDatasInSteam.characterDatas == null)
+            {
+                DBManager.I.allSaveDatasInSteam.characterDatas = new List<CharacterData>();
+            }
+
             int addEmptyCount = select - DBManager.I.allSaveDatasInSteam.characterDatas.Count;
             if (addEmptyCount > 0)
             {
@@ -385,18 +413,27 @@ public class LobbyStoryPanel : MonoBehaviour
         else
         {
             DBManager.I.currSlot = select + 3;
-            int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.characterDatas.Count;
-            if (addEmptyCount > 0)
+
+            if(DBManager.I.allSaveDatasInLocal.characterDatas == null)
             {
-                CharacterData emptyData = new CharacterData();
-                emptyData.maxHealth = 0;
-                emptyData.itemDatas = new List<CharacterData.ItemData>();
-                emptyData.gearDatas = new List<CharacterData.GearData>();
-                emptyData.lanternDatas = new List<CharacterData.LanternData>();
-                emptyData.recordDatas = new List<CharacterData.RecordData>();
-                for (int i = 0; i < addEmptyCount; i++)
-                    DBManager.I.allSaveDatasInLocal.characterDatas.Add(emptyData);
+                DBManager.I.allSaveDatasInLocal.characterDatas = new List<CharacterData>();
             }
+
+                    int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.characterDatas.Count;
+                if (addEmptyCount > 0)
+                {
+                    CharacterData emptyData = new CharacterData();
+                    emptyData.maxHealth = 0;
+                    emptyData.itemDatas = new List<CharacterData.ItemData>();
+                    emptyData.gearDatas = new List<CharacterData.GearData>();
+                    emptyData.lanternDatas = new List<CharacterData.LanternData>();
+                    emptyData.recordDatas = new List<CharacterData.RecordData>();
+                    for (int i = 0; i < addEmptyCount; i++)
+                        DBManager.I.allSaveDatasInLocal.characterDatas.Add(emptyData);
+                }
+            
+
+            
             DBManager.I.allSaveDatasInLocal.characterDatas.Add(newData);
         }
         DBManager.I.Save();
