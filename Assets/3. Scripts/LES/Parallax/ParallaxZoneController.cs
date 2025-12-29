@@ -45,29 +45,25 @@ namespace Game.Visuals
             }
         }
 
-        // [핵심 수정 1] 오브젝트가 꺼질 때(스테이지 이동 등) 상태를 강제로 정리함
+        // [핵심] 오브젝트가 꺼질 때 상태를 깔끔하게 정리 (오류 방지)
         private void OnDisable()
         {
             if (currentFadeRoutine != null) StopCoroutine(currentFadeRoutine);
             currentFadeRoutine = null;
             
-            // 꺼질 때는 배경도 같이 확실하게 꺼줌 (다시 켜질 때 꼬임 방지)
-            // 단, isStartingZone 로직과 충돌하지 않게 주의 (보통 스테이지 꺼지면 배경도 꺼지는게 맞음)
+            // 꺼질 때는 배경도 같이 끔 (다시 켜질 때 초기화된 상태로 시작하기 위함)
             if (backgroundRoot != null)
             {
-                // 페이드 없이 즉시 끔
                 ForceState(false, 0f); 
             }
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            // [안전 장치] 내가 켜져있을 때만 로직 수행
             if (!isActiveAndEnabled) return;
 
             if (collision.CompareTag(targetTag) && backgroundRoot != null)
             {
-                // 일단 켜고 본다
                 backgroundRoot.SetActive(true);
                 ToggleScripts(true);
 
@@ -80,8 +76,7 @@ namespace Game.Visuals
 
         private void OnTriggerExit2D(Collider2D collision)
         {
-            // [핵심 수정 2] 오류 해결 부분
-            // 만약 나가는 순간 오브젝트가 꺼졌다면, 코루틴 시작하지 말고 그냥 즉시 꺼버림
+            // 나가는 순간 씬 이동 등으로 내가 꺼졌다면 에러 없이 종료
             if (!isActiveAndEnabled) 
             {
                 ForceState(false, 0f);
@@ -97,7 +92,6 @@ namespace Game.Visuals
             }
         }
 
-        // 상태 강제 적용 함수 (코루틴 없이 즉시 적용)
         private void ForceState(bool isActive, float alpha)
         {
             if (backgroundRoot == null) return;
