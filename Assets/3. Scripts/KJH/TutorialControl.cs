@@ -108,7 +108,7 @@ public class TutorialControl : MonoBehaviour
             if (dist > 15f) // 15미터 이상 멀면 대기
             {
                 if (flag != 0) ResetParryTutorial(ref flag);
-                tutParryTr.gameObject.SetActive(false);
+                //tutParryTr.gameObject.SetActive(false);
                 continue;
             }
 
@@ -183,7 +183,6 @@ public class TutorialControl : MonoBehaviour
 
         Text noticeText = wrap.Find("Text").GetComponent<Text>();
         Text buttonText = wrap.Find("Key/Text").GetComponent<Text>();
-        wrap.gameObject.SetActive(true);
 
         Color defaultColor = new Color(0.2f, 0.2f, 0.2f, 1f);
         Color highlightColor = Color.white;
@@ -205,7 +204,6 @@ public class TutorialControl : MonoBehaviour
         // 2초 경과 시 강제 복구
         Time.timeScale = 1f;
         RecoverColorParryNotice();
-        wrap.gameObject.SetActive(false);
     }
 
     void RecoverColorParryNotice()
