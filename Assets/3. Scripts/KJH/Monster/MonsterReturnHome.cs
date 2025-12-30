@@ -14,6 +14,7 @@ public class MonsterReturnHome : MonsterState
         ctsReturn?.Cancel();
         ctsReturn = new CancellationTokenSource();
         var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(token, ctsReturn.Token);
+        if (control.isDie) return;
         if (anim)
             anim.Play("Idle");
         if (Random.value <= 0.5f)
@@ -36,6 +37,7 @@ public class MonsterReturnHome : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         checkRay = new Ray2D();
+        if (control.isDie) return;
         if (anim)
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                 anim.Play("Idle");
@@ -160,6 +162,7 @@ public class MonsterReturnHome : MonsterState
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
                     rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     // 애니매이션처리
+                    if (control.isDie) return;
                     if (control.isGround)
                     {
                         if (!isMoveAnimation)
@@ -190,6 +193,7 @@ public class MonsterReturnHome : MonsterState
     RaycastHit2D[] grounds = new RaycastHit2D[10];
     public async UniTask Activate2(CancellationToken token)
     {
+        if (control.isDie) return;
         if (anim)
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                 anim.Play("Idle");
@@ -380,6 +384,7 @@ public class MonsterReturnHome : MonsterState
                 {
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
                     rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                    if (control.isDie) return;
                     // 애니매이션처리
                     if (control.isGround)
                     {
@@ -410,9 +415,11 @@ public class MonsterReturnHome : MonsterState
         // 이동 끝
         if (isMoveAnimation)
         {
+            if (control.isDie) return;
             isMoveAnimation = false;
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             {
+                if (control.isDie) return;
                 anim.Play("Idle");
             }
         }

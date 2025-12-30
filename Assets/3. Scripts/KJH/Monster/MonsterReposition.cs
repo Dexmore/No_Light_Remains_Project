@@ -27,6 +27,7 @@ public class MonsterReposition : MonsterState
     RaycastHit2D CheckRayHit;
     public async UniTask Activate(CancellationToken token)
     {
+        if (control.isDie) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
         

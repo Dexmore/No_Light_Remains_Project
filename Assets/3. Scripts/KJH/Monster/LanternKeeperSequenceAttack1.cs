@@ -66,6 +66,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
 
         // 1번 공격
         attackIndex = 0;
+        if(control.state == MonsterControl.State.Die) return;
         anim.Play("JumpAttack");
         await UniTask.Delay(900, cancellationToken: token);
         rb.AddForce(Vector2.up * 26f + (Vector2)model.right * 6f, ForceMode2D.Impulse);
@@ -87,6 +88,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
 
         // 2번 공격
         attackIndex = 1;
+        if(control.state == MonsterControl.State.Die) return;
         anim.Play("SlamAttack");
         await UniTask.Delay(600, cancellationToken: token);
         chafe?.SetActive(true);

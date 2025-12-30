@@ -90,6 +90,7 @@ public class MonsterBiteAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    if(control.state == MonsterControl.State.Die) return;
                     anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
@@ -141,6 +142,7 @@ public class MonsterBiteAttack : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
         if (control.isDie) return;
+        if(control.state == MonsterControl.State.Die) return;
         anim.Play("BiteAttack");
         // 너무 멀면 앞으로 접근
         dist = Mathf.Abs(target.position.x - transform.position.x);

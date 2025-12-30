@@ -79,6 +79,7 @@ public class MonsterMovingAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    if(control.state == MonsterControl.State.Die) return;
                     anim.Play("Move");
                     isAnimation = true;
                     once = true;
@@ -132,6 +133,7 @@ public class MonsterMovingAttack : MonsterState
                                     if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                                     {
                                         isAnimation = true;
+                                        if(control.state == MonsterControl.State.Die) return;
                                         anim.Play("Move");
                                     }
                         }
@@ -140,6 +142,7 @@ public class MonsterMovingAttack : MonsterState
                             isAnimation = false;
                             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                             {
+                                if(control.state == MonsterControl.State.Die) return;
                                 anim.Play("Idle");
                             }
                         }
@@ -159,6 +162,7 @@ public class MonsterMovingAttack : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
         if (control.isDie) return;
+        if(control.state == MonsterControl.State.Die) return;
         anim.Play("MovingAttack");
         startTime = Time.time;
         await UniTask.Delay((int)(1000f * moveTimeRange.x), cancellationToken: token);
@@ -233,6 +237,7 @@ public class MonsterMovingAttack : MonsterState
                     rb.AddForce(multiplier * moveDirection * 2.5f * (control.data.MoveSpeed + 4.905f) / 1.25f);
                 }
         }
+        if (control.isDie) return;
         anim.Play("Idle");
         //await UniTask.Delay((int)(1000f * (duration - (moveTimeRange.y - moveTimeRange.x))), cancellationToken: token);
         PlayerControl pControl = target.GetComponentInParent<PlayerControl>();

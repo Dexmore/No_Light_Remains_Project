@@ -17,6 +17,7 @@ public class MonsterWander : MonsterState
         ctsWander?.Cancel();
         ctsWander = new CancellationTokenSource();
         var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(token, ctsWander.Token);
+        if (control.isDie) return;
         if (anim)
         {
             anim.Play("Idle");
@@ -40,6 +41,7 @@ public class MonsterWander : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         checkRay = new Ray2D();
+        if (control.isDie) return;
         if (anim)
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                 anim.Play("Idle");
@@ -165,6 +167,7 @@ public class MonsterWander : MonsterState
             if (!stopWall)
                 if (dot < control.data.MoveSpeed)
                 {
+                    if (control.isDie) return;
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
                     rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     // 애니매이션처리
@@ -198,6 +201,7 @@ public class MonsterWander : MonsterState
     RaycastHit2D[] grounds = new RaycastHit2D[10];
     public async UniTask Activate2(CancellationToken token)
     {
+        if (control.isDie) return;
         if (anim)
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                 anim.Play("Idle");
@@ -408,6 +412,7 @@ public class MonsterWander : MonsterState
                 // 이동
                 if (dot < control.data.MoveSpeed)
                 {
+                    if (control.isDie) return;
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
                     rb.AddForce(multiplier * moveDirection * (control.data.MoveSpeed + 4.905f) / 1.25f);
                     // 애니매이션처리
@@ -443,6 +448,7 @@ public class MonsterWander : MonsterState
             isMoveAnimation = false;
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             {
+                if (control.isDie) return;
                 anim.Play("Idle");
             }
         }

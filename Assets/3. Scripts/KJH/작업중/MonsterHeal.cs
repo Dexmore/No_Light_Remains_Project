@@ -30,7 +30,7 @@ public class MonsterHeal : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(token);
-
+        if (control.isDie) return;
         anim.Play("Heal");
         await UniTask.Delay((int)(1000f * (0.3f * duration)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
