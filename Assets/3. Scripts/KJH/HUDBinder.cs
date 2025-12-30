@@ -268,8 +268,10 @@ public class HUDBinder : MonoBehaviour
         {
             string msg = noticeQueue.Dequeue();
             CreateNoticeElement(msg);
+            AudioManager.I.PlaySFX("Tick2");
+            yield return new WaitForSeconds(0.04f);
             // --- 촤르르륵 뜨는 간격 조절 (예: 0.15초) ---
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(0.11f);
         }
         isProcessing = false;
     }
@@ -278,7 +280,6 @@ public class HUDBinder : MonoBehaviour
         var clone = Instantiate(itemNoticeTextPrefab, itemNoticeParent);
         ItemNoticeText element = clone.GetComponent<ItemNoticeText>();
         if (element == null) element = clone.gameObject.AddComponent<ItemNoticeText>();
-
         element.Setup(message);
     }
     

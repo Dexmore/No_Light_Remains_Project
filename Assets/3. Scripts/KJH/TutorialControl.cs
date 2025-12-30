@@ -86,44 +86,26 @@ public class TutorialControl : MonoBehaviour
         while (true)
         {
             yield return null;
-
-            // 2. 몹이 없으면 UI 끄고 대기
             if (slicer == null || !slicer.gameObject.activeInHierarchy)
             {
                 if (flag != 0) ResetParryTutorial(ref flag);
                 tutParryTr.gameObject.SetActive(false);
                 yield break;
             }
-
             tutParryTr.position = slicer.transform.position;
             float nt = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            Collider2D collider = Physics2D.OverlapCircle(slicer.transform.position + childTr.right, 3f, 1 << playerLayer);
-
-            // // 1. 타임아웃 등으로 인해 외부에서 TimeScale이 복구되었다면 flag 리셋
-            // if (flag == 1 && Time.timeScale == 1f) flag = 0;
-
-            // 3. [추가] 거리 체크: 몹과 너무 멀면 로직 실행 안 함
+            Collider2D collider = Physics2D.OverlapCircle(slicer.transform.position + childTr.right, 4f, 1 << playerLayer);
             float dist = Vector2.Distance(playerControl.transform.position, slicer.transform.position);
             if (dist > 15f) // 15미터 이상 멀면 대기
             {
                 if (flag != 0) ResetParryTutorial(ref flag);
-                //tutParryTr.gameObject.SetActive(false);
                 continue;
             }
             bool isPlayerReady = true;
-
-            // bool isPlayerReady = playerControl.fsm.currentState == playerControl.idle ||
-            //                      playerControl.fsm.currentState == playerControl.run ||
-            //                      playerControl.fsm.currentState == playerControl.attack ||
-            //                      playerControl.fsm.currentState == playerControl.attackCombo ||
-            //                      playerControl.fsm.currentState == playerControl.hit;
-
             bool condition = false;
-
-            // 4. 패링 타이밍 로직 (슬로우 중에는 거리만 체크)
             if (flag == 1)
             {
-                condition = (collider != null); // 이미 슬로우 중이면 플레이어 상태 무관하게 유지
+                condition = (collider != null);
             }
             else
             {
@@ -143,8 +125,6 @@ public class TutorialControl : MonoBehaviour
                         break;
                 }
             }
-
-            // 5. 실행 제어
             if (flag == 1 && playerControl.fsm.currentState == playerControl.parry)
             {
                 ResetParryTutorial(ref flag);
@@ -161,13 +141,11 @@ public class TutorialControl : MonoBehaviour
             }
         }
     }
-
     private bool IsInParryWindow(Animator anim, string clipName, float nt, float start, float end, Collider2D col, bool playerReady)
     {
         return col != null && anim.GetCurrentAnimatorStateInfo(0).IsName(clipName)
                && nt >= start && nt <= end && playerReady;
     }
-
     private void ResetParryTutorial(ref int flag)
     {
         flag = 0;
@@ -175,15 +153,12 @@ public class TutorialControl : MonoBehaviour
         StopCoroutine(nameof(BlinkParryNotice));
         RecoverColorParryNotice();
     }
-
     IEnumerator BlinkParryNotice()
     {
         Transform wrap = transform.Find("TutorialParry/Canvas/Wrap");
         if (wrap == null) yield break;
-
         Text noticeText = wrap.Find("Text").GetComponent<Text>();
         Text buttonText = wrap.Find("Key/Text").GetComponent<Text>();
-
         Color defaultColor = new Color(0.2f, 0.2f, 0.2f, 1f);
         Color highlightColor = Color.white;
         float blinkSpeed = 5.0f;
@@ -198,13 +173,9 @@ public class TutorialControl : MonoBehaviour
             yield return null;
             elapsedUnscaledTime += Time.unscaledDeltaTime;
         }
-        //Debug.Log("aa");
-
-        // 2초 경과 시 강제 복구
         Time.timeScale = 1f;
         RecoverColorParryNotice();
     }
-
     void RecoverColorParryNotice()
     {
         StopCoroutine(nameof(BlinkParryNotice));
@@ -217,7 +188,6 @@ public class TutorialControl : MonoBehaviour
             SetColor(buttonText, new Color(0.2f, 0.2f, 0.2f, 1f));
         }
     }
-
     private void SetColor(Graphic graphic, Color targetColor)
     {
         if (graphic != null) graphic.color = targetColor;
@@ -227,43 +197,36 @@ public class TutorialControl : MonoBehaviour
     {
         if (Name == "TutorialMove")
         {
-            //Debug.Log("튜토리얼 : Step2. Move 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 2);
             currentProgress = 2;
         }
         else if (Name == "TutorialLantern")
         {
-            //Debug.Log("튜토리얼 : Step3. Lantern 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 3);
             currentProgress = 3;
         }
         else if (Name == "TutorialJump")
         {
-            //Debug.Log("튜토리얼 : Step4. Jump 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 4);
             currentProgress = 4;
         }
         else if (Name == "TutorialDash")
         {
-            //Debug.Log("튜토리얼 : Step5. Dash 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 5);
             currentProgress = 5;
         }
         else if (Name == "TutorialAttack")
         {
-            //Debug.Log("튜토리얼 : Step6. Attack 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 6);
             currentProgress = 6;
         }
         else if (Name == "TutorialInventory")
         {
-            //Debug.Log("튜토리얼 : Step7. Inventory 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 7);
             currentProgress = 7;
         }
         else if (Name == "TutorialDownJump")
         {
-            //Debug.Log("튜토리얼 : Step8. DownJump 조작법 안내");
             DBManager.I.SetProgress("Tutorial", 8);
             currentProgress = 8;
         }
