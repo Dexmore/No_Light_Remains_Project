@@ -381,12 +381,12 @@ public class PlayerControl : MonoBehaviour
                     {
                         currHealth += 5f;
                         currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
-
+                        hUDBinder.Refresh(1f);
                     }
                 }
                 float tempFloat = 1f;
                 if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                    tempFloat = 0.55f;
+                    tempFloat = 0.36f;
                 currBattery += lanternAttackAmount * tempFloat;
                 currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                 hUDBinder.RefreshBattery();
@@ -459,6 +459,8 @@ public class PlayerControl : MonoBehaviour
                         Bullet bullet = hData.attacker.GetComponent<Bullet>();
                         bullet.Despawn();
                     }
+                    GameManager.I.HitEffect(hData.hitPoint, 0.25f);
+                    ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
 
                     OnParrySuccess(hData);
 
@@ -471,7 +473,7 @@ public class PlayerControl : MonoBehaviour
                     float tempFloat = 1f;
                     if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
                         if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                            tempFloat = 0.4f;
+                            tempFloat = 0.34f;
 
                     currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);

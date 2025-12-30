@@ -8,7 +8,7 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
-    private const float duration = 1.6f;
+    private const float duration = 1.7f;
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
@@ -61,6 +61,15 @@ public class PlayerUsePotion : IPlayerState
             case 2:
                 adjustedTime = duration * 1.3f + 0.6f;
                 break;
+        }
+        //Gear 기어 (신복의 기어) 007_QuickHealGear
+        bool outValue = false;
+        if (DBManager.I.HasGear("007_QuickHealGear", out outValue))
+        {
+            if (outValue)
+            {
+                adjustedTime = 0.8f * adjustedTime - 0.1f;
+            }
         }
     }
     public void Exit()
@@ -157,7 +166,16 @@ public class PlayerUsePotion : IPlayerState
         await UniTask.Yield(token);
         if (once) return;
         once = true;
-        float du = 2.8f;
+        float du = 3.8f;
+        //Gear 기어 (신복의 기어) 007_QuickHealGear
+        bool outValue = false;
+        if (DBManager.I.HasGear("007_QuickHealGear", out outValue))
+        {
+            if (outValue)
+            {
+                du = 1f;
+            }
+        }
         float e = 0;
         float startHealth = DBManager.I.currData.currHealth;
         ctx.hUDBinder.Refresh(du + 1.5f);
