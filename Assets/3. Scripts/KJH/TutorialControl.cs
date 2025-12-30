@@ -77,12 +77,13 @@ public class TutorialControl : MonoBehaviour
     }
 
 
+    int flag = 0;
     IEnumerator TutorialParryLoop()
     {
         Transform tutParryTr = transform.Find("TutorialParry");
         Animator animator = slicer.GetComponentInChildren<Animator>();
         Transform childTr = slicer.transform.GetChild(0);
-        int flag = 0;
+        flag = 0;
         while (true)
         {
             yield return null;
@@ -163,7 +164,7 @@ public class TutorialControl : MonoBehaviour
         Color highlightColor = Color.white;
         float blinkSpeed = 5.0f;
         float elapsedUnscaledTime = 0;
-        while (elapsedUnscaledTime < 1.8f)
+        while (elapsedUnscaledTime < 1.5f)
         {
             float timer = elapsedUnscaledTime * blinkSpeed;
             float t = (Mathf.Sin(timer) + 1f) * 0.5f;
@@ -174,6 +175,7 @@ public class TutorialControl : MonoBehaviour
             elapsedUnscaledTime += Time.unscaledDeltaTime;
         }
         Time.timeScale = 1f;
+        DOVirtual.DelayedCall(0.15f, () => flag = 0);
         RecoverColorParryNotice();
     }
     void RecoverColorParryNotice()

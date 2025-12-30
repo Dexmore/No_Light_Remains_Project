@@ -35,6 +35,7 @@ public class MonsterReposition : MonsterState
         {
             await UniTask.Yield(token);
             control.ChangeState(MonsterControl.State.Idle);
+            Debug.Log("1");
             return;
         }
         Transform target;
@@ -129,6 +130,11 @@ public class MonsterReposition : MonsterState
         if (findPath == null)
         {
             await UniTask.Yield(token);
+            if(Random.value < 0.05f)
+            {
+                control.ChangeState(MonsterControl.State.Wander);
+                return;
+            }
             control.ChangeNextState();
             return;
         }
@@ -158,6 +164,7 @@ public class MonsterReposition : MonsterState
                 {
                     await UniTask.Yield(token);
                     control.ChangeState(MonsterControl.State.Idle);
+                    Debug.Log("4");
                     return;
                 }
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken: token);
@@ -190,6 +197,7 @@ public class MonsterReposition : MonsterState
                     {
                         await UniTask.Delay(5, cancellationToken: token);
                         control.ChangeNextState();
+                        Debug.Log("5");
                         return;
                     }
                 }
@@ -270,6 +278,7 @@ public class MonsterReposition : MonsterState
                 {
                     await UniTask.Delay(5, cancellationToken: token);
                     control.ChangeNextState();
+                    Debug.Log("6");
                     return;
                 }
             }
