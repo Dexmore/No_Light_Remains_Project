@@ -133,7 +133,7 @@ public class MonsterShootingAttack1 : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveDirection * 3.6f * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                        rb.AddForce(multiplier * moveDirection * 4f * (control.data.MoveSpeed + 6.905f) / 1.25f);
                     }
                 if (!condition) break;
             }
@@ -191,7 +191,11 @@ public class MonsterShootingAttack1 : MonsterState
         anim.Play("ShootingAttack");
         await UniTask.Delay((int)(1000f * (0.3f * animationWaitSecond)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
-        particle.transform.localScale = 0.3f * Vector3.one;
+        if (control.data.Type != MonsterType.Large && control.Type != MonsterType.Boss)
+            particle.transform.localScale = 0.3f * Vector3.one;
+        else
+            particle.transform.localScale = Vector3.one;
+        
         await UniTask.Delay((int)(1000f * (0.7f * animationWaitSecond)), cancellationToken: token);
 
         //
