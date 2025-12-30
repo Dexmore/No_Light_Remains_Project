@@ -1253,6 +1253,8 @@ GameObject:
   - component: {fileID: 4559949027452656385}
   - component: {fileID: 7881336599499377275}
   - component: {fileID: 4072911068462056517}
+  - component: {fileID: -6758503302409658705}
+  - component: {fileID: 161726854657673104}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -1378,6 +1380,9 @@ MonoBehaviour:
     - state: 0
       weight: 15
       coolTime: 1
+    - state: 17
+      weight: 50
+      coolTime: 20
   - condition: 4
     frequencies:
     - state: 4
@@ -1391,11 +1396,17 @@ MonoBehaviour:
     - state: 16
       weight: 1050
       coolTime: 6
+    - state: 18
+      weight: 5
+      coolTime: 100
   - condition: 16
     frequencies:
     - state: 16
       weight: 1000
       coolTime: 6
+    - state: 18
+      weight: 15
+      coolTime: 50
   attackRange: {fileID: 0}
   bgmName: Terra
   state: 0
@@ -1455,6 +1466,7 @@ MonoBehaviour:
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
     gold: 19
+    record: {fileID: 0}
     countRange: {x: 12, y: 18}
     probability: 1
 --- !u!114 &969003863410519774
@@ -1565,6 +1577,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterReturnHome
   coolTime: 0
+--- !u!114 &-6758503302409658705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dcae2b06f6128d4b9af536d80cb612e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterShootingAttack1
+  coolTime: 0
+  range: 20
+  animationWaitSecond: 0.3
+  bulletPaterns:
+  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
+    startTime: 0
+    force: 6
+    damageMultiplier: 0.3
+    count: 1
+    heuristic: {x: 0, y: 0}
+  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
+    startTime: 0.9
+    force: 5
+    damageMultiplier: 0.3
+    count: 1
+    heuristic: {x: 0, y: 0}
+  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
+    startTime: 1.8
+    force: 5
+    damageMultiplier: 0.3
+    count: 1
+    heuristic: {x: 0, y: 0}
+--- !u!114 &161726854657673104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72c12ebea6718cf44a6772a5ba70d13c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterHeal
+  coolTime: 0
+  durationRange: {x: 3, y: 6}
+  bulletPaterns: []
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

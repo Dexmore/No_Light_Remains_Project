@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -18,6 +19,8 @@ public class HUDBinder : MonoBehaviour
     Image[] potionImages;
     int displayPotionCount;
     Canvas canvas;
+    public ItemNoticeText itemNoticeTextPrefab;
+    Transform itemNoticeParent;
     void Awake()
     {
         canvas = GetComponentInChildren<Canvas>();
@@ -38,6 +41,7 @@ public class HUDBinder : MonoBehaviour
         for (int i = 0; i < potionImages.Length; i++)
             potionImages[i] = potionParent.GetChild(i).GetChild(0).GetComponent<Image>();
         displayPotionCount = 5;
+        itemNoticeParent = transform.Find("HUDCanvas/TopRight/ItemNoticeParent");
     }
     void OnEnable()
     {
@@ -67,7 +71,7 @@ public class HUDBinder : MonoBehaviour
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 2;
         }
-            
+
 
     }
     void HandleHit(HitData hitData)
@@ -219,8 +223,67 @@ public class HUDBinder : MonoBehaviour
 
     }
 
-
     // 습득 텍스트
+    // 알림 데이터를 담아둘 큐
+    private Queue<string> noticeQueue = new Queue<string>();
+    private bool isProcessing = false;
+    // 외부에서 호출하는 함수
+    public void PlayNoticeText(int type)
+    {
+        string message = "";
+        if (SettingManager.I.setting.locale == 0) // KR
+        {
+            message = type switch
+            {
+                0 => "Item acquired.",
+                1 => "Gear acquired.",
+                2 => "Lantern acquired.",
+                3 => "Document acquired.",
+                _ => "Item acquired."
+            };
+        }
+        else if (SettingManager.I.setting.locale == 1)
+        {
+            message = type switch
+            {
+                0 => "아이템을 습득하였습니다.",
+                1 => "기어를 습득하였습니다.",
+                2 => "랜턴을 습득하였습니다.",
+                3 => "기록물을 습득하였습니다.",
+                _ => "아이템을 습득하였습니다."
+            };
+        }
+        // 1. 큐에 메시지 추가
+        noticeQueue.Enqueue(message);
+        // 2. 처리 중이 아니라면 코루틴 시작
+        if (!isProcessing)
+        {
+            StartCoroutine(ProcessQueue());
+        }
+    }
+    private IEnumerator ProcessQueue()
+    {
+        isProcessing = true;
+        while (noticeQueue.Count > 0)
+        {
+            string msg = noticeQueue.Dequeue();
+            CreateNoticeElement(msg);
+            // --- 촤르르륵 뜨는 간격 조절 (예: 0.15초) ---
+            yield return new WaitForSeconds(0.15f);
+        }
+        isProcessing = false;
+    }
+    private void CreateNoticeElement(string message)
+    {
+        var clone = Instantiate(itemNoticeTextPrefab, itemNoticeParent);
+        ItemNoticeText element = clone.GetComponent<ItemNoticeText>();
+        if (element == null) element = clone.gameObject.AddComponent<ItemNoticeText>();
+
+        element.Setup(message);
+    }
+    
+
+
 
     // 배터리 충전장소에서 조금씩 충전 중
 
@@ -230,7 +293,7 @@ public class HUDBinder : MonoBehaviour
 
     // 배터리 충격식(패링) 많은양 충전 연출
 
-    
+
 
 
 

@@ -59,7 +59,6 @@ public class TutorialControl : MonoBehaviour
         if (hitData.attacker != slicer.transform) return;
         if (hitData.target.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         if (hitData.attackType == HitData.AttackType.Chafe) return;
-        // Time.timeScale = 1f;
     }
     IEnumerator TutorialAttackLoop()
     {
@@ -72,7 +71,7 @@ public class TutorialControl : MonoBehaviour
             if (blob == null || !blob.gameObject.activeInHierarchy)
             {
                 tutAttackTr.gameObject.SetActive(false);
-                Time.timeScale = 1f;
+                yield break;
             }
         }
     }
@@ -93,15 +92,15 @@ public class TutorialControl : MonoBehaviour
             {
                 if (flag != 0) ResetParryTutorial(ref flag);
                 tutParryTr.gameObject.SetActive(false);
-                continue;
+                yield break;
             }
 
             tutParryTr.position = slicer.transform.position;
             float nt = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            Collider2D collider = Physics2D.OverlapCircle(slicer.transform.position + childTr.right, 2f, 1 << playerLayer);
+            Collider2D collider = Physics2D.OverlapCircle(slicer.transform.position + childTr.right, 3f, 1 << playerLayer);
 
-            // 1. 타임아웃 등으로 인해 외부에서 TimeScale이 복구되었다면 flag 리셋
-            if (flag == 1 && Time.timeScale == 1f) flag = 0;
+            // // 1. 타임아웃 등으로 인해 외부에서 TimeScale이 복구되었다면 flag 리셋
+            // if (flag == 1 && Time.timeScale == 1f) flag = 0;
 
             // 3. [추가] 거리 체크: 몹과 너무 멀면 로직 실행 안 함
             float dist = Vector2.Distance(playerControl.transform.position, slicer.transform.position);
@@ -111,12 +110,13 @@ public class TutorialControl : MonoBehaviour
                 //tutParryTr.gameObject.SetActive(false);
                 continue;
             }
+            bool isPlayerReady = true;
 
-            bool isPlayerReady = playerControl.fsm.currentState == playerControl.idle ||
-                                 playerControl.fsm.currentState == playerControl.run ||
-                                 playerControl.fsm.currentState == playerControl.attack ||
-                                 playerControl.fsm.currentState == playerControl.attackCombo ||
-                                 playerControl.fsm.currentState == playerControl.hit;
+            // bool isPlayerReady = playerControl.fsm.currentState == playerControl.idle ||
+            //                      playerControl.fsm.currentState == playerControl.run ||
+            //                      playerControl.fsm.currentState == playerControl.attack ||
+            //                      playerControl.fsm.currentState == playerControl.attackCombo ||
+            //                      playerControl.fsm.currentState == playerControl.hit;
 
             bool condition = false;
 
@@ -130,13 +130,13 @@ public class TutorialControl : MonoBehaviour
                 switch (slicer.state)
                 {
                     case MonsterControl.State.NormalAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.42f, 0.49f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.42f, 0.47f, collider, isPlayerReady);
                         break;
                     case MonsterControl.State.MovingAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.46f, 0.53f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.5f, 0.55f, collider, isPlayerReady);
                         break;
                     case MonsterControl.State.ShortAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.45f, 0.51f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.46f, 0.51f, collider, isPlayerReady);
                         break;
                     default:
                         condition = false;
@@ -152,7 +152,7 @@ public class TutorialControl : MonoBehaviour
             else if (condition && flag == 0)
             {
                 flag = 1;
-                Time.timeScale = 0.03f;
+                Time.timeScale = 0f;
                 StartCoroutine(nameof(BlinkParryNotice));
             }
             else if (!condition && flag != 0)
@@ -188,18 +188,17 @@ public class TutorialControl : MonoBehaviour
         Color highlightColor = Color.white;
         float blinkSpeed = 5.0f;
         float elapsedUnscaledTime = 0;
-
-        while (elapsedUnscaledTime < 2.0f) // 2초 타임아웃 적용 (원하시는 대로 수정)
+        while (elapsedUnscaledTime < 2.5f)
         {
             float timer = elapsedUnscaledTime * blinkSpeed;
             float t = (Mathf.Sin(timer) + 1f) * 0.5f;
             Color targetColor = Color.Lerp(defaultColor, highlightColor, t);
             SetColor(noticeText, targetColor);
             SetColor(buttonText, targetColor);
-
             yield return null;
             elapsedUnscaledTime += Time.unscaledDeltaTime;
         }
+        //Debug.Log("aa");
 
         // 2초 경과 시 강제 복구
         Time.timeScale = 1f;

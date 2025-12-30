@@ -395,7 +395,6 @@ public class PlayerControl : MonoBehaviour
         {
             if (isHit2) return;
             if (isHit1) return;
-            usePotion.cts?.Cancel();
             isHit1 = true;
             run.isStagger = true;
             StopCoroutine(nameof(HitCoolTime1));
@@ -434,7 +433,13 @@ public class PlayerControl : MonoBehaviour
         {
             if (isHit2) return;
             isHit2 = true;
-            usePotion.cts?.Cancel();
+            if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
+            {
+                usePotion.cts?.Cancel();
+                usePotion.cts = null;
+                usePotion.sfx2?.Despawn();
+                usePotion.sfx2 = null;
+            }
             StopCoroutine(nameof(HitCoolTime2));
             StartCoroutine(nameof(HitCoolTime2));
             if (_Avoided)
@@ -461,11 +466,17 @@ public class PlayerControl : MonoBehaviour
                     AttractParticle ap = upa.GetComponent<AttractParticle>();
                     Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
                     ap.targetVector = pos;
-                    currBattery += lanternParryAmount;
+                    // MonsterControl monsterControl = hData.attacker.GetComponent<Monster>
+                    float tempFloat = 1f;
+                    if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
+                        if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
+                            tempFloat = 0.333f;
+                    
+                    currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
-                    hitCoolTime1speed = 5f;
-                    hitCoolTime2speed = 5f;
+                    hitCoolTime1speed = 2.8f;
+                    hitCoolTime2speed = 2.8f;
                     StartCoroutine(nameof(ReleaseParred));
                     return;
                 }
