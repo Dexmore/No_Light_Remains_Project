@@ -91,7 +91,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -105,7 +105,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 15
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -126,7 +126,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -183,12 +183,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 95
-        width: 95
-        height: 88
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 48
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -205,12 +205,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_1
       rect:
         serializedVersion: 2
-        x: 150
-        y: 95
-        width: 79
-        height: 88
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 48
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -227,12 +227,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_2
       rect:
         serializedVersion: 2
-        x: 275
-        y: 114
-        width: 15
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 48
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -249,12 +249,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_3
       rect:
         serializedVersion: 2
-        x: 288
-        y: 96
-        width: 69
-        height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 48
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -271,12 +271,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_4
       rect:
         serializedVersion: 2
-        x: 393
-        y: 95
-        width: 92
-        height: 88
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -293,12 +293,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_5
       rect:
         serializedVersion: 2
-        x: 393
-        y: 114
-        width: 12
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -315,12 +315,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_6
       rect:
         serializedVersion: 2
-        x: 230
-        y: 95
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -337,12 +337,12 @@ TextureImporter:
       name: LanternKeeper@MovingAttack_7
       rect:
         serializedVersion: 2
-        x: 269
-        y: 96
-        width: 15
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 48
+      alignment: 9
+      pivot: {x: 0.47, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -355,253 +355,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_8
-      rect:
-        serializedVersion: 2
-        x: 409
-        y: 95
-        width: 12
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9d2f3f7daeb80f570800000000000000
-      internalID: 8498446337609822937
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_9
-      rect:
-        serializedVersion: 2
-        x: 473
-        y: 95
-        width: 15
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a589ddc20c1209220800000000000000
-      internalID: 2490527703206041690
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_10
-      rect:
-        serializedVersion: 2
-        x: 31
-        y: 0
-        width: 63
-        height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 359d74aec2a0671b0800000000000000
-      internalID: -5659324693719033517
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_11
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 82
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9580f06c323f6d8a0800000000000000
-      internalID: -6280565295349299111
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_12
-      rect:
-        serializedVersion: 2
-        x: 130
-        y: 0
-        width: 92
-        height: 90
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 71db4b4b379520330800000000000000
-      internalID: 3675598599375600919
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_13
-      rect:
-        serializedVersion: 2
-        x: 267
-        y: 0
-        width: 82
-        height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 09c289daf7b230b60800000000000000
-      internalID: 7711054814361693328
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_14
-      rect:
-        serializedVersion: 2
-        x: 396
-        y: 0
-        width: 88
-        height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ba83c98c64df16400800000000000000
-      internalID: 315811929347864747
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_15
-      rect:
-        serializedVersion: 2
-        x: 143
-        y: 53
-        width: 12
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 59c6eb58a2ed34830800000000000000
-      internalID: 4054328363777420437
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_16
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 2
-        width: 25
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fb6ec5d86319471c0800000000000000
-      internalID: -4506817663605086529
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_17
-      rect:
-        serializedVersion: 2
-        x: 217
-        y: 0
-        width: 27
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3b1f7a8c41fa810f0800000000000000
-      internalID: -1145973601365134925
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LanternKeeper@MovingAttack_18
-      rect:
-        serializedVersion: 2
-        x: 354
-        y: 21
-        width: 8
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7240e43161481ac70800000000000000
-      internalID: 8980604362301506599
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: ffdb026a6e0595846ba7f62d865fa132
     internalID: 0
     vertices: []
     indices: 
@@ -609,27 +367,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":2.0},"gridSpriteSize":{"x":64.0,"y":48.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.4699999988079071,"y":0.029999999329447748},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       LanternKeeper@MovingAttack_0: -2515944171882024456
       LanternKeeper@MovingAttack_1: 5246215652927262829
-      LanternKeeper@MovingAttack_10: -5659324693719033517
-      LanternKeeper@MovingAttack_11: -6280565295349299111
-      LanternKeeper@MovingAttack_12: 3675598599375600919
-      LanternKeeper@MovingAttack_13: 7711054814361693328
-      LanternKeeper@MovingAttack_14: 315811929347864747
-      LanternKeeper@MovingAttack_15: 4054328363777420437
-      LanternKeeper@MovingAttack_16: -4506817663605086529
-      LanternKeeper@MovingAttack_17: -1145973601365134925
-      LanternKeeper@MovingAttack_18: 8980604362301506599
       LanternKeeper@MovingAttack_2: -1076378917316545940
       LanternKeeper@MovingAttack_3: -3998115543672528429
       LanternKeeper@MovingAttack_4: 7320526634604468498
       LanternKeeper@MovingAttack_5: 3579750092313262783
       LanternKeeper@MovingAttack_6: -3637454465685482524
       LanternKeeper@MovingAttack_7: -2486886070072533025
-      LanternKeeper@MovingAttack_8: 8498446337609822937
-      LanternKeeper@MovingAttack_9: 2490527703206041690
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
