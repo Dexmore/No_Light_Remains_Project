@@ -1381,15 +1381,15 @@ MonoBehaviour:
       weight: 15
       coolTime: 1
     - state: 17
-      weight: 50
-      coolTime: 20
+      weight: 150
+      coolTime: 15
   - condition: 4
     frequencies:
     - state: 4
       weight: 50
       coolTime: 1
     - state: 10
-      weight: 2000
+      weight: 750
       coolTime: 0.7
   - condition: 8
     frequencies:
@@ -1593,22 +1593,16 @@ MonoBehaviour:
   range: 20
   animationWaitSecond: 0.3
   bulletPaterns:
-  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
+  - bullet: {fileID: -4856176997232454425, guid: 6911e380c80556e468504c13d1e25e4b, type: 3}
     startTime: 0
-    force: 6
-    damageMultiplier: 0.3
+    force: 7.5
+    damageMultiplier: 0.37
     count: 1
     heuristic: {x: 0, y: 0}
-  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
-    startTime: 0.9
-    force: 5
-    damageMultiplier: 0.3
-    count: 1
-    heuristic: {x: 0, y: 0}
-  - bullet: {fileID: -4856176997232454425, guid: 77dedac1587a68c40bc88eff3f3a7431, type: 3}
-    startTime: 1.8
-    force: 5
-    damageMultiplier: 0.3
+  - bullet: {fileID: -4856176997232454425, guid: 6911e380c80556e468504c13d1e25e4b, type: 3}
+    startTime: 1.2
+    force: 6.5
+    damageMultiplier: 0.52
     count: 1
     heuristic: {x: 0, y: 0}
 --- !u!114 &161726854657673104
@@ -1624,8 +1618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterHeal
   coolTime: 0
-  durationRange: {x: 3, y: 6}
-  bulletPaterns: []
+  durationRange: {x: 6, y: 8}
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

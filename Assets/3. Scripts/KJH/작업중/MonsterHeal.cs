@@ -13,6 +13,10 @@ public class MonsterHeal : MonsterState
         await UniTask.Yield(token);
         Activate(token).Forget();
         duration = Random.Range(durationRange.x, durationRange.y);
+        if (control.data.Type == MonsterType.Large || control.data.Type == MonsterType.Boss)
+        {
+            bossHUD = FindAnyObjectByType<BossHUD>();
+        }
     }
     public override void Exit()
     {
@@ -21,25 +25,31 @@ public class MonsterHeal : MonsterState
         particle = null;
     }
     Particle particle;
-    public List<BulletControl.BulletPatern> bulletPaterns = new List<BulletControl.BulletPatern>();
+    BossHUD bossHUD;
+
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(token);
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            anim.Play("Idle");
-
 
         anim.Play("Heal");
         await UniTask.Delay((int)(1000f * (0.3f * duration)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
         particle.transform.localScale = 0.3f * Vector3.one;
 
+        float _startTime = Time.time;
+        while (!token.IsCancellationRequested && (Time.time - _startTime) < 0.7f * duration)
+        {
+            float ratio = (Time.time - _startTime) / (0.7f * duration);
+            await UniTask.Delay(50, cancellationToken: token);
+            ratio = Mathf.Pow(ratio, 1.8f);
+            ratio = Mathf.Clamp01(ratio);
+            control.currHealth += (0.11f * control.data.HP + 450f) * (0.5f + 2f * ratio) * 0.015f;
+            if (bossHUD)
+                bossHUD.Refresh();
+        }
 
-        
+        await UniTask.Yield(token);
 
-
-
-        await UniTask.Delay((int)(1000f * (0.7f * duration)), cancellationToken: token);
         particle?.Despawn();
         particle = null;
         control.ChangeNextState();

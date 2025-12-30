@@ -433,13 +433,6 @@ public class PlayerControl : MonoBehaviour
         {
             if (isHit2) return;
             isHit2 = true;
-            if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
-            {
-                usePotion.cts?.Cancel();
-                usePotion.cts = null;
-                usePotion.sfx2?.Despawn();
-                usePotion.sfx2 = null;
-            }
             StopCoroutine(nameof(HitCoolTime2));
             StartCoroutine(nameof(HitCoolTime2));
             if (_Avoided)
@@ -458,6 +451,11 @@ public class PlayerControl : MonoBehaviour
                     AudioManager.I.PlaySFX("Parry");
                     ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                     GameManager.I.onParry.Invoke(hData);
+                    if (hData.attackType == HitData.AttackType.Bullet)
+                    {
+                        Bullet bullet = hData.attacker.GetComponent<Bullet>();
+                        bullet.Despawn();
+                    }
 
                     OnParrySuccess(hData);
 
@@ -471,7 +469,7 @@ public class PlayerControl : MonoBehaviour
                     if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
                         if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
                             tempFloat = 0.333f;
-                    
+
                     currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
@@ -487,6 +485,15 @@ public class PlayerControl : MonoBehaviour
                     //Debug.Log("패링 불가 공격");
                 }
             }
+
+            if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
+            {
+                usePotion.cts?.Cancel();
+                usePotion.cts = null;
+                usePotion.sfx2?.Despawn();
+                usePotion.sfx2 = null;
+            }
+
             float multiplier = 1f;
             switch (hData.staggerType)
             {
@@ -540,6 +547,14 @@ public class PlayerControl : MonoBehaviour
             AudioManager.I.PlaySFX("Hit8bit2", hData.hitPoint, null);
             HitChangeColor(Color.white, 1);
             GameManager.I.onHitAfter.Invoke(hData);
+            if (hData.attackType == HitData.AttackType.Bullet)
+            {
+                if (Random.value < 0.5f)
+                {
+                    Bullet bullet = hData.attacker.GetComponent<Bullet>();
+                    bullet.Despawn();
+                }
+            }
             return;
         }
     }

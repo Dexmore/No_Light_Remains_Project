@@ -59,7 +59,7 @@ public class PlayerUsePotion : IPlayerState
                 adjustedTime = duration * 1.2f + 0.4f;
                 break;
             case 2:
-                adjustedTime = duration * 1.4f + 0.6f;
+                adjustedTime = duration * 1.3f + 0.6f;
                 break;
         }
     }
@@ -93,12 +93,12 @@ public class PlayerUsePotion : IPlayerState
             sfxFlag1 = true;
             AudioManager.I.PlaySFX("Pocket1");
         }
-        if (_elapsedTime > 0.3f && !aniFlag1)
+        if (_elapsedTime > 0.15f && !aniFlag1)
         {
             aniFlag1 = true;
             ctx.animator.Play("Player_UsePotion");
         }
-        if (_elapsedTime > duration * 0.6f)
+        if (_elapsedTime > duration * 0.3f)
         {
             float startHealth = ctx.currHealth;
             if (!sfxFlag2)
@@ -117,7 +117,7 @@ public class PlayerUsePotion : IPlayerState
                 }
             }
         }
-        if (_elapsedTime > duration * 0.8f && !sfxFlag3)
+        if (_elapsedTime > duration * 0.5f && !sfxFlag3)
         {
             sfxFlag3 = true;
             sfx2 = AudioManager.I.PlaySFX("Heal");
