@@ -384,7 +384,10 @@ public class PlayerControl : MonoBehaviour
 
                     }
                 }
-                currBattery += lanternAttackAmount;
+                float tempFloat = 1f;
+                if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
+                    tempFloat = 0.55f;
+                currBattery += lanternAttackAmount * tempFloat;
                 currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                 hUDBinder.RefreshBattery();
             }
@@ -468,7 +471,7 @@ public class PlayerControl : MonoBehaviour
                     float tempFloat = 1f;
                     if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
                         if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                            tempFloat = 0.333f;
+                            tempFloat = 0.4f;
 
                     currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);

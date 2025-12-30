@@ -12,6 +12,7 @@ public class MonsterMovingAttack : MonsterState
     public float range = 1.4f;
     public Vector2 moveTimeRange;
     int multiHitCount = 1;
+    public float movingForce;
     MonsterShortAttack monsterShortAttack;
     public override MonsterControl.State mapping => MonsterControl.State.MovingAttack;
     // 낭떠러지 체크용
@@ -54,11 +55,11 @@ public class MonsterMovingAttack : MonsterState
         bool isBlocked = false;
         for (int i = 0; i < raycastHits.Length; i++)
         {
-            if(raycastHits[i].collider.isTrigger) continue;
+            if (raycastHits[i].collider.isTrigger) continue;
             isBlocked = true;
             break;
         }
-        if(isBlocked)
+        if (isBlocked)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -79,6 +80,7 @@ public class MonsterMovingAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    if (control.state == MonsterControl.State.Die) return;
                     anim.Play("Move");
                     isAnimation = true;
                     once = true;
@@ -132,6 +134,7 @@ public class MonsterMovingAttack : MonsterState
                                     if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                                     {
                                         isAnimation = true;
+                                        if (control.state == MonsterControl.State.Die) return;
                                         anim.Play("Move");
                                     }
                         }
@@ -140,6 +143,7 @@ public class MonsterMovingAttack : MonsterState
                             isAnimation = false;
                             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                             {
+                                if (control.state == MonsterControl.State.Die) return;
                                 anim.Play("Idle");
                             }
                         }
@@ -159,6 +163,7 @@ public class MonsterMovingAttack : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
         if (control.isDie) return;
+        if (control.state == MonsterControl.State.Die) return;
         anim.Play("MovingAttack");
         startTime = Time.time;
         await UniTask.Delay((int)(1000f * moveTimeRange.x), cancellationToken: token);
@@ -185,6 +190,10 @@ public class MonsterMovingAttack : MonsterState
         }
 
         await UniTask.Delay(50, cancellationToken: token);
+        if (movingForce > 10f)
+        {
+            rb.AddForce((movingForce - 8f) * moveDirection);
+        }
         while (Time.time - startTime < moveTimeRange.y)
         {
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
@@ -222,17 +231,15 @@ public class MonsterMovingAttack : MonsterState
             {
                 stopWall = true;
             }
-
-
-
             // AddForce방식으로 캐릭터 이동
             if (!stopWall)
                 if (dot < control.data.MoveSpeed)
                 {
                     float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                    rb.AddForce(multiplier * moveDirection * 2.5f * (control.data.MoveSpeed + 4.905f) / 1.25f);
+                    rb.AddForce(multiplier * moveDirection * movingForce * 1.25f * (control.data.MoveSpeed + 4.905f) / 1.25f);
                 }
         }
+        if (control.isDie) return;
         anim.Play("Idle");
         //await UniTask.Delay((int)(1000f * (duration - (moveTimeRange.y - moveTimeRange.x))), cancellationToken: token);
         PlayerControl pControl = target.GetComponentInParent<PlayerControl>();

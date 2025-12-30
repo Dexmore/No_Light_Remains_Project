@@ -163,7 +163,7 @@ public class TutorialControl : MonoBehaviour
         Color highlightColor = Color.white;
         float blinkSpeed = 5.0f;
         float elapsedUnscaledTime = 0;
-        while (elapsedUnscaledTime < 2.5f)
+        while (elapsedUnscaledTime < 1.8f)
         {
             float timer = elapsedUnscaledTime * blinkSpeed;
             float t = (Mathf.Sin(timer) + 1f) * 0.5f;

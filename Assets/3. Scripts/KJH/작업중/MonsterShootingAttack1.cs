@@ -32,6 +32,7 @@ public class MonsterShootingAttack1 : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(token);
+        if (control.isDie) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
 
@@ -75,7 +76,11 @@ public class MonsterShootingAttack1 : MonsterState
         // 너무 가까우면 살짝 뒤로 이동
         if (condition)
         {
-            while (Time.time - startTime < 1.8f)
+            moveDirection = transform.position - target.position;
+            moveDirection.y = 0;
+            moveDirection.Normalize();
+            rb.AddForce(moveDirection * 4.6f);
+            while (Time.time - startTime < 1.6f)
             {
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
                 moveDirection = transform.position - target.position;
@@ -86,6 +91,7 @@ public class MonsterShootingAttack1 : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    if (control.isDie) return;
                     anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
@@ -127,13 +133,14 @@ public class MonsterShootingAttack1 : MonsterState
                 {
                     stopWall = true;
                 }
+                if (stopWall) break;
 
                 // AddForce방식으로 캐릭터 이동
                 if (!stopWall)
                     if (dot < control.data.MoveSpeed)
                     {
-                        float multiplier = (control.data.MoveSpeed - dot) + 1f;
-                        rb.AddForce(multiplier * moveDirection * 4f * (control.data.MoveSpeed + 6.905f) / 1.25f);
+                        float multiplier = 1.2f * (control.data.MoveSpeed - dot) + 1.1f;
+                        rb.AddForce(multiplier * moveDirection * 6.6f * (control.data.MoveSpeed + 7.905f) / 1.1f);
                     }
                 if (!condition) break;
             }
@@ -141,6 +148,7 @@ public class MonsterShootingAttack1 : MonsterState
         moveDirection = target.position - transform.position;
         moveDirection.y = 0;
         moveDirection.Normalize();
+        rb.AddForce(moveDirection * 4.6f);
         if (moveDirection.x > 0 && model.right.x < 0)
         {
             model.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -187,7 +195,7 @@ public class MonsterShootingAttack1 : MonsterState
         if (control.isDie) return;
 
         //
-
+        if (control.isDie) return;
         anim.Play("ShootingAttack");
         await UniTask.Delay((int)(1000f * (0.3f * animationWaitSecond)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
@@ -195,7 +203,7 @@ public class MonsterShootingAttack1 : MonsterState
             particle.transform.localScale = 0.3f * Vector3.one;
         else
             particle.transform.localScale = Vector3.one;
-        
+
         await UniTask.Delay((int)(1000f * (0.7f * animationWaitSecond)), cancellationToken: token);
 
         //

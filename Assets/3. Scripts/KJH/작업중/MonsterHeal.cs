@@ -30,7 +30,7 @@ public class MonsterHeal : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(token);
-
+        if (control.isDie) return;
         anim.Play("Heal");
         await UniTask.Delay((int)(1000f * (0.3f * duration)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
@@ -41,14 +41,15 @@ public class MonsterHeal : MonsterState
         {
             float ratio = (Time.time - _startTime) / (0.7f * duration);
             await UniTask.Delay(50, cancellationToken: token);
-            ratio = Mathf.Pow(ratio, 1.8f);
+            ratio = Mathf.Pow(ratio, 1.4f);
             ratio = Mathf.Clamp01(ratio);
-            control.currHealth += (0.11f * control.data.HP + 450f) * (0.5f + 2f * ratio) * 0.015f;
+            control.currHealth += (0.1f * control.data.HP + 420f) * (0.5f + 1.8f * ratio) * 0.006f;
             if (bossHUD)
                 bossHUD.Refresh();
         }
-
+        
         await UniTask.Yield(token);
+        await UniTask.Delay((int)1000f, cancellationToken: token);
 
         particle?.Despawn();
         particle = null;

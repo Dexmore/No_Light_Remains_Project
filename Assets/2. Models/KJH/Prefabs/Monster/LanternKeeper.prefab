@@ -1255,6 +1255,7 @@ GameObject:
   - component: {fileID: 4072911068462056517}
   - component: {fileID: -6758503302409658705}
   - component: {fileID: 161726854657673104}
+  - component: {fileID: 2360094903198248376}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -1272,7 +1273,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4, y: 1.4, z: 1.4}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 9187486854711018159}
@@ -1382,7 +1383,7 @@ MonoBehaviour:
       coolTime: 1
     - state: 17
       weight: 150
-      coolTime: 15
+      coolTime: 12
   - condition: 4
     frequencies:
     - state: 4
@@ -1398,15 +1399,18 @@ MonoBehaviour:
       coolTime: 6
     - state: 18
       weight: 5
-      coolTime: 100
+      coolTime: 110
   - condition: 16
     frequencies:
     - state: 16
       weight: 1000
       coolTime: 6
     - state: 18
-      weight: 15
-      coolTime: 50
+      weight: 10
+      coolTime: 60
+    - state: 14
+      weight: 150
+      coolTime: 15
   attackRange: {fileID: 0}
   bgmName: Terra
   state: 0
@@ -1540,7 +1544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack1
   coolTime: 0
-  damageMultiplier1: 0.7
+  damageMultiplier1: 0.6
   staggerType1: 1
   damageMultiplier2: 1.95
   staggerType2: 3
@@ -1619,6 +1623,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterHeal
   coolTime: 0
   durationRange: {x: 6, y: 8}
+--- !u!114 &2360094903198248376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f4d00957b57be4180393cd186c7859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterMovingAttack
+  coolTime: 0
+  damageMultiplier: 0.8
+  staggerType: 2
+  durationRange: {x: 3, y: 3.5}
+  range: 1.5
+  moveTimeRange: {x: 0.55, y: 2}
+  movingForce: 23
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

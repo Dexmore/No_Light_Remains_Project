@@ -15,6 +15,7 @@ public class MonsterExampleState: MonsterState
         await UniTask.Yield(token);
         Activate(token).Forget();
         attackedColliders.Clear();
+        if(control.state == MonsterControl.State.Die) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
     }

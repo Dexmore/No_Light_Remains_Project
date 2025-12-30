@@ -105,9 +105,12 @@ public class MonsterDie : MonsterState
         foreach (var element in dropTables)
         {
             if (Random.value > element.probability) continue;
-            // 0.001%같은 유니크 아이템이 한마리 잡고 바로 나오는 행위방지
-            float MinExpectation = (1 / element.probability) * 0.2717f;
-            if (killCount < MinExpectation) continue;
+            if (element.probability <= 0.1f)
+            {
+                // 0.001%같은 유니크 아이템이 한마리 잡고 바로 나오는 행위방지
+                float MinExpectation = (1 / element.probability) * 0.2717f;
+                if (killCount < MinExpectation) continue;
+            }
             if (element.dropItem == null && element.record != null)
             {
                 if (DBManager.I.HasRecord(element.record.name))

@@ -42,6 +42,7 @@ public class MonsterPursuit : MonsterState
         target = control.memories.First().Key.transform;
 
         checkRay = new Ray2D();
+        if (control.isDie) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
         float startTime = Time.time;
@@ -162,11 +163,13 @@ public class MonsterPursuit : MonsterState
                         if (!isMoveAnimation)
                             if (control.isGround)
                             {
+                                if (control.isDie) return;
                                 isMoveAnimation = true;
                                 anim.Play("Move");
                             }
                         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                         {
+                            if (control.isDie) return;
                             isMoveAnimation = true;
                             anim.Play("Move");
                         }
@@ -176,6 +179,7 @@ public class MonsterPursuit : MonsterState
                         isMoveAnimation = false;
                         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                         {
+                            if (control.isDie) return;
                             anim.Play("Idle");
                         }
                     }
@@ -445,11 +449,13 @@ public class MonsterPursuit : MonsterState
                         if (!isMoveAnimation)
                             if (control.isGround)
                             {
+                                if (control.isDie) return;
                                 isMoveAnimation = true;
                                 anim.Play("Move");
                             }
                         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Move"))
                         {
+                            if (control.isDie) return;
                             isMoveAnimation = true;
                             anim.Play("Move");
                         }
@@ -459,6 +465,7 @@ public class MonsterPursuit : MonsterState
                         isMoveAnimation = false;
                         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
                         {
+                            if (control.isDie) return;
                             anim.Play("Idle");
                         }
                     }
@@ -472,6 +479,7 @@ public class MonsterPursuit : MonsterState
             isMoveAnimation = false;
             if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             {
+                if (control.isDie) return;
                 anim.Play("Idle");
             }
         }
