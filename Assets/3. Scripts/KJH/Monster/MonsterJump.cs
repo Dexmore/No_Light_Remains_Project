@@ -37,7 +37,7 @@ public class MonsterJump : MonsterState
             control.ChangeNextState();
             return;
         }
-
+        if(control.state == MonsterControl.State.Die) return;
         anim.Play("Idle");
         rb.AddForce(Vector2.up * (control.jumpLength + 1.85f) * 175f);
         float startTime = Time.time;

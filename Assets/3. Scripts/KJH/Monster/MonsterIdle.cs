@@ -35,6 +35,7 @@ public class MonsterIdle : MonsterState
         if (control.isDie) return;
         if(anim)
         {
+            if(control.state == MonsterControl.State.Die) return;
             anim.Play("Idle");
         }
         await UniTask.Delay((int)(duration * 1000f), cancellationToken: token);

@@ -79,6 +79,7 @@ public class MonsterNormalAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    if (control.isDie) return;
                     anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)

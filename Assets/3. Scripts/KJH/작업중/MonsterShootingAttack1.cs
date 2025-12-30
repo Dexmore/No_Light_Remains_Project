@@ -32,6 +32,7 @@ public class MonsterShootingAttack1 : MonsterState
     public async UniTask Activate(CancellationToken token)
     {
         await UniTask.Yield(token);
+        if (control.isDie) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
 
@@ -86,6 +87,7 @@ public class MonsterShootingAttack1 : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
+                    if (control.isDie) return;
                     anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
@@ -187,7 +189,7 @@ public class MonsterShootingAttack1 : MonsterState
         if (control.isDie) return;
 
         //
-
+        if (control.isDie) return;
         anim.Play("ShootingAttack");
         await UniTask.Delay((int)(1000f * (0.3f * animationWaitSecond)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
