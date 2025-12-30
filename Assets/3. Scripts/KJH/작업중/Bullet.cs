@@ -88,7 +88,6 @@ public abstract class Bullet : PoolBehaviour
         hitData.staggerType = staggerType;
         hitData.attackType = HitData.AttackType.Bullet;
         GameManager.I.onHit.Invoke(hitData);
-        Despawn();
     }
 
 

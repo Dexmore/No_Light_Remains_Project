@@ -143,6 +143,37 @@ public class BossHUD : MonoBehaviour
             barImage.color = currColor;
         }
     }
+    public void Refresh()
+    {
+        float ratio = target.currHealth / target.maxHealth;
+        slicedLiquidBar.Value = ratio;
+        RectTransform rect = slicedLiquidBar.transform as RectTransform;
+        Vector2 particlePos = Vector2.zero;
+        Vector2 pivot = MethodCollection.RectTo1920x1080Position(rect);
+        float x = pivot.x - 0.5f * rect.sizeDelta.x;
+        float y = pivot.y;
+        float addX = slicedLiquidBar.xPosRange.x + (slicedLiquidBar.xPosRange.y - slicedLiquidBar.xPosRange.x) * ratio;
+        if (slicedLiquidBar.Value > 0.7f && currColor != phase1Color)
+        {
+            currColor = phase1Color;
+            barImage.color = currColor;
+        }
+        else if (slicedLiquidBar.Value > 0.4f && slicedLiquidBar.Value <= 0.7f && currColor != phase2Color)
+        {
+            currColor = phase2Color;
+            barImage.color = currColor;
+        }
+        else if (slicedLiquidBar.Value > 0.23f && slicedLiquidBar.Value <= 0.4f && currColor != phase3Color)
+        {
+            currColor = phase3Color;
+            barImage.color = currColor;
+        }
+        else if (slicedLiquidBar.Value <= 0.23f && currColor != moribundColor)
+        {
+            currColor = moribundColor;
+            barImage.color = currColor;
+        }
+    }
 
 
 
