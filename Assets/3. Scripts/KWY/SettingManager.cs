@@ -44,7 +44,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
 
         // 밝기 적용
         float alpha = Mathf.Lerp(0f, 0.66511f, 1 - setting.brightness);
-        var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
+        var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>(true);
         brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
 
         // 1. 해상도 및 전체화면 적용
