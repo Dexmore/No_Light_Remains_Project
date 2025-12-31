@@ -11,9 +11,9 @@ public class PlayerAttackCombo2 : IPlayerState
     private InputAction parryAction;
     bool parryPressed;
     bool isSFX;
-    private const float duration = 0.66f;
+    private const float duration = 1.8f;
     public const int multiHitCount = 1;
-    private const float comboAvailableTime = 0.5f;
+    private const float comboAvailableTime = 1.6f;
     float adjustedTime1;
     float adjustedTime2;
     public void Enter()
@@ -39,7 +39,7 @@ public class PlayerAttackCombo2 : IPlayerState
                 adjustedTime2 = comboAvailableTime + 0.11f;
                 break;
         }
-        ctx.animator.Play("Player_Attack2");
+        ctx.animator.Play("Player_Attack3");
         isSFX = false;
         ctx.attack.finishTime = 0;
     }
@@ -110,11 +110,11 @@ public class PlayerAttackCombo2 : IPlayerState
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.78f, 1.38f);
-            float damage = 36.8f;
-            if (rnd >= 1.22f)
+            float damage = 120.8f;
+            if (rnd >= 1.24f)
             {
                 rnd = Random.Range(0.8f, 0.999f);
-                damage = 45f;
+                damage = 180f;
             }
             float lanternOn = 1f;
             if (GameManager.I.isLanternOn) lanternOn = 1.33f;
@@ -132,12 +132,17 @@ public class PlayerAttackCombo2 : IPlayerState
                     }
                 }
             }
+            //Gear 기어 (초신성 기어) 006_SuperNovaGear
+            if(GameManager.I.isSuperNovaGearEquip)
+            {
+                gearMultiplier *= 1.2f;
+            }
 
             GameManager.I.onHit.Invoke
             (
                 new HitData
                 (
-                    "AttackCombo",
+                    "AttackCombo2",
                     ctx.transform,
                     coll.transform,
                     rnd * damage * gearMultiplier * lanternOn,

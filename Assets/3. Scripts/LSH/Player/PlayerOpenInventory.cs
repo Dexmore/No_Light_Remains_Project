@@ -125,11 +125,23 @@ public class PlayerOpenInventory : IPlayerState
             ctx.hUDBinder.Refresh(1f);
         }
 
-
-
-
-
-
+        //Gear 기어 (초신성 기어) 006_SuperNovaGear
+        bool outValue1 = false;
+        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue))
+        {
+            if (outValue1)
+            {
+                GameManager.I.isSuperNovaGearEquip = true;
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+        }
+        else
+        {
+            GameManager.I.isSuperNovaGearEquip = false;
+        }
 
 
         //for(int i=0; i)

@@ -8,13 +8,17 @@ public class PlayerParry : IPlayerState
     private const float duration = 0.6f;   // 총 길이
     private const float parryTime = 0.22f;   // 패링 시간
     private float _elapsedTime;
+    SFX sfxWait;
     public void Enter()
     {
         flag1 = false;
         isSuccess = false;
         GameManager.I.onParry += ParrySuccessHandler;
         _elapsedTime = 0f;
-        ctx.animator.Play("Player_Parry");
+        sfxWait?.Despawn();
+        sfxWait = null;
+        ctx.animator.Play("Player_ParryWait");
+        sfxWait = AudioManager.I.PlaySFX("ParryWait");
         ctx.Parred = true;
         switch (DBManager.I.currData.difficulty)
         {
@@ -38,7 +42,6 @@ public class PlayerParry : IPlayerState
             if (outValue)
             {
                 adjustedTime1 *= 1.4f + 0.15f;
-
             }
         }
     }
@@ -47,10 +50,63 @@ public class PlayerParry : IPlayerState
         ctx.Parred = false;
         GameManager.I.onParry -= ParrySuccessHandler;
         flag1 = false;
+        sfxWait?.Despawn();
+        sfxWait = null;
     }
+    float addTime = 0.4f;
+    int lastSuccesCount;
+    float lastSuccesTime;
     void ParrySuccessHandler(HitData hitData)
     {
         isSuccess = true;
+        if (Time.time - lastSuccesTime < 2f)
+        {
+            if (lastSuccesCount % 2 == 0)
+            {
+                ctx.animator.Play("Player_Parry2");
+            }
+            if (lastSuccesCount % 2 == 1)
+            {
+                ctx.animator.Play("Player_Parry");
+            }
+            lastSuccesCount++;
+        }
+        else
+        {
+            lastSuccesCount = 0;
+            ctx.animator.Play("Player_Parry");
+        }
+        sfxWait?.Despawn();
+        sfxWait = null;
+        lastSuccesTime = Time.time;
+        //Gear 기어 (반격의 기어) 002_CounterGear
+        bool outValue = false;
+        if (DBManager.I.HasGear("002_CounterGear", out outValue))
+        {
+            if (outValue)
+            {
+                Transform target = hitData.attacker;
+                float monsterDamage = hitData.damage;
+                // 기본데미지 20f
+                // 반사데미지 0.1f * damage
+                float gearDamage = 20f + 0.1f * monsterDamage;
+                Vector2 hitPoint = 0.25f * hitData.hitPoint + 0.75f * (target.transform.position + 1.3f * Vector3.up);
+                GameManager.I.onHit.Invoke
+                (
+                    new HitData
+                    (
+                        "CounterGear",
+                        ctx.transform,
+                        target,
+                        gearDamage,
+                        hitPoint,
+                        null,
+                        HitData.StaggerType.None,
+                        HitData.AttackType.CounterGear
+                    )
+                );
+            }
+        }
     }
     bool isSuccess;
 
@@ -70,6 +126,11 @@ public class PlayerParry : IPlayerState
             }
         }
         if (_elapsedTime > adjustedTime2)
+        {
+            if (isSuccess)
+                fsm.ChangeState(ctx.idle);
+        }
+        if (_elapsedTime > adjustedTime2 + addTime)
         {
             fsm.ChangeState(ctx.idle);
         }

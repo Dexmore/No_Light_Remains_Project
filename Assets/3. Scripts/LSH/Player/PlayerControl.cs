@@ -39,6 +39,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerFall fall;
     [HideInInspector] public PlayerAttack attack;
     [HideInInspector] public PlayerAttackCombo attackCombo;
+    [HideInInspector] public PlayerAttackCombo2 attackCombo2;
     [HideInInspector] public PlayerDash dash;
     [HideInInspector] public PlayerParry parry;
     [HideInInspector] public PlayerHit hit;
@@ -94,6 +95,7 @@ public class PlayerControl : MonoBehaviour
         fall = new PlayerFall(this, fsm);
         attack = new PlayerAttack(this, fsm);
         attackCombo = new PlayerAttackCombo(this, fsm);
+        attackCombo2 = new PlayerAttackCombo2(this, fsm);
         parry = new PlayerParry(this, fsm);
         dash = new PlayerDash(this, fsm);
         hit = new PlayerHit(this, fsm);
@@ -743,7 +745,13 @@ public class PlayerControl : MonoBehaviour
                     float isOpenUI = 1f;
                     if (GameManager.I.isOpenDialog) isOpenUI = 0.2f;
                     if (GameManager.I.isOpenPop) isOpenUI = 0.4f;
-                    currBattery += lanternDecreaseTick * diffMultiplier * isOpenUI * interval;
+                    //Gear 기어 (초신성 기어) 006_SuperNovaGear
+                    float gearMultiplier = 1f;
+                    if(GameManager.I.isSuperNovaGearEquip)
+                    {
+                        gearMultiplier = 1.5f;
+                    }
+                    currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
