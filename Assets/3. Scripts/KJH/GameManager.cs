@@ -55,6 +55,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public bool isOpenInventory;
     [HideInInspector] public bool isSceneWaiting;
     [HideInInspector] public bool isShowPop0;
+    [HideInInspector] public bool isSuperNovaGearEquip;
 
     // 게임의 중요 이벤트들
     public UnityAction<HitData> onHit = (x) => { };
@@ -902,6 +903,7 @@ public struct HitData
         Chafe,
         Bullet,
         Trap,
+        CounterGear,
     }
     public enum StaggerType
     {

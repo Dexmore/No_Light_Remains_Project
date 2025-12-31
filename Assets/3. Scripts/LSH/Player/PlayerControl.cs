@@ -39,6 +39,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public PlayerFall fall;
     [HideInInspector] public PlayerAttack attack;
     [HideInInspector] public PlayerAttackCombo attackCombo;
+    [HideInInspector] public PlayerAttackCombo2 attackCombo2;
     [HideInInspector] public PlayerDash dash;
     [HideInInspector] public PlayerParry parry;
     [HideInInspector] public PlayerHit hit;
@@ -94,6 +95,7 @@ public class PlayerControl : MonoBehaviour
         fall = new PlayerFall(this, fsm);
         attack = new PlayerAttack(this, fsm);
         attackCombo = new PlayerAttackCombo(this, fsm);
+        attackCombo2 = new PlayerAttackCombo2(this, fsm);
         parry = new PlayerParry(this, fsm);
         dash = new PlayerDash(this, fsm);
         hit = new PlayerHit(this, fsm);
@@ -170,6 +172,58 @@ public class PlayerControl : MonoBehaviour
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
+
+        //Gear 기어 (확장의 기어) 008_ExpansionGear
+        bool outValue = false;
+        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        {
+            if (outValue)
+            {
+                DBManager.I.currData.maxPotionCount = 4;
+                if (DBManager.I.currData.currPotionCount <= 3)
+                {
+                    DBManager.I.currData.currPotionCount++;
+                }
+                hUDBinder.Refresh(1f);
+            }
+            else
+            {
+                DBManager.I.currData.maxPotionCount = 3;
+                if (DBManager.I.currData.currPotionCount >= 4)
+                {
+                    DBManager.I.currData.currPotionCount = 3;
+                }
+                hUDBinder.Refresh(1f);
+            }
+        }
+        else
+        {
+            DBManager.I.currData.maxPotionCount = 3;
+            if (DBManager.I.currData.currPotionCount >= 4)
+            {
+                DBManager.I.currData.currPotionCount = 3;
+            }
+            hUDBinder.Refresh(1f);
+        }
+
+        //Gear 기어 (초신성 기어) 006_SuperNovaGear
+        bool outValue1 = false;
+        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
+        {
+            if (outValue1)
+            {
+                GameManager.I.isSuperNovaGearEquip = true;
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+        }
+        else
+        {
+            GameManager.I.isSuperNovaGearEquip = false;
+        }
+        
     }
 
     void OnEnable()
@@ -381,12 +435,12 @@ public class PlayerControl : MonoBehaviour
                     {
                         currHealth += 5f;
                         currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
-
+                        hUDBinder.Refresh(1f);
                     }
                 }
                 float tempFloat = 1f;
                 if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                    tempFloat = 0.55f;
+                    tempFloat = 0.36f;
                 currBattery += lanternAttackAmount * tempFloat;
                 currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                 hUDBinder.RefreshBattery();
@@ -459,6 +513,8 @@ public class PlayerControl : MonoBehaviour
                         Bullet bullet = hData.attacker.GetComponent<Bullet>();
                         bullet.Despawn();
                     }
+                    GameManager.I.HitEffect(hData.hitPoint, 0.25f);
+                    ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
 
                     OnParrySuccess(hData);
 
@@ -471,7 +527,7 @@ public class PlayerControl : MonoBehaviour
                     float tempFloat = 1f;
                     if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
                         if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                            tempFloat = 0.4f;
+                            tempFloat = 0.34f;
 
                     currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
@@ -741,7 +797,13 @@ public class PlayerControl : MonoBehaviour
                     float isOpenUI = 1f;
                     if (GameManager.I.isOpenDialog) isOpenUI = 0.2f;
                     if (GameManager.I.isOpenPop) isOpenUI = 0.4f;
-                    currBattery += lanternDecreaseTick * diffMultiplier * isOpenUI * interval;
+                    //Gear 기어 (초신성 기어) 006_SuperNovaGear
+                    float gearMultiplier = 1f;
+                    if (GameManager.I.isSuperNovaGearEquip)
+                    {
+                        gearMultiplier = 1.5f;
+                    }
+                    currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
