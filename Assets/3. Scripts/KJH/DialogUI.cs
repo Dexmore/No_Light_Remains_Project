@@ -54,6 +54,16 @@ public class DialogUI : MonoBehaviour
                     //3페이지
                     "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
                 },
+                //대사5
+                new string[]
+                {
+                    //1페이지
+                    "aaaaaaaaaa\nbbbbbbbbbbb\ncccccccc\nddddddddd",
+                    //2페이지
+                    "eeeeee\nfffffffff\nggggggggggg\nhhhhhhhhhhh",
+                    //3페이지
+                    "iiiiiiiii\njjjjjjjjjjjj\nkkkkkkkkkk\nlllllllll",
+                },
                 
             };
         }
