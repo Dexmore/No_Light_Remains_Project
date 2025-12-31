@@ -174,9 +174,12 @@ public class PlayerAttack : IPlayerState
                 }
             }
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
-            if(GameManager.I.isSuperNovaGearEquip)
+            if (GameManager.I.isSuperNovaGearEquip)
             {
-                gearMultiplier *= 1.2f;
+                if (GameManager.I.isLanternOn)
+                    gearMultiplier *= 1.2f;
+                else
+                    gearMultiplier *= 1.05f;
             }
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             GameManager.I.onHit.Invoke

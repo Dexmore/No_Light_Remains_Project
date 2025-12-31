@@ -158,10 +158,14 @@ public class PlayerAttackCombo : IPlayerState
                 }
             }
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
-            if(GameManager.I.isSuperNovaGearEquip)
+            if (GameManager.I.isSuperNovaGearEquip)
             {
-                gearMultiplier *= 1.2f;
+                if (GameManager.I.isLanternOn)
+                    gearMultiplier *= 1.2f;
+                else
+                    gearMultiplier *= 1.05f;
             }
+            
 
             if (rnd >= 1.22f)
             {

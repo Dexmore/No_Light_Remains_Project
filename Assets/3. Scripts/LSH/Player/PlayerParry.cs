@@ -121,7 +121,7 @@ public class PlayerParry : IPlayerState
             ctx.Parred = false;
             if (!flag1 && !isSuccess)
             {
-                Debug.Log("Fail");
+                //Debug.Log("Fail");
                 flag1 = true;
             }
         }
@@ -136,7 +136,7 @@ public class PlayerParry : IPlayerState
         }
         if (!flag1 && isSuccess)
         {
-            Debug.Log("Success");
+            //Debug.Log("Success");
             flag1 = true;
         }
     }

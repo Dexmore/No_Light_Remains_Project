@@ -172,6 +172,58 @@ public class PlayerControl : MonoBehaviour
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
+
+        //Gear 기어 (확장의 기어) 008_ExpansionGear
+        bool outValue = false;
+        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        {
+            if (outValue)
+            {
+                DBManager.I.currData.maxPotionCount = 4;
+                if (DBManager.I.currData.currPotionCount <= 3)
+                {
+                    DBManager.I.currData.currPotionCount++;
+                }
+                hUDBinder.Refresh(1f);
+            }
+            else
+            {
+                DBManager.I.currData.maxPotionCount = 3;
+                if (DBManager.I.currData.currPotionCount >= 4)
+                {
+                    DBManager.I.currData.currPotionCount = 3;
+                }
+                hUDBinder.Refresh(1f);
+            }
+        }
+        else
+        {
+            DBManager.I.currData.maxPotionCount = 3;
+            if (DBManager.I.currData.currPotionCount >= 4)
+            {
+                DBManager.I.currData.currPotionCount = 3;
+            }
+            hUDBinder.Refresh(1f);
+        }
+
+        //Gear 기어 (초신성 기어) 006_SuperNovaGear
+        bool outValue1 = false;
+        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
+        {
+            if (outValue1)
+            {
+                GameManager.I.isSuperNovaGearEquip = true;
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+        }
+        else
+        {
+            GameManager.I.isSuperNovaGearEquip = false;
+        }
+        
     }
 
     void OnEnable()
@@ -747,7 +799,7 @@ public class PlayerControl : MonoBehaviour
                     if (GameManager.I.isOpenPop) isOpenUI = 0.4f;
                     //Gear 기어 (초신성 기어) 006_SuperNovaGear
                     float gearMultiplier = 1f;
-                    if(GameManager.I.isSuperNovaGearEquip)
+                    if (GameManager.I.isSuperNovaGearEquip)
                     {
                         gearMultiplier = 1.5f;
                     }
