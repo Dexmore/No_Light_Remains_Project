@@ -929,18 +929,22 @@ public class MonsterControl : MonoBehaviour
         if (isDie) return;
         if (hData.target.Root() != transform) return;
 
-        // Effect
-        if (hData.particleNames != null)
+        if (hData.attackType != HitData.AttackType.CounterGear)
         {
-            int rnd = Random.Range(0, hData.particleNames.Length);
-            string particleName = hData.particleNames[rnd];
-            ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            // Effect
+            if (hData.particleNames != null)
+            {
+                int rnd = Random.Range(0, hData.particleNames.Length);
+                string particleName = hData.particleNames[rnd];
+                ParticleManager.I.PlayParticle(particleName, hData.hitPoint, Quaternion.identity, null);
+            }
+            ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
+            AudioManager.I.PlaySFX("Hit8bit1", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
+            GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         }
-        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
         ParticleManager.I.PlayText(hData.damage.ToString("F1"), hData.hitPoint, ParticleManager.TextType.Damage);
-        AudioManager.I.PlaySFX("Hit8bit1", 0.7f * hData.hitPoint + 0.3f * transform.position, null);
-        GameManager.I.HitEffect(hData.hitPoint, 0.5f);
         HitChangeColor(Color.white);
+
 
         // Stagger
         if (Random.value <= 0.25f)
@@ -967,6 +971,9 @@ public class MonsterControl : MonoBehaviour
                     break;
                 case "AttackCombo":
                     staggerFactor2 = 1f;
+                    break;
+                case "AttackCombo2":
+                    staggerFactor2 = 1.25f;
                     break;
             }
             float temp = hData.damage / data.HP;
@@ -1015,6 +1022,7 @@ public class MonsterControl : MonoBehaviour
                     curHitAmount = Random.Range(0.3f, 0.7f) * maxHitAmount;
             }
         }
+        // Debug.Log(hData.attackName);
         // Set HP
         currHealth -= hData.damage;
         if (HasCondition(Condition.Peaceful))

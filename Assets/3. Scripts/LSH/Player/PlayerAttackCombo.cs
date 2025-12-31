@@ -10,6 +10,8 @@ public class PlayerAttackCombo : IPlayerState
     private float _elapsedTime;
     private InputAction parryAction;
     bool parryPressed;
+    private InputAction attackAction;
+    bool attackComboPressed;
     bool isSFX;
     private const float duration = 0.66f;
     public const int multiHitCount = 1;
@@ -18,11 +20,15 @@ public class PlayerAttackCombo : IPlayerState
     float adjustedTime2;
     public void Enter()
     {
+        if (attackAction == null)
+            attackAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Attack");
         if (parryAction == null)
             parryAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Parry");
         ctx.attackRange.onTriggetStay2D += TriggerHandler;
+        attackAction.performed += PlayerAttackComboInput;
         _elapsedTime = 0f;
         parryPressed = false;
+        attackComboPressed = false;
         attacked.Clear();
         switch (DBManager.I.currData.difficulty)
         {
@@ -42,13 +48,25 @@ public class PlayerAttackCombo : IPlayerState
         ctx.animator.Play("Player_Attack2");
         isSFX = false;
         ctx.attack.finishTime = 0;
+        //Gear 기어 (일격의 기어) 003_FatalBlowGear
+        hasAttack3Gear = false;
+        bool outValue = false;
+        if (DBManager.I.HasGear("003_FatalBlowGear", out outValue))
+        {
+            if (outValue)
+            {
+                hasAttack3Gear = true;
+            }
+        }
     }
     public void Exit()
     {
         ctx.attackRange.onTriggetStay2D -= TriggerHandler;
         attacked.Clear();
         ctx.attack.finishTime = 0;
+        hasAttack3Gear = false;
     }
+    bool hasAttack3Gear;
     public void UpdateState()
     {
         _elapsedTime += Time.deltaTime;
@@ -86,6 +104,14 @@ public class PlayerAttackCombo : IPlayerState
                 fsm.ChangeState(ctx.dash);
             }
         }
+        if (hasAttack3Gear)
+            if (_elapsedTime > adjustedTime2 + 0.6f * (adjustedTime1 - adjustedTime2))
+            {
+                if (attackComboPressed)
+                {
+                    fsm.ChangeState(ctx.attackCombo2);
+                }
+            }
         ///////////////////////////////////////////////////////////
         if (_elapsedTime > adjustedTime1)
         {
@@ -103,10 +129,10 @@ public class PlayerAttackCombo : IPlayerState
         if (attacked.Count > 0)
         {
             int mCount = 0;
-            for(int i=0; i<attacked.Count; i++)
+            for (int i = 0; i < attacked.Count; i++)
             {
-                if(attacked[i].gameObject == null) continue;
-                if(attacked[i].gameObject.layer != LayerMask.NameToLayer("Monster")) continue;
+                if (attacked[i].gameObject == null) continue;
+                if (attacked[i].gameObject.layer != LayerMask.NameToLayer("Monster")) continue;
                 mCount++;
             }
             if (mCount >= multiHitCount) return;
@@ -121,16 +147,25 @@ public class PlayerAttackCombo : IPlayerState
             //Gear 기어 (배수의 기어) 001_LastStandGear
             float gearMultiplier = 1f;
             bool outValue = false;
-            if(DBManager.I.HasGear("001_LastStandGear",out outValue))
+            if (DBManager.I.HasGear("001_LastStandGear", out outValue))
             {
-                if(outValue)
+                if (outValue)
                 {
-                    if(ctx.currHealth/ctx.maxHealth <= 0.25f)
+                    if (ctx.currHealth / ctx.maxHealth <= 0.25f)
                     {
                         gearMultiplier = 1.3f;
                     }
                 }
             }
+            //Gear 기어 (초신성 기어) 006_SuperNovaGear
+            if (GameManager.I.isSuperNovaGearEquip)
+            {
+                if (GameManager.I.isLanternOn)
+                    gearMultiplier *= 1.2f;
+                else
+                    gearMultiplier *= 1.05f;
+            }
+            
 
             if (rnd >= 1.22f)
             {
@@ -153,4 +188,13 @@ public class PlayerAttackCombo : IPlayerState
             );
         }
     }
+
+    void PlayerAttackComboInput(InputAction.CallbackContext callback)
+    {
+        if (_elapsedTime < adjustedTime2 - 0.24f) return;
+        if (!ctx.Grounded) return;
+        attackComboPressed = true;
+    }
+
+
 }
