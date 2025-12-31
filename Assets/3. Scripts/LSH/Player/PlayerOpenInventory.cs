@@ -14,7 +14,7 @@ public class PlayerOpenInventory : IPlayerState
     int flagInt = 0;
     public void Enter()
     {
-        
+
         if (escAction == null)
             escAction = ctx.inputActionAsset.FindActionMap("UI").FindAction("ESC");
         if (inventoryAction == null)
@@ -84,15 +84,72 @@ public class PlayerOpenInventory : IPlayerState
                 }
             }
         }
-        if (!isEqual)
+        if (!isEqual && gearDatas2.Count != 0)
         {
-            AudioManager.I.PlaySFX("FlashlightClick");
-            ParticleManager.I.PlayText("Gear Changed!", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+            if (gearDatas2.Count != 0)
+            {
+                AudioManager.I.PlaySFX("GearChanged");
+                ParticleManager.I.PlayText("Gear Changed!", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+            }
+            else
+            {
+                ParticleManager.I.PlayText("Gear Empty", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+            }
         }
 
 
 
 
+        //Gear 기어 (확장의 기어) 008_ExpansionGear
+        bool outValue = false;
+        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        {
+            if (outValue)
+            {
+                DBManager.I.currData.maxPotionCount = 4;
+                if (DBManager.I.currData.currPotionCount <= 3)
+                {
+                    DBManager.I.currData.currPotionCount++;
+                }
+                ctx.hUDBinder.Refresh(1f);
+            }
+            else
+            {
+                DBManager.I.currData.maxPotionCount = 3;
+                if (DBManager.I.currData.currPotionCount >= 4)
+                {
+                    DBManager.I.currData.currPotionCount = 3;
+                }
+                ctx.hUDBinder.Refresh(1f);
+            }
+        }
+        else
+        {
+            DBManager.I.currData.maxPotionCount = 3;
+            if (DBManager.I.currData.currPotionCount >= 4)
+            {
+                DBManager.I.currData.currPotionCount = 3;
+            }
+            ctx.hUDBinder.Refresh(1f);
+        }
+
+        //Gear 기어 (초신성 기어) 006_SuperNovaGear
+        bool outValue1 = false;
+        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
+        {
+            if (outValue1)
+            {
+                GameManager.I.isSuperNovaGearEquip = true;
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+        }
+        else
+        {
+            GameManager.I.isSuperNovaGearEquip = false;
+        }
 
 
 
