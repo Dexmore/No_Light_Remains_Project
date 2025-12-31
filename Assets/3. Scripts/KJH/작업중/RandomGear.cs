@@ -20,7 +20,7 @@ public class RandomGear : DropItem
         recordData = null;
         base.OnEnable();
     }
-    
+    SpriteRenderer sr;
     
     IEnumerator Start()
     {
@@ -64,6 +64,39 @@ public class RandomGear : DropItem
             {
                 gameObject.SetActive(false);
                 yield break;
+            }
+            if(TryGetComponent(out sr))
+            {
+                switch(gearData.name)
+                {
+                    case "001_LastStandGear":
+                    sr.sprite = sprites[0];
+                    break;
+                    case "002_CounterGear":
+                    sr.sprite = sprites[1];
+                    break;
+                    case "003_FatalBlowGear":
+                    sr.sprite = sprites[2];
+                    break;
+                    case "004_GlitchGear":
+                    sr.sprite = sprites[3];
+                    break;
+                    case "005_RestorationGear":
+                    sr.sprite = sprites[4];
+                    break;
+                    case "006_SuperNovaGear":
+                    sr.sprite = sprites[5];
+                    break;
+                    case "007_QuickHealGear":
+                    sr.sprite = sprites[3];
+                    break;
+                    case "008_ExpansionGear":
+                    sr.sprite = sprites[6];
+                    break;
+                    case "009_ParryGear":
+                    sr.sprite = sprites[3];
+                    break;
+                }
             }
         }
     }

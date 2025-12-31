@@ -86,9 +86,17 @@ public class PlayerOpenInventory : IPlayerState
         }
         if (!isEqual && gearDatas2.Count != 0)
         {
-            AudioManager.I.PlaySFX("SciFiConfirm");
-            ParticleManager.I.PlayText("Gear Changed!", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+            if (gearDatas2.Count != 0)
+            {
+                AudioManager.I.PlaySFX("GearChanged");
+                ParticleManager.I.PlayText("Gear Changed!", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+            }
+            else
+            {
+                ParticleManager.I.PlayText("Gear Empty", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+            }
         }
+
 
 
 
@@ -142,7 +150,7 @@ public class PlayerOpenInventory : IPlayerState
         {
             GameManager.I.isSuperNovaGearEquip = false;
         }
-        
+
 
 
         //for(int i=0; i)
