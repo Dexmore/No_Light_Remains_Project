@@ -29,6 +29,7 @@ public class SavePoint_LSH : Interactable
             _activatedOnce = true;
         }
 
+        AudioManager.I.PlaySFX("Save");
         ParticleManager.I.PlayText("Save", transform.position + 1.2f * Vector3.up + 0.8f * dir, ParticleManager.TextType.PlayerNotice);
         DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
         DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
