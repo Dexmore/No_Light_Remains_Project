@@ -1654,6 +1654,8 @@ GameObject:
   - component: {fileID: 2911151096007246634}
   - component: {fileID: 1040247390678569573}
   - component: {fileID: 2049774876832324308}
+  - component: {fileID: 1721911162815312664}
+  - component: {fileID: 10329866122555219}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Untagged
@@ -1795,6 +1797,203 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!82 &1721911162815312664
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8351178544674619736}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 1914778362587350369, guid: 2d291b9a263a7ea47bf333ff0e02c950, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &10329866122555219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8351178544674619736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a50f5472a08b441409953e5090e67f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundSystem
+  soundList:
+  - key: Walk
+    clip: {fileID: 8300000, guid: 52f688bb03eca234299c2b80cb49ef30, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.3
+    startTime: 0
+    endTime: 0
+  - key: Attack1
+    clip: {fileID: 8300000, guid: 422ecf8396ca32745b92fae53694b199, type: 3}
+    volume: 2
+    usePitch: 0
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: Charging
+    clip: {fileID: 8300000, guid: 11d8f55b18b520c40a717b171bb4a323, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: Spark
+    clip: {fileID: 8300000, guid: a36d350433f21894eafef511b552d605, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: Charging2
+    clip: {fileID: 8300000, guid: 11d8f55b18b520c40a717b171bb4a323, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.5
+    startTime: 0
+    endTime: 0
+  - key: Takedown
+    clip: {fileID: 8300000, guid: 1907f5fc32f578046b74e2f95b7c24ec, type: 3}
+    volume: 2
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  - key: Jump
+    clip: {fileID: 8300000, guid: 2924ecd6a568267499735007d69bae10, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  - key: Attack2
+    clip: {fileID: 8300000, guid: 8a7a7e6a76e7e9742bb4e6f59b85d03d, type: 3}
+    volume: 2
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  - key: Dash
+    clip: {fileID: 8300000, guid: 300a1f42586881a4f814b739f5664ecf, type: 3}
+    volume: 2
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  - key: DashSpark
+    clip: {fileID: 8300000, guid: 8160276b9bb87194ea9c388a8ea11b34, type: 3}
+    volume: 2
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  - key: Heal
+    clip: {fileID: 8300000, guid: c0977924c70528a40b1727adc70109e7, type: 3}
+    volume: 2
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  - key: Die
+    clip: {fileID: 8300000, guid: aa2a8d471c8f0e443a03de93f0508479, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.9
+    startTime: 0
+    endTime: 0
+  soundRange: 15
+  playInterval: 0.1
+  showDebugRange: 1
 --- !u!1 &8952319678246257119
 GameObject:
   m_ObjectHideFlags: 0

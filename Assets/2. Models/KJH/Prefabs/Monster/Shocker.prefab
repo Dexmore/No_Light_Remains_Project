@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 7899090060067652854}
   - component: {fileID: 5062604122809052872}
   - component: {fileID: 3902863368258880294}
-  - component: {fileID: 1554804073985450767}
+  - component: {fileID: 5261085333769657265}
   m_Layer: 6
   m_Name: Shocker
   m_TagString: Untagged
@@ -314,7 +314,7 @@ AudioSource:
   m_GameObject: {fileID: 1859265925258598345}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 1914778362587350369, guid: 2d291b9a263a7ea47bf333ff0e02c950, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -402,7 +402,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1554804073985450767
+--- !u!114 &5261085333769657265
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -411,13 +411,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 1859265925258598345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e23350732c309947be60add9a0b5d9f, type: 3}
+  m_Script: {fileID: 11500000, guid: a50f5472a08b441409953e5090e67f31, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundPlayer
-  soundData: {fileID: 11400000, guid: fbc5019dbeb47da49beac2c13bf9d122, type: 2}
-  soundRange: 10
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundSystem
+  soundList:
+  - key: Move1
+    clip: {fileID: 8300000, guid: 659b9bd1843f1504ba4c8b74d3af1f54, type: 3}
+    volume: 0.5
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: Move2
+    clip: {fileID: 8300000, guid: 79c72a050b7c6504290071a9f0d3dd32, type: 3}
+    volume: 0.5
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: EnergyChaching
+    clip: {fileID: 8300000, guid: 5e13eaa0a6ffd9d47b8218ec3083bd7e, type: 3}
+    volume: 0.5
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: Attack1
+    clip: {fileID: 8300000, guid: 8b426afb3b2de354a87dd035a4ec52f1, type: 3}
+    volume: 0.5
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  - key: Attack2
+    clip: {fileID: 8300000, guid: d4e09b201e8402e44b54e93ee4492d84, type: 3}
+    volume: 0.5
+    pitch: 1
+    startTime: 0
+    endTime: 0
+  soundRange: 15
   playInterval: 0.1
-  showSoundRangeDebug: 1
+  showDebugRange: 1
 --- !u!1 &2050366670228604698
 GameObject:
   m_ObjectHideFlags: 0
