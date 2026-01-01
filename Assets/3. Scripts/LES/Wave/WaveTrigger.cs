@@ -25,7 +25,7 @@ public class WaveTrigger : MonoBehaviour
             if (targetWaveManager != null)
             {
                 Debug.Log("⚠️ Player Entered Trigger Area! Starting Battle...");
-                targetWaveManager.StartBattle();
+                targetWaveManager.StartBattle((Vector2)transform.position);
 
                 // 3. [핵심] 1회성 보장: 발동 즉시 이 트리거 오브젝트를 삭제
                 // (Setactive(false)보다 Destroy가 확실하게 메모리에서 날려버림)

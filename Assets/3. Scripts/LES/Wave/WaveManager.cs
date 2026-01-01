@@ -18,6 +18,8 @@ public class SpawnEntry
     [Header("Optional Settings")]
     [Tooltip("비워두면(None): 기존처럼 랜덤한 곳에서 나옵니다.\n지정하면(Transform): 해당 위치가 '화면 밖'일 때만 그곳에서 나옵니다.")]
     public Transform specificSpawnPoint;
+
+
 }
 
 [System.Serializable]
@@ -33,6 +35,7 @@ public class Wave
 
 public class WaveManager : MonoBehaviour
 {
+
     [Header("--- Settings ---")]
     public List<Transform> allSpawnPoints;
 
@@ -41,6 +44,9 @@ public class WaveManager : MonoBehaviour
 
     [Header("--- Waves Config ---")]
     public List<Wave> waves;
+
+    [Tooltip("클리어하면 나타날 상자 프리팹")]
+    public GameObject chestPrefab;
 
     private List<GameObject> currentActiveMonsters = new List<GameObject>();
     private Camera mainCam;
@@ -51,16 +57,19 @@ public class WaveManager : MonoBehaviour
     {
         mainCam = Camera.main;
     }
-
-    public void StartBattle()
+    Vector2 _startPosition;
+    DoorType1 doorType1;
+    DoorType2 doorType2;
+    public void StartBattle(Vector2 startPosition)
     {
+        _startPosition = startPosition;
         if (isBattleStarted) return;
         isBattleStarted = true;
-        StartCoroutine(ExecuteWaves());
-        DoorType1 doorType1 = FindAnyObjectByType<DoorType1>();
+        doorType1 = FindAnyObjectByType<DoorType1>();
+        if (doorType1.isComplete || doorType1.isPlayerRight) return;
         doorType1?.Close();
+        StartCoroutine(ExecuteWaves());
     }
-
     IEnumerator ExecuteWaves()
     {
         foreach (var wave in waves)
@@ -140,8 +149,15 @@ public class WaveManager : MonoBehaviour
         }
 
         Debug.Log("🎉 STAGE CLEARED 🎉");
-        DoorType2 doorType2 = FindAnyObjectByType<DoorType2>();
+        doorType2 = FindAnyObjectByType<DoorType2>();
         doorType2?.Open();
+        doorType1.isComplete = true;
+        doorType2.isComplete = true;
+
+        GameObject chest = Instantiate(chestPrefab);
+        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 8f * Vector2.up;
+        chest.transform.localRotation = Quaternion.Euler(0f, 0f, -4f);
+
     }
 
     // --- Helper Logic ---

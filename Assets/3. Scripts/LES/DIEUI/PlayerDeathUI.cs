@@ -95,7 +95,7 @@ public class PlayerDeathUI : MonoBehaviour
         if (fadePanel != null)
         {
             // 설정한 fadeDuration 동안 검게 변함
-            fadePanel.DOFade(1f, fadeDuration);
+            fadePanel.DOFade(1f, fadeDuration).SetLink(gameObject);
         }
 
         // 4. 암전이 완료될 때까지 대기

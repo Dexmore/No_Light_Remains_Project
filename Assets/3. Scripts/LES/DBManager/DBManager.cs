@@ -52,43 +52,34 @@ public class DBManager : SingletonBehaviour<DBManager>
     [Space(60)]
     [Header("-----현재 플레이중인 캐릭터-----")]
     public CharacterData currData;
-    public void Save(bool OnlyDeathCountSave = false)
+    public void Save()
     {
         CharacterData dataToSave;
-        if (!OnlyDeathCountSave)
+        dataToSave = currData;
+        dataToSave.maxHealth = RoundToOneDecimal(dataToSave.maxHealth);
+        dataToSave.maxBattery = RoundToOneDecimal(dataToSave.maxBattery);
+        dataToSave.currHealth = RoundToOneDecimal(dataToSave.currHealth);
+        dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
+        dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
+        dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
+        for (int i = 0; i < dataToSave.sceneDatas.Count; i++)
         {
-            dataToSave = currData;
-            dataToSave.maxHealth = RoundToOneDecimal(dataToSave.maxHealth);
-            dataToSave.maxBattery = RoundToOneDecimal(dataToSave.maxBattery);
-            dataToSave.currHealth = RoundToOneDecimal(dataToSave.currHealth);
-            dataToSave.currBattery = RoundToOneDecimal(dataToSave.currBattery);
-            dataToSave.lastPos.x = RoundToOneDecimal(dataToSave.lastPos.x);
-            dataToSave.lastPos.y = RoundToOneDecimal(dataToSave.lastPos.y);
-
-            for (int i = 0; i < dataToSave.sceneDatas.Count; i++)
+            CharacterData.SceneData sData = dataToSave.sceneDatas[i];
+            if (sData.monsterPositionDatas != null)
             {
-                CharacterData.SceneData sData = dataToSave.sceneDatas[i];
-                if (sData.monsterPositionDatas != null)
+                for (int j = 0; j < sData.monsterPositionDatas.Count; j++)
                 {
-                    for (int j = 0; j < sData.monsterPositionDatas.Count; j++)
-                    {
-                        CharacterData.MonsterPositionData mData = sData.monsterPositionDatas[j];
-                        mData.lastHealth = RoundToOneDecimal(mData.lastHealth);
-                        mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
-                        mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
-                        sData.monsterPositionDatas[j] = mData;
-                    }
+                    CharacterData.MonsterPositionData mData = sData.monsterPositionDatas[j];
+                    mData.lastHealth = RoundToOneDecimal(mData.lastHealth);
+                    mData.lastPos.x = RoundToOneDecimal(mData.lastPos.x);
+                    mData.lastPos.y = RoundToOneDecimal(mData.lastPos.y);
+                    sData.monsterPositionDatas[j] = mData;
                 }
-                dataToSave.sceneDatas[i] = sData;
             }
+            dataToSave.sceneDatas[i] = sData;
+        }
 
-        }
-        // 죽었을경우 currData 에서 savedData 로 롤백한뒤. death 카운트만 갱신함
-        else
-        {
-            dataToSave = savedData;
-            dataToSave.death = currData.death;
-        }
+        //
         savedData = dataToSave;
         if (currSlot >= 0 && currSlot <= 2)
         {

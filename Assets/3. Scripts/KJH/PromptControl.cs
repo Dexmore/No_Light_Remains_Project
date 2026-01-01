@@ -213,12 +213,12 @@ public class PromptControl : MonoBehaviour
                 ).SetEase(Ease.OutQuad);
                 pressRing.color = new Color(0f, 0f, 0f, 0f);
                 DOTween.Kill(pressRing);
-                pressRing.DOFade(0.2f, 1f).SetEase(Ease.InSine);
+                pressRing.DOFade(0.2f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
             }
             DOTween.Kill(tMP_Text);
             Color color = tMP_Text.color;
             tMP_Text.color = new Color(color.r, color.g, color.b, 0f);
-            tMP_Text.DOFade(0.23f, 1f).SetEase(Ease.InSine);
+            tMP_Text.DOFade(0.23f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
             DOTween.Kill(text);
             DOTween.Kill(text.transform);
             text.transform.localScale = Vector3.one;
@@ -226,7 +226,7 @@ public class PromptControl : MonoBehaviour
             text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             Color color1 = text.color;
             text.color = new Color(color1.r, color1.g, color1.b, 0f);
-            text.DOFade(0.8f, 1f).SetEase(Ease.InSine);
+            text.DOFade(0.8f, 1f).SetEase(Ease.InSine).SetLink(gameObject).SetLink(gameObject);
         }
         else if (type == 1)
         {
@@ -286,12 +286,12 @@ public class PromptControl : MonoBehaviour
                 ).SetEase(Ease.OutQuad);
                 pressRing.color = new Color(0f, 0f, 0f, 0f);
                 DOTween.Kill(pressRing);
-                pressRing.DOFade(0.2f, 1f).SetEase(Ease.InSine);
+                pressRing.DOFade(0.2f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
             }
             DOTween.Kill(tMP_Text);
             Color color = tMP_Text.color;
             tMP_Text.color = new Color(color.r, color.g, color.b, 0f);
-            tMP_Text.DOFade(0.23f, 1f).SetEase(Ease.InSine);
+            tMP_Text.DOFade(0.23f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
             DOTween.Kill(text);
             DOTween.Kill(text.transform);
             text.transform.localScale = Vector3.one;
@@ -299,7 +299,7 @@ public class PromptControl : MonoBehaviour
             text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             Color color1 = text.color;
             text.color = new Color(color1.r, color1.g, color1.b, 0f);
-            text.DOFade(0.8f, 1f).SetEase(Ease.InSine);
+            text.DOFade(0.8f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
         }
 
     }
@@ -327,8 +327,8 @@ public class PromptControl : MonoBehaviour
             DOTween.Kill(text.material);
             text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             target1 = null;
-            text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
-            tMP_Text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
+            text.DOFade(0f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
+            tMP_Text.DOFade(0f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
             await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             itrctCanvas.gameObject.SetActive(false);
             isClosing1 = false;
@@ -349,9 +349,9 @@ public class PromptControl : MonoBehaviour
             text.material.SetVector("_EmissionColor", new Vector4(24f, 24f, 24f, 0.9f));
             DOTween.Kill(pressRing);
             target2 = null;
-            pressRing.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
-            text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
-            tMP_Text.DOFade(0f, 0.3f).SetEase(Ease.OutSine);
+            pressRing.DOFade(0f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
+            text.DOFade(0f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
+            tMP_Text.DOFade(0f, 0.3f).SetEase(Ease.OutSine).SetLink(gameObject);
             await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             lanternCanvas.gameObject.SetActive(false);
             isClosing2 = false;

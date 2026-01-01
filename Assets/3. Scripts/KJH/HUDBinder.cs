@@ -187,7 +187,7 @@ public class HUDBinder : MonoBehaviour
         else if (diff > 25) duration = 1.5f;
         else duration = 1f;
         goldFadeTween?.Kill(true);
-        goldFadeTween = goldCanvasGroup.DOFade(1f, 0.2f);
+        goldFadeTween = goldCanvasGroup.DOFade(1f, 0.2f).SetLink(gameObject);
         goldCountingTween = DOTween.To
         (
             () => displayGold,
@@ -207,7 +207,7 @@ public class HUDBinder : MonoBehaviour
         goldFadeTween?.Kill(true);
         Sequence fadeSeq = DOTween.Sequence();
         fadeSeq.AppendInterval(1.5f);
-        fadeSeq.Append(goldCanvasGroup.DOFade(0f, 2f));
+        fadeSeq.Append(goldCanvasGroup.DOFade(0f, 2f).SetLink(gameObject));
         goldFadeTween = fadeSeq;
     }
     void RefreshPotionInLoop()

@@ -54,7 +54,7 @@ public class LobbyControl : MonoBehaviour
         tweenTitle?.Kill();
         titleText = Title_p.transform.Find("REKINDLE").GetComponent<Image>();
         titleText.color = new Color(titleText.color.r, titleText.color.g, titleText.color.b, 0.7f);
-        tweenTitle = titleText.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo).Play();
+        tweenTitle = titleText.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject).SetLoops(-1, LoopType.Yoyo).Play();
     }
 
     private void OnDisable()

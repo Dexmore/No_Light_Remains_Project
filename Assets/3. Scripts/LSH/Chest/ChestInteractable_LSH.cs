@@ -48,7 +48,6 @@ public class ChestInteractable_LSH : Interactable, ISavable
         if (!animator) animator = GetComponentInChildren<Animator>();
         if (!animator) Debug.LogError("[Chest] Animator not found!");
         col = GetComponent<Collider2D>();
-        if (col) col.isTrigger = true;
         isReady = true;
     }
 

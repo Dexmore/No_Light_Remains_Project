@@ -59,14 +59,14 @@ public class LobbyStoryPanel : MonoBehaviour
         Image image = rt.GetComponent<Image>();
         DOTween.Kill(image);
         image.color = new Color(1f, 1f, 1f, 1f);
-        image.DOFade(0f, 2f);
+        image.DOFade(0f, 2f).SetLink(gameObject);
         DBManager.I.currData = new CharacterData();
         await Task.Delay(1500);
         transform.Find("Wrap").gameObject.SetActive(true);
         CanvasGroup canvasGroup = transform.Find("Wrap").GetComponent<CanvasGroup>();
         DOTween.Kill(canvasGroup);
         canvasGroup.alpha = 0f;
-        canvasGroup.DOFade(1f, 1.9f).SetEase(Ease.InSine);
+        canvasGroup.DOFade(1f, 1.9f).SetEase(Ease.InSine).SetLink(gameObject);
         rt = transform.Find("Wrap/BG2").GetComponent<RectTransform>();
         DOTween.Kill(rt);
         rt.anchoredPosition = new Vector2(0, -130);
@@ -215,11 +215,11 @@ public class LobbyStoryPanel : MonoBehaviour
         rtFrame.sizeDelta = size2;
         rtFrame.DOSizeDelta(size, 0.55f).SetEase(Ease.InBack);
         imgFrame.color = new Color(imgFrame.color.r, imgFrame.color.g, imgFrame.color.b, 0f);
-        imgFrame.DOFade(1f, 4f);
+        imgFrame.DOFade(1f, 4f).SetLink(gameObject);
         CanvasGroup canvasGroup = leftMonitor.transform.Find("Wrap").GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0f;
         DOTween.Kill(canvasGroup);
-        canvasGroup.DOFade(1f, 3.5f).SetEase(Ease.InSine);
+        canvasGroup.DOFade(1f, 3.5f).SetEase(Ease.InSine).SetLink(gameObject);
         // 텍스트 내용 갱신
         Transform wrap = leftMonitor.transform.Find("Wrap");
         CharacterData data;

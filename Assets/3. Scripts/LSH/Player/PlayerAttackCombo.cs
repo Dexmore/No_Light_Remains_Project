@@ -128,13 +128,7 @@ public class PlayerAttackCombo : IPlayerState
         if (coll.gameObject.layer != LayerMask.NameToLayer("Monster") && coll.gameObject.layer != LayerMask.NameToLayer("Interactable")) return;
         if (attacked.Count > 0)
         {
-            int mCount = 0;
-            for (int i = 0; i < attacked.Count; i++)
-            {
-                if (attacked[i].gameObject == null) continue;
-                if (attacked[i].gameObject.layer != LayerMask.NameToLayer("Monster")) continue;
-                mCount++;
-            }
+            int mCount = attacked.Count(x => x != null && x.gameObject.layer == LayerMask.NameToLayer("Monster"));
             if (mCount >= multiHitCount) return;
         }
         if (!attacked.Contains(coll))

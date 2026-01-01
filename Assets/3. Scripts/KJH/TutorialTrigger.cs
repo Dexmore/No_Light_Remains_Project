@@ -86,7 +86,7 @@ public class TutorialTrigger : MonoBehaviour
         canvasObject.SetActive(true);
         tween?.Kill();
         canvasGroup.alpha = 0f;
-        tween = canvasGroup.DOFade(0.8f, 1f).SetEase(Ease.InSine).Play();
+        tween = canvasGroup.DOFade(0.8f, 1f).SetEase(Ease.InSine).SetLink(gameObject).Play();
 
     }
     void OnTriggerExit2D(Collider2D collision)
@@ -94,7 +94,7 @@ public class TutorialTrigger : MonoBehaviour
         if (collision.gameObject.layer != playerLayer) return;
         tween?.Kill();
         float myFloat = canvasGroup.alpha;
-        tween = canvasGroup.DOFade(0f, 1.6f - myFloat).SetEase(Ease.InSine).OnComplete(() => { canvasObject.SetActive(false); }).Play();
+        tween = canvasGroup.DOFade(0f, 1.6f - myFloat).SetEase(Ease.InSine).SetLink(gameObject).OnComplete(() => { canvasObject.SetActive(false); }).Play();
     }
 
 
