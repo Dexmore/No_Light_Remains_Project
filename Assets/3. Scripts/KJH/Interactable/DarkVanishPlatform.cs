@@ -76,7 +76,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
         tweenLpLight?.Kill();
         lp.color = new Color(lp.color.r, lp.color.g, lp.color.b, 0f);
         lpLight.intensity = 0f;
-        lp.DOFade(1f, 0.5f).SetEase(Ease.InSine);
+        lp.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject);
         tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
         lpParticle.gameObject.SetActive(true);
         lpParticle.Play();
@@ -103,7 +103,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
         isCancel = true;
         DOTween.Kill(lp);
         tweenLpLight?.Kill();
-        lp.DOFade(0f, 1.1f).SetEase(Ease.InSine);
+        lp.DOFade(0f, 1.1f).SetEase(Ease.InSine).SetLink(gameObject);
         tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0f, 1.1f).SetEase(Ease.InSine)
         .OnComplete(() => lp.gameObject.SetActive(false)).Play();
         var mainModule = lpParticle.main;

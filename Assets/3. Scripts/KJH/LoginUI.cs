@@ -88,7 +88,7 @@ public class LoginUI : MonoBehaviour
         DOTween.Kill(waiting);
         DOTween.Kill(waiting.transform);
         waiting.color = new Color(1f, 1f, 1f, 0f);
-        waiting.DOFade(1f, 0.8f);
+        waiting.DOFade(1f, 0.8f).SetLink(gameObject);
         waiting.transform.DOLocalRotate(-360f * Vector3.forward, 1.8f, RotateMode.LocalAxisAdd).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
         // 기다리는 연출 (Circle wating)
         DBManager.I.StartSteam();

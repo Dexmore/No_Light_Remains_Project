@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 1148845177294387522}
   - component: {fileID: 3858246739097477100}
   - component: {fileID: 2332946335329316979}
+  - component: {fileID: -543891441639396560}
   m_Layer: 8
-  m_Name: Chest(0)
+  m_Name: ChestWave1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,13 +29,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3655978220690790638}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.01745245, w: 0.99984777}
   m_LocalPosition: {x: 0, y: 0.185, z: 0}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -2}
 --- !u!212 &3288120877556198518
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -125,7 +126,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 611cdda0d98cf9343b17db74b3a634c1, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -145,11 +146,11 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.1, y: 0.25}
+  m_Offset: {x: -0.1, y: 0.31}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.45, y: 0.02}
@@ -177,13 +178,75 @@ MonoBehaviour:
   canReplay: 0
   replayWaitTimeSecond: 0
   dropTables:
-  - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 3
-    record: {fileID: 0}
-    countRange: {x: 2, y: 3}
-    probability: 1
-  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+  - dropItem: {fileID: 255965422636804604, guid: 5ec6e4ed15d0302438994e22becd66aa, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
     probability: 1
+  - dropItem: {fileID: 5004745406220570011, guid: 34b1495757423a9409fa1e1f321c12e4, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05
+  - dropItem: {fileID: 5864044104820566245, guid: 817f170ec7a12f748b53d17e433a1142, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05
+  - dropItem: {fileID: 4610686049601695910, guid: 4832679443a67ef45a2555ad768822d9, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05
+  - dropItem: {fileID: 620777080605811870, guid: 687930f41ce1b304e82f440cbc08367a, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05
+  - dropItem: {fileID: 557120464238281856, guid: b67e75d6e421f1345ab06ffe0a5af4ce, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.2
+  - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
+    gold: 10
+    record: {fileID: 0}
+    countRange: {x: 3, y: 5}
+    probability: 1
+  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 2}
+    probability: 1
+  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 2}
+    probability: 1
+--- !u!50 &-543891441639396560
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3655978220690790638}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0.1
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

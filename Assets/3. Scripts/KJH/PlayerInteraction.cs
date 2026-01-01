@@ -314,7 +314,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // 단계 1: 부상 및 활성화
         playerLightTr.DOLocalMove(floatPosLocal, duration).SetEase(Ease.OutCubic);
-        lanternSprite.DOFade(1f, duration);
+        lanternSprite.DOFade(1f, duration).SetLink(gameObject);
         DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 3f, duration);
 
         await UniTask.Delay((int)(duration * 0.5f * 1000), cancellationToken: token);
@@ -373,7 +373,7 @@ public class PlayerInteraction : MonoBehaviour
         DOTween.Kill(lanternSprite);
 
         float exitDuration = 0.5f;
-        lanternSprite.DOFade(0f, exitDuration);
+        lanternSprite.DOFade(0f, exitDuration).SetLink(gameObject);
         DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 0f, exitDuration);
 
         // 라인 및 프리폼 즉시 초기화 (필요시 트윈으로 변경 가능)
