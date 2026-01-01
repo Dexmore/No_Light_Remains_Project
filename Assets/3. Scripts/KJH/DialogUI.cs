@@ -356,7 +356,7 @@ public class DialogUI : MonoBehaviour
         triangle.gameObject.SetActive(true);
         tweenTriangle?.Kill();
         triangle.color = new Color(triangle.color.r, triangle.color.g, triangle.color.b, 0.2f);
-        tweenTriangle = triangle.DOFade(1f, 0.15f).SetLoops(-1, LoopType.Yoyo).Play();
+        tweenTriangle = triangle.DOFade(1f, 0.15f).SetLink(gameObject).SetLoops(-1, LoopType.Yoyo).Play();
         StopCoroutine(nameof(SometimesGlitchTextLoop));
         StartCoroutine(nameof(SometimesGlitchTextLoop));
     }
@@ -377,7 +377,7 @@ public class DialogUI : MonoBehaviour
         triangle.gameObject.SetActive(true);
         tweenTriangle?.Kill();
         triangle.color = new Color(triangle.color.r, triangle.color.g, triangle.color.b, 0.2f);
-        tweenTriangle = triangle.DOFade(1f, 0.15f).SetLoops(-1, LoopType.Yoyo).Play();
+        tweenTriangle = triangle.DOFade(1f, 0.15f).SetLink(gameObject).SetLoops(-1, LoopType.Yoyo).Play();
         StopCoroutine(nameof(SometimesGlitchTextLoop));
         StartCoroutine(nameof(SometimesGlitchTextLoop));
     }

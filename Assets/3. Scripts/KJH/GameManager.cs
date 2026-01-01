@@ -194,7 +194,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             dimImg.color = new Color(0f, 0f, 0f, 0f);
             //진행
             Tween tween;
-            tween = dimImg.DOFade(1f, time).SetEase(Ease.OutQuad);
+            tween = dimImg.DOFade(1f, time).SetLink(gameObject).SetEase(Ease.OutQuad);
             tween.OnComplete(() =>
             {
                 fadeScreen.SetActive(true);
@@ -210,7 +210,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             dimImg.gameObject.SetActive(true);
             //진행
             Tween tween;
-            tween = dimImg.DOFade(1f, (1f - startA2) * 1.5f + 0.5f);
+            tween = dimImg.DOFade(1f, (1f - startA2) * 1.5f + 0.5f).SetLink(gameObject);
             tween.OnComplete(() =>
             {
                 fadeScreen.SetActive(true);
@@ -237,7 +237,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         dimImg.color = new Color(0f, 0f, 0f, 1f);
         //진행
         Tween tween;
-        tween = dimImg.DOFade(0f, 2.3f).SetEase(Ease.InSine);
+        tween = dimImg.DOFade(0f, 2.3f).SetEase(Ease.InSine).SetLink(gameObject);
         tween.OnComplete(() =>
         {
             fadeScreen.SetActive(false);
@@ -273,7 +273,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         loadingDim.gameObject.SetActive(true);
         loadingDim.color = new Color(0f, 0f, 0f, 1f);
         loadingTween?.Kill();
-        loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine);
+        loadingTween = loadingDim.DOFade(0f, 1.2f).SetEase(Ease.InSine).SetLink(gameObject);
         float elapsedTime = 0f;
         int randomInt = Random.Range(0, loadingSprites.Length);
         loadingImage.sprite = loadingSprites[randomInt];
@@ -301,7 +301,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
         }
         loadingTween?.Kill();
-        loadingTween = loadingDim.DOFade(1f, 1.2f).SetEase(Ease.InSine).OnComplete(() =>
+        loadingTween = loadingDim.DOFade(1f, 1.2f).SetEase(Ease.InSine).SetLink(gameObject).OnComplete(() =>
         {
             loadingScreen.SetActive(false);
             loadingDim.gameObject.SetActive(false);

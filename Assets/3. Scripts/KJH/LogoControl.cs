@@ -32,7 +32,7 @@ public class LogoControl : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(1f);
         // 글자 'i' 등장 연출
         logoChildrenRT[7].anchoredPosition = new Vector2(480, logoChildrenInitPos[7].y);
-        logoChildrenImg[7].DOFade(1f, 0.3f).SetEase(Ease.InSine);
+        logoChildrenImg[7].DOFade(1f, 0.3f).SetEase(Ease.InSine).SetLink(gameObject);
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         AudioManager.I.PlaySFX("Stretch");
         logoChildrenRT[7].DOScaleY(2.5f, 0.7f).SetEase(Ease.OutQuad).OnComplete(() =>
@@ -41,7 +41,7 @@ public class LogoControl : MonoBehaviour
         }).SetLink(gameObject);
         logoChildrenRT[16].anchoredPosition = new Vector2(logoChildrenInitPos[16].x + (480 - logoChildrenInitPos[7].x), logoChildrenInitPos[16].y);
         yield return YieldInstructionCache.WaitForSeconds(1.3f);
-        logoChildrenImg[16].DOFade(1f, 1.5f);
+        logoChildrenImg[16].DOFade(1f, 1.5f).SetLink(gameObject);
         logoChildrenRT[7].DOAnchorPos(logoChildrenInitPos[7], 0.55f).SetEase(Ease.OutQuad);
         logoChildrenRT[16].DOAnchorPos(logoChildrenInitPos[16], 0.55f).SetEase(Ease.OutQuad);
         yield return null;
@@ -51,17 +51,17 @@ public class LogoControl : MonoBehaviour
             if (i == 7 || i == 16) continue;
             logoChildrenRT[i].anchoredPosition = new Vector2(480, logoChildrenInitPos[7].y);
             logoChildrenRT[i].DOAnchorPos(logoChildrenInitPos[i], 0.55f).SetEase(Ease.OutQuad);
-            logoChildrenImg[i].DOFade(1f, 0.3f).SetEase(Ease.InSine);
+            logoChildrenImg[i].DOFade(1f, 0.3f).SetEase(Ease.InSine).SetLink(gameObject);
         }
         AudioManager.I.PlaySFX("Logo");
         yield return YieldInstructionCache.WaitForSeconds(1.9f);
         for (int i = 0; i < logoChildrenRT.Length; i++)
         {
-            logoChildrenImg[i].DOFade(0f, 1.3f).SetEase(Ease.OutSine);
+            logoChildrenImg[i].DOFade(0f, 1.3f).SetEase(Ease.OutSine).SetLink(gameObject);
         }
         #endregion
         yield return YieldInstructionCache.WaitForSeconds(1f);
-        GameManager.I.LoadSceneAsync(1);
+        GameManager.I.LoadSceneAsync("Lobby");
     }
 
 }

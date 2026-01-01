@@ -27,7 +27,7 @@ public class UIHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             isRaycastLoop = true;
             StartCoroutine(nameof(RaycastLoop));
             currentTween?.Kill(true);
-            currentTween = appearGroup.DOFade(1f, 0.3f).SetEase(Ease.OutQuad).OnComplete(() =>
+            currentTween = appearGroup.DOFade(1f, 0.3f).SetEase(Ease.OutQuad).SetLink(gameObject).OnComplete(() =>
             {
                 appearGroup.blocksRaycasts = true;
                 appearGroup.interactable = true;
@@ -80,9 +80,10 @@ public class UIHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                             appearGroup.blocksRaycasts = false;
                             appearGroup.interactable = false;
                         })
-                        .Append(appearGroup.DOFade(0f, 0.8f).SetEase(Ease.OutQuad))
+                        .Append(appearGroup.DOFade(0f, 0.8f).SetEase(Ease.OutQuad).SetLink(gameObject))
                         .OnKill(() => exitSequence = null);
                     currentTween = exitSequence;
+                    exitSequence.SetLink(gameObject);
                 }
                 isRaycastLoop = false;
                 yield break;

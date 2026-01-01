@@ -100,7 +100,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.5f);
             float duration = _duration + Random.Range(0.2f, 0.15f);
-            _clone.txt.DOFade(0f, duration).SetEase(Ease.OutSine);
+            _clone.txt.DOFade(0f, duration).SetEase(Ease.OutSine).SetLink(gameObject);
             return _clone;
         }
         else if (type == TextType.Damage)
@@ -118,7 +118,7 @@ public class ParticleManager : SingletonBehaviour<ParticleManager>
             Color color = _clone.txt.color;
             _clone.txt.color = new Color(color.r, color.g, color.b, 0.2f);
             float duration = _duration + Random.Range(0.01f, 0.09f);
-            _clone.txt.DOFade(0f, duration - 0.3f).SetEase(Ease.OutQuad);
+            _clone.txt.DOFade(0f, duration - 0.3f).SetEase(Ease.OutQuad).SetLink(gameObject);
             return _clone;
         }
         return null;

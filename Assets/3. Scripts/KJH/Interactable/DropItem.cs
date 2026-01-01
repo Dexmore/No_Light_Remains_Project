@@ -33,6 +33,7 @@ public class DropItem : Interactable
         if (!isReady) return;
         if (isRun) return;
         isRun = true;
+        isReady = false;
         Rooting();
     }
     Camera _mainCamera;
@@ -60,22 +61,51 @@ public class DropItem : Interactable
         }
         AudioManager.I.PlaySFX("GetItem");
         DBManager.I.currData.gold += gold;
+        bool outBool = false;
         if (itemData != null)
         {
             DBManager.I.AddItem(itemData.name);
         }
         else if (gearData != null)
         {
+            if (DBManager.I.HasGear(gearData.name, out outBool))
+            {
+                if (outBool)
+                {
+                    isRun = false;
+                    isReady = true;
+                    return;
+                }
+            }
             DBManager.I.AddGear(gearData.name);
         }
         else if (lanternData != null)
         {
+            if (DBManager.I.HasGear(lanternData.name, out outBool))
+            {
+                if (outBool)
+                {
+                    isRun = false;
+                    isReady = true;
+                    return;
+                }
+            }
             DBManager.I.AddLantern(lanternData.name);
         }
         else if (recordData != null)
         {
+            if (DBManager.I.HasGear(recordData.name, out outBool))
+            {
+                if (outBool)
+                {
+                    isRun = false;
+                    isReady = true;
+                    return;
+                }
+            }
             DBManager.I.AddRecord(recordData.name);
         }
+        isReady = false;
         await Task.Delay(10);
         Destroy(gameObject);
     }
