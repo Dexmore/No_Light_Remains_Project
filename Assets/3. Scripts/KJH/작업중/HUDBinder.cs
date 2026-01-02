@@ -208,6 +208,7 @@ public class HUDBinder : MonoBehaviour
         Sequence fadeSeq = DOTween.Sequence();
         fadeSeq.AppendInterval(1.5f);
         fadeSeq.Append(goldCanvasGroup.DOFade(0f, 2f).SetLink(gameObject));
+        fadeSeq.SetLink(gameObject);
         goldFadeTween = fadeSeq;
     }
     void RefreshPotionInLoop()

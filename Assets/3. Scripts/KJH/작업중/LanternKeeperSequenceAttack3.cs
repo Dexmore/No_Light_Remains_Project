@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-public class MonsterShootingAttack2 : MonsterState
+public class LanternKeeperSequenceAttack3 : MonsterState
 {
     int multiHitCount = 1;
-    public override MonsterControl.State mapping => MonsterControl.State.ShootingAttack2;
+    public override MonsterControl.State mapping => MonsterControl.State.SequenceAttack3;
     public override async UniTask Enter(CancellationToken token)
     {
         control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;

@@ -315,6 +315,7 @@ public class MonsterControl : MonoBehaviour
         DoubleAttack,
         Revive,
         Explosion,
+        RareAttack,
         /////////////////////
 
 

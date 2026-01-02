@@ -1251,11 +1251,11 @@ GameObject:
   - component: {fileID: 2829082605445565019}
   - component: {fileID: 4748392690718178906}
   - component: {fileID: 4559949027452656385}
-  - component: {fileID: 7881336599499377275}
   - component: {fileID: 4072911068462056517}
   - component: {fileID: -6758503302409658705}
   - component: {fileID: 161726854657673104}
   - component: {fileID: 2360094903198248376}
+  - component: {fileID: 1651952747455098986}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -1411,6 +1411,9 @@ MonoBehaviour:
     - state: 14
       weight: 150
       coolTime: 15
+    - state: 25
+      weight: 5
+      coolTime: 100
   attackRange: {fileID: 0}
   bgmName: Terra
   state: 0
@@ -1581,23 +1584,6 @@ MonoBehaviour:
   damageMultiplier3: 0.9
   staggerType3: 2
   durationRange: {x: 1, y: 3.2}
---- !u!114 &7881336599499377275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8068371728270083225}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9dcbd4a8c6092c4c86b1aa13d8494be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterRangeAttack
-  coolTime: 0
-  range: 0
-  damageMultiplier: 1.7
-  staggerType: 0
-  durationRange: {x: 0, y: 0}
 --- !u!114 &4072911068462056517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1672,6 +1658,24 @@ MonoBehaviour:
   range: 1.5
   moveTimeRange: {x: 0.55, y: 2}
   movingForce: 23
+  canParry: 0
+--- !u!114 &1651952747455098986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85acf5c3b47dde4c973c04569c54af4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterRareAttack
+  coolTime: 0
+  range: 5
+  damageMultiplier: 0.5
+  staggerType: 1
+  durationRange: {x: 2.8, y: 3.8}
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

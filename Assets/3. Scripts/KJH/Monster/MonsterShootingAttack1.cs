@@ -79,13 +79,88 @@ public class MonsterShootingAttack1 : MonsterState
             moveDirection = transform.position - target.position;
             moveDirection.y = 0;
             moveDirection.Normalize();
-            rb.AddForce(moveDirection * 4.6f);
-            while (Time.time - startTime < 1.6f)
+            float repositionDuration = 1.8f;
+
+            // 만약 뒤가 (절벽으로 가로막히거나 낭떠러지라면) && (전방에 충분한 공간이 있다면)
+            bool isBackBlocked = false;
+            bool isFrontClear = false;
+
+
+            // 뒤 절벽 체크
+            rayOrigin = transform.position + control.height * Vector3.up;
+            rayDirection = moveDirection;
+            rayLength = 4f * control.width;
+            checkRay.origin = rayOrigin;
+            checkRay.direction = rayDirection;
+            CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+            if (CheckRayHit.collider != null)
+            {
+                isBackBlocked = true;
+            }
+            // 앞 절벽 체크
+            rayDirection = -moveDirection;
+            rayLength = 10f * control.width;
+            checkRay.origin = rayOrigin;
+            checkRay.direction = rayDirection;
+            CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+            if (CheckRayHit.collider == null)
+            {
+                isFrontClear = true;
+            }
+            // 뒤 낭떠러지 체크
+            if (!isBackBlocked)
+                for (int i = 0; i < 4; i++)
+                {
+                    rayOrigin = transform.position + (control.height * Vector3.up) + ((1 + i) * control.width * (Vector3)moveDirection);
+                    rayDirection = Vector3.down;
+                    rayLength = 1.1f * control.height;
+                    checkRay.origin = rayOrigin;
+                    checkRay.direction = rayDirection;
+                    CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                    if (CheckRayHit.collider == null)
+                    {
+                        isBackBlocked = true;
+                        Debug.DrawRay(rayOrigin, rayLength * rayDirection, Color.white, 1f);
+                        break;
+                    }
+                }
+            // 앞 낭떠러지 체크
+            if (isFrontClear) // 위에서 레이캐스트로 앞쪽 벽이 없다는 것이 확인된 경우에만 진행
+            {
+                // 몬스터 앞쪽으로 일정 거리(예: 너비의 2~3배) 지점을 체크
+                for (int i = 0; i < 3; i++)
+                {
+                    // 몬스터의 눈 높이 정도에서 앞쪽(target 방향)으로 i만큼 떨어진 위치에서 아래로 레이 발사
+                    rayOrigin = transform.position + (control.height * Vector3.up) + ((4.5f + i) * control.width * (Vector3)(-moveDirection));
+                    rayDirection = Vector3.down;
+                    rayLength = 1.1f * control.height;
+                    checkRay.origin = rayOrigin;
+                    checkRay.direction = rayDirection;
+                    CheckRayHit = Physics2D.Raycast(checkRay.origin, checkRay.direction, rayLength, control.groundLayer);
+                    if (CheckRayHit.collider == null)
+                    {
+                        isFrontClear = false;
+                        break;
+                    }
+                }
+            }
+
+            Debug.Log($"{isBackBlocked} , {isFrontClear}");
+
+            // 위 여러 검사결과로 판단하여. 뒤 대신 전방으로 길게 직진해야 한다면.
+            if (isBackBlocked && isFrontClear)
+            {
+                repositionDuration = 4.6f;
+                moveDirection = -moveDirection;
+                Debug.DrawRay(transform.position, 6f * moveDirection, Color.red, 3f);
+            }
+            if (!isBackBlocked)
+            {
+                rb.AddForce(moveDirection * 6.8f, ForceMode2D.Impulse);
+            }
+            while (Time.time - startTime < repositionDuration)
             {
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
-                moveDirection = transform.position - target.position;
-                moveDirection.y = 0;
-                moveDirection.Normalize();
                 dist = Mathf.Abs(target.position.x - transform.position.x);
                 condition = dist < 0.9f * range - 0.1f;
                 // 캐릭터 방향 설정
@@ -140,7 +215,7 @@ public class MonsterShootingAttack1 : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = 1.2f * (control.data.MoveSpeed - dot) + 1.1f;
-                        rb.AddForce(multiplier * moveDirection * 6.6f * (control.data.MoveSpeed + 7.905f) / 1.1f);
+                        rb.AddForce(multiplier * moveDirection * 7.4f * (control.data.MoveSpeed + 7.905f) / 1.1f);
                     }
                 if (!condition) break;
             }

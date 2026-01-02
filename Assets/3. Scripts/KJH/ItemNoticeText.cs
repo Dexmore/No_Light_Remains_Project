@@ -27,7 +27,8 @@ public class ItemNoticeText : MonoBehaviour
         // 3. 2초 대기 후 페이드 아웃하며 파괴
         Sequence seq = DOTween.Sequence();
         seq.AppendInterval(2f); // 2초 유지
-        seq.Append(canvasGroup.DOFade(0f, 0.5f)); // 0.5초간 페이드 아웃
+        seq.Append(canvasGroup.DOFade(0f, 0.5f).SetLink(gameObject)); // 0.5초간 페이드 아웃
         seq.OnComplete(() => Destroy(gameObject)); // 완료 후 오브젝트 삭제
+        seq.SetLink(gameObject);
     }
 }
