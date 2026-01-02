@@ -406,8 +406,8 @@ GameObject:
   - component: {fileID: 1228122092506742702}
   - component: {fileID: 4830109814779618246}
   - component: {fileID: 3381216435244843532}
-  - component: {fileID: 2744220109088947535}
   - component: {fileID: 5947398311617172208}
+  - component: {fileID: 310655329407473272}
   m_Layer: 6
   m_Name: ContaminatedFlower
   m_TagString: Monster
@@ -549,22 +549,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2744220109088947535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5370766153372647743}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e23350732c309947be60add9a0b5d9f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundPlayer
-  soundData: {fileID: 11400000, guid: 03d02f0a260a71f4fb9df3c53902fa03, type: 2}
-  soundRange: 10
-  playInterval: 0.1
-  showSoundRangeDebug: 1
 --- !u!82 &5947398311617172208
 AudioSource:
   m_ObjectHideFlags: 0
@@ -680,6 +664,62 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &310655329407473272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5370766153372647743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a50f5472a08b441409953e5090e67f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundSystem
+  soundList:
+  - key: Crawl
+    clip: {fileID: 8300000, guid: ad24c3f0eb3f40f46ab44fbbab00fc72, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Pump
+    clip: {fileID: 8300000, guid: 27be1d7452dc3534e97bd276b9fc7c14, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: GasAttack
+    clip: {fileID: 8300000, guid: 45dfdeab351cef54c82b2ce4f0ba7564, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: BiteAttack
+    clip: {fileID: 8300000, guid: c2c27272a1d97784d81acdb21d2ed79c, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Die
+    clip: {fileID: 8300000, guid: 0878e5353c2f219489caece82c43f2ee, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0
+    playOnManager: 1
+    startTime: 0
+    endTime: 0
+  soundRange: 15
+  playInterval: 0.1
+  showDebugRange: 1
 --- !u!1 &5470446756990384027
 GameObject:
   m_ObjectHideFlags: 0
