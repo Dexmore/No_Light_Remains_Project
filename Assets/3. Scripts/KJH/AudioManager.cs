@@ -222,6 +222,46 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         ausBGM1.loop = true;
     }
 
+    // [AudioManager.cs] 기존 코드 하단에 추가
+
+    // 몬스터 시스템 연동을 위한 확장 함수 (클립 직접 재생 + 고급 설정)
+    public void PlayDirectSFX(AudioClip clip, Vector3 pos, float volume, float pitch, float startTime, float endTime)
+    {
+        if (clip == null) return;
+
+        // 1. 기존 풀링 시스템을 이용해 SFX 객체 소환 (부모를 null이나 Manager로 지정해 몬스터가 죽어도 유지됨)
+        // 기존 PlaySFX 로직을 활용하되, 리스트 검색 없이 바로 스폰합니다.
+        PoolBehaviour pb = PoolManager.I?.Spawn(sfxPrefab, pos, Quaternion.identity, transform);
+        
+        if (pb == null) return;
+
+        // 2. SFX 프리팹 내부의 AudioSource 접근
+        AudioSource source = pb.GetComponent<AudioSource>();
+        if (source == null) return;
+
+        // 3. 고급 설정 적용
+        source.clip = clip;
+        source.spatialBlend = 1f; // 3D 사운드 (위치를 잡았으므로)
+        source.volume = volume * volumeSFX; // 글로벌 SFX 볼륨 적용
+        source.pitch = pitch;
+        source.time = startTime; // 시작 지점 점프
+
+        source.Play();
+
+        // 4. 종료 시간 스케줄링 (구간 재생인 경우)
+        if (endTime > 0 && endTime > startTime)
+        {
+            double duration = endTime - startTime;
+            source.SetScheduledEndTime(AudioSettings.dspTime + duration);
+        }
+        // 일반 재생인 경우 (PlayOneShot 대신 Play를 쓰되, 클립 길이만큼만 재생 후 풀 반환은 SFX 스크립트가 처리한다고 가정)
+        else
+        {
+            // SFX 프리팹이 스스로 비활성화되는 로직이 있다면 그대로 둡니다.
+            // 만약 SFX 프리팹이 PlayOneShot만 기다린다면, 여기서 Invoke 등을 통해 비활성화 처리가 필요할 수 있습니다.
+            // (기존 SFX 구조를 존중하여 Play()만 실행)
+        }
+    }
 
 
 }

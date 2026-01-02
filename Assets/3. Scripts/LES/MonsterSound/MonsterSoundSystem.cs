@@ -1,31 +1,34 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+// [유지] 평소에는 몬스터 본체의 스피커를 사용하므로 컴포넌트 필요
 [RequireComponent(typeof(AudioSource))]
 public class MonsterSoundSystem : MonoBehaviour
 {
     [System.Serializable]
     public class SoundSetting
     {
-        public string key;             // 애니메이션 이벤트 키 (예: Attack)
-        public AudioClip clip;         // 오디오 파일
+        public string key;
+        public AudioClip clip;
         [Range(0f, 3f)] public float volume = 1f; 
-
-        // ✅ 피치 적용 여부를 결정하는 bool 스위치 추가
         public bool usePitch = false; 
         [Range(0.1f, 3f)] public float pitch = 1f;
+        
+        [Header("옵션")]
+        [Tooltip("체크하면 몬스터가 죽어도 소리가 끊기지 않습니다. (죽음 소리 전용)")]
+        public bool playOnManager = false; // ✅ 새로 추가된 기능 (기존 데이터 안 날아감)
 
-        [Header("재생 범위 설정 (초 단위)")]
-        [Tooltip("0이면 처음부터 재생")]
+        [Header("재생 범위 (0이면 전체)")]
         public float startTime = 0f;   
-        [Tooltip("0이면 끝까지 재생")]
         public float endTime = 0f;     
     }
 
-    [Header("사운드 리스트 설정")]
     [SerializeField] private List<SoundSetting> soundList = new List<SoundSetting>();
     
-    [Header("거리 및 쿨타임 옵션")]
+    // 성능 최적화용 딕셔너리
+    private Dictionary<string, SoundSetting> _soundDict = new Dictionary<string, SoundSetting>();
+
+    [Header("거리 및 쿨타임")]
     [SerializeField] private float soundRange = 15f;
     [SerializeField] private float playInterval = 0.1f;
     [SerializeField] private bool showDebugRange = true;
@@ -37,52 +40,82 @@ public class MonsterSoundSystem : MonoBehaviour
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-        _audioSource.spatialBlend = 0f; 
+        _audioSource.spatialBlend = 1f; // 3D 사운드 유지 (현실감)
         _audioSource.playOnAwake = false;
 
-        if (_playerTransform == null)
+        foreach (var setting in soundList)
         {
-            var playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) _playerTransform = playerObj.transform;
+            if (!_soundDict.ContainsKey(setting.key))
+                _soundDict.Add(setting.key, setting);
         }
     }
 
     public void PlaySound(string key)
     {
-        if (_playerTransform == null) return;
+        // 1. 플레이어 거리 체크 로직 (기존 동일)
+        if (_playerTransform == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) _playerTransform = player.transform;
+            else return;
+        }
 
         float dist = Vector2.Distance(transform.position, _playerTransform.position);
         if (dist > soundRange) return;
         if (Time.time - _lastPlayTime < playInterval) return;
 
-        SoundSetting setting = soundList.Find(s => s.key == key);
-        if (setting == null || setting.clip == null) return;
+        // 2. 데이터 가져오기
+        if (!_soundDict.TryGetValue(key, out SoundSetting setting) || setting.clip == null) return;
 
-        bool isRangePlay = (setting.endTime > 0 && setting.endTime > setting.startTime) || setting.startTime > 0;
+        // 3. 볼륨 및 피치 계산
         float finalVolume = Mathf.Clamp01(1f - (dist / soundRange)) * setting.volume;
         if (finalVolume <= 0.01f) return;
 
-        // ✅ 피치 결정 로직: usePitch가 true일 때만 설정값 사용, 아니면 원본(1f)
-        float targetPitch = setting.usePitch ? setting.pitch : 1f;
+        float finalPitch = setting.usePitch ? setting.pitch : 1f;
+        bool isRangePlay = (setting.endTime > 0 && setting.endTime > setting.startTime) || setting.startTime > 0;
 
-        if (isRangePlay)
+        // =================================================================
+        // [핵심] 하이브리드 분기 처리
+        // =================================================================
+        if (setting.playOnManager) 
         {
-            _audioSource.clip = setting.clip;
-            _audioSource.volume = finalVolume;
-            _audioSource.pitch = targetPitch; // 적용
-            _audioSource.time = setting.startTime;
-            _audioSource.Play();
-
-            if (setting.endTime > 0)
+            // A. [매니저 위임] 죽는 소리 등 (체크박스 켠 경우)
+            // 몬스터가 파괴되어도 매니저가 대신 소리를 내줌
+            if (AudioManager.I != null)
             {
-                double duration = setting.endTime - setting.startTime;
-                _audioSource.SetScheduledEndTime(AudioSettings.dspTime + duration);
+                AudioManager.I.PlayDirectSFX(
+                    setting.clip, 
+                    transform.position, 
+                    finalVolume, 
+                    finalPitch, 
+                    setting.startTime, 
+                    setting.endTime
+                );
             }
         }
-        else
+        else 
         {
-            _audioSource.pitch = targetPitch; // 적용
-            _audioSource.PlayOneShot(setting.clip, finalVolume);
+            // B. [로컬 재생] 걷기, 공격 등 (체크박스 끈 경우)
+            // 몬스터 몸체에서 소리가 나므로 이동할 때 자연스럽게 따라다님 (현실감 Up)
+            if (isRangePlay)
+            {
+                _audioSource.clip = setting.clip;
+                _audioSource.volume = finalVolume;
+                _audioSource.pitch = finalPitch;
+                _audioSource.time = setting.startTime;
+                _audioSource.Play();
+                
+                if (setting.endTime > 0)
+                {
+                    double duration = setting.endTime - setting.startTime;
+                    _audioSource.SetScheduledEndTime(AudioSettings.dspTime + duration);
+                }
+            }
+            else
+            {
+                _audioSource.pitch = finalPitch;
+                _audioSource.PlayOneShot(setting.clip, finalVolume);
+            }
         }
 
         _lastPlayTime = Time.time;
