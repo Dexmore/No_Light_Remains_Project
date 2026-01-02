@@ -1399,7 +1399,7 @@ MonoBehaviour:
       coolTime: 6
     - state: 18
       weight: 5
-      coolTime: 110
+      coolTime: 140
   - condition: 16
     frequencies:
     - state: 16
@@ -1407,12 +1407,12 @@ MonoBehaviour:
       coolTime: 6
     - state: 18
       weight: 10
-      coolTime: 60
+      coolTime: 85
     - state: 14
-      weight: 150
-      coolTime: 15
+      weight: 300
+      coolTime: 25
     - state: 25
-      weight: 5
+      weight: 2.5
       coolTime: 100
   attackRange: {fileID: 0}
   bgmName: Terra
@@ -1579,7 +1579,7 @@ MonoBehaviour:
   coolTime: 0
   damageMultiplier1: 0.6
   staggerType1: 1
-  damageMultiplier2: 1.95
+  damageMultiplier2: 1.75
   staggerType2: 3
   damageMultiplier3: 0.9
   staggerType3: 2
@@ -1652,7 +1652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterMovingAttack
   coolTime: 0
-  damageMultiplier: 0.8
+  damageMultiplier: 0.6
   staggerType: 2
   durationRange: {x: 3, y: 3.5}
   range: 1.5
@@ -1672,10 +1672,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterRareAttack
   coolTime: 0
-  range: 5
-  damageMultiplier: 0.5
-  staggerType: 1
-  durationRange: {x: 2.8, y: 3.8}
+  damageMultiplier: 0.4
+  staggerType: 3
+  durationRange: {x: 5.5, y: 6.3}
+  canParry: 0
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,9 +1853,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 30
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -1863,20 +1863,38 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
+      time: 0.02
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: -2.1428576
+      outSlope: -2.1428576
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.06666667
+      value: 0.9
+      inSlope: -2.39074
+      outSlope: -2.39074
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3031708
+      value: 0.2759549
+      inSlope: -1.5173187
+      outSlope: -1.5173187
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: -0.39601514
+      outSlope: -0.39601514
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1888,10 +1906,10 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.72
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1906,7 +1924,7 @@ AudioSource:
       value: 0
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1921,7 +1939,7 @@ AudioSource:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1943,37 +1961,42 @@ MonoBehaviour:
   soundList:
   - key: Walk
     clip: {fileID: 8300000, guid: 52f688bb03eca234299c2b80cb49ef30, type: 3}
-    volume: 1
+    volume: 0.8
     usePitch: 0
     pitch: 0.3
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Attack1
     clip: {fileID: 8300000, guid: 422ecf8396ca32745b92fae53694b199, type: 3}
-    volume: 2
+    volume: 1.6
     usePitch: 0
     pitch: 1
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Charging
     clip: {fileID: 8300000, guid: 11d8f55b18b520c40a717b171bb4a323, type: 3}
-    volume: 1
+    volume: 0.8
     usePitch: 0
     pitch: 1
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Spark
     clip: {fileID: 8300000, guid: a36d350433f21894eafef511b552d605, type: 3}
-    volume: 1
+    volume: 0.5
     usePitch: 0
     pitch: 1
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Charging2
     clip: {fileID: 8300000, guid: 11d8f55b18b520c40a717b171bb4a323, type: 3}
     volume: 1
     usePitch: 0
-    pitch: 0.5
+    pitch: 0.4
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Takedown
@@ -1981,6 +2004,7 @@ MonoBehaviour:
     volume: 2
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Jump
@@ -1988,6 +2012,7 @@ MonoBehaviour:
     volume: 1
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Attack2
@@ -1995,6 +2020,7 @@ MonoBehaviour:
     volume: 2
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Dash
@@ -2002,6 +2028,7 @@ MonoBehaviour:
     volume: 2
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: DashSpark
@@ -2009,6 +2036,7 @@ MonoBehaviour:
     volume: 2
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Heal
@@ -2016,6 +2044,7 @@ MonoBehaviour:
     volume: 2
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Die
@@ -2023,6 +2052,15 @@ MonoBehaviour:
     volume: 1
     usePitch: 0
     pitch: 0.9
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Laser
+    clip: {fileID: 8300000, guid: 9c7c624b4c3996b409633f4185c2c96d, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.9
+    playOnManager: 0
     startTime: 0
     endTime: 0
   soundRange: 15

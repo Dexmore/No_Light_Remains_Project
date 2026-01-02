@@ -22,7 +22,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         else
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
-        control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
+        control.attackRange.onTriggetStay2D += TriggerStay2DHandler;
         await UniTask.Yield(token);
         Activate(token).Forget();
         attackedColliders.Clear();
@@ -30,7 +30,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
     public override void Exit()
     {
         base.Exit();
-        control.attackRange.onTriggetStay2D -= Handler_TriggerStay2D;
+        control.attackRange.onTriggetStay2D -= TriggerStay2DHandler;
         chafe?.SetActive(true);
     }
     public async UniTask Activate(CancellationToken token)
@@ -98,7 +98,7 @@ public class LanternKeeperSequenceAttack1 : MonsterState
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
     int attackIndex = 0;
-    void Handler_TriggerStay2D(Collider2D coll)
+    void TriggerStay2DHandler(Collider2D coll)
     {
         if (coll.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         if (attackedColliders.Count >= multiHitCount) return;

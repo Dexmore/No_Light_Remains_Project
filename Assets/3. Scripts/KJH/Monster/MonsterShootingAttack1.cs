@@ -145,7 +145,7 @@ public class MonsterShootingAttack1 : MonsterState
                 }
             }
 
-            Debug.Log($"{isBackBlocked} , {isFrontClear}");
+            //Debug.Log($"{isBackBlocked} , {isFrontClear}");
 
             // 위 여러 검사결과로 판단하여. 뒤 대신 전방으로 길게 직진해야 한다면.
             if (isBackBlocked && isFrontClear)

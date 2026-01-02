@@ -993,15 +993,15 @@ public class MonsterControl : MonoBehaviour
         }
 
         // Hit Small
-        bool pass = true;
-        if (state == State.Idle) pass = false;
-        if (state == State.Pursuit) pass = false;
-        if (state == State.Reposition) pass = false;
-        if (state == State.NormalAttack) pass = false;
-        if (state == State.RangeAttack) pass = false;
-        if (state == State.BiteAttack) pass = false;
-        if (state == State.MovingAttack) pass = false;
-        if (!pass && Random.value <= 0.63f)
+        bool condition = true;
+        if(hData.attackName.Contains("Gear")) condition = false;
+        if (state == State.Pursuit) condition = false;
+        if (state == State.Reposition) condition = false;
+        if (state == State.NormalAttack) condition = false;
+        if (state == State.RangeAttack) condition = false;
+        if (state == State.BiteAttack) condition = false;
+        if (state == State.MovingAttack) condition = false;
+        if (!condition && Random.value <= 0.63f)
         {
             curHitAmount += hData.damage;
             if (maxHitAmount == 0) maxHitAmount = 1.5f * Random.Range(0.11f, 0.26f) * Mathf.Clamp(data.HP, 270, 1100);
@@ -1086,7 +1086,11 @@ public class MonsterControl : MonoBehaviour
         || hitData.attackType == HitData.AttackType.Trap)
             return;
         parryCount++;
-        if (parryCount > data.ParryCount) parryCount = data.ParryCount;
+        if (state.ToString().Contains("Sequenc"))
+        {
+            if (parryCount >= data.ParryCount) parryCount = data.ParryCount - 1;
+            return;
+        }
         if (parryCanvas)
         {
             parryCanvas.SetActive(true);
@@ -1105,10 +1109,14 @@ public class MonsterControl : MonoBehaviour
             ctsParryHUD?.Cancel();
             ctsParryHUD = new CancellationTokenSource();
             CancellationTokenSource ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsParryHUD.Token);
-            parryCountImages[parryCount - 1].color = parryCountColor;
+            for (int i = 0; i < parryCountImages.Length; i++)
+            {
+                if (i <= parryCount - 1)
+                    parryCountImages[i].color = parryCountColor;
+            }
             ParryHUD(parryCount - 1, data.ParryCount, ctsLink.Token).Forget();
         }
-        if (state == State.SequenceAttack1) return;
+        Debug.Log($"------parryCount : {parryCount}------");
         if (parryCount >= data.ParryCount)
         {
             //Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");

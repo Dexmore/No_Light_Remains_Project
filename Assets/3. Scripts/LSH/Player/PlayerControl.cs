@@ -823,10 +823,10 @@ public class PlayerControl : MonoBehaviour
                 }
                 else
                 {
-                    if (currBattery <= 16f)
+                    if (currBattery <= 15f)
                     {
                         if (fsm.currentState == die) continue;
-                        currBattery += 0.7f * interval;
+                        currBattery += 1.3f * interval;
                         currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                         DBManager.I.currData.currBattery = currBattery;
                         hUDBinder.RefreshBattery();

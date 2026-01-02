@@ -147,7 +147,7 @@ public class DialogUI : MonoBehaviour
         nextPageAction1.action.performed += InputButton;
         nextPageAction2.action.performed += InputButton;
         nextPageAction3.action.performed += InputButton;
-        GameManager.I.onDialog += HandlerDialogTrigger;
+        GameManager.I.onDialog += DialogTriggerHandler;
         Close(false);
     }
     void OnDisable()
@@ -155,7 +155,7 @@ public class DialogUI : MonoBehaviour
         nextPageAction1.action.performed -= InputButton;
         nextPageAction2.action.performed -= InputButton;
         nextPageAction3.action.performed -= InputButton;
-        GameManager.I.onDialog -= HandlerDialogTrigger;
+        GameManager.I.onDialog -= DialogTriggerHandler;
         StopCoroutine(nameof(SometimesGlitchTextLoop));
         tweenTriangle?.Kill();
         triangle.gameObject.SetActive(false);
@@ -202,7 +202,7 @@ public class DialogUI : MonoBehaviour
             if (!canvasObject.activeInHierarchy) yield break;
         }
     }
-    void HandlerDialogTrigger(int index, Transform sender)
+    void DialogTriggerHandler(int index, Transform sender)
     {
         Open(index);
     }

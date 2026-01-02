@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 public class LightAppearPlatform : Lanternable, ISavable
 {
     #region Lanternable Complement
-    public override bool isReady { get { return _isReady; } set { _isReady = value; } }
+    public override bool isReady {get; set;}
     public override bool isAuto => false;
     public override ParticleSystem particle => ps;
     public override SpriteRenderer lightPoint => lp;
@@ -24,19 +24,18 @@ public class LightAppearPlatform : Lanternable, ISavable
     int ISavable.ReplayWaitTimeSecond => 0;
     public void SetCompletedImmediately()
     {
-        _isReady = false;
+        isReady = false;
         isComplete = true;
         Step4();
     }
     #endregion
-    bool _isReady;
     ParticleSystem ps;
     SpriteRenderer lp;
     [SerializeField] GameObject platform;
     Collider2D platformColl;
     void Awake()
     {
-        _isReady = true;
+        isReady = true;
         isComplete = false;
         platform?.SetActive(false);
         platform.TryGetComponent(out platformColl);
@@ -50,7 +49,7 @@ public class LightAppearPlatform : Lanternable, ISavable
     }
     public override void Run()
     {
-        _isReady = false;
+        isReady = false;
         isComplete = true;
         Step2();
         AudioManager.I.PlaySFX("UIClick2");
@@ -209,6 +208,7 @@ public class LightAppearPlatform : Lanternable, ISavable
         if (platform == null) return;
         platform.SetActive(true);
         platformColl.enabled = false;
+        isReady = false;
         foreach (var lr in lineRenderers) lr.SetPosition(1, Vector2.zero);
         foreach (var li in light2Ds) li.gameObject.SetActive(false);
         int lineCount = lineRenderers.Length;
@@ -293,6 +293,8 @@ public class LightAppearPlatform : Lanternable, ISavable
             }
             if (light2Ds[i] != null) light2Ds[i].SetShapePath(finalPath);
         }
+        isReady = false;
+        isComplete = true;
     }
 }
 [BurstCompile]
