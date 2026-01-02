@@ -21,6 +21,7 @@ public class MonsterMovingAttack : MonsterState
     float rayLength;
     Ray2D checkRay;
     RaycastHit2D CheckRayHit;
+    public bool canParry;
     public override async UniTask Enter(CancellationToken token)
     {
         TryGetComponent(out monsterShortAttack);
@@ -274,18 +275,21 @@ public class MonsterMovingAttack : MonsterState
         {
             attackedColliders.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            HitData hitData =
+            new HitData
+            (
+                "MovingAttack",
+                transform,
+                coll.transform,
+                Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
+                hitPoint,
+                new string[1] { "Hit2" },
+                staggerType
+            );
+            hitData.isCannotParry = !canParry;
             GameManager.I.onHit.Invoke
             (
-                new HitData
-                (
-                    "MovingAttack",
-                    transform,
-                    coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
-                    hitPoint,
-                    new string[1] { "Hit2" },
-                    staggerType
-                )
+                hitData
             );
         }
     }
