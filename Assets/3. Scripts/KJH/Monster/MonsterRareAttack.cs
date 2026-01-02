@@ -44,10 +44,7 @@ public class MonsterRareAttack : MonsterState
     }
     public async UniTask Activate(CancellationToken token)
     {
-
-        Debug.Log("aa");
-
-
+        
         Transform target;
         target = control.memories.First().Key.transform;
         Vector2 direction = target.position - transform.position;
@@ -61,30 +58,8 @@ public class MonsterRareAttack : MonsterState
 
         anim.Play("RareAttack");
 
-
-
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
 
-        // RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position + Vector2.up, control.groundLayer);
-        // bool isBlocked = false;
-        // for (int i = 0; i < raycastHits.Length; i++)
-        // {
-        //     if (raycastHits[i].collider.isTrigger) continue;
-        //     isBlocked = true;
-        //     break;
-        // }
-        // if (isBlocked)
-        // {
-        //     await UniTask.Yield(token);
-        //     control.ChangeNextState();
-        //     return;
-        // }
-
-
-
-        // anim.Play("RareAttack");
-
-        // await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
     }
     public override void Exit()

@@ -1116,7 +1116,7 @@ public class MonsterControl : MonoBehaviour
             }
             ParryHUD(parryCount - 1, data.ParryCount, ctsLink.Token).Forget();
         }
-        Debug.Log($"------parryCount : {parryCount}------");
+        //Debug.Log($"------parryCount : {parryCount}------");
         if (parryCount >= data.ParryCount)
         {
             //Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
