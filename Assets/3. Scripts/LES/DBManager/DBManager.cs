@@ -633,6 +633,7 @@ public struct CharacterData
         public string Name;
         public bool isNew;
         public bool isEquipped;
+        //public int level; 
     }
     [System.Serializable]
     public struct LanternData
