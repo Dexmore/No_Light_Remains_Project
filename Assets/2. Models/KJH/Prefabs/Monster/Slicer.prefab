@@ -679,6 +679,11 @@ MonoBehaviour:
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
     probability: 0.3
+  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.02
   - dropItem: {fileID: 5740257142740369428, guid: 2914aaaa417bb21449d6879f8408f972, type: 3}
     gold: 0
     record: {fileID: 0}
@@ -690,6 +695,11 @@ MonoBehaviour:
     countRange: {x: 1, y: 1}
     probability: 0.01
   - dropItem: {fileID: 6796166215426491620, guid: 1670ba609e0ebc049aa01ad098a2beaf, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.01
+  - dropItem: {fileID: 5864044104820566245, guid: 817f170ec7a12f748b53d17e433a1142, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
@@ -1239,9 +1249,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 30
+  MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -1249,38 +1259,20 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.02
+      time: 0
       value: 1
-      inSlope: -2.1428576
-      outSlope: -2.1428576
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.06666667
-      value: 0.9
-      inSlope: -2.39074
-      outSlope: -2.39074
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.3031708
-      value: 0.2759549
-      inSlope: -1.5173187
-      outSlope: -1.5173187
-      tangentMode: 34
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -0.39601514
-      outSlope: -0.39601514
-      tangentMode: 34
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1295,7 +1287,7 @@ AudioSource:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1310,7 +1302,7 @@ AudioSource:
       value: 0
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1325,7 +1317,7 @@ AudioSource:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -1347,31 +1339,31 @@ MonoBehaviour:
   soundList:
   - key: Walk
     clip: {fileID: 8300000, guid: 9140fbc2fb6ef3844b972264d59f838f, type: 3}
-    volume: 0.35
+    volume: 0.5
     pitch: 1
     startTime: 0
     endTime: 0
   - key: Attack1
     clip: {fileID: 8300000, guid: 968f85e12b4df5b4ca4833d9ed72c92b, type: 3}
-    volume: 0.35
+    volume: 0.5
     pitch: 1
     startTime: 0
     endTime: 0
   - key: Attack2
     clip: {fileID: 8300000, guid: 65b3ecb27a1d58247848d6212e3cb3b6, type: 3}
-    volume: 0.35
+    volume: 0.5
     pitch: 1
     startTime: 0
     endTime: 0
   - key: Attack3_1
     clip: {fileID: 8300000, guid: b81be547e6d9ade45bcf3d182940880b, type: 3}
-    volume: 0.35
+    volume: 0.5
     pitch: 1
     startTime: 0
     endTime: 0
   - key: Attack3_2
     clip: {fileID: 8300000, guid: b2157f3d681fb574888a38e1526f8d73, type: 3}
-    volume: 0.35
+    volume: 0.5
     pitch: 1
     startTime: 0
     endTime: 0
