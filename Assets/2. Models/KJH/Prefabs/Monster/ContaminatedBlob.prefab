@@ -95,8 +95,8 @@ GameObject:
   - component: {fileID: 8427563198356133083}
   - component: {fileID: 8468160981850405431}
   - component: {fileID: 3017747121280610863}
-  - component: {fileID: 1236277139326798872}
   - component: {fileID: 5334732118028481604}
+  - component: {fileID: 4862117381138504958}
   m_Layer: 6
   m_Name: ContaminatedBlob
   m_TagString: Untagged
@@ -238,22 +238,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1236277139326798872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1612880199952721584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e23350732c309947be60add9a0b5d9f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundPlayer
-  soundData: {fileID: 11400000, guid: 0753710c1c3eaef468830f72bdd5ce4a, type: 2}
-  soundRange: 10
-  playInterval: 0.1
-  showSoundRangeDebug: 1
 --- !u!82 &5334732118028481604
 AudioSource:
   m_ObjectHideFlags: 0
@@ -369,6 +353,38 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4862117381138504958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612880199952721584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a50f5472a08b441409953e5090e67f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundSystem
+  soundList:
+  - key: Crawl
+    clip: {fileID: 8300000, guid: b89fc851d04035242a3f5e7d2e0fc2b9, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Die
+    clip: {fileID: 8300000, guid: b34141ed727279546b99d714c7513393, type: 3}
+    volume: 3
+    usePitch: 0
+    pitch: 0
+    playOnManager: 1
+    startTime: 0
+    endTime: 0
+  soundRange: 15
+  playInterval: 0.1
+  showDebugRange: 1
 --- !u!1 &3785753429681866502
 GameObject:
   m_ObjectHideFlags: 0

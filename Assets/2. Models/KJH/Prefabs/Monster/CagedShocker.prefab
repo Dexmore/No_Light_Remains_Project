@@ -1006,7 +1006,7 @@ GameObject:
   - component: {fileID: 8251926785477482230}
   - component: {fileID: 3668057563191940043}
   - component: {fileID: 5189496062830969253}
-  - component: {fileID: 4705822763885470186}
+  - component: {fileID: 3031099720588311638}
   m_Layer: 6
   m_Name: CagedShocker
   m_TagString: Untagged
@@ -1263,7 +1263,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4705822763885470186
+--- !u!114 &3031099720588311638
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1272,13 +1272,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 8628135345381627966}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e23350732c309947be60add9a0b5d9f, type: 3}
+  m_Script: {fileID: 11500000, guid: a50f5472a08b441409953e5090e67f31, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundPlayer
-  soundData: {fileID: 11400000, guid: d039a1ad01ad89742943483474a626ae, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterSoundSystem
+  soundList:
+  - key: Walk
+    clip: {fileID: 8300000, guid: 7e7f7bef88f04f844b47c661f636896c, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.1
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Attack1
+    clip: {fileID: 8300000, guid: 26f0774589497b74b97a306482357dbe, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.1
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Attack2
+    clip: {fileID: 8300000, guid: ebc3431cebeac36478fcd75fb1c8968d, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 0.1
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Die1
+    clip: {fileID: 8300000, guid: 530b82b878abbca42a972bfc896bfe33, type: 3}
+    volume: 3
+    usePitch: 0
+    pitch: 0.1
+    playOnManager: 1
+    startTime: 0
+    endTime: 0
+  - key: Die2
+    clip: {fileID: 8300000, guid: f931bd4f8bba95f44b60260e91815ff6, type: 3}
+    volume: 3
+    usePitch: 0
+    pitch: 0.1
+    playOnManager: 1
+    startTime: 0
+    endTime: 0
+  - key: Die3
+    clip: {fileID: 8300000, guid: 25f3a7a5ea88efc4288942629e4387cb, type: 3}
+    volume: 0.5
+    usePitch: 0
+    pitch: 0.1
+    playOnManager: 1
+    startTime: 0
+    endTime: 0.5
   soundRange: 15
   playInterval: 0.1
-  showSoundRangeDebug: 1
+  showDebugRange: 1
 --- !u!1001 &7928211210867587276
 PrefabInstance:
   m_ObjectHideFlags: 0

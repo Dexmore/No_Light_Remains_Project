@@ -122,6 +122,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
                 // 만약 끄려고 하거나(같은 아이템 클릭), 바꾸려고 하면(다른 아이템 클릭) 모두 차단
                 Debug.Log($"[Lantern] '{equippedAsset.name}'은 해제할 수 없는 아이템입니다.");
                 if (notificationUI != null) notificationUI.ShowMessage("기본 장착 아이템은 해제할 수 없습니다.");
+                AudioManager.I.PlaySFX("AccessDenied");
                 return; 
             }
         }

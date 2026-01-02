@@ -435,7 +435,7 @@ MonoBehaviour:
   soundList:
   - key: Move1
     clip: {fileID: 8300000, guid: 659b9bd1843f1504ba4c8b74d3af1f54, type: 3}
-    volume: 0.5
+    volume: 1
     usePitch: 0
     pitch: 1
     playOnManager: 0
@@ -443,7 +443,7 @@ MonoBehaviour:
     endTime: 0
   - key: Move2
     clip: {fileID: 8300000, guid: 79c72a050b7c6504290071a9f0d3dd32, type: 3}
-    volume: 0.5
+    volume: 1
     usePitch: 0
     pitch: 1
     playOnManager: 0
@@ -451,7 +451,7 @@ MonoBehaviour:
     endTime: 0
   - key: EnergyChaching
     clip: {fileID: 8300000, guid: 5e13eaa0a6ffd9d47b8218ec3083bd7e, type: 3}
-    volume: 0.5
+    volume: 1
     usePitch: 0
     pitch: 1
     playOnManager: 0
@@ -459,7 +459,7 @@ MonoBehaviour:
     endTime: 0
   - key: Attack1
     clip: {fileID: 8300000, guid: 8b426afb3b2de354a87dd035a4ec52f1, type: 3}
-    volume: 0.5
+    volume: 1
     usePitch: 0
     pitch: 1
     playOnManager: 0
@@ -467,10 +467,18 @@ MonoBehaviour:
     endTime: 0
   - key: Attack2
     clip: {fileID: 8300000, guid: d4e09b201e8402e44b54e93ee4492d84, type: 3}
-    volume: 0.5
+    volume: 1
     usePitch: 0
     pitch: 1
     playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: Die
+    clip: {fileID: 8300000, guid: 71ade612ac95bdd4293b0236c97be05b, type: 3}
+    volume: 1
+    usePitch: 0
+    pitch: 1
+    playOnManager: 1
     startTime: 0
     endTime: 0
   soundRange: 15
@@ -870,7 +878,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &600405430945506212
 Transform:
   m_ObjectHideFlags: 0
@@ -993,8 +1001,8 @@ MonoBehaviour:
       weight: 100
       coolTime: 2.5
     - state: 17
-      weight: 5000
-      coolTime: 1
+      weight: 5
+      coolTime: 10
   - condition: 4
     frequencies:
     - state: 4
