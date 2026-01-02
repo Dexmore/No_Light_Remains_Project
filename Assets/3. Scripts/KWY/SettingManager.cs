@@ -63,7 +63,7 @@ public class SettingManager : SingletonBehaviour<SettingManager>
         {
             audioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.masterVolume)) * 20);
             audioMixer.SetFloat("BGMVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.bgmVolume)) * 20);
-            audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.sfxVolume)) * 20);
+            audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.sfxVolume)) * 20 + 12);
         }
 
         // 3. 언어 설정 적용 (Localization 패키지 사용 시)
@@ -140,7 +140,7 @@ public class SettingData
     public float brightness = 0.4f;
     public float masterVolume = 1.0f;
     public float bgmVolume = 0.5f;
-    public float sfxVolume = 1.0f;
+    public float sfxVolume = 0.5f;
     public string keyBindingOverrides = "";
     public int locale;
     public SettingData()
@@ -150,7 +150,7 @@ public class SettingData
         brightness = 0.4f;
         masterVolume = 1.0f;
         bgmVolume = 0.5f;
-        sfxVolume = 1.0f;
+        sfxVolume = 0.5f;
         keyBindingOverrides = "";
     }
 }

@@ -421,7 +421,7 @@ public class PopupUI : MonoBehaviour
     }
     void SetSFXVolume(float value)
     {
-        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20); // 오디오 믹서 연동 시
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20 + 12); // 오디오 믹서 연동 시
         SettingManager.I.setting.sfxVolume = value;
 
     }
