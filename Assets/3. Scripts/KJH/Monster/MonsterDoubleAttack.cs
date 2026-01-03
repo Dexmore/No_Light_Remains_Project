@@ -145,7 +145,7 @@ public class MonsterDoubleAttack : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
         if (control.isDie) return;
-        anim.Play("NormalAttack");
+        anim.Play("DoubleAttack");
         await UniTask.Delay((int)(1000f * listClearTime), cancellationToken: token);
         attackedColliders.Clear();
         await UniTask.Delay((int)(1000f * (duration - listClearTime)), cancellationToken: token);

@@ -195,10 +195,10 @@ AudioSource:
   m_GameObject: {fileID: 5370766153372647743}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 1914778362587350369, guid: 2d291b9a263a7ea47bf333ff0e02c950, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -208,9 +208,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 15
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -218,20 +218,38 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
+      time: 0.02
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: -2.1428576
+      outSlope: -2.1428576
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.06666667
+      value: 0.9
+      inSlope: -2.39074
+      outSlope: -2.39074
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3031708
+      value: 0.2759549
+      inSlope: -1.5173187
+      outSlope: -1.5173187
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: -0.39601514
+      outSlope: -0.39601514
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -243,10 +261,10 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -261,7 +279,7 @@ AudioSource:
       value: 0
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -276,7 +294,7 @@ AudioSource:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
@@ -298,7 +316,7 @@ MonoBehaviour:
   soundList:
   - key: Move
     clip: {fileID: 8300000, guid: 4b154159278bbac4bae344e5aa3b12e3, type: 3}
-    volume: 1.5
+    volume: 1
     usePitch: 0
     pitch: 0
     playOnManager: 0
@@ -306,7 +324,7 @@ MonoBehaviour:
     endTime: 0
   - key: Attack
     clip: {fileID: 8300000, guid: a451a9c6449054d4e836ca4d2745bd02, type: 3}
-    volume: 1.5
+    volume: 1
     usePitch: 0
     pitch: 0
     playOnManager: 0
@@ -314,7 +332,7 @@ MonoBehaviour:
     endTime: 0
   - key: Die
     clip: {fileID: 8300000, guid: d4d48d7565b9a034a8a220969fc5a54c, type: 3}
-    volume: 1.5
+    volume: 1
     usePitch: 0
     pitch: 0
     playOnManager: 1
