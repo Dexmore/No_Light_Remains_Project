@@ -544,6 +544,30 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
 
+    public int GetGearLevel(string name)
+    {
+        int index = currData.gearDatas.FindIndex(x => x.Name == name);
+        if (index != -1)
+        {
+            return currData.gearDatas[index].level;
+        }
+        return 0; // 없으면 0 리턴
+    }
+
+    public void LevelUpGear(string name)
+    {
+        int index = currData.gearDatas.FindIndex(x => x.Name == name);
+        if (index != -1)
+        {
+            // 구조체는 값 타입이므로 복사 -> 수정 -> 재할당 해야 함
+            CharacterData.GearData data = currData.gearDatas[index];
+            data.level = 1; // 1회 제한이므로 1로 설정 (또는 data.level++)
+            currData.gearDatas[index] = data;
+
+            // (선택사항) 저장 기능을 바로 호출하고 싶다면
+            // Save(); 
+        }
+    }
 
 #if UNITY_EDITOR
     [Space(60)]
@@ -634,6 +658,7 @@ public struct CharacterData
         public bool isNew;
         public int level;
         public bool isEquipped;
+        public int level;
     }
     [System.Serializable]
     public struct LanternData
@@ -687,9 +712,4 @@ public struct CharacterData
         public string Name;
         public int count;
     }
-
-
-
-
-
 }
