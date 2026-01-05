@@ -46,16 +46,16 @@ public class MonsterBiteAttack : MonsterState
         float dist = Mathf.Abs(target.position.x - transform.position.x);
         bool condition = dist < 0.9f * range - 0.1f;
         bool once = false;
-        
+
         RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position + Vector2.up, control.groundLayer);
         bool isBlocked = false;
         for (int i = 0; i < raycastHits.Length; i++)
         {
-            if(raycastHits[i].collider.isTrigger) continue;
+            if (raycastHits[i].collider.isTrigger) continue;
             isBlocked = true;
             break;
         }
-        if(isBlocked)
+        if (isBlocked)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -90,7 +90,7 @@ public class MonsterBiteAttack : MonsterState
                 // 캐릭터 방향 설정
                 if (!once)
                 {
-                    if(control.state == MonsterControl.State.Die) return;
+                    if (control.state == MonsterControl.State.Die) return;
                     anim.Play("Move");
                     once = true;
                     if (moveDirection.x > 0 && model.right.x < 0)
@@ -142,8 +142,9 @@ public class MonsterBiteAttack : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
         if (control.isDie) return;
-        if(control.state == MonsterControl.State.Die) return;
+        if (control.state == MonsterControl.State.Die) return;
         anim.Play("BiteAttack");
+        await UniTask.Delay((int)(1000f * 0.35f), cancellationToken: token);
         // 너무 멀면 앞으로 접근
         dist = Mathf.Abs(target.position.x - transform.position.x);
         condition = dist > 1.1f * range + 0.1f;

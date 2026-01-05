@@ -1256,6 +1256,7 @@ GameObject:
   - component: {fileID: 161726854657673104}
   - component: {fileID: 2360094903198248376}
   - component: {fileID: 1651952747455098986}
+  - component: {fileID: 6904959221262641927}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -1400,6 +1401,9 @@ MonoBehaviour:
     - state: 18
       weight: 5
       coolTime: 140
+    - state: 20
+      weight: 12
+      coolTime: 35
   - condition: 16
     frequencies:
     - state: 16
@@ -1410,10 +1414,13 @@ MonoBehaviour:
       coolTime: 85
     - state: 14
       weight: 300
-      coolTime: 25
+      coolTime: 28
     - state: 25
       weight: 2.5
       coolTime: 100
+    - state: 20
+      weight: 25
+      coolTime: 20
   attackRange: {fileID: 0}
   bgmName: Terra
   state: 0
@@ -1676,6 +1683,21 @@ MonoBehaviour:
   staggerType: 3
   durationRange: {x: 5.5, y: 6.3}
   canParry: 0
+--- !u!114 &6904959221262641927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0370566fdb67904290d3102c42e5092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack2
+  coolTime: 0
+  staggerType: 2
+  durationRange: {x: 2.8, y: 4.2}
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,7 +1875,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 30
+  MaxDistance: 50
   Pan2D: 0
   rolloffMode: 2
   BypassEffects: 0
@@ -1906,7 +1928,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.72
+      value: 0.6
       inSlope: 0
       outSlope: 0
       tangentMode: 34
@@ -2052,7 +2074,7 @@ MonoBehaviour:
     volume: 1
     usePitch: 0
     pitch: 0.9
-    playOnManager: 0
+    playOnManager: 1
     startTime: 0
     endTime: 0
   - key: Laser
