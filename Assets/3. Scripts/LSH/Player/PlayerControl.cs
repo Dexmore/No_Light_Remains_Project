@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using NaughtyAttributes;
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerControl : MonoBehaviour
 {
@@ -909,5 +911,18 @@ public class PlayerControl : MonoBehaviour
 
         _parryHitStopCo = null;
     }
+
+
+
+    [Button]
+    public void Test1()
+    {
+        openInventory.Test1();
+    }
+
+
+
+
+
 
 }

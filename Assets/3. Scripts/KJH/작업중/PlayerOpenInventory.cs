@@ -184,4 +184,16 @@ public class PlayerOpenInventory : IPlayerState
 
     }
 
+
+    public void Test1()
+    {
+        
+    }
+
+
+
+
+
+
+
 }

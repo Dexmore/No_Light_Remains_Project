@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using NaughtyAttributes;
+using DG.Tweening;
 public class BossHUD : MonoBehaviour
 {
     [ReadOnlyInspector] public MonsterControl target;
@@ -22,6 +24,7 @@ public class BossHUD : MonoBehaviour
         canvas.Find("Opening").gameObject.SetActive(false);
         canvas.Find("Wrap").gameObject.SetActive(false);
         canvas.gameObject.SetActive(false);
+        openingChildTr = canvas.Find("Opening").GetChild(0);
     }
     void OnEnable()
     {
@@ -174,6 +177,101 @@ public class BossHUD : MonoBehaviour
             barImage.color = currColor;
         }
     }
+
+
+
+
+
+    Transform openingChildTr;
+    Tween tweenAlpha;
+    [Button]
+    public void Test1()
+    {
+        StopCoroutine(nameof(Test1_co));
+        CanvasGroup group1 = canvas.Find("Opening").GetComponent<CanvasGroup>();
+        CanvasGroup group2 = canvas.Find("Wrap").GetComponent<CanvasGroup>();
+        group1.alpha = 0f;
+        group2.alpha = 0f;
+        RectTransform rectTr = openingChildTr as RectTransform;
+        rectTr.anchoredPosition = new Vector2(400, 0);
+        rectTr.localScale = new Vector3(0.2f, 1f, 1f);
+        rectTr.localRotation = Quaternion.Euler(0f, 0f, -90f);
+        canvas.gameObject.SetActive(true);
+        canvas.Find("Opening").gameObject.SetActive(true);
+        canvas.Find("Wrap").gameObject.SetActive(true);
+        group1.DOKill();
+        group2.DOKill();
+        rectTr.DOKill();
+        tweenAlpha?.Kill();
+        StartCoroutine(nameof(Test1_co));
+    }
+    
+    IEnumerator Test1_co()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(0.2f);
+        canvas.gameObject.SetActive(true);
+        CanvasGroup group1 = canvas.Find("Opening").GetComponent<CanvasGroup>();
+        CanvasGroup group2 = canvas.Find("Wrap").GetComponent<CanvasGroup>();
+        RectTransform rectTr = openingChildTr as RectTransform;
+        // 트랜스폼 연출
+        tweenAlpha = DOTween.To(() => group1.alpha, x => group1.alpha = x, 0.3f, 2f);
+        rectTr.DOLocalRotate(Vector3.zero, 0.35f).SetEase(Ease.OutSine).SetLink(gameObject);
+        yield return YieldInstructionCache.WaitForSeconds(0.3f);
+        rectTr.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutSine).SetLink(gameObject);
+        TMP_Text tMP_Text = canvas.Find("Wrap/Text(BossName)").GetComponent<TMP_Text>();
+        GameManager.I.GlitchText(tMP_Text, 0.25f);
+        yield return YieldInstructionCache.WaitForSeconds(0.3f);
+        AudioManager.I.PlaySFX("BossWarring");
+        group1.DOKill();
+        tweenAlpha?.Kill();
+
+        //크로스페이드
+        float totalDuration = 2.1f;
+        float switchRatio = 0.3f;
+        float progress = 0f;
+        float startAlpha1 = group1.alpha;
+        tweenAlpha = DOTween.To(() => progress, x =>
+        {
+            progress = x;
+            float masterAlpha = progress;
+            if (progress <= switchRatio)
+            {
+                float t = progress / switchRatio;
+                group1.alpha = Mathf.Lerp(startAlpha1, 0f, t);
+                group2.alpha = t;
+            }
+            else
+            {
+                group1.alpha = 0f;
+                group2.alpha = 1f;
+            }
+            group2.alpha *= masterAlpha;
+
+        }, 1f, totalDuration).SetEase(Ease.OutSine).SetLink(gameObject);
+        yield return YieldInstructionCache.WaitForSeconds(0.35f);
+        GameManager.I.GlitchText(tMP_Text, 0.1f);
+        yield return YieldInstructionCache.WaitForSeconds(0.35f);
+        GameManager.I.GlitchText(tMP_Text, 0.1f);
+        yield return YieldInstructionCache.WaitForSeconds(0.7f);
+        canvas.Find("Opening").gameObject.SetActive(false);
+        GameManager.I.GlitchText(tMP_Text, 0.3f);
+        yield return YieldInstructionCache.WaitForSeconds(0.6f);
+        GameManager.I.GlitchText(tMP_Text, 0.1f);
+        yield return YieldInstructionCache.WaitForSeconds(0.6f);
+        GameManager.I.GlitchText(tMP_Text, 0.3f);
+        yield return YieldInstructionCache.WaitForSeconds(totalDuration - 2f);
+
+    }
+
+
+    [Button]
+    public void Test2()
+    {
+
+    }
+
+
+
 
 
 

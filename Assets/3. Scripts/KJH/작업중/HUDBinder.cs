@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using NaughtyAttributes;
+
 public class HUDBinder : MonoBehaviour
 {
     // Player 오브젝트 지정
@@ -283,7 +285,23 @@ public class HUDBinder : MonoBehaviour
         if (element == null) element = clone.gameObject.AddComponent<ItemNoticeText>();
         element.Setup(message);
     }
+
+
+    [Button]
+    public void Test1()
+    {
+
+    }
     
+    [Button]
+    public void Test2()
+    {
+
+    }
+
+
+
+
 
 
 
@@ -291,9 +309,10 @@ public class HUDBinder : MonoBehaviour
 
     // 배터리 소모중 (소모곡선)
 
+    // 배터리 충격식(패링) 많은양 충전 연출
+
     // 배터리 너무오래켜둠 + 부족 경고
 
-    // 배터리 충격식(패링) 많은양 충전 연출
 
 
 
