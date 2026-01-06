@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.Localization.Settings;
 
 public class GearPanelController : MonoBehaviour, ITabContent
 {
@@ -16,6 +17,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
     [SerializeField] private TextMeshProUGUI detailGearName;
     [SerializeField] private Image detailGearImage;
     [SerializeField] private TextMeshProUGUI detailGearDescription;
+    [SerializeField] private TextMeshProUGUI detailEnhanceText;
     [SerializeField] private CostMeterUI detailCostMeter;
     [SerializeField] private GameObject detailModulePanel;
     [Header("내비게이션")]
@@ -25,6 +27,32 @@ public class GearPanelController : MonoBehaviour, ITabContent
     [SerializeField] private NotificationUI notificationUI;
 
     private int _currentEquippedCost = 0;
+
+    private GearData _currentSelectedGear;
+
+    private void Start()
+    {
+        // 언어가 바뀌면 OnLocaleChanged 함수를 실행해라! 라고 등록
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+        
+        // (기존 Start 내용이 있다면 여기에 유지...)
+    }
+
+    private void OnDestroy()
+    {
+        // 게임이 꺼지거나 패널이 사라질 때 이벤트 연결 해제 (메모리 누수 방지)
+        LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    // 언어가 바뀌면 자동으로 호출되는 함수
+    private void OnLocaleChanged(UnityEngine.Localization.Locale locale)
+    {
+        // 패널이 켜져 있고, 선택된 기어가 있다면 화면을 새로고침
+        if (gameObject.activeInHierarchy && _currentSelectedGear != null)
+        {
+            ShowSelectedGearDetails(_currentSelectedGear);
+        }
+    }
 
     public void OnShow()
     {
@@ -173,44 +201,64 @@ public class GearPanelController : MonoBehaviour, ITabContent
     // [핵심 수정] 상세 정보 표시 로직 업데이트
     public void ShowSelectedGearDetails(GearData gear)
     {
+        // 현재 선택된 기어를 변수에 저장 (언어 바뀔 때 다시 쓰려고)
+        _currentSelectedGear = gear; 
+
         if (gear != null)
         {
-            // 1. 이름 (로컬라이징)
-            detailGearName.text = gear.gearName.GetLocalizedString();
-            
-            // 2. 아이콘
+            detailGearName.text = gear.localizedName;
             detailGearImage.sprite = gear.gearIcon;
             detailGearImage.gameObject.SetActive(gear.gearIcon != null);
 
-            // 3. 설명 (0강/1강 및 한글/영어 분기 처리)
-            int currentLevel = DBManager.I.GetGearLevel(gear.name); // 현재 레벨 확인
-            int locale = SettingManager.I.setting.locale; // 0:En, 1:Kr
-
-            string description = "";
-
-            if (currentLevel >= 1)
+            // [수정된 부분] ---------------------------------------------------
+            // 기존의 "값이 있으면 그냥 쓴다"는 if문을 지웠습니다.
+            // 대신 항상 Localization 시스템에 "지금 언어로 줘!"라고 요청합니다.
+            
+            if (detailGearDescription != null)
             {
-                // 1강 상태 -> Sub 텍스트 (강화 효과) 표시
-                description = (locale == 1) ? gear.upgradeSub_KR : gear.upgradeSub_EN;
+                if (!gear.gearDescription.IsEmpty)
+                {
+                    // 비동기로 텍스트 요청 (항상 실행)
+                    gear.gearDescription.GetLocalizedStringAsync().Completed += (op) => 
+                    {
+                        // 로딩이 끝나면 UI에 반영 (UI가 여전히 켜져있는지 체크)
+                        if (detailGearDescription != null && gameObject.activeInHierarchy) 
+                        {
+                            detailGearDescription.text = op.Result;
+                            // 필요하다면 변수에도 업데이트 (선택 사항)
+                            gear.localizedNormalDescription = op.Result; 
+                        }
+                    };
+                }
+                else
+                {
+                    detailGearDescription.text = ""; 
+                }
             }
-            else
+            // ------------------------------------------------------------------
+
+            // 2. 강화 효과 텍스트 (이건 원래 잘 작동했음)
+            if (detailEnhanceText != null)
             {
-                // 0강 상태 -> Main 텍스트 (기본 효과) 표시
-                description = (locale == 1) ? gear.upgradeMain_KR : gear.upgradeMain_EN;
+                // GetEffectText 함수 내부에서 현재 언어를 체크하므로 잘 작동함
+                string effectText = gear.GetEffectText(gear.currentLevel);
+                detailEnhanceText.text = $"<color=#FFD700>{effectText}</color>";
             }
 
-            detailGearDescription.text = description;
-
-            // 4. 코스트 미터
+            // 비용 미터기 설정 (기존 유지)
             detailCostMeter.SetMaxCost(detailCostMeter.GetTotalPipCount());
             detailCostMeter.SetCost(gear.cost);
         }
         else
         {
+            // 선택 해제 시 초기화
             detailGearName.text = "기어 슬롯";
             detailGearImage.sprite = null;
             detailGearImage.gameObject.SetActive(false);
-            detailGearDescription.text = "선택한 기어의 정보가 표시됩니다.";
+            
+            if (detailGearDescription != null) detailGearDescription.text = "";
+            if (detailEnhanceText != null) detailEnhanceText.text = "기어를 선택하세요.";
+
             detailCostMeter.SetMaxCost(detailCostMeter.GetTotalPipCount());
             detailCostMeter.SetCost(0);
         }

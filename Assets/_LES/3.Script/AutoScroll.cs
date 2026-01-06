@@ -36,6 +36,9 @@ public class AutoScroll : MonoBehaviour
         _scrollRect = GetComponent<ScrollRect>();
         _contentRect = _scrollRect.content;
         
+        // [추가] 마우스 휠 입력을 무시하도록 감도를 0으로 강제 설정
+        _scrollRect.scrollSensitivity = 0f;
+
         // [수정] viewport가 null이면 transform을 사용하도록 안전장치 추가
         _viewportRect = _scrollRect.viewport != null ? _scrollRect.viewport : GetComponent<RectTransform>();
     }

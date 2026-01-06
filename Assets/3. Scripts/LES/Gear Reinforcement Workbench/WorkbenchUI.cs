@@ -4,6 +4,8 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization;          // [추가됨] Locale 클래스 사용을 위해 필수
+using UnityEngine.Localization.Settings; // 언어 감지용
 
 public class WorkbenchUI : MonoBehaviour
 {
@@ -20,14 +22,11 @@ public class WorkbenchUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nextEffectText;
     [SerializeField] private Image targetGearImage;
 
-    [Header("추가 정보")]
-    [SerializeField] private TextMeshProUGUI flavorTitleText; 
-    [SerializeField] private TextMeshProUGUI flavorBodyText; 
-
     [Header("강화 UI")]
     [SerializeField] private TextMeshProUGUI[] costTexts;
     [SerializeField] private Button enhanceButton;
     [SerializeField] private TextMeshProUGUI buttonText;
+    [SerializeField] private NotificationUI notificationUI;
 
     private GearData _targetGearData;
     private WorkbenchSlotUI _selectedSlotUI;
@@ -58,6 +57,23 @@ public class WorkbenchUI : MonoBehaviour
                 if (slot != null) _preplacedSlots.Add(slot);
             }
         }
+        
+        // 언어 변경 감지 이벤트 연결
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 해제
+        LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    private void OnLocaleChanged(Locale locale)
+    {
+        if (IsUIActive() && _targetGearData != null)
+        {
+            UpdateInfoUI(_targetGearData); // 언어 변경 시 텍스트 즉시 갱신
+        }
     }
     
     private void Update()
@@ -71,7 +87,11 @@ public class WorkbenchUI : MonoBehaviour
             if (EventSystem.current.currentSelectedGameObject == enhanceButton.gameObject)
             {
                 if (enhanceButton.interactable) enhanceButton.onClick.Invoke();
-                else FindObjectOfType<NotificationUI>()?.ShowMessage("조건이 부족합니다.");
+                else 
+                {
+                    notificationUI.gameObject.SetActive(true);
+                    notificationUI.ShowMessage("조건이 부족합니다.");
+                }
             }
         }
     }
@@ -99,7 +119,6 @@ public class WorkbenchUI : MonoBehaviour
 
         for (int i = 0; i < _preplacedSlots.Count; i++)
         {
-            // 모든 슬롯을 켜서 프리팹에서 설정한 네비게이션 경로가 끊기지 않게 유지
             _preplacedSlots[i].gameObject.SetActive(true); 
             _preplacedSlots[i].SetSelectedState(false); 
 
@@ -115,19 +134,7 @@ public class WorkbenchUI : MonoBehaviour
                 _preplacedSlots[i].SetupEmpty(this);
             }
         }
-
-        // [수정됨] 이 함수가 범인이었습니다. 삭제합니다!
-        // ConnectNavigation(); 
     }
-
-    // [수정됨] ConnectNavigation 함수 전체 삭제 (더 이상 코드로 네비게이션을 덮어쓰지 않음)
-    /*
-    private void ConnectNavigation()
-    {
-        // (코드로 자동 연결하던 로직 제거)
-        // 이제 유니티 인스펙터(Inspector)에서 설정한 Visualize 화살표대로 작동합니다.
-    }
-    */
 
     private System.Collections.IEnumerator SelectFirstSlot()
     {
@@ -158,8 +165,7 @@ public class WorkbenchUI : MonoBehaviour
         if (targetGearImage != null) targetGearImage.gameObject.SetActive(false);
         if (currentEffectText != null) currentEffectText.text = "";
         if (nextEffectText != null) nextEffectText.text = "";
-        if (flavorTitleText != null) flavorTitleText.text = "";
-        if (flavorBodyText != null) flavorBodyText.text = "";
+
         SetInteractable(false, "선택 필요", "-", "-", "-");
     }
 
@@ -174,18 +180,19 @@ public class WorkbenchUI : MonoBehaviour
             targetGearImage.gameObject.SetActive(true);
         }
 
-        if (flavorTitleText != null) flavorTitleText.text = "상세 정보";
-        if (flavorBodyText != null) flavorBodyText.text = ""; 
-
         int currentLevel = DBManager.I.GetGearLevel(data.name);
-        int locale = SettingManager.I.setting.locale;
-        string textLv0 = (locale == 1) ? data.upgradeMain_KR : data.upgradeMain_EN;
-        string textLv1 = (locale == 1) ? data.upgradeSub_KR : data.upgradeSub_EN;
+
+        // [유지] GearData의 함수를 사용하여 로컬라이징(영어/한글) 완벽 동기화
+        string textLv0 = data.GetEffectText(0);
+        string textLv1 = data.GetEffectText(1);
 
         if (currentLevel >= 1)
         {
             if (currentEffectText) currentEffectText.text = $"> {textLv1}";
-            if (nextEffectText) nextEffectText.text = (locale == 1) ? "> 강화 최종 단계" : "> Max Level Reached";
+            
+            bool isKR = LocalizationSettings.SelectedLocale.Identifier.Code.Contains("ko");
+            if (nextEffectText) nextEffectText.text = isKR ? "> 강화 최종 단계" : "> Max Level Reached";
+            
             SetInteractable(false, "강화 완료", "-", "-", "-");
         }
         else
@@ -200,7 +207,7 @@ public class WorkbenchUI : MonoBehaviour
             }
             else
             {
-                SetInteractable(false, "선택(Enter)하여 확정", "-", "-", "-");
+                SetInteractable(false, "선택(Enter)", "-", "-", "-");
             }
         }
     }
@@ -234,6 +241,7 @@ public class WorkbenchUI : MonoBehaviour
                 else if (i == 1) mat2Text = matString;
             }
         }
+
         if (string.IsNullOrEmpty(mat1Text)) mat1Text = "-";
         if (string.IsNullOrEmpty(mat2Text)) mat2Text = "-";
         SetInteractable(isEnough, isEnough ? "강화하기" : "비용 부족", mat1Text, mat2Text, goldText);
@@ -248,7 +256,12 @@ public class WorkbenchUI : MonoBehaviour
 
     private void SetInteractable(bool interactable, string btnText, string info1, string info2, string info3)
     {
-        if (enhanceButton != null) enhanceButton.interactable = interactable;
+        // 핵심 수정: 재료가 부족해도 알림을 띄워야 하므로 버튼은 항상 켜둡니다.
+        if (enhanceButton != null) enhanceButton.interactable = true; 
+
+        // (옵션) 만약 재료 부족 시 버튼 색을 흐리게 하고 싶다면 여기서 Image 색상을 변경하는 로직 추가 가능
+        // 예: enhanceButton.image.color = isPossible ? Color.white : Color.gray;
+
         if (buttonText != null) buttonText.text = btnText;
         if (costTexts.Length > 0) costTexts[0].text = info1;
         if (costTexts.Length > 1) costTexts[1].text = info2;
@@ -261,14 +274,14 @@ public class WorkbenchUI : MonoBehaviour
         var result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
         if (result == EnhancementManager.EnhancementResult.Success)
         {
-            FindObjectOfType<NotificationUI>()?.ShowMessage("강화 성공!");
+            notificationUI.ShowMessage("강화 성공!");
             UpdateInfoUI(_targetGearData);
             if (_selectedSlotUI != null) 
                  EventSystem.current.SetSelectedGameObject(_selectedSlotUI.gameObject);
         }
         else if (result == EnhancementManager.EnhancementResult.MaxLevel)
-            FindObjectOfType<NotificationUI>()?.ShowMessage("이미 강화된 장비입니다.");
+            notificationUI.ShowMessage("이미 강화된 장비입니다.");
         else
-            FindObjectOfType<NotificationUI>()?.ShowMessage("비용이 부족합니다.");
+            notificationUI.ShowMessage("비용이 부족합니다.");
     }
 }
