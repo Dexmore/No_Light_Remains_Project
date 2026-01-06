@@ -994,7 +994,7 @@ public class MonsterControl : MonoBehaviour
 
         // Hit Small
         bool condition = true;
-        if(hData.attackName.Contains("Gear")) condition = false;
+        if (hData.attackName.Contains("Gear")) condition = false;
         if (state == State.Pursuit) condition = false;
         if (state == State.Reposition) condition = false;
         if (state == State.NormalAttack) condition = false;
@@ -1120,6 +1120,7 @@ public class MonsterControl : MonoBehaviour
         if (parryCount >= data.ParryCount)
         {
             //Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
+            AudioManager.I.PlaySFX("MonsterStun", transform.position, null, 0.7f);
             parryCount = 0;
             monsterHit.type = 2;
             monsterHit.prevState = state;

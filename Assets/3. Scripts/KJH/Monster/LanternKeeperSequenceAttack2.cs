@@ -8,7 +8,6 @@ public class LanternKeeperSequenceAttack2 : MonsterState
     int multiHitCount = 1;
     public override MonsterControl.State mapping => MonsterControl.State.SequenceAttack2;
     float range = 1.4f;
-    public HitData.StaggerType staggerType;
     public Vector2 durationRange;
     float duration;
     float damageMultiplier = 1f;
@@ -25,6 +24,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
         attackedColliders.Clear();
+        attackIndex = 0;
     }
     public override void Exit()
     {
@@ -154,36 +154,41 @@ public class LanternKeeperSequenceAttack2 : MonsterState
 
         //1타
         damageMultiplier = 1.1f;
+        attackIndex = 0;
         anim.Play("SequenceAttack2");
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.92f), cancellationToken: token);
-
+        await UniTask.Delay((int)(1000f * 1.08f), cancellationToken: token);
 
         //2타
         damageMultiplier = 1.3f;
+        attackIndex = 1;
         anim.Play("NormalAttack", 0, 0.3f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.7f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 0.86f), cancellationToken: token);
 
         //3타
         damageMultiplier = 1.1f;
+        attackIndex = 2;
         anim.Play("SequenceAttack2", 0, 0.3f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.8f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 0.95f), cancellationToken: token);
+
 
         if (control.HasCondition(MonsterControl.Condition.Phase3))
         {
             //4타
+            await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             damageMultiplier = 1.7f;
+            attackIndex = 3;
             anim.Play("JumpAttack", 0, 0.8f);
             await UniTask.Yield(token);
             attackedColliders.Clear();
             rb.gravityScale = 1.5f;
             rb.AddForce(Vector2.up * 18f + (Vector2)model.right * 2f, ForceMode2D.Impulse);
-            await UniTask.Delay((int)(1000f * 0.2f), cancellationToken: token);
+            await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             rb.gravityScale = 2f;
             await UniTask.Delay((int)(1000f * 0.5f), cancellationToken: token);
             rb.AddForce(Vector2.down * 20f + (Vector2)(target.position - transform.position).normalized * 7.5f, ForceMode2D.Impulse);
@@ -195,6 +200,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         control.ChangeNextState();
 
     }
+    int attackIndex;
     List<Collider2D> attackedColliders = new List<Collider2D>();
     void TriggerStay2DHandler(Collider2D coll)
     {
@@ -206,18 +212,24 @@ public class LanternKeeperSequenceAttack2 : MonsterState
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             HitData hitData = new HitData
             (
-                "SequenceAttack2",
+                $"SequenceAttack2-{attackIndex}",
                 transform,
                 coll.transform,
                 Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
                 hitPoint,
                 new string[1] { "Hit2" },
-                staggerType
+                HitData.StaggerType.None
             );
-            if (control.HasCondition(MonsterControl.Condition.Phase3))
+            if (attackIndex == 3)
+            {
                 hitData.isCannotParry = true;
+                hitData.staggerType = HitData.StaggerType.Middle;
+            }
             else
+            {
                 hitData.isCannotParry = false;
+                hitData.staggerType = HitData.StaggerType.None;
+            }
             GameManager.I.onHit.Invoke
             (
                 hitData
