@@ -27,11 +27,11 @@ public class PlayerParry : IPlayerState
                 adjustedTime1 = parryTime * 1.2f + 0.1f;
                 break;
             case 1:
-                adjustedTime2 = duration * 1.05f + 0.03f;
+                adjustedTime2 = duration * 1.025f + 0.02f;
                 adjustedTime1 = parryTime * 0.8f + 0.05f;
                 break;
             case 2:
-                adjustedTime2 = duration * 1.1f + 0.06f;
+                adjustedTime2 = duration * 1.05f + 0.04f;
                 adjustedTime1 = parryTime * 0.7f;
                 break;
         }

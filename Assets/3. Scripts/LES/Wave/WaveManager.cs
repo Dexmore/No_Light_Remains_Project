@@ -156,7 +156,7 @@ public class WaveManager : MonoBehaviour
 
         GameObject chest = Instantiate(chestPrefab);
         chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 8f * Vector2.up;
-        chest.transform.localRotation = Quaternion.Euler(0f, 0f, -4f);
+        chest.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
     }
 

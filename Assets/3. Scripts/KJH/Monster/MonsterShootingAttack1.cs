@@ -9,8 +9,10 @@ public class MonsterShootingAttack1 : MonsterState
     BulletControl bulletControl;
     public float range;
     public float animationWaitSecond;
+    bool _once;
     public override async UniTask Enter(CancellationToken token)
     {
+
         if (bulletControl == null) bulletControl = FindAnyObjectByType<BulletControl>();
         await UniTask.Yield(token);
         Activate(token).Forget();
@@ -31,6 +33,14 @@ public class MonsterShootingAttack1 : MonsterState
     public List<BulletControl.BulletPatern> bulletPaterns = new List<BulletControl.BulletPatern>();
     public async UniTask Activate(CancellationToken token)
     {
+        if (!_once)
+        {
+            _once = true;
+            control.SetCoolTime(MonsterControl.State.ShootingAttack1, 10f);
+            await UniTask.Yield(token);
+            control.ChangeNextState();
+            return;
+        }
         await UniTask.Yield(token);
         if (control.isDie) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
@@ -147,12 +157,14 @@ public class MonsterShootingAttack1 : MonsterState
 
             //Debug.Log($"{isBackBlocked} , {isFrontClear}");
 
+            float moveSpeedMulti2 = 1f;
             // 위 여러 검사결과로 판단하여. 뒤 대신 전방으로 길게 직진해야 한다면.
             if (isBackBlocked && isFrontClear)
             {
-                repositionDuration = 4.6f;
+                repositionDuration = 2.8f;
+                moveSpeedMulti2 = 1.4f;
                 moveDirection = -moveDirection;
-                Debug.DrawRay(transform.position, 6f * moveDirection, Color.red, 3f);
+                //Debug.DrawRay(transform.position, 6f * moveDirection, Color.red, 3f);
             }
             if (!isBackBlocked)
             {
@@ -215,7 +227,7 @@ public class MonsterShootingAttack1 : MonsterState
                     if (dot < control.data.MoveSpeed)
                     {
                         float multiplier = 1.2f * (control.data.MoveSpeed - dot) + 1.1f;
-                        rb.AddForce(multiplier * moveDirection * 7.4f * (control.data.MoveSpeed + 7.905f) / 1.1f);
+                        rb.AddForce(multiplier * moveDirection * 7.4f * moveSpeedMulti2 * (control.data.MoveSpeed + 7.905f) / 1.1f);
                     }
                 if (!condition) break;
             }

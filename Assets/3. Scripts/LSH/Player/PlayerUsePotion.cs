@@ -8,7 +8,14 @@ public class PlayerUsePotion : IPlayerState
     private readonly PlayerControl ctx;
     private readonly PlayerStateMachine fsm;
     public PlayerUsePotion(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
+
+
+    // 포션 1회 사용으로 차게 할 체력 회복량 (ex. 아래값이 1일경우 최대체력의 100%, 아래값이 0.8일경우 최대체력의 80%, 0.5일경우 최대체력의 50%가 참)
+    private const float hpAmount = 0.5f;
+    // 포션사용 동작 길이
     private const float duration = 1.7f;
+
+
     private float _elapsedTime;
     public IPlayerState prevState;
     [HideInInspector] public float emptyTime;
@@ -166,7 +173,7 @@ public class PlayerUsePotion : IPlayerState
         await UniTask.Yield(token);
         if (once) return;
         once = true;
-        float du = 3.8f;
+        float du = 3.5f;
         //Gear 기어 (신복의 기어) 007_QuickHealGear
         bool outValue = false;
         if (DBManager.I.HasGear("007_QuickHealGear", out outValue))
@@ -183,9 +190,9 @@ public class PlayerUsePotion : IPlayerState
         {
             e += Time.deltaTime;
             float ratio = (e / du);
-            float acceleratedT = ratio * ratio;
+            float acceleratedT = Mathf.Pow(ratio, 1.5f);
             ctx.currHealth = Mathf.Lerp(startHealth, ctx.maxHealth, acceleratedT);
-            ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, ctx.maxHealth);
+            ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, hpAmount * ctx.maxHealth);
             DBManager.I.currData.currHealth = ctx.currHealth;
             await UniTask.Yield(token);
             if (ratio >= 1) break;
