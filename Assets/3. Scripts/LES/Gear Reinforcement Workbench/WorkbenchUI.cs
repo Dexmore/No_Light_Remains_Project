@@ -3,219 +3,285 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem; // [필수] Input System 사용
+using UnityEngine.InputSystem;
+using UnityEngine.Localization;          // [추가됨] Locale 클래스 사용을 위해 필수
+using UnityEngine.Localization.Settings; // 언어 감지용
 
 public class WorkbenchUI : MonoBehaviour
 {
     public System.Action OnClose;
 
-    [Header("1. 패널 및 기본 설정")]
-    [SerializeField] private GameObject panelRoot;
+    [Header("UI 연결")]
+    [SerializeField] private GameObject panelRoot; 
     [SerializeField] private Button closeButton;
+    [SerializeField] private Transform slotContent;
 
-    [Header("2. 슬롯 리스트")]
-    [SerializeField] private Transform slotContent; 
-
-    [Header("3. 중앙 정보")]
-    [SerializeField] private TextMeshProUGUI gearTitleText;       
-    [SerializeField] private TextMeshProUGUI currentEffectText;   
-    [SerializeField] private TextMeshProUGUI nextEffectText;      
+    [Header("정보 표시")]
+    [SerializeField] private TextMeshProUGUI gearTitleText;
+    [SerializeField] private TextMeshProUGUI currentEffectText;
+    [SerializeField] private TextMeshProUGUI nextEffectText;
     [SerializeField] private Image targetGearImage;
 
-    [Header("4. 재료 및 버튼")]
-    [SerializeField] private TextMeshProUGUI[] costTexts; 
-    [SerializeField] private Button enhanceButton; 
-    [SerializeField] private TextMeshProUGUI buttonText;  
+    [Header("강화 UI")]
+    [SerializeField] private TextMeshProUGUI[] costTexts;
+    [SerializeField] private Button enhanceButton;
+    [SerializeField] private TextMeshProUGUI buttonText;
+    [SerializeField] private NotificationUI notificationUI;
 
-    private GearData _selectedGearData;
-    private string _selectedGearName;
+    private GearData _targetGearData;
+    private WorkbenchSlotUI _selectedSlotUI;
     private List<WorkbenchSlotUI> _preplacedSlots = new List<WorkbenchSlotUI>();
+
+    public bool IsUIActive()
+    {
+        if (panelRoot != null)
+            return panelRoot.activeSelf;
+        return false;
+    }
 
     private void Start()
     {
         if(closeButton != null) closeButton.onClick.AddListener(Close);
         if(enhanceButton != null) enhanceButton.onClick.AddListener(OnClickEnhance);
-        if(panelRoot != null) panelRoot.SetActive(false);
+        
+        if(panelRoot != null) 
+        {
+            panelRoot.SetActive(false);
+        }
 
         if (slotContent != null)
         {
             foreach (Transform child in slotContent)
             {
-                var slotScript = child.GetComponent<WorkbenchSlotUI>();
-                if (slotScript != null)
-                {
-                    _preplacedSlots.Add(slotScript);
-                    child.gameObject.SetActive(false);
-                }
+                var slot = child.GetComponent<WorkbenchSlotUI>();
+                if (slot != null) _preplacedSlots.Add(slot);
             }
         }
+        
+        // 언어 변경 감지 이벤트 연결
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
     }
 
+    private void OnDestroy()
+    {
+        // 이벤트 해제
+        LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    private void OnLocaleChanged(Locale locale)
+    {
+        if (IsUIActive() && _targetGearData != null)
+        {
+            UpdateInfoUI(_targetGearData); // 언어 변경 시 텍스트 즉시 갱신
+        }
+    }
+    
     private void Update()
     {
-        // [수정] 구버전 Input.GetKeyDown 제거 -> 신버전 Input System 사용
-        // 이 부분이 에러의 핵심 원인이었습니다.
-        if (panelRoot.activeSelf && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (!IsUIActive() || Keyboard.current == null) return;
+
+        if (Keyboard.current.escapeKey.wasPressedThisFrame) Close();
+        
+        if (Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame)
         {
-            Close();
+            if (EventSystem.current.currentSelectedGameObject == enhanceButton.gameObject)
+            {
+                if (enhanceButton.interactable) enhanceButton.onClick.Invoke();
+                else 
+                {
+                    notificationUI.gameObject.SetActive(true);
+                    notificationUI.ShowMessage("조건이 부족합니다.");
+                }
+            }
         }
     }
 
     public void Open()
     {
         if(panelRoot != null) panelRoot.SetActive(true);
+        
         RefreshSlotList(); 
-        ClearSelection();
+        ClearInfo();
+        _targetGearData = null;
+        StartCoroutine(SelectFirstSlot());
+    }
+    
+    public void Close()
+    {
+        if(panelRoot != null) panelRoot.SetActive(false);
+        OnClose?.Invoke();
+    }
 
-        // [Navigation] UI가 열릴 때 첫 번째 슬롯에 강제로 포커스를 줍니다.
+    private void RefreshSlotList()
+    {
+        if (DBManager.I == null) return;
+        var userGears = DBManager.I.currData.gearDatas;
+
+        for (int i = 0; i < _preplacedSlots.Count; i++)
+        {
+            _preplacedSlots[i].gameObject.SetActive(true); 
+            _preplacedSlots[i].SetSelectedState(false); 
+
+            if (i < userGears.Count)
+            {
+                var userGear = userGears[i];
+                GearData gearData = DBManager.I.itemDatabase.FindGearByName(userGear.Name);
+                if (gearData != null) _preplacedSlots[i].Setup(gearData, this);
+                else _preplacedSlots[i].SetupEmpty(this);
+            }
+            else
+            {
+                _preplacedSlots[i].SetupEmpty(this);
+            }
+        }
+    }
+
+    private System.Collections.IEnumerator SelectFirstSlot()
+    {
+        yield return null;
         if (_preplacedSlots.Count > 0 && _preplacedSlots[0].gameObject.activeSelf)
         {
             EventSystem.current.SetSelectedGameObject(_preplacedSlots[0].gameObject);
         }
     }
 
-    public void Close()
+    public void ShowPreview(GearData data)
     {
-        if(panelRoot != null) panelRoot.SetActive(false);
-        // 닫힐 때 이벤트 발생 -> WorkbenchObject가 받아서 플레이어 상태 복구
-        OnClose?.Invoke();
+        if (_targetGearData == null) UpdateInfoUI(data); 
     }
 
-    private void RefreshSlotList()
+    public void ConfirmSelection(WorkbenchSlotUI slotUI)
     {
-        if (DBManager.I == null || DBManager.I.currData.gearDatas == null) return;
-
-        var userGears = DBManager.I.currData.gearDatas;
-        int count = Mathf.Min(userGears.Count, _preplacedSlots.Count);
-
-        for (int i = 0; i < count; i++)
-        {
-            var userGear = userGears[i];
-            GearData gearData = DBManager.I.itemDatabase.FindGearByName(userGear.Name);
-
-            if (gearData != null)
-            {
-                _preplacedSlots[i].gameObject.SetActive(true);
-                _preplacedSlots[i].Setup(gearData, userGear.Name, this);
-            }
-            else
-            {
-                _preplacedSlots[i].gameObject.SetActive(false);
-            }
-        }
-
-        for (int i = count; i < _preplacedSlots.Count; i++)
-            _preplacedSlots[i].gameObject.SetActive(false);
+        if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(false);
+        _selectedSlotUI = slotUI;
+        _targetGearData = slotUI.Data;
+        if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(true);
+        UpdateInfoUI(_targetGearData);
     }
 
-    public void SelectGear(string gearName, GearData data)
+    private void ClearInfo()
     {
-        _selectedGearName = gearName;
-        _selectedGearData = data;
-        UpdateUI();
+        if (gearTitleText != null) gearTitleText.text = "[ 기어를 선택하세요 ]";
+        if (targetGearImage != null) targetGearImage.gameObject.SetActive(false);
+        if (currentEffectText != null) currentEffectText.text = "";
+        if (nextEffectText != null) nextEffectText.text = "";
+
+        SetInteractable(false, "선택 필요", "-", "-", "-");
     }
 
-    private void UpdateUI()
+    private void UpdateInfoUI(GearData data)
     {
-        if (_selectedGearData == null) return;
+        if (data == null) { ClearInfo(); return; }
 
-        if (gearTitleText != null) gearTitleText.text = $"[ {_selectedGearData.localizedName} ]";
+        if (gearTitleText != null) gearTitleText.text = $"[ {data.localizedName} ]";
         if (targetGearImage != null)
         {
-            targetGearImage.sprite = _selectedGearData.gearIcon;
+            targetGearImage.sprite = data.gearIcon;
             targetGearImage.gameObject.SetActive(true);
         }
 
-        int currentLevel = DBManager.I.GetGearLevel(_selectedGearName);
+        int currentLevel = DBManager.I.GetGearLevel(data.name);
 
-        string normalText = string.IsNullOrEmpty(_selectedGearData.localizedNormalEffect) ? _selectedGearData.localizedEnhancedEffect : _selectedGearData.localizedNormalEffect;
-        string enhanceText = string.IsNullOrEmpty(_selectedGearData.localizedEnhancedEffect) ? "강화 효과 없음" : _selectedGearData.localizedEnhancedEffect;
-
-        if (currentEffectText != null) currentEffectText.text = $"> {normalText}"; 
-        if (nextEffectText != null) nextEffectText.text = $"> {enhanceText}";
+        // [유지] GearData의 함수를 사용하여 로컬라이징(영어/한글) 완벽 동기화
+        string textLv0 = data.GetEffectText(0);
+        string textLv1 = data.GetEffectText(1);
 
         if (currentLevel >= 1)
         {
-            SetInteractable(false, "강화 완료", "-", "-");
+            if (currentEffectText) currentEffectText.text = $"> {textLv1}";
+            
+            bool isKR = LocalizationSettings.SelectedLocale.Identifier.Code.Contains("ko");
+            if (nextEffectText) nextEffectText.text = isKR ? "> 강화 최종 단계" : "> Max Level Reached";
+            
+            SetInteractable(false, "강화 완료", "-", "-", "-");
         }
         else
         {
-            EnhancementManager.LevelInfo info = GetCostInfo(_selectedGearData);
-            
-            string matStr = "";
-            bool isEnough = true;
+            if (currentEffectText) currentEffectText.text = $"> {textLv0}";
+            if (nextEffectText) nextEffectText.text = $"> {textLv1}";
 
-            bool enoughGold = DBManager.I.currData.gold >= info.goldCost;
-            if(!enoughGold) isEnough = false;
-
-            if (info.requiredMaterials != null)
+            if (_targetGearData == data)
             {
-                foreach (var mat in info.requiredMaterials)
-                {
-                    if (mat.item == null) continue;
-                    DBManager.I.HasItem(mat.item.name, out int hasCount);
-                    
-                    if (hasCount < mat.count) isEnough = false;
-                    matStr += $"{mat.item.localizedName} ( {hasCount} / {mat.count} )\n"; 
-                }
+                EnhancementManager.LevelInfo info = GetCostInfo(data);
+                CheckCostAndEnableButton(info);
             }
-            if (string.IsNullOrEmpty(matStr)) matStr = "재료 없음";
-
-            SetInteractable(isEnough, "강화하기", matStr, $"{info.goldCost} G");
+            else
+            {
+                SetInteractable(false, "선택(Enter)", "-", "-", "-");
+            }
         }
+    }
+
+    private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info)
+    {
+        bool isEnough = true;
+        if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
+        string goldText = $"{info.goldCost} G";
+        string mat1Text = "";
+        string mat2Text = "";
+
+        if (info.requiredMaterials != null)
+        {
+            for (int i = 0; i < info.requiredMaterials.Count; i++)
+            {
+                if (i >= 2) break;
+                var mat = info.requiredMaterials[i];
+                if (mat.item == null) continue;
+                string targetName = mat.item.name;
+                int totalCount = 0;
+                if (DBManager.I.currData.itemDatas != null)
+                {
+                    foreach (var dbItem in DBManager.I.currData.itemDatas)
+                        if (dbItem.Name == targetName) totalCount += dbItem.count;
+                }
+                if (totalCount < mat.count) isEnough = false;
+                string color = (totalCount >= mat.count) ? "white" : "red";
+                string matString = $"<color={color}>{mat.item.localizedName} ( {totalCount} / {mat.count} )</color>";
+                if (i == 0) mat1Text = matString;
+                else if (i == 1) mat2Text = matString;
+            }
+        }
+
+        if (string.IsNullOrEmpty(mat1Text)) mat1Text = "-";
+        if (string.IsNullOrEmpty(mat2Text)) mat2Text = "-";
+        SetInteractable(isEnough, isEnough ? "강화하기" : "비용 부족", mat1Text, mat2Text, goldText);
     }
 
     private EnhancementManager.LevelInfo GetCostInfo(GearData data)
     {
         if (data.specificEnhancementSettings != null && data.specificEnhancementSettings.Length > 0)
-        {
             return data.specificEnhancementSettings[0];
-        }
-        return default; 
+        return default;
     }
 
-    private void SetInteractable(bool interactable, string btnText, string matText, string goldText)
+    private void SetInteractable(bool interactable, string btnText, string info1, string info2, string info3)
     {
-        if (enhanceButton != null) enhanceButton.interactable = interactable;
+        // 핵심 수정: 재료가 부족해도 알림을 띄워야 하므로 버튼은 항상 켜둡니다.
+        if (enhanceButton != null) enhanceButton.interactable = true; 
+
+        // (옵션) 만약 재료 부족 시 버튼 색을 흐리게 하고 싶다면 여기서 Image 색상을 변경하는 로직 추가 가능
+        // 예: enhanceButton.image.color = isPossible ? Color.white : Color.gray;
+
         if (buttonText != null) buttonText.text = btnText;
-        if (costTexts.Length > 0) costTexts[0].text = matText;
-        if (costTexts.Length > 1) costTexts[1].text = goldText;
-    }
-
-    private void ClearSelection()
-    {
-        _selectedGearData = null;
-        if (gearTitleText != null) gearTitleText.text = "[ 선택 대기 ]";
-        if (targetGearImage != null) targetGearImage.gameObject.SetActive(false);
-        if (currentEffectText != null) currentEffectText.text = "";
-        if (nextEffectText != null) nextEffectText.text = "";
-        
-        foreach (var t in costTexts) t.text = "-";
-        
-        if (enhanceButton != null) enhanceButton.interactable = false;
-        if (buttonText != null) buttonText.text = "강화하기";
+        if (costTexts.Length > 0) costTexts[0].text = info1;
+        if (costTexts.Length > 1) costTexts[1].text = info2;
+        if (costTexts.Length > 2) costTexts[2].text = info3;
     }
 
     private void OnClickEnhance()
     {
-        if (_selectedGearData == null) return;
-        var result = EnhancementManager.I.TryEnhance(_selectedGearName, _selectedGearData);
-
+        if (_targetGearData == null) return; 
+        var result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
         if (result == EnhancementManager.EnhancementResult.Success)
         {
-            FindObjectOfType<NotificationUI>()?.ShowMessage("강화 성공!");
-            UpdateUI(); 
-            // 강화 후 버튼 비활성화로 포커스가 잃지 않도록, 현재 슬롯 다시 선택
-             if (_preplacedSlots.Count > 0) 
-                 EventSystem.current.SetSelectedGameObject(_preplacedSlots[0].gameObject);
+            notificationUI.ShowMessage("강화 성공!");
+            UpdateInfoUI(_targetGearData);
+            if (_selectedSlotUI != null) 
+                 EventSystem.current.SetSelectedGameObject(_selectedSlotUI.gameObject);
         }
         else if (result == EnhancementManager.EnhancementResult.MaxLevel)
-        {
-            FindObjectOfType<NotificationUI>()?.ShowMessage("이미 강화된 장비입니다.");
-        }
+            notificationUI.ShowMessage("이미 강화된 장비입니다.");
         else
-        {
-            FindObjectOfType<NotificationUI>()?.ShowMessage("비용이 부족합니다.");
-        }
+            notificationUI.ShowMessage("비용이 부족합니다.");
     }
 }
