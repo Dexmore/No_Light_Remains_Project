@@ -1119,7 +1119,7 @@ public class MonsterControl : MonoBehaviour
         //Debug.Log($"------parryCount : {parryCount}------");
         if (parryCount >= data.ParryCount)
         {
-            //Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
+            Debug.Log($"패링성공({parryCount}/{data.ParryCount}) 자세파괴");
             AudioManager.I.PlaySFX("MonsterStun", transform.position, null, 0.7f);
             parryCount = 0;
             monsterHit.type = 2;

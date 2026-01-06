@@ -175,7 +175,10 @@ public class PlayerInteraction : MonoBehaviour
         await UniTask.Delay(110, cancellationToken: token);
         prompt.Close(0);
         await UniTask.Delay(110, cancellationToken: token);
-        iobj.Run();
+        if(iobj)
+        {
+            iobj.Run();
+        }
         flag1 = false;
     }
     void CancelInteract(InputAction.CallbackContext callback)
