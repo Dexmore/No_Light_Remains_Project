@@ -170,7 +170,7 @@ public class BossHUD : MonoBehaviour
             barImage.color = currColor;
         }
     }
-    
+
 
 
 
@@ -222,6 +222,9 @@ public class BossHUD : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         rectTr.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutSine).SetLink(gameObject);
         TMP_Text tMP_Text = canvas.Find("Wrap/Text(BossName)").GetComponent<TMP_Text>();
+        tMP_Text.color = new Color(0.62f, 0.73f, 0.73f);
+        tMP_Text.DOKill();
+        tMP_Text.DOColor(new Color(0.8f, 0.2f, 0.2f), 0.9f).SetEase(Ease.InSine).SetLink(gameObject);
         GameManager.I.GlitchText(tMP_Text, 0.25f);
         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         AudioManager.I.PlaySFX("BossWarring");
@@ -251,19 +254,18 @@ public class BossHUD : MonoBehaviour
 
         }, 1f, totalDuration).SetEase(Ease.OutSine).SetLink(gameObject);
         yield return YieldInstructionCache.WaitForSeconds(0.35f);
-        GameManager.I.GlitchText(tMP_Text, 0.1f);
+        GameManager.I.GlitchText(tMP_Text, 0.13f);
         yield return YieldInstructionCache.WaitForSeconds(0.35f);
-        GameManager.I.GlitchText(tMP_Text, 0.1f);
+        GameManager.I.GlitchText(tMP_Text, 0.13f);
         yield return YieldInstructionCache.WaitForSeconds(0.7f);
+        GameManager.I.GlitchText(tMP_Text, 0.2f);
         canvas.Find("Opening").gameObject.SetActive(false);
-        GameManager.I.GlitchText(tMP_Text, 0.3f);
         yield return YieldInstructionCache.WaitForSeconds(0.6f);
-        GameManager.I.GlitchText(tMP_Text, 0.1f);
+        tMP_Text.DOColor(new Color(0.62f, 0.73f, 0.73f), 0.9f).SetEase(Ease.InSine).SetLink(gameObject);
         yield return YieldInstructionCache.WaitForSeconds(0.6f);
         tweenAlpha?.Kill();
         tweenAlpha2 = DOTween.To(() => group3.alpha, x => group3.alpha = x, 0f, 2f).SetLink(gameObject)
         .OnComplete(() => canvas.Find("Warring").gameObject.SetActive(false));
-        GameManager.I.GlitchText(tMP_Text, 0.3f);
         yield return YieldInstructionCache.WaitForSeconds(totalDuration - 2f);
     }
     void CheckPhase()

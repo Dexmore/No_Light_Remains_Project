@@ -1001,15 +1001,15 @@ public class MonsterControl : MonoBehaviour
         if (state == State.RangeAttack) condition = false;
         if (state == State.BiteAttack) condition = false;
         if (state == State.MovingAttack) condition = false;
-        if (!condition && Random.value <= 0.63f)
+        if (!condition && Random.value <= 0.53f)
         {
             curHitAmount += hData.damage;
-            if (maxHitAmount == 0) maxHitAmount = 1.5f * Random.Range(0.11f, 0.26f) * Mathf.Clamp(data.HP, 270, 1100);
+            if (maxHitAmount == 0) maxHitAmount = 1.2f * Random.Range(0.1f, 0.23f) * Mathf.Clamp(data.HP, 280, 1100);
             if (hitCoolTime == 0) hitCoolTime = Random.Range(0.2f, 0.6f);
             if (hitCoolTime >= 0.5f) hitCoolTime = Random.Range(0.2f, 1f);
             if (curHitAmount >= maxHitAmount && Time.time - prevHitTime > hitCoolTime)
             {
-                if (Random.value < 0.63f)
+                if (Random.value < 0.53f)
                 {
                     monsterHit.type = 1;
                     monsterHit.prevState = state;
