@@ -490,10 +490,6 @@ public class PlayerControl : MonoBehaviour
         }
         else if (hData.attackType != HitData.AttackType.Chafe)
         {
-            if (isHit2) return;
-            isHit2 = true;
-            StopCoroutine(nameof(HitCoolTime2));
-            StartCoroutine(nameof(HitCoolTime2));
             if (_Avoided)
             {
                 GameManager.I.onAvoid.Invoke(hData);
@@ -546,6 +542,10 @@ public class PlayerControl : MonoBehaviour
                     //Debug.Log("패링 불가 공격");
                 }
             }
+            if (isHit2) return;
+            isHit2 = true;
+            StopCoroutine(nameof(HitCoolTime2));
+            StartCoroutine(nameof(HitCoolTime2));
 
             if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
             {

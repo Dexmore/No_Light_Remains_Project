@@ -163,18 +163,18 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         //2타
         damageMultiplier = 1.3f;
         attackIndex = 1;
-        anim.Play("NormalAttack", 0, 0.3f);
+        anim.Play("NormalAttack", 0, 0.28f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.86f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 0.96f), cancellationToken: token);
 
         //3타
         damageMultiplier = 1.1f;
         attackIndex = 2;
-        anim.Play("SequenceAttack2", 0, 0.3f);
+        anim.Play("SequenceAttack2", 0, 0.25f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.95f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 0.96f), cancellationToken: token);
 
 
         if (control.HasCondition(MonsterControl.Condition.Phase3))
