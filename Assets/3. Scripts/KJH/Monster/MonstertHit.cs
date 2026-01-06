@@ -29,18 +29,18 @@ public class MonsterHit : MonsterState
         {
             if (control.isDie) return;
             anim.Play("HitSmall");
-            float rnd = Random.Range(0f, 0.2f);
+            float rnd = 0.5f + Random.Range(0f, 0.2f);
             duration -= rnd;
             float _startTime = Time.time;
             await UniTask.Delay((int)(1000 * 0.1f), cancellationToken: token);
             if (Random.value <= 0.5f)
                 rb.AddForce(2.3f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized, ForceMode2D.Impulse);
-            while(!token.IsCancellationRequested && Time.time - _startTime < rnd)
+            while (!token.IsCancellationRequested && Time.time - _startTime < rnd * 0.8f)
             {
-                rb.AddForce(2f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized);
+                rb.AddForce(0.7f * Random.Range(0.9f, 1.1f) * (direction + 0.2f * Vector3.up).normalized);
                 await UniTask.Yield(token);
             }
-
+            await UniTask.Delay((int)(1000f * rnd * 0.25f), cancellationToken: token);
         }
         else if (type == 2)
         {

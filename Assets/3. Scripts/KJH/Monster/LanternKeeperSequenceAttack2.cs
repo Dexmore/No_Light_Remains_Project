@@ -158,7 +158,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         anim.Play("SequenceAttack2");
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 1.08f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 1.2f), cancellationToken: token);
 
         //2타
         damageMultiplier = 1.3f;
@@ -166,7 +166,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         anim.Play("NormalAttack", 0, 0.28f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.96f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 1.1f), cancellationToken: token);
 
         //3타
         damageMultiplier = 1.1f;
@@ -174,7 +174,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         anim.Play("SequenceAttack2", 0, 0.25f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 0.96f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 1.1f), cancellationToken: token);
 
 
         if (control.HasCondition(MonsterControl.Condition.Phase3))
@@ -193,7 +193,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
             await UniTask.Delay((int)(1000f * 0.5f), cancellationToken: token);
             rb.AddForce(Vector2.down * 20f + (Vector2)(target.position - transform.position).normalized * 7.5f, ForceMode2D.Impulse);
             anim.Play("SlamAttack");
-            await UniTask.Delay((int)(1000f * 1.5f), cancellationToken: token);
+            await UniTask.Delay((int)(1000f * 2.5f), cancellationToken: token);
         }
 
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
