@@ -113,13 +113,13 @@ public class TutorialControl : MonoBehaviour
                 switch (slicer.state)
                 {
                     case MonsterControl.State.NormalAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.42f, 0.47f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.42f, 0.46f, collider, isPlayerReady);
                         break;
                     case MonsterControl.State.MovingAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.5f, 0.55f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.53f, 0.58f, collider, isPlayerReady);
                         break;
                     case MonsterControl.State.ShortAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.46f, 0.51f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.46f, 0.50f, collider, isPlayerReady);
                         break;
                     default:
                         condition = false;

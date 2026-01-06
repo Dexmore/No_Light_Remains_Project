@@ -21,19 +21,19 @@ public class LobbyStoryPanel : MonoBehaviour
     void OnEnable()
     {
         RefreshSlots();
-        DBManager.I.onLogOut += HandlerChangeLogin;
-        DBManager.I.onReLogIn += HandlerChangeLogin;
+        DBManager.I.onLogOut += LoginChangeHandler;
+        DBManager.I.onReLogIn += LoginChangeHandler;
         Opening();
         select = -1;
         isDisable = false;
     }
     void OnDisable()
     {
-        DBManager.I.onLogOut -= HandlerChangeLogin;
-        DBManager.I.onReLogIn -= HandlerChangeLogin;
+        DBManager.I.onLogOut -= LoginChangeHandler;
+        DBManager.I.onReLogIn -= LoginChangeHandler;
         isDisable = true;
     }
-    async void HandlerChangeLogin()
+    async void LoginChangeHandler()
     {
         if (DBManager.I.IsSteamInit())
         {

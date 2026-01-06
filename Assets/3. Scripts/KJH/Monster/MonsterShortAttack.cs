@@ -21,7 +21,7 @@ public class MonsterShortAttack : MonsterState
     RaycastHit2D CheckRayHit;
     public override async UniTask Enter(CancellationToken token)
     {
-        control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
+        control.attackRange.onTriggetStay2D += TriggerStay2DHandler;
         attackedColliders.Clear();
         if (transform.Find("Chafe") != null)
             chafe = transform.Find("Chafe").gameObject;
@@ -160,11 +160,11 @@ public class MonsterShortAttack : MonsterState
     public override void Exit()
     {
         base.Exit();
-        control.attackRange.onTriggetStay2D -= Handler_TriggerStay2D;
+        control.attackRange.onTriggetStay2D -= TriggerStay2DHandler;
         chafe?.SetActive(true);
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
-    void Handler_TriggerStay2D(Collider2D coll)
+    void TriggerStay2DHandler(Collider2D coll)
     {
         if (coll.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         if (attackedColliders.Count >= multiHitCount) return;

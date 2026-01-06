@@ -154,7 +154,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.45, y: 0.02}
-    oldSize: {x: 2.04, y: 1}
+    oldSize: {x: 1.9615384, y: 0.96153843}
     newSize: {x: 2.55, y: 1.25}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -222,6 +222,11 @@ MonoBehaviour:
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 2}
+    probability: 1
+  - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
+    gold: 30
+    record: {fileID: 0}
+    countRange: {x: 5, y: 7}
     probability: 1
 --- !u!50 &-543891441639396560
 Rigidbody2D:

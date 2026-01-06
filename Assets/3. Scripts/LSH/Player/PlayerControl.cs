@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using NaughtyAttributes;
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerControl : MonoBehaviour
 {
@@ -488,17 +490,19 @@ public class PlayerControl : MonoBehaviour
         }
         else if (hData.attackType != HitData.AttackType.Chafe)
         {
+
             if (isHit2) return;
             isHit2 = true;
             StopCoroutine(nameof(HitCoolTime2));
             StartCoroutine(nameof(HitCoolTime2));
+
             if (_Avoided)
             {
                 GameManager.I.onAvoid.Invoke(hData);
                 ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                 AudioManager.I.PlaySFX("Woosh1");
-                hitCoolTime1speed = 5f;
-                hitCoolTime2speed = 5f;
+                hitCoolTime1speed = 10f;
+                hitCoolTime2speed = 10f;
                 return;
             }
             if (_Parred)
@@ -532,8 +536,8 @@ public class PlayerControl : MonoBehaviour
                     currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
-                    hitCoolTime1speed = 2.8f;
-                    hitCoolTime2speed = 2.8f;
+                    hitCoolTime1speed = 30f;
+                    hitCoolTime2speed = 30f;
                     StartCoroutine(nameof(ReleaseParred));
                     return;
                 }
@@ -544,6 +548,7 @@ public class PlayerControl : MonoBehaviour
                     //Debug.Log("패링 불가 공격");
                 }
             }
+            
 
             if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
             {
@@ -823,10 +828,10 @@ public class PlayerControl : MonoBehaviour
                 }
                 else
                 {
-                    if (currBattery <= 16f)
+                    if (currBattery <= 15f)
                     {
                         if (fsm.currentState == die) continue;
-                        currBattery += 0.7f * interval;
+                        currBattery += 1.3f * interval;
                         currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                         DBManager.I.currData.currBattery = currBattery;
                         hUDBinder.RefreshBattery();
@@ -909,5 +914,18 @@ public class PlayerControl : MonoBehaviour
 
         _parryHitStopCo = null;
     }
+
+
+
+    [Button]
+    public void Test1()
+    {
+        openInventory.Test1();
+    }
+
+
+
+
+
 
 }

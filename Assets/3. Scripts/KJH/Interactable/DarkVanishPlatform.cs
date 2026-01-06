@@ -1,14 +1,7 @@
 using UnityEngine;
-//using Unity.Mathematics;
-// using Unity.Burst;
-// using Unity.Jobs;
-// using Unity.Collections;
 using UnityEngine.Rendering.Universal;
-using NaughtyAttributes;
-// using System.Threading.Tasks;
 using DG.Tweening;
 using System.Threading.Tasks;
-// using Random = UnityEngine.Random;
 public class DarkVanishPlatform : Lanternable, ISavable
 {
     #region Lanternable Complement
@@ -34,13 +27,11 @@ public class DarkVanishPlatform : Lanternable, ISavable
     ParticleSystem fogParticle;
     SpriteRenderer lp;
     [SerializeField] GameObject platform;
-    Collider2D platformColl;
     void Awake()
     {
         _isReady = true;
         isComplete = false;
         platform?.SetActive(true);
-        platform.TryGetComponent(out platformColl);
         fogParticle = transform.Find("DarkFogParticle").GetComponent<ParticleSystem>();
         fogParticle?.gameObject.SetActive(true);
         lp = transform.Find("LightPoint").GetComponent<SpriteRenderer>();

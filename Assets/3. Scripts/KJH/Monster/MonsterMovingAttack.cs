@@ -21,10 +21,11 @@ public class MonsterMovingAttack : MonsterState
     float rayLength;
     Ray2D checkRay;
     RaycastHit2D CheckRayHit;
+    public bool canParry;
     public override async UniTask Enter(CancellationToken token)
     {
         TryGetComponent(out monsterShortAttack);
-        control.attackRange.onTriggetStay2D += Handler_TriggerStay2D;
+        control.attackRange.onTriggetStay2D += TriggerStay2DHandler;
         attackedColliders.Clear();
         await UniTask.Yield(token);
         duration = Random.Range(durationRange.x, durationRange.y);
@@ -263,10 +264,10 @@ public class MonsterMovingAttack : MonsterState
     public override void Exit()
     {
         base.Exit();
-        control.attackRange.onTriggetStay2D -= Handler_TriggerStay2D;
+        control.attackRange.onTriggetStay2D -= TriggerStay2DHandler;
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
-    void Handler_TriggerStay2D(Collider2D coll)
+    void TriggerStay2DHandler(Collider2D coll)
     {
         if (coll.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         if (attackedColliders.Count >= multiHitCount) return;
@@ -274,18 +275,21 @@ public class MonsterMovingAttack : MonsterState
         {
             attackedColliders.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
+            HitData hitData =
+            new HitData
+            (
+                "MovingAttack",
+                transform,
+                coll.transform,
+                Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
+                hitPoint,
+                new string[1] { "Hit2" },
+                staggerType
+            );
+            hitData.isCannotParry = !canParry;
             GameManager.I.onHit.Invoke
             (
-                new HitData
-                (
-                    "MovingAttack",
-                    transform,
-                    coll.transform,
-                    Random.Range(0.9f, 1.1f) * damageMultiplier * control.adjustedAttack,
-                    hitPoint,
-                    new string[1] { "Hit2" },
-                    staggerType
-                )
+                hitData
             );
         }
     }

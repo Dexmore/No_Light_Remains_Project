@@ -624,7 +624,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.9
       inSlope: 0
       outSlope: 0
       tangentMode: 34
@@ -703,7 +703,7 @@ MonoBehaviour:
     endTime: 0
   - key: BiteAttack
     clip: {fileID: 8300000, guid: c2c27272a1d97784d81acdb21d2ed79c, type: 3}
-    volume: 1
+    volume: 0.9
     usePitch: 0
     pitch: 0
     playOnManager: 0
@@ -714,7 +714,15 @@ MonoBehaviour:
     volume: 1
     usePitch: 0
     pitch: 0
-    playOnManager: 1
+    playOnManager: 0
+    startTime: 0
+    endTime: 0
+  - key: BiteAttack2
+    clip: {fileID: 8300000, guid: 66a318819df77f949b8b74fb457f3aff, type: 3}
+    volume: 1.2
+    usePitch: 0
+    pitch: 0
+    playOnManager: 0
     startTime: 0
     endTime: 0
   soundRange: 15
@@ -1125,7 +1133,7 @@ MonoBehaviour:
   eye: {fileID: 0}
   parryCount: 0
   startPosition: {x: 0, y: 0}
-  homeValue: 0.8
+  homeValue: 1
 --- !u!114 &4572157595017877094
 MonoBehaviour:
   m_ObjectHideFlags: 0

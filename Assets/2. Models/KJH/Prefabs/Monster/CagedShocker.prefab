@@ -1078,12 +1078,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4983663432883839795, guid: 25af5f7e241e8b84cb0ee3d47318b5ed, type: 3}
+  m_Sprite: {fileID: 508294238, guid: 25af5f7e241e8b84cb0ee3d47318b5ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 8.888889, y: 3.5555556}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1223,7 +1223,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.9
       inSlope: 0
       outSlope: 0
       tangentMode: 34
@@ -1302,10 +1302,10 @@ MonoBehaviour:
     endTime: 0
   - key: Die1
     clip: {fileID: 8300000, guid: 530b82b878abbca42a972bfc896bfe33, type: 3}
-    volume: 3
+    volume: 1
     usePitch: 0
     pitch: 0.1
-    playOnManager: 1
+    playOnManager: 0
     startTime: 0
     endTime: 0
   - key: Die2
@@ -1313,17 +1313,9 @@ MonoBehaviour:
     volume: 3
     usePitch: 0
     pitch: 0.1
-    playOnManager: 1
+    playOnManager: 0
     startTime: 0
     endTime: 0
-  - key: Die3
-    clip: {fileID: 8300000, guid: 25f3a7a5ea88efc4288942629e4387cb, type: 3}
-    volume: 0.5
-    usePitch: 0
-    pitch: 0.1
-    playOnManager: 1
-    startTime: 0
-    endTime: 0.5
   soundRange: 15
   playInterval: 0.1
   showDebugRange: 1

@@ -48,16 +48,16 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     void OnEnable()
     {
         if (GameManager.I != null)
-            GameManager.I.onSceneChange += HandlerSceneChange;
+            GameManager.I.onSceneChange += SceneChangeHandler;
     }
 
     void OnDisable()
     {
         if (GameManager.I != null)
-            GameManager.I.onSceneChange -= HandlerSceneChange;
+            GameManager.I.onSceneChange -= SceneChangeHandler;
     }
 
-    void HandlerSceneChange()
+    void SceneChangeHandler()
     {
         string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         int find = autoBGM.FindIndex(x => x.scneneName == sceneName);

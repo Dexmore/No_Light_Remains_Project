@@ -174,7 +174,7 @@ public class LobbySettingPanel : MonoBehaviour
 
     public void SetSFXVolume(float value)
     {
-        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20);
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20 + 12);
         SettingManager.I.setting.sfxVolume = value;
     }
     public void ClickSound()

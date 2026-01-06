@@ -6,7 +6,7 @@ public class PlayerParry : IPlayerState
     private readonly PlayerStateMachine fsm;
     public PlayerParry(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.6f;   // 총 길이
-    private const float parryTime = 0.22f;   // 패링 시간
+    private const float parryTime = 0.24f;   // 패링 시간
     private float _elapsedTime;
     SFX sfxWait;
     public void Enter()
@@ -27,11 +27,11 @@ public class PlayerParry : IPlayerState
                 adjustedTime1 = parryTime * 1.2f + 0.1f;
                 break;
             case 1:
-                adjustedTime2 = duration * 1.05f + 0.03f;
+                adjustedTime2 = duration * 1.025f + 0.02f;
                 adjustedTime1 = parryTime * 0.8f + 0.05f;
                 break;
             case 2:
-                adjustedTime2 = duration * 1.1f + 0.06f;
+                adjustedTime2 = duration * 1.05f + 0.04f;
                 adjustedTime1 = parryTime * 0.7f;
                 break;
         }
@@ -59,7 +59,7 @@ public class PlayerParry : IPlayerState
     void ParrySuccessHandler(HitData hitData)
     {
         isSuccess = true;
-        if (Time.time - lastSuccesTime < 2f)
+        if (Time.time - lastSuccesTime < 1.8f)
         {
             if (lastSuccesCount % 2 == 0)
             {
