@@ -11,7 +11,7 @@ public class PlayerUsePotion : IPlayerState
 
 
     // 포션 1회 사용으로 차게 할 체력 회복량 (ex. 아래값이 1일경우 최대체력의 100%, 아래값이 0.8일경우 최대체력의 80%, 0.5일경우 최대체력의 50%가 참)
-    private const float hpAmount = 0.5f;
+    private const float healAmount = 0.5f;
     // 포션사용 동작 길이
     private const float duration = 1.7f;
 
@@ -184,19 +184,27 @@ public class PlayerUsePotion : IPlayerState
             }
         }
         float e = 0;
+        // 1. 계산 영역 (루프 진입 전)
         float startHealth = DBManager.I.currData.currHealth;
-        ctx.hUDBinder.Refresh(du + 1.5f);
+        float amountToHeal = healAmount * ctx.maxHealth;
+        float targetHealth = Mathf.Min(startHealth + amountToHeal, ctx.maxHealth);
+
         while (!token.IsCancellationRequested)
         {
             e += Time.deltaTime;
-            float ratio = (e / du);
+            float ratio = Mathf.Clamp01(e / du); // ratio가 1을 넘지 않도록 방어
             float acceleratedT = Mathf.Pow(ratio, 1.5f);
-            ctx.currHealth = Mathf.Lerp(startHealth, ctx.maxHealth, acceleratedT);
-            ctx.currHealth = Mathf.Clamp(ctx.currHealth, 0f, hpAmount * ctx.maxHealth);
+
+            // Lerp의 시작값과 끝값을 고정했으므로, 240에서 490까지 부드럽게 증가합니다.
+            ctx.currHealth = Mathf.Lerp(startHealth, targetHealth, acceleratedT);
+
+            // 데이터 업데이트
             DBManager.I.currData.currHealth = ctx.currHealth;
+
+            if (ratio >= 1f) break;
             await UniTask.Yield(token);
-            if (ratio >= 1) break;
         }
+
     }
 
 
