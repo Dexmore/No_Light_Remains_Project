@@ -490,13 +490,19 @@ public class PlayerControl : MonoBehaviour
         }
         else if (hData.attackType != HitData.AttackType.Chafe)
         {
+
+            if (isHit2) return;
+            isHit2 = true;
+            StopCoroutine(nameof(HitCoolTime2));
+            StartCoroutine(nameof(HitCoolTime2));
+
             if (_Avoided)
             {
                 GameManager.I.onAvoid.Invoke(hData);
                 ParticleManager.I.PlayText("Miss", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
                 AudioManager.I.PlaySFX("Woosh1");
-                hitCoolTime1speed = 5f;
-                hitCoolTime2speed = 5f;
+                hitCoolTime1speed = 20f;
+                hitCoolTime2speed = 20f;
                 return;
             }
             if (_Parred)
@@ -530,8 +536,8 @@ public class PlayerControl : MonoBehaviour
                     currBattery += lanternParryAmount * tempFloat;
                     currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
                     hUDBinder.RefreshBattery();
-                    hitCoolTime1speed = 2.8f;
-                    hitCoolTime2speed = 2.8f;
+                    hitCoolTime1speed = 20f;
+                    hitCoolTime2speed = 20f;
                     StartCoroutine(nameof(ReleaseParred));
                     return;
                 }
@@ -542,10 +548,7 @@ public class PlayerControl : MonoBehaviour
                     //Debug.Log("패링 불가 공격");
                 }
             }
-            if (isHit2) return;
-            isHit2 = true;
-            StopCoroutine(nameof(HitCoolTime2));
-            StartCoroutine(nameof(HitCoolTime2));
+            
 
             if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
             {
