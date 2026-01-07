@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Localization;          // [추가됨] Locale 클래스 사용을 위해 필수
-using UnityEngine.Localization.Settings; // 언어 감지용
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class WorkbenchUI : MonoBehaviour
 {
@@ -16,14 +17,21 @@ public class WorkbenchUI : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Transform slotContent;
 
-    [Header("정보 표시")]
+    [Header("부팅 연출")]
+    [SerializeField] private BootTerminal bootTerminal;       
+    [SerializeField] private GameObject mainContentRoot;      
+
+    [Header("정보 표시 (타이핑 대상)")]
     [SerializeField] private TextMeshProUGUI gearTitleText;
     [SerializeField] private TextMeshProUGUI currentEffectText;
     [SerializeField] private TextMeshProUGUI nextEffectText;
     [SerializeField] private Image targetGearImage;
 
+    [Header("타이핑 설정")]
+    [SerializeField] private float typingSpeed = 0.02f; // 글자당 속도
+
     [Header("강화 UI")]
-    [SerializeField] private TextMeshProUGUI[] costTexts;
+    [SerializeField] private TextMeshProUGUI[] costTexts; // 0:재료1, 1:재료2, 2:골드
     [SerializeField] private Button enhanceButton;
     [SerializeField] private TextMeshProUGUI buttonText;
     [SerializeField] private NotificationUI notificationUI;
@@ -32,10 +40,11 @@ public class WorkbenchUI : MonoBehaviour
     private WorkbenchSlotUI _selectedSlotUI;
     private List<WorkbenchSlotUI> _preplacedSlots = new List<WorkbenchSlotUI>();
 
+    private Dictionary<TextMeshProUGUI, Coroutine> _activeTypingCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
+
     public bool IsUIActive()
     {
-        if (panelRoot != null)
-            return panelRoot.activeSelf;
+        if (panelRoot != null) return panelRoot.activeSelf;
         return false;
     }
 
@@ -44,10 +53,7 @@ public class WorkbenchUI : MonoBehaviour
         if(closeButton != null) closeButton.onClick.AddListener(Close);
         if(enhanceButton != null) enhanceButton.onClick.AddListener(OnClickEnhance);
         
-        if(panelRoot != null) 
-        {
-            panelRoot.SetActive(false);
-        }
+        if(panelRoot != null) panelRoot.SetActive(false);
 
         if (slotContent != null)
         {
@@ -58,27 +64,31 @@ public class WorkbenchUI : MonoBehaviour
             }
         }
         
-        // 언어 변경 감지 이벤트 연결
         LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
     }
 
     private void OnDestroy()
     {
-        // 이벤트 해제
         LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    private void OnDisable()
+    {
+        StopAllTyping();
     }
 
     private void OnLocaleChanged(Locale locale)
     {
         if (IsUIActive() && _targetGearData != null)
         {
-            UpdateInfoUI(_targetGearData); // 언어 변경 시 텍스트 즉시 갱신
+            UpdateInfoUI(_targetGearData); 
         }
     }
     
     private void Update()
     {
         if (!IsUIActive() || Keyboard.current == null) return;
+        if (mainContentRoot != null && !mainContentRoot.activeSelf) return;
 
         if (Keyboard.current.escapeKey.wasPressedThisFrame) Close();
         
@@ -100,15 +110,34 @@ public class WorkbenchUI : MonoBehaviour
     {
         if(panelRoot != null) panelRoot.SetActive(true);
         
+        if (bootTerminal != null)
+        {
+            if (mainContentRoot != null) mainContentRoot.SetActive(false);
+            bootTerminal.PlayBootSequence(() => 
+            {
+                if (mainContentRoot != null) mainContentRoot.SetActive(true);
+                InitWorkbenchLogic();
+            });
+        }
+        else
+        {
+            if (mainContentRoot != null) mainContentRoot.SetActive(true);
+            InitWorkbenchLogic();
+        }
+    }
+    
+    private void InitWorkbenchLogic()
+    {
         RefreshSlotList(); 
         ClearInfo();
         _targetGearData = null;
         StartCoroutine(SelectFirstSlot());
     }
-    
+
     public void Close()
     {
         if(panelRoot != null) panelRoot.SetActive(false);
+        StopAllTyping();
         OnClose?.Invoke();
     }
 
@@ -152,28 +181,48 @@ public class WorkbenchUI : MonoBehaviour
 
     public void ConfirmSelection(WorkbenchSlotUI slotUI)
     {
+        // 1. 선택 취소(토글)
+        if (_selectedSlotUI == slotUI)
+        {
+            slotUI.SetSelectedState(false);
+            _selectedSlotUI = null;
+            _targetGearData = null;
+            ClearInfo(); 
+            return;
+        }
+
+        // 2. 새로운 선택
         if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(false);
+        
         _selectedSlotUI = slotUI;
         _targetGearData = slotUI.Data;
+        
         if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(true);
         UpdateInfoUI(_targetGearData);
     }
 
     private void ClearInfo()
     {
-        if (gearTitleText != null) gearTitleText.text = "[ 기어를 선택하세요 ]";
+        SetTextInstant(gearTitleText, "[ 기어를 선택하세요 ]");
+        
         if (targetGearImage != null) targetGearImage.gameObject.SetActive(false);
-        if (currentEffectText != null) currentEffectText.text = "";
-        if (nextEffectText != null) nextEffectText.text = "";
+        
+        SetTextInstant(currentEffectText, "");
+        SetTextInstant(nextEffectText, "");
 
-        SetInteractable(false, "선택 필요", "-", "-", "-");
+        if (costTexts.Length > 0) SetTextInstant(costTexts[0], "-");
+        if (costTexts.Length > 1) SetTextInstant(costTexts[1], "-");
+        if (costTexts.Length > 2) SetTextInstant(costTexts[2], "-");
+
+        UpdateEnhanceButtonState(false, "선택 필요");
     }
 
     private void UpdateInfoUI(GearData data)
     {
         if (data == null) { ClearInfo(); return; }
 
-        if (gearTitleText != null) gearTitleText.text = $"[ {data.localizedName} ]";
+        SetTextTyping(gearTitleText, $"[ {data.localizedName} ]");
+
         if (targetGearImage != null)
         {
             targetGearImage.sprite = data.gearIcon;
@@ -181,44 +230,105 @@ public class WorkbenchUI : MonoBehaviour
         }
 
         int currentLevel = DBManager.I.GetGearLevel(data.name);
-
-        // [유지] GearData의 함수를 사용하여 로컬라이징(영어/한글) 완벽 동기화
         string textLv0 = data.GetEffectText(0);
         string textLv1 = data.GetEffectText(1);
 
         if (currentLevel >= 1)
         {
-            if (currentEffectText) currentEffectText.text = $"> {textLv1}";
-            
+            SetTextTyping(currentEffectText, $"> {textLv1}");
             bool isKR = LocalizationSettings.SelectedLocale.Identifier.Code.Contains("ko");
-            if (nextEffectText) nextEffectText.text = isKR ? "> 강화 최종 단계" : "> Max Level Reached";
+            SetTextTyping(nextEffectText, isKR ? "> 강화 최종 단계" : "> Max Level Reached");
             
-            SetInteractable(false, "강화 완료", "-", "-", "-");
+            if (costTexts.Length > 0) SetTextTyping(costTexts[0], "-");
+            if (costTexts.Length > 1) SetTextTyping(costTexts[1], "-");
+            if (costTexts.Length > 2) SetTextTyping(costTexts[2], "-");
+
+            UpdateEnhanceButtonState(false, "강화 완료");
         }
         else
         {
-            if (currentEffectText) currentEffectText.text = $"> {textLv0}";
-            if (nextEffectText) nextEffectText.text = $"> {textLv1}";
+            SetTextTyping(currentEffectText, $"> {textLv0}");
+            SetTextTyping(nextEffectText, $"> {textLv1}");
 
-            if (_targetGearData == data)
-            {
-                EnhancementManager.LevelInfo info = GetCostInfo(data);
-                CheckCostAndEnableButton(info);
-            }
-            else
-            {
-                SetInteractable(false, "선택(Enter)", "-", "-", "-");
-            }
+            // [핵심 변경] 선택 여부와 관계없이 재료 정보는 항상 계산해서 보여줍니다.
+            EnhancementManager.LevelInfo info = GetCostInfo(data);
+            bool isSelected = (_targetGearData == data);
+            
+            CheckCostAndEnableButton(info, isSelected);
         }
     }
 
-    private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info)
+    // ================= [타이핑 효과 로직] =================
+
+    private void SetTextTyping(TextMeshProUGUI target, string content)
+    {
+        if (target == null) return;
+        
+        // [수정됨] 이미 같은 내용이 적혀있다면 타이핑을 다시 시작하지 않음 (선택 시 재출력 방지)
+        if (target.text == content) return;
+
+        if (_activeTypingCoroutines.ContainsKey(target) && _activeTypingCoroutines[target] != null)
+        {
+            StopCoroutine(_activeTypingCoroutines[target]);
+        }
+
+        _activeTypingCoroutines[target] = StartCoroutine(TypewriterRoutine(target, content));
+    }
+
+    private void SetTextInstant(TextMeshProUGUI target, string content)
+    {
+        if (target == null) return;
+        
+        if (_activeTypingCoroutines.ContainsKey(target) && _activeTypingCoroutines[target] != null)
+        {
+            StopCoroutine(_activeTypingCoroutines[target]);
+            _activeTypingCoroutines.Remove(target);
+        }
+
+        target.text = content;
+        target.maxVisibleCharacters = int.MaxValue; 
+    }
+
+    private IEnumerator TypewriterRoutine(TextMeshProUGUI tmp, string content)
+    {
+        tmp.text = content;
+        tmp.maxVisibleCharacters = 0; 
+        
+        tmp.ForceMeshUpdate(); 
+        
+        int totalVisibleCharacters = tmp.textInfo.characterCount; 
+        int counter = 0;
+
+        while (counter <= totalVisibleCharacters)
+        {
+            int visibleCount = counter % (totalVisibleCharacters + 1);
+            tmp.maxVisibleCharacters = visibleCount; 
+            yield return new WaitForSeconds(typingSpeed); 
+            counter++;
+        }
+        
+        tmp.maxVisibleCharacters = int.MaxValue; 
+        _activeTypingCoroutines.Remove(tmp);
+    }
+
+    private void StopAllTyping()
+    {
+        foreach (var coroutine in _activeTypingCoroutines.Values)
+        {
+            if (coroutine != null) StopCoroutine(coroutine);
+        }
+        _activeTypingCoroutines.Clear();
+    }
+
+    // =======================================================
+
+    private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info, bool isSelected)
     {
         bool isEnough = true;
         if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
         string goldText = $"{info.goldCost} G";
-        string mat1Text = "";
-        string mat2Text = "";
+        string mat1Text = "-";
+        string mat2Text = "-";
 
         if (info.requiredMaterials != null)
         {
@@ -241,10 +351,21 @@ public class WorkbenchUI : MonoBehaviour
                 else if (i == 1) mat2Text = matString;
             }
         }
-
-        if (string.IsNullOrEmpty(mat1Text)) mat1Text = "-";
-        if (string.IsNullOrEmpty(mat2Text)) mat2Text = "-";
-        SetInteractable(isEnough, isEnough ? "강화하기" : "비용 부족", mat1Text, mat2Text, goldText);
+        
+        // [변경] 프리뷰 상태여도 재료 텍스트는 보여줍니다.
+        if (costTexts.Length > 0) SetTextTyping(costTexts[0], mat1Text);
+        if (costTexts.Length > 1) SetTextTyping(costTexts[1], mat2Text);
+        if (costTexts.Length > 2) SetTextTyping(costTexts[2], goldText);
+        
+        // 버튼 텍스트는 선택 여부에 따라 다르게 표시
+        if (isSelected)
+        {
+            UpdateEnhanceButtonState(isEnough, isEnough ? "강화하기" : "비용 부족");
+        }
+        else
+        {
+            UpdateEnhanceButtonState(true, "선택(Enter)"); // 아직 선택 안 함
+        }
     }
 
     private EnhancementManager.LevelInfo GetCostInfo(GearData data)
@@ -254,18 +375,10 @@ public class WorkbenchUI : MonoBehaviour
         return default;
     }
 
-    private void SetInteractable(bool interactable, string btnText, string info1, string info2, string info3)
+    private void UpdateEnhanceButtonState(bool interactable, string btnText)
     {
-        // 핵심 수정: 재료가 부족해도 알림을 띄워야 하므로 버튼은 항상 켜둡니다.
         if (enhanceButton != null) enhanceButton.interactable = true; 
-
-        // (옵션) 만약 재료 부족 시 버튼 색을 흐리게 하고 싶다면 여기서 Image 색상을 변경하는 로직 추가 가능
-        // 예: enhanceButton.image.color = isPossible ? Color.white : Color.gray;
-
         if (buttonText != null) buttonText.text = btnText;
-        if (costTexts.Length > 0) costTexts[0].text = info1;
-        if (costTexts.Length > 1) costTexts[1].text = info2;
-        if (costTexts.Length > 2) costTexts[2].text = info3;
     }
 
     private void OnClickEnhance()
