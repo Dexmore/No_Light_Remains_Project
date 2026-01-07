@@ -92,7 +92,9 @@ public class PlayerUsePotion : IPlayerState
         sfxFlag3 = false;
         aniFlag1 = false;
         sfx?.Despawn();
+        sfx = null;
         upa?.Despawn();
+        upa = null;
     }
     SFX sfx;
     bool sfxFlag1 = false;
@@ -204,6 +206,7 @@ public class PlayerUsePotion : IPlayerState
             if (ratio >= 1f) break;
             await UniTask.Yield(token);
         }
+        once = false;
 
     }
 

@@ -71,7 +71,6 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction onSceneChange = () => { };
     public UnityAction onSceneChangeBefore = () => { };
     public UnityAction onBackToLobby = () => { };
-
     void OnEnable()
     {
         InitFade();
@@ -921,7 +920,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             isOpenInventory = false;
             isShowPop0 = false;
             isSuperNovaGearEquip = false; //검사 필요
-                                          //Gear 기어 (초신성 기어) 006_SuperNovaGear
+            //Gear 기어 (초신성 기어) 006_SuperNovaGear
             bool outValue1 = false;
             if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
             {
@@ -938,11 +937,19 @@ public class GameManager : SingletonBehaviour<GameManager>
             {
                 GameManager.I.isSuperNovaGearEquip = false;
             }
-
-
-
         }
     }
+
+
+    [SerializeField] AfterImageEffect afterImageEffectPrefab;
+
+    public void PlayAfterImageEffect(SpriteRenderer targetSR, float duration, int fps = 8)
+    {
+        AfterImageEffect clone = Instantiate(afterImageEffectPrefab);
+        clone.transform.position = Vector3.zero;
+        clone.Init(targetSR, duration, fps);
+    }
+
 
 
 

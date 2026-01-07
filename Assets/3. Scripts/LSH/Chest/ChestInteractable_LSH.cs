@@ -12,6 +12,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
     int ISavable.ReplayWaitTimeSecond => replayWaitTimeSecond;
     public void SetCompletedImmediately()
     {
+        isReady = false;
         isComplete = true;
         col.enabled = false;
         animator.Play("Empty");
@@ -53,7 +54,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
 
     public override void Run()
     {
-        if (!isReady || opened) return;
+        if (!isReady || isComplete || opened) return;
         OpenChest();
         GameManager.I.ach_chestCount++;
         if(GameManager.I.ach_chestCount >= 5)
@@ -65,6 +66,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
     {
         opened = true;
         isReady = false;
+        isComplete = true;
         // 애니메이션 트리거
         if (animator)
         {
@@ -141,7 +143,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
 
             await Task.Delay(10);
         }
-        isComplete = true;
+        
     }
 
 }

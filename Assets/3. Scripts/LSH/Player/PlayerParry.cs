@@ -70,7 +70,7 @@ public class PlayerParry : IPlayerState
                 ctx.animator.Play("Player_Parry");
             }
             lastSuccesCount++;
-            if(lastSuccesCount == 4)
+            if (lastSuccesCount == 4)
             {
                 DBManager.I.SteamAchievement("ACH_PARRY_COMBO_4");
             }
@@ -112,11 +112,11 @@ public class PlayerParry : IPlayerState
             }
         }
         GameManager.I.ach_parryCount++;
-        if(GameManager.I.ach_parryCount == 1)
+        if (GameManager.I.ach_parryCount == 1)
         {
             DBManager.I.SteamAchievement("ACH_PARRY_FIRST");
         }
-        if(GameManager.I.ach_parryCount >= 50)
+        if (GameManager.I.ach_parryCount >= 50)
         {
             DBManager.I.SteamAchievement("ACH_PARRY_COUNT_50");
             GameManager.I.ach_parryCount = 0;

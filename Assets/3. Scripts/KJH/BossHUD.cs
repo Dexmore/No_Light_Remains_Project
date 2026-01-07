@@ -308,6 +308,7 @@ public class BossHUD : MonoBehaviour
         }
         yield return YieldInstructionCache.WaitForSeconds(2.7f);
         horLines?.Despawn();
+        horLines = null;
         text.DOKill();
         text.DOFade(0f, 0.5f).SetLink(gameObject);
     }

@@ -32,6 +32,8 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         base.Exit();
         control.attackRange.onTriggetStay2D -= TriggerStay2DHandler;
         chafe?.SetActive(true);
+        verticalLines?.Despawn();
+        verticalLines = null;
     }
     public async UniTask Activate(CancellationToken token)
     {
@@ -53,11 +55,11 @@ public class LanternKeeperSequenceAttack1 : MonsterState
         bool isBlocked = false;
         for (int i = 0; i < raycastHits.Length; i++)
         {
-            if(raycastHits[i].collider.isTrigger) continue;
+            if (raycastHits[i].collider.isTrigger) continue;
             isBlocked = true;
             break;
         }
-        if(isBlocked)
+        if (isBlocked)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -66,15 +68,21 @@ public class LanternKeeperSequenceAttack1 : MonsterState
 
         // 1번 공격
         attackIndex = 0;
-        if(control.state == MonsterControl.State.Die) return;
+        if (control.state == MonsterControl.State.Die) return;
         anim.Play("JumpAttack");
         await UniTask.Delay(900, cancellationToken: token);
         rb.AddForce(Vector2.up * 26f + (Vector2)model.right * 6f, ForceMode2D.Impulse);
         await UniTask.Delay(180, cancellationToken: token);
         rb.gravityScale = 1.51f;
+        SpriteRenderer sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        if (sr)
+        {
+            GameManager.I.PlayAfterImageEffect(sr, 2.3f);
+        }
         await UniTask.Delay(460, cancellationToken: token);
         rb.gravityScale = 2f;
         attackedColliders.Clear();
+        verticalLines = ParticleManager.I.PlayUIParticle("UIVerticalLines", new Vector2(960, 540), Quaternion.identity);
         await UniTask.Delay(140, cancellationToken: token);
         moveDirection = target.position - transform.position;
         moveDirection.y = 0;
@@ -85,17 +93,19 @@ public class LanternKeeperSequenceAttack1 : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         rb.AddForce(Vector2.down * 27f + (Vector2)(target.position - transform.position).normalized * 9.5f, ForceMode2D.Impulse);
         await UniTask.WaitUntil(() => control.isGround, cancellationToken: token);
-
         // 2번 공격
         attackIndex = 1;
-        if(control.state == MonsterControl.State.Die) return;
+        if (control.state == MonsterControl.State.Die) return;
         anim.Play("SlamAttack");
         await UniTask.Delay(600, cancellationToken: token);
+        verticalLines?.Despawn();
+        verticalLines = null;
         chafe?.SetActive(true);
         int dur = Random.Range((int)(durationRange.x * 1000f), (int)(durationRange.y * 1000f));
         await UniTask.Delay(dur, cancellationToken: token);
         control.ChangeNextState();
     }
+    UIParticle verticalLines;
     List<Collider2D> attackedColliders = new List<Collider2D>();
     int attackIndex = 0;
     void TriggerStay2DHandler(Collider2D coll)

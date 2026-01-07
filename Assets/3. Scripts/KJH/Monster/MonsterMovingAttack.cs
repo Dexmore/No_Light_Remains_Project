@@ -31,6 +31,7 @@ public class MonsterMovingAttack : MonsterState
         duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
+    UIParticle horzLines;
     public async UniTask Activate(CancellationToken token)
     {
         if (control.memories.Count == 0)
@@ -168,7 +169,10 @@ public class MonsterMovingAttack : MonsterState
         anim.Play("MovingAttack");
         startTime = Time.time;
         await UniTask.Delay((int)(1000f * moveTimeRange.x), cancellationToken: token);
-
+        if (control.Type == MonsterType.Large || control.Type == MonsterType.Boss)
+        {
+            horzLines = ParticleManager.I.PlayUIParticle("UIHorizontalLines", new Vector2(960, 540), Quaternion.identity);
+        }
         int count = 0;
         for (int i = 0; i < 3; i++)
         {
@@ -195,9 +199,38 @@ public class MonsterMovingAttack : MonsterState
         {
             rb.AddForce((movingForce - 8f) * moveDirection);
         }
+        bool flag1 = false;
+        bool flag2 = false;
         while (Time.time - startTime < moveTimeRange.y)
         {
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
+            if (Time.time - startTime > 0.5f)
+            {
+                if (!flag1)
+                {
+                    flag1 = true;
+                    SpriteRenderer sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
+                    if (sr)
+                    {
+                        if (control.Type == MonsterType.Large || control.Type == MonsterType.Boss)
+                        {
+                            GameManager.I.PlayAfterImageEffect(sr, 1.4f);
+                        }
+                        else
+                        {
+                            GameManager.I.PlayAfterImageEffect(sr, 0.7f);
+                        }
+                    }
+                }
+            }
+            if (Time.time - startTime > 1.5f)
+            {
+                if (!flag2)
+                {
+                    horzLines?.Despawn();
+                    horzLines = null;
+                }
+            }
             moveDirection = model.right;
             float dot = Vector2.Dot(rb.linearVelocity, moveDirection);
             // 벽 향해서 전진하는 버그 막기
@@ -265,6 +298,8 @@ public class MonsterMovingAttack : MonsterState
     {
         base.Exit();
         control.attackRange.onTriggetStay2D -= TriggerStay2DHandler;
+        horzLines?.Despawn();
+        horzLines = null;
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
     void TriggerStay2DHandler(Collider2D coll)

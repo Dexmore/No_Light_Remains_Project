@@ -180,6 +180,11 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         if (control.HasCondition(MonsterControl.Condition.Phase3))
         {
             //4타
+            SpriteRenderer sr = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            if (sr)
+            {
+                GameManager.I.PlayAfterImageEffect(sr, 2.3f);
+            }
             await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             damageMultiplier = 1.7f;
             attackIndex = 3;
@@ -190,16 +195,21 @@ public class LanternKeeperSequenceAttack2 : MonsterState
             rb.AddForce(Vector2.up * 18f + (Vector2)model.right * 2f, ForceMode2D.Impulse);
             await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
             rb.gravityScale = 2f;
+            verticalLines = ParticleManager.I.PlayUIParticle("UIVerticalLines", new Vector2(960, 540), Quaternion.identity);
             await UniTask.Delay((int)(1000f * 0.5f), cancellationToken: token);
             rb.AddForce(Vector2.down * 20f + (Vector2)(target.position - transform.position).normalized * 7.5f, ForceMode2D.Impulse);
             anim.Play("SlamAttack");
-            await UniTask.Delay((int)(1000f * 2.5f), cancellationToken: token);
+            await UniTask.Delay((int)(1000f * 0.6f), cancellationToken: token);
+            verticalLines?.Despawn();
+            verticalLines = null;
+            await UniTask.Delay((int)(1000f * 1.9f), cancellationToken: token);
         }
 
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
 
     }
+    UIParticle verticalLines;
     int attackIndex;
     List<Collider2D> attackedColliders = new List<Collider2D>();
     void TriggerStay2DHandler(Collider2D coll)
