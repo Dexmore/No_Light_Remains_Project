@@ -544,6 +544,19 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
     }
 
+    public int GetKillcount(string Name)
+    {
+        int find = currData.killCounts.FindIndex(x => x.Name == Name);
+        if (find == -1)
+        {
+            return -1;
+        }
+        else
+        {
+            return currData.killCounts[find].count;
+        }
+    }
+
     public int GetGearLevel(string name)
     {
         int index = currData.gearDatas.FindIndex(x => x.Name == name);
@@ -566,8 +579,37 @@ public class DBManager : SingletonBehaviour<DBManager>
 
             // (선택사항) 저장 기능을 바로 호출하고 싶다면
             // Save(); 
+            SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
         }
     }
+
+
+    public void SteamAchievement(string API_Name)
+    {
+        if (!IsSteam()) return;
+        SteamUserStats.GetAchievement(API_Name, out bool isUnlocked);
+        if (!isUnlocked)
+        {
+            SteamUserStats.SetAchievement(API_Name);
+            SteamUserStats.StoreStats();
+            //Debug.Log($"Try Achievement {API_Name}");
+        }
+        // ACH_PARRY_FIRST
+        // ACH_CHEST_OPEN_5
+        // ACH_GEAR_UPGRADE_FIRST
+        // ACH_FLOWER_KILL_20 (MonsterDie)
+        // ACH_PARRY_COUNT_50
+        // ACH_BOSS_LANTERN_KILL (MonsterDie)
+        // ACH_GEAR_COLLECT_ALL
+        // ACH_BOSS_LANTERN_KILL_2_NORMAL (MonsterDie)
+        // ACH_PARRY_COMBO_4
+        // ACH_FLOWER_KILL_100 (MonsterDie)
+        // ACH_BOSS_LANTERN_NO_POTION_HARD (MonsterDie)
+    }
+
+
+
+
 
 #if UNITY_EDITOR
     [Space(60)]

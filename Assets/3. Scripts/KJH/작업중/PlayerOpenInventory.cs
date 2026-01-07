@@ -89,11 +89,11 @@ public class PlayerOpenInventory : IPlayerState
             if (gearDatas2.Count != 0)
             {
                 AudioManager.I.PlaySFX("GearChanged");
-                ParticleManager.I.PlayText("Gear Changed!", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+                ParticleManager.I.PlayText("Gear Changed!", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 2f);
             }
             else
             {
-                ParticleManager.I.PlayText("Gear Empty", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 1f);
+                ParticleManager.I.PlayText("Gear Empty", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 2f);
             }
         }
 

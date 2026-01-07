@@ -151,6 +151,7 @@ public class WaveManager : MonoBehaviour
         Debug.Log("🎉 STAGE CLEARED 🎉");
         doorType2 = FindAnyObjectByType<DoorType2>();
         doorType2?.Open();
+        doorType1?.Open();
         doorType1.isComplete = true;
         doorType2.isComplete = true;
 

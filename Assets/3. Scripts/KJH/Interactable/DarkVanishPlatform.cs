@@ -27,6 +27,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
     ParticleSystem fogParticle;
     SpriteRenderer lp;
     [SerializeField] GameObject platform;
+    Light2D darkVanishLight2D;
     void Awake()
     {
         _isReady = true;
@@ -49,6 +50,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
                 renderer.material.SetFloat("_DissolveAmount", 1f);
             }
         }
+        darkVanishLight2D = transform.Find("DarkVanishLight2D").GetComponent<Light2D>();
     }
     public override void Run()
     {
@@ -70,6 +72,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
         lp.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject);
         tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
         lpParticle.gameObject.SetActive(true);
+        lpParticle.Stop();
         lpParticle.Play();
         SubParticleOnFill();
     }
@@ -106,8 +109,11 @@ public class DarkVanishPlatform : Lanternable, ISavable
     {
         isCancel = true;
         lp.gameObject.SetActive(true);
+        lpParticle.Stop();
         lpParticle.Play();
         dvParticle.gameObject.SetActive(true);
+        darkVanishLight2D.gameObject.SetActive(true);
+        // darkVanishLight2D
         dvParticle.Play();
         if (platform != null)
         {
@@ -169,12 +175,14 @@ public class DarkVanishPlatform : Lanternable, ISavable
                 ParticleManager.I.PlayParticle("DarkDust", pivot + jitter, Quaternion.identity, null);
             }
         }
+        darkVanishLight2D.gameObject.SetActive(false);
     }
     void Step99()
     {
         Transform[] children = transform.GetComponentsInChildren<Transform>();
         foreach (var child in children)
             child.gameObject.SetActive(false);
+        darkVanishLight2D.gameObject.SetActive(false);
     }
 
 

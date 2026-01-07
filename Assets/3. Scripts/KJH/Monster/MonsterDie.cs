@@ -1,6 +1,7 @@
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using System.Diagnostics.Eventing.Reader;
 public class MonsterDie : MonsterState
 {
     public float duration = 0.4f;
@@ -170,6 +171,41 @@ public class MonsterDie : MonsterState
 
             await UniTask.Delay(10, cancellationToken: token);
         }
+
+        string strimedName1 = transform.name.Split("(")[0];
+        //Debug.Log(strimedName1);
+        switch (strimedName1)
+        {
+            case "ContaminatedFlower":
+
+                int tempCount = DBManager.I.GetKillcount(strimedName1);
+                if (tempCount >= 20)
+                {
+                    DBManager.I.SteamAchievement("ACH_FLOWER_KILL_20");
+                }
+                if (tempCount >= 100)
+                {
+                    DBManager.I.SteamAchievement("ACH_FLOWER_KILL_100");
+                }
+                break;
+
+            case "LanternKeeper":
+                if (DBManager.I.currData.difficulty >= 1)
+                {
+                    GameManager.I.ach_NormalLKCount++;
+                }
+                if (GameManager.I.ach_NormalLKCount >= 2)
+                {
+                    DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_KILL_2_NORMAL");
+                }
+                if (DBManager.I.currData.difficulty >= 2)
+                    if (DBManager.I.currData.maxPotionCount == DBManager.I.currData.currPotionCount)
+                    {
+                        DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_NO_POTION_HARD");
+                    }
+                break;
+        }
+
         await UniTask.Yield(token);
         gameObject.SetActive(false);
         //Destroy(gameObject);

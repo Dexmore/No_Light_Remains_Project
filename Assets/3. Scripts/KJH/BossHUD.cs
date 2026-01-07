@@ -258,7 +258,7 @@ public class BossHUD : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(0.35f);
         GameManager.I.GlitchText(tMP_Text, 0.13f);
         yield return YieldInstructionCache.WaitForSeconds(0.7f);
-        GameManager.I.GlitchText(tMP_Text, 0.2f);
+        GameManager.I.GlitchText(tMP_Text, 0.35f);
         canvas.Find("Opening").gameObject.SetActive(false);
         yield return YieldInstructionCache.WaitForSeconds(0.6f);
         tMP_Text.DOColor(new Color(0.62f, 0.73f, 0.73f), 0.9f).SetEase(Ease.InSine).SetLink(gameObject);
@@ -271,12 +271,12 @@ public class BossHUD : MonoBehaviour
     void CheckPhase()
     {
         float ratio = target.currHealth / target.maxHealth;
-        if (ratio <= 0.4f && phaseProgress <= 2)
+        if (ratio <= 0.42f && phaseProgress <= 2)
         {
             phaseProgress = 3;
             Test2();
         }
-        else if (ratio <= 0.7f && phaseProgress <= 1)
+        else if (ratio <= 0.72f && phaseProgress <= 1)
         {
             phaseProgress = 2;
             Test2();

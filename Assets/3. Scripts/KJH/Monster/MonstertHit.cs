@@ -47,9 +47,9 @@ public class MonsterHit : MonsterState
             if (control.isDie) return;
             anim.Play("HitLarge");
             if (control.data.Type != MonsterType.Large && control.data.Type != MonsterType.Boss)
-                duration = 4.8f;
+                duration = 4.3f;
             else
-                duration = 6.8f;
+                duration = 6.3f;
             await UniTask.Delay((int)(1000 * 0.15f), cancellationToken: token);
             rb.AddForce(6.7f * Random.Range(0.9f, 1.1f) * (direction + 0.8f * Vector3.up).normalized, ForceMode2D.Impulse);
             await UniTask.Delay((int)(1000 * 0.4f), cancellationToken: token);

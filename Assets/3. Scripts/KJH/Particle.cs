@@ -1,6 +1,7 @@
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Rendering.Universal;
 public class Particle : PoolBehaviour
 {
     #region UniTask Setting
@@ -36,6 +37,7 @@ public class Particle : PoolBehaviour
     public void Play()
     {
         ps.Play();
+        PlayLight2D(cts.Token).Forget();
         if (!loop) Play_ut(cts.Token).Forget();
     }
     async UniTask Play_ut(CancellationToken token)
@@ -44,4 +46,24 @@ public class Particle : PoolBehaviour
         await UniTask.Delay((int)(1000f * (ps.main.duration + 0.1f)), ignoreTimeScale: true, cancellationToken: token);
         base.Despawn();
     }
+    async UniTask PlayLight2D(CancellationToken token)
+    {
+        Light2D light2D = GetComponentInChildren<Light2D>(true);
+        if (!light2D) return;
+        light2D.gameObject.SetActive(true);
+        float duration = ps.main.duration;
+        float targetIntensity = light2D.intensity;
+        //light2D.intensity = 0f;
+
+
+
+        await UniTask.Yield(token);
+
+
+
+        await UniTask.Yield(token);
+
+    }
+
+
 }

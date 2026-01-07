@@ -166,7 +166,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         anim.Play("NormalAttack", 0, 0.28f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 1.1f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 1f), cancellationToken: token);
 
         //3타
         damageMultiplier = 1.1f;
@@ -174,7 +174,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         anim.Play("SequenceAttack2", 0, 0.25f);
         await UniTask.Yield(token);
         attackedColliders.Clear();
-        await UniTask.Delay((int)(1000f * 1.1f), cancellationToken: token);
+        await UniTask.Delay((int)(1000f * 1f), cancellationToken: token);
 
 
         if (control.HasCondition(MonsterControl.Condition.Phase3))

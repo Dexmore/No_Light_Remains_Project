@@ -6,6 +6,24 @@ using Cysharp.Threading.Tasks;
 [RequireComponent(typeof(Collider2D))]
 public abstract class Bullet : PoolBehaviour
 {
+    #region UniTask Setting
+    protected CancellationTokenSource cts;
+    protected virtual void OnDestroy() { UniTaskCancel(); }
+    void UniTaskCancel()
+    {
+        cts?.Cancel();
+        try
+        {
+            cts?.Dispose();
+        }
+        catch (System.Exception e)
+        {
+
+            Debug.Log(e.Message);
+        }
+        cts = null;
+    }
+    #endregion
     public enum BulletType
     {
         Line, // 완전 직선형
@@ -20,6 +38,7 @@ public abstract class Bullet : PoolBehaviour
     public Collider2D coll;
     public BulletType bulletType;
     public MonsterControl owner;
+    public float lifeTime;
     [HideInInspector] public float damage;
     // 0 , 1, 2, 3
     public HitData.StaggerType staggerType;
@@ -27,7 +46,7 @@ public abstract class Bullet : PoolBehaviour
     public Animator animator;
     AttackRange attackRange;
     [SerializeField] LayerMask groundLayer;
-    ParticleSystem particleSystem;
+    ParticleSystem _particleSystem;
     protected virtual void Awake()
     {
         TryGetComponent(out rb);
@@ -38,19 +57,36 @@ public abstract class Bullet : PoolBehaviour
     }
     protected virtual void OnEnable()
     {
+        cts = new CancellationTokenSource();
+        Application.quitting += UniTaskCancel;
         attackedColliders.Clear();
         if (attackRange)
             attackRange.onTriggetStay2D += AttackRangeHandler;
-        if (particleSystem)
+        if (_particleSystem)
         {
-            particleSystem.gameObject.SetActive(true);
-            particleSystem.Play();
+            _particleSystem.gameObject.SetActive(true);
+            _particleSystem.Play();
         }
+        LifeTimeWait(cts.Token).Forget();
+    }
+    async UniTask LifeTimeWait(CancellationToken token)
+    {
+        await UniTask.Delay((int)(1000f * lifeTime), cancellationToken:token);
+        await UniTask.Yield(token);
+        Despawn();
     }
     protected virtual void OnDisable()
     {
         if (attackRange)
             attackRange.onTriggetStay2D -= AttackRangeHandler;
+        try
+        {
+            UniTaskCancel();
+        }
+        catch
+        {
+
+        }
     }
     List<Collider2D> attackedColliders = new List<Collider2D>();
     protected virtual void OnTriggerStay2D(Collider2D coll)

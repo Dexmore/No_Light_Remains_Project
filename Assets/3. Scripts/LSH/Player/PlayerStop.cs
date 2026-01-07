@@ -10,6 +10,13 @@ public class PlayerStop : IPlayerState
     {
         elapsed = 0;
         ctx.animator.Play("Player_Idle");
+        // ACH
+        int count1 = DBManager.I.itemDatabase.allGears.Count;
+        int count2 = DBManager.I.currData.gearDatas.Count;
+        if(count1 == count2)
+        {
+            DBManager.I.SteamAchievement("ACH_GEAR_COLLECT_ALL");
+        }
     }
     public void Exit()
     {

@@ -175,7 +175,7 @@ public class PlayerInteraction : MonoBehaviour
         await UniTask.Delay(110, cancellationToken: token);
         prompt.Close(0);
         await UniTask.Delay(110, cancellationToken: token);
-        if(iobj)
+        if (iobj)
         {
             iobj.Run();
         }
@@ -221,7 +221,7 @@ public class PlayerInteraction : MonoBehaviour
         LanternAnimationExit(ctsLink.Token).Forget();
         sfxLanternInteraction?.Despawn();
         sfxLanternInteraction = null;
-        target2 = null;
+        //target2 = null;
     }
     CancellationTokenSource ctsLanternAnimationStart;
     CancellationTokenSource ctsLanternAnimationExit;
@@ -231,14 +231,13 @@ public class PlayerInteraction : MonoBehaviour
     private SpriteRenderer lanternSprite;
     private LineRenderer lanternLine;
     private Light2D lanternFreeform;    // 사각형 프리폼 라이트
-
     // 1. 애니메이션 시작 (Start)
     async UniTask LanternAnimationStart(CancellationToken token)
     {
         if (playerLightTr == null)
             playerLightTr = playerControl.transform.Find("PlayerLight");
 
-        // 컴포넌트 캐싱
+        // 컴포넌트 캐싱 및 초기 확인
         if (lanternGroup == null)
         {
             lanternGroup = playerLightTr.Find("Lantern");
@@ -246,12 +245,18 @@ public class PlayerInteraction : MonoBehaviour
             lanternLine = lanternGroup.GetComponent<LineRenderer>();
             lanternFreeform = lanternGroup.Find("FreeformLight").GetComponent<Light2D>();
         }
-        // 모든 진행 중인 트윈 중지
+
+        // [수정] ID를 지정하여 인텐시티 트윈을 확실히 사살
+        DOTween.Kill("LanternIntensity");
         DOTween.Kill(playerLightTr);
         DOTween.Kill(lanternGroup);
         DOTween.Kill(lanternSprite);
+        DOTween.Kill(lanternFreeform);
 
+        // 강제 초기값 설정
+        lanternFreeform.intensity = 0f;
         lanternGroup.gameObject.SetActive(true);
+
         // [초기화] 랜턴 중심을 둘러싸는 작은 정사각형 (길이 0)
         Vector3[] initPath = new Vector3[4];
         float s = 0.12f; // 두께 설정
@@ -265,11 +270,12 @@ public class PlayerInteraction : MonoBehaviour
         Vector3 targetBasePos = target2.transform.Find("LightPoint").position;
         Vector3 midPoint = Vector3.Lerp(playerControl.transform.position, targetBasePos, 0.3f);
         Vector3 floatPosWorld = midPoint + Vector3.up * 1.2f;
+
+        // [위치 계산 로직]
         for (int j = 0; j < 10; j++)
         {
             if (Vector3.Distance(floatPosWorld, targetBasePos) <= 0.8f)
             {
-                //Debug.Log("물체랑 너무 가까워서 뒤로 조금 밈");
                 Vector3 outerDir = playerControl.transform.position - targetBasePos;
                 outerDir.y = 0f;
                 outerDir.Normalize();
@@ -277,7 +283,6 @@ public class PlayerInteraction : MonoBehaviour
             }
             if (Vector3.Distance(floatPosWorld, playerControl.transform.position + Vector3.up) <= 0.9f)
             {
-                //Debug.Log("플레이어랑 너무 가까워서 뒤로 조금 밈");
                 Vector3 outerDir = floatPosWorld - targetBasePos;
                 outerDir.y *= 0.2f;
                 outerDir.Normalize();
@@ -285,7 +290,7 @@ public class PlayerInteraction : MonoBehaviour
                 outerDir.Normalize();
                 floatPosWorld += 1f * outerDir;
             }
-            //Debug.Log("랜턴 위치가 어떤 콜라이더의 속이라면 위치 재조정");
+
             Collider2D[] colliders = Physics2D.OverlapCircleAll(floatPosWorld, 0.2f, playerControl.groundLayer);
             bool isBlocked = false;
             for (int i = 0; i < colliders.Length; i++)
@@ -294,12 +299,8 @@ public class PlayerInteraction : MonoBehaviour
                 isBlocked = true;
                 break;
             }
-            if (!isBlocked)
-            {
-                // 최종 랜턴 위치 확정
-                break;
-            }
-            // [4] 랜덤하게 재조정 (등 뒤 탐색)
+            if (!isBlocked) break;
+
             float playerYRot = playerControl.childTR.localRotation.eulerAngles.y;
             float backDirX = (Mathf.Abs(playerYRot - 0f) < 1f) ? -1f : 1f;
             float searchRange = 1f + (j * 0.2f);
@@ -312,13 +313,21 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         Vector3 floatPosLocal = playerLightTr.parent.InverseTransformPoint(floatPosWorld);
+
+        // 비동기 대기 전 취소 여부 확인
         await UniTask.Delay(10, cancellationToken: token);
+        if (token.IsCancellationRequested) return;
+
         sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
 
         // 단계 1: 부상 및 활성화
         playerLightTr.DOLocalMove(floatPosLocal, duration).SetEase(Ease.OutCubic);
         lanternSprite.DOFade(1f, duration).SetLink(gameObject);
-        DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 3f, duration);
+
+        // [수정] ID 부여: 이제 Kill("LanternIntensity")로 멈출 수 있습니다.
+        DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 3f, duration)
+            .SetId("LanternIntensity")
+            .SetLink(gameObject);
 
         await UniTask.Delay((int)(duration * 0.5f * 1000), cancellationToken: token);
 
@@ -328,41 +337,36 @@ public class PlayerInteraction : MonoBehaviour
 
         await UniTask.Delay((int)(duration * 0.4f * 1000), cancellationToken: token);
 
-        // 단계 3: 빛 발사 (WaitUntil 방식)
-        // 기준점을 lanternGroup(실제 랜턴 위치)으로 변경하여 오차 제거
+        // 단계 3: 빛 발사
         float distance = Vector3.Distance(lanternGroup.position, targetBasePos);
         s = 0.12f;
         bool isTweenFinished = false;
 
-        // 1. 라인 렌더러 끝점 설정 (X축 로컬 좌표로 늘림)
-        // 시작점(0,0,0)에서 끝점(distance,0,0)까지
+        // 라인 렌더러 끝점 설정
         DOTween.To(() => lanternLine.GetPosition(1), x => lanternLine.SetPosition(1, x), new Vector3(distance, 0, 0), 0.06f);
 
-        // 2. 프리폼 라이트 노드 설정
+        // 프리폼 라이트 노드 확장
         DOTween.To(() => 0f, (val) =>
         {
             Vector3[] path = new Vector3[4];
             path[0] = new Vector3(0, s, 0);
             path[1] = new Vector3(0, -s, 0);
-            path[2] = new Vector3(val, -s, 0); // val이 distance까지 도달함
+            path[2] = new Vector3(val, -s, 0);
             path[3] = new Vector3(val, s, 0);
             lanternFreeform.SetShapePath(path);
-        }, distance, 0.06f) // 목표값을 정확히 위에서 계산한 distance로 설정
+        }, distance, 0.06f)
         .SetEase(Ease.OutCubic)
         .OnComplete(() => isTweenFinished = true);
 
         await UniTask.WaitUntil(() => isTweenFinished, cancellationToken: token);
-
     }
 
     // 2. 애니메이션 종료 (Exit)
     async UniTask LanternAnimationExit(CancellationToken token)
     {
-
         if (playerLightTr == null)
             playerLightTr = playerControl.transform.Find("PlayerLight");
 
-        // 컴포넌트 캐싱
         if (lanternGroup == null)
         {
             lanternGroup = playerLightTr.Find("Lantern");
@@ -370,16 +374,24 @@ public class PlayerInteraction : MonoBehaviour
             lanternLine = lanternGroup.GetComponent<LineRenderer>();
             lanternFreeform = lanternGroup.Find("FreeformLight").GetComponent<Light2D>();
         }
-        // 모든 진행 중인 트윈 중지
+
+        // [수정] ID 기반 Kill 추가
+        DOTween.Kill("LanternIntensity");
         DOTween.Kill(playerLightTr);
         DOTween.Kill(lanternGroup);
         DOTween.Kill(lanternSprite);
+        DOTween.Kill(lanternFreeform);
+
+        if (token.IsCancellationRequested) return;
 
         float exitDuration = 0.5f;
         lanternSprite.DOFade(0f, exitDuration).SetLink(gameObject);
-        DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 0f, exitDuration);
 
-        // 라인 및 프리폼 즉시 초기화 (필요시 트윈으로 변경 가능)
+        // [수정] 동일한 ID 부여
+        DOTween.To(() => lanternFreeform.intensity, x => lanternFreeform.intensity = x, 0f, exitDuration)
+            .SetId("LanternIntensity")
+            .SetLink(gameObject);
+
         lanternLine.SetPosition(1, Vector3.zero);
         lanternFreeform.SetShapePath(new Vector3[4]);
 
@@ -387,9 +399,20 @@ public class PlayerInteraction : MonoBehaviour
         lanternGroup.DOLocalRotateQuaternion(Quaternion.identity, exitDuration);
         playerLightTr.DOLocalMove(new Vector3(0f, 0.5f, 0f), exitDuration)
             .SetEase(Ease.InCubic)
-            .OnComplete(() => { isExitFinished = true; lanternGroup.gameObject.SetActive(false); });
+            .OnComplete(() => { isExitFinished = true; });
 
-        await UniTask.WaitUntil(() => isExitFinished, cancellationToken: token);
+        try
+        {
+            await UniTask.WaitUntil(() => isExitFinished, cancellationToken: token);
+
+            // [핵심 가드] 대기가 끝난 시점에 이미 다시 'Start'가 실행되었다면 값을 덮어쓰지 않음
+            if (!token.IsCancellationRequested)
+            {
+                lanternGroup.gameObject.SetActive(false);
+                lanternFreeform.intensity = 0f;
+            }
+        }
+        catch (System.OperationCanceledException) { }
     }
     CancellationTokenSource ctsLanternInteraction;
     SFX sfxLanternInteraction;

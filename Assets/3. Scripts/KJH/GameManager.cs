@@ -56,6 +56,10 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public bool isSceneWaiting;
     [HideInInspector] public bool isShowPop0;
     [HideInInspector] public bool isSuperNovaGearEquip;
+    [HideInInspector] public int ach_chestCount;
+    [HideInInspector] public int ach_parryCount;
+    [HideInInspector] public int ach_NormalLKCount;
+
 
     // 게임의 중요 이벤트들
     public UnityAction<HitData> onHit = (x) => { };
@@ -66,6 +70,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public UnityAction<int, Transform> onDialog = (x, y) => { };
     public UnityAction onSceneChange = () => { };
     public UnityAction onSceneChangeBefore = () => { };
+    public UnityAction onBackToLobby = () => { };
 
     void OnEnable()
     {
@@ -74,53 +79,56 @@ public class GameManager : SingletonBehaviour<GameManager>
         isOpenPop = false;
         isOpenDialog = false;
         InitLocale();
+        onBackToLobby += BackToLobbyHandler;
+        onSceneChange += SceneStartHandler;
     }
     void OnDisable()
     {
-
+        onBackToLobby -= BackToLobbyHandler;
+        onSceneChange -= SceneStartHandler;
     }
     #region Load Scene
-    public async void LoadSceneAsync(int index, bool loadingScreen = false, bool isDie = false)
-    {
-        isSceneWaiting = true;
-        loadingSlider.value = 0f;
-        FadeOut(0.8f);
-        await Task.Delay(500);
-        if (!isDie)
-        {
-            await SaveAllMonsterAndObject();
-        }
-        else
-        {
-            // 죽어서 씬 이동하는 경우는 currData 에서 savedData로 롤백
-            DBManager.I.currData = DBManager.I.savedData;
-        }
-        await Task.Delay(500);
-        AsyncOperation ao = SceneManager.LoadSceneAsync(index);
-        onSceneChangeBefore.Invoke();
-        if (loadingScreen)
-        {
-            StartLoading();
-        }
-        while (!ao.isDone)
-        {
-            await Task.Delay(10);
-            loadingProgress = ao.progress;
-        }
-        if (loadingScreen)
-        {
-            while (!isLoadingDone)
-            {
-                await Task.Delay(10);
-            }
-        }
-        await Task.Delay(10);
-        isSceneWaiting = false;
-        onSceneChange.Invoke();
-        await Task.Delay(500);
-        FadeIn(0.4f);
-        await Task.Delay(500);
-    }
+    // public async void LoadSceneAsync(int index, bool loadingScreen = false, bool isDie = false)
+    // {
+    //     isSceneWaiting = true;
+    //     loadingSlider.value = 0f;
+    //     FadeOut(0.8f);
+    //     await Task.Delay(500);
+    //     if (!isDie)
+    //     {
+    //         await SaveAllMonsterAndObject();
+    //     }
+    //     else
+    //     {
+    //         // 죽어서 씬 이동하는 경우는 currData 에서 savedData로 롤백
+    //         DBManager.I.currData = DBManager.I.savedData;
+    //     }
+    //     await Task.Delay(500);
+    //     AsyncOperation ao = SceneManager.LoadSceneAsync(index);
+    //     onSceneChangeBefore.Invoke();
+    //     if (loadingScreen)
+    //     {
+    //         StartLoading();
+    //     }
+    //     while (!ao.isDone)
+    //     {
+    //         await Task.Delay(10);
+    //         loadingProgress = ao.progress;
+    //     }
+    //     if (loadingScreen)
+    //     {
+    //         while (!isLoadingDone)
+    //         {
+    //             await Task.Delay(10);
+    //         }
+    //     }
+    //     await Task.Delay(10);
+    //     isSceneWaiting = false;
+    //     onSceneChange.Invoke();
+    //     await Task.Delay(500);
+    //     FadeIn(0.4f);
+    //     await Task.Delay(500);
+    // }
     public async void LoadSceneAsync(string name, bool loadingScreen = false, bool isDie = false)
     {
         isSceneWaiting = true;
@@ -134,6 +142,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         else
         {
             DBManager.I.currData = DBManager.I.savedData;
+        }
+        if (name == "Lobby")
+        {
+            onBackToLobby.Invoke();
         }
         await Task.Delay(500);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
@@ -885,6 +897,55 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
         }
     }
+
+    void BackToLobbyHandler()
+    {
+        isLanternOn = false;
+        isOpenPop = false;
+        isOpenDialog = false;
+        isOpenInventory = false;
+        isShowPop0 = false;
+        isSuperNovaGearEquip = false;
+        ach_chestCount = 0;
+        ach_parryCount = 0;
+        ach_NormalLKCount = 0;
+    }
+
+    void SceneStartHandler()
+    {
+        PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
+        if (playerControl)
+        {
+            isOpenPop = false;
+            isOpenDialog = false;
+            isOpenInventory = false;
+            isShowPop0 = false;
+            isSuperNovaGearEquip = false; //검사 필요
+                                          //Gear 기어 (초신성 기어) 006_SuperNovaGear
+            bool outValue1 = false;
+            if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
+            {
+                if (outValue1)
+                {
+                    GameManager.I.isSuperNovaGearEquip = true;
+                }
+                else
+                {
+                    GameManager.I.isSuperNovaGearEquip = false;
+                }
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+
+
+
+        }
+    }
+
+
+
 }
 public struct HitData
 {

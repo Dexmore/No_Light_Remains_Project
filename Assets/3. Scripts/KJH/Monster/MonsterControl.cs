@@ -1001,6 +1001,7 @@ public class MonsterControl : MonoBehaviour
         if (state == State.RangeAttack) condition = false;
         if (state == State.BiteAttack) condition = false;
         if (state == State.MovingAttack) condition = false;
+        if (state.ToString().Contains("Sequence")) condition = false;
         if (!condition && Random.value <= 0.53f)
         {
             curHitAmount += hData.damage;
@@ -1086,7 +1087,7 @@ public class MonsterControl : MonoBehaviour
         || hitData.attackType == HitData.AttackType.Trap)
             return;
         parryCount++;
-        if (state.ToString().Contains("Sequenc"))
+        if (state.ToString().Contains("Sequence"))
         {
             if (parryCount >= data.ParryCount) parryCount = data.ParryCount - 1;
             return;
