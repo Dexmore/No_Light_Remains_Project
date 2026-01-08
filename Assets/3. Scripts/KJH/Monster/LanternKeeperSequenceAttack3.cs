@@ -277,49 +277,162 @@ public class LanternKeeperSequenceAttack3 : MonsterState
         // -----------위치 재조정 끝------------
 
         anim.Play("ShootingAttack");
-        LightPillar clone = null;
-        // if (control.HasCondition(MonsterControl.Condition.Phase3))
-        // {
 
-
-
-        // }
-        // else if (control.HasCondition(MonsterControl.Condition.Phase2))
-        // {
-
-
-        // }
-        // else
+        // 페이즈별 공격 실행
+        if (control.HasCondition(MonsterControl.Condition.Phase3))
         {
-            if (Random.value < 0.35f)
-            {
-                Vector3 pos;
-                float rndDist = Random.Range(0.55f, 1.1f);
-                Vector3 dir = target.transform.position - transform.position;
-                dir.y = 0f;
-                dir.Normalize();
-                pos = target.transform.position + rndDist * -dir;
-                // 추후 아랫방향 레이 검사로 정확한 지면위치 검출 필요
-                pos.y = transform.position.y;
-                clone = Instantiate(lightPillar);
-                clone.transform.position = pos;
-            }
-            else
-            {
-                Vector3 pos;
-                float rndDist = control.width + Random.Range(0f, 2f);
-                Vector3 dir = target.transform.position - transform.position;
-                dir.y = 0f;
-                dir.Normalize();
-                pos = transform.position + rndDist * dir;
-                clone = Instantiate(lightPillar);
-                clone.transform.position = pos;
-            }
+            await ExecutePhase3Pattern(target, token);
+        }
+        else if (control.HasCondition(MonsterControl.Condition.Phase2))
+        {
+            await ExecutePhase2Pattern(target, token);
+        }
+        else
+        {
+            // 기본 페이즈 (Phase 0 / 1)
+            ExecutePhase1Pattern(target);
         }
 
+        // 패턴 종료 후 딜레이 및 상태 전환
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
         control.ChangeNextState();
     }
+
+    #region Phase Patterns Logic
+
+    // [기본 페이즈] 플레이어 주변 혹은 내 앞 단발 소환
+    private void ExecutePhase1Pattern(Transform target)
+    {
+        Vector3 pos;
+        Vector3 dir = (target.position - transform.position).normalized;
+        dir.y = 0;
+
+        if (Random.value < 0.35f) // 플레이어 뒤쪽
+        {
+            float rndDist = Random.Range(0.55f, 1.1f);
+            pos = target.position + rndDist * -dir;
+        }
+        else // 내 앞쪽
+        {
+            float rndDist = control.width + Random.Range(0f, 2f);
+            pos = transform.position + rndDist * dir;
+        }
+        SpawnLightPillar(pos);
+    }
+
+    // [페이즈 2] 콤보형 공격 (순차적/예측)
+    private async UniTask ExecutePhase2Pattern(Transform target, CancellationToken token)
+    {
+        float rand = Random.value;
+
+        if (rand < 0.6f) // 패턴 A: 시간차 저격 (플레이어 현재 위치 -> 이동 경로 예측)
+        {
+            SpawnLightPillar(target.position);
+            await UniTask.Delay(500, cancellationToken: token);
+
+            Vector2 velocity = 3f * target.GetChild(0).right;
+            Vector3 predictPos = target.position + (Vector3)velocity.normalized * 1.5f;
+            SpawnLightPillar(predictPos);
+        }
+        else // 패턴 C: 보호 후 랜덤 저격
+        {
+            ExecuteSidePattern();
+            await UniTask.Delay(400, cancellationToken: token);
+            SpawnLightPillar(GetRandomPosInRange());
+        }
+    }
+
+    // [페이즈 3] 복합/혼돈형 공격 (가두기/난사/랜덤)
+    private async UniTask ExecutePhase3Pattern(Transform target, CancellationToken token)
+    {
+        int patternType = Random.Range(0, 4);
+
+        switch (patternType)
+        {
+            case 0: // 광범위3 --> 저격 2연속 + 완전 랜덤 1개
+                await ExecuteWideAreaPattern(token, 3);
+                await UniTask.Delay(350, cancellationToken: token);
+                for (int i = 0; i < 2; i++) { SpawnLightPillar(target.position); await UniTask.Delay(300, cancellationToken: token); }
+                SpawnLightPillar(GetRandomPosInRange());
+                break;
+            case 1: // 광범위 폭격4 --> 플레이어 가두기
+                await ExecuteWideAreaPattern(token, 4);
+                await UniTask.Delay(200, cancellationToken: token);
+                SpawnLightPillar(target.position + Vector3.left * 1.5f);
+                SpawnLightPillar(target.position + Vector3.right * 1.5f);
+                break;
+            case 2: // 내 주변 양옆 + 완전 랜덤 2개 혼사 --> 광범위3
+                ExecuteSidePattern();
+                await UniTask.Delay(200, cancellationToken: token);
+                for (int i = 0; i < 2; i++) { SpawnLightPillar(GetRandomPosInRange()); await UniTask.Delay(200, cancellationToken: token); }
+                await UniTask.Delay(350, cancellationToken: token);
+                await ExecuteWideAreaPattern(token, 3);
+                break;
+            case 3: // 광범위 폭격4 --> 혼돈
+                await ExecuteWideAreaPattern(token, 4);
+                await UniTask.Delay(250, cancellationToken: token);
+                Vector3 pos;
+                Vector3 dir = (target.position - transform.position).normalized;
+                dir.y = 0;
+                if (Random.value < 0.35f) // 플레이어 뒤쪽
+                {
+                    float rndDist = Random.Range(0.55f, 1.1f);
+                    pos = target.position + rndDist * -dir;
+                }
+                else // 내 앞쪽
+                {
+                    float rndDist = control.width + Random.Range(0f, 2f);
+                    pos = transform.position + rndDist * dir;
+                }
+                SpawnLightPillar(pos);
+                for (int i = 0; i < 3; i++) { SpawnLightPillar(GetRandomPosInRange()); await UniTask.Delay(250, cancellationToken: token); }
+                break;
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    // 지면을 체크하여 빛기둥 소환
+    private void SpawnLightPillar(Vector3 spawnPos)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(spawnPos.x, transform.position.y + 2f), Vector2.down, 5f, control.groundLayer);
+        Vector3 finalPos = hit.collider != null ? (Vector3)hit.point : new Vector3(spawnPos.x, transform.position.y, 0);
+
+        LightPillar clone = Instantiate(lightPillar);
+        clone.transform.position = finalPos;
+    }
+
+    // 광범위 폭격 로직
+    private async UniTask ExecuteWideAreaPattern(CancellationToken token, int count)
+    {
+        float startX = transform.position.x - range;
+        float step = (range * 2f) / (count - 1);
+        for (int i = 0; i < count; i++)
+        {
+            float x = startX + (i * step) + Random.Range(-0.5f, 0.5f);
+            SpawnLightPillar(new Vector3(x, transform.position.y, 0));
+            await UniTask.Delay(150, cancellationToken: token);
+        }
+    }
+
+    // 내 주변 양옆 보호
+    private void ExecuteSidePattern()
+    {
+        float sideOffset = 2.5f;
+        SpawnLightPillar(transform.position + Vector3.left * sideOffset);
+        SpawnLightPillar(transform.position + Vector3.right * sideOffset);
+    }
+
+    // 완전 랜덤 좌표 추출
+    private Vector3 GetRandomPosInRange()
+    {
+        float randomX = transform.position.x + Random.Range(-range * 1.5f, range * 1.5f);
+        return new Vector3(randomX, transform.position.y, 0);
+    }
+
+    #endregion
 
 
 

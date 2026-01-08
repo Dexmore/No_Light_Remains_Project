@@ -225,7 +225,7 @@ public class PlayerControl : MonoBehaviour
         {
             GameManager.I.isSuperNovaGearEquip = false;
         }
-        
+
     }
 
     void OnEnable()
@@ -549,7 +549,7 @@ public class PlayerControl : MonoBehaviour
                     //Debug.Log("패링 불가 공격");
                 }
             }
-            
+
 
             hitCoolTime1speed = 1f;
             hitCoolTime2speed = 1f;
@@ -751,11 +751,13 @@ public class PlayerControl : MonoBehaviour
             light1.SetActive(true);
             light2.SetActive(false);
             GameManager.I.isLanternOn = true;
+            GameManager.I.lanternOnStartTime = Time.time;
         }
     }
     [HideInInspector] public bool isNearSavePoint;
     [HideInInspector] public bool isNearSconceLight;
     public AnimationCurve curve;
+    private bool isBatteryMalfunction;
     IEnumerator DecreaseBattery()
     {
         float diffMultiplier = 1f;
@@ -776,6 +778,22 @@ public class PlayerControl : MonoBehaviour
         while (true)
         {
             yield return YieldInstructionCache.WaitForSeconds(interval);
+            float lanternOnTime = GameManager.I.isLanternOn ? (Time.time - GameManager.I.lanternOnStartTime) : 0f;
+            float batteryPercent = currBattery / maxBattery;
+            bool isCharging = isNearSavePoint || isNearSconceLight;
+            if (isCharging && GameManager.I.isLanternOn)
+            {
+                GameManager.I.lanternOnStartTime = Time.time;
+            }
+            hUDBinder.UpdateBatteryUI(isCharging, batteryPercent, lanternOnTime, isBatteryMalfunction);
+            float malfunctionFactor = 1f;
+            if (!isCharging && GameManager.I.isLanternOn && lanternOnTime > 10f && !isBatteryMalfunction)
+            {
+                if (Random.value < 0.004f)
+                    isBatteryMalfunction = true;
+            }
+            if (!GameManager.I.isLanternOn) isBatteryMalfunction = false;
+            if (isBatteryMalfunction) malfunctionFactor = 1.6f;
             if (isNearSavePoint)
             {
                 if (currBattery <= 100)
@@ -802,6 +820,10 @@ public class PlayerControl : MonoBehaviour
             {
                 if (GameManager.I.isLanternOn)
                 {
+                    float timeDiff = Time.time - GameManager.I.lanternOnStartTime;
+                    float tempFloat = Mathf.Clamp01(timeDiff / 14f);
+                    float tempFloat2 = curve.Evaluate(tempFloat);
+                    //Debug.Log($"timeDiff:{timeDiff},tempFloat2:{tempFloat2}");
                     float isOpenUI = 1f;
                     if (GameManager.I.isOpenDialog) isOpenUI = 0.2f;
                     if (GameManager.I.isOpenPop) isOpenUI = 0.4f;
@@ -811,7 +833,7 @@ public class PlayerControl : MonoBehaviour
                     {
                         gearMultiplier = 1.5f;
                     }
-                    currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval;
+                    currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval * tempFloat2 * malfunctionFactor;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);
                     DBManager.I.currData.currBattery = currBattery;
                     hUDBinder.RefreshBattery();
@@ -916,14 +938,6 @@ public class PlayerControl : MonoBehaviour
 
 
         _parryHitStopCo = null;
-    }
-
-
-
-    [Button]
-    public void Test1()
-    {
-        openInventory.Test1();
     }
 
 

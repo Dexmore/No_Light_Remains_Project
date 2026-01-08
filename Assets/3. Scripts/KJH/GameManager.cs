@@ -50,6 +50,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     // 씬 넘어가도 유지시킬 변수들
     [HideInInspector] public bool isLanternOn;
+    [HideInInspector] public float lanternOnStartTime;
     [HideInInspector] public bool isOpenPop;
     [HideInInspector] public bool isOpenDialog;
     [HideInInspector] public bool isOpenInventory;

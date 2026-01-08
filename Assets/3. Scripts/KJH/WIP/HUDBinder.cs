@@ -344,25 +344,71 @@ public class HUDBinder : MonoBehaviour
         element.Setup(message);
     }
 
+    //------ 아래 구현 예정------
+    [Header("Battery Notice")]
+    [SerializeField] Image batteryNoticeIcon1; // 충전(0) 또는 경고(1) 아이콘
+    [SerializeField] Image batteryNoticeIcon2; // 잔고장(2) 전용 아이콘
+    [SerializeField] Sprite[] batteryNoticeSprites; // 0:충전, 1:경고, 2:잔고장
 
-    [Button]
-    public void Test1()
+    private Tween icon1Tween;
+    private Tween icon2Tween;
+
+    public void UpdateBatteryUI(bool isCharging, float batteryPercent, float lanternOnTime, bool hasDebuff)
     {
+        // --- 1번 아이콘 (충전 vs 부족) 로직 ---
+        int icon1Index = -1;
+        if (isCharging) 
+        {
+            icon1Index = 0; // 충전 중 우선순위 1등
+        }
+        else if (batteryPercent < 0.2f && lanternOnTime > 5f) 
+        {
+            icon1Index = 1; // 충전 중이 아닐 때만 부족 경고
+        }
 
+        // --- 2번 아이콘 (잔고장) 로직 ---
+        // 충전 중이 아닐 때만 잔고장 표시
+        bool showDebuff = !isCharging && hasDebuff;
+
+        // --- 실제 UI 적용 ---
+        HandleIconState(batteryNoticeIcon1, icon1Index, ref icon1Tween);
+        HandleIconState(batteryNoticeIcon2, showDebuff ? 2 : -1, ref icon2Tween);
     }
 
-    [Button]
-    public void Test2()
+    private void HandleIconState(Image icon, int spriteIndex, ref Tween tween)
     {
+        if (spriteIndex == -1)
+        {
+            // 아이콘 비활성화
+            if (icon.gameObject.activeSelf)
+            {
+                tween?.Kill();
+                icon.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            // 아이콘 활성화 및 스프라이트 교체
+            icon.sprite = batteryNoticeSprites[spriteIndex];
+            
+            if (!icon.gameObject.activeSelf)
+            {
+                icon.gameObject.SetActive(true);
+                // 알파값 초기화 후 깜빡임 시작
+                Color c = icon.color;
+                c.a = 1f;
+                icon.color = c;
 
+                tween?.Kill();
+                tween = icon.DOFade(0.2f, 0.6f)
+                    .SetLoops(-1, LoopType.Yoyo)
+                    .SetEase(Ease.InOutSine)
+                    .SetLink(icon.gameObject);
+            }
+        }
     }
 
 
-    // 배터리 충전장소에서 조금씩 충전 중
-
-    // 배터리 소모중 (소모곡선)
-
-    // 배터리 너무오래켜둠 + 부족 경고
 
 
 

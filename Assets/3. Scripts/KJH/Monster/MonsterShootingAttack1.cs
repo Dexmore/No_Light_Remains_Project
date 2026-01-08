@@ -16,6 +16,15 @@ public class MonsterShootingAttack1 : MonsterState
         if (bulletControl == null) bulletControl = FindAnyObjectByType<BulletControl>();
         await UniTask.Yield(token);
         Activate(token).Forget();
+        randomedBulletPaterns.Clear();
+        for (int i = 0; i < bulletPaterns.Count; i++)
+        {
+            randomedBulletPaterns.Add(bulletPaterns[i]);
+            var pattern = randomedBulletPaterns[i];
+            pattern.startTime = Random.Range(0.9f, 1.1f) * pattern.startTime;
+            pattern.force = Random.Range(0.9f, 1.1f) * pattern.force;
+            randomedBulletPaterns[i] = pattern;
+        }
     }
     public override void Exit()
     {
@@ -31,6 +40,7 @@ public class MonsterShootingAttack1 : MonsterState
     RaycastHit2D CheckRayHit;
     Particle particle;
     public List<BulletControl.BulletPatern> bulletPaterns = new List<BulletControl.BulletPatern>();
+    List<BulletControl.BulletPatern> randomedBulletPaterns = new List<BulletControl.BulletPatern>();
     public async UniTask Activate(CancellationToken token)
     {
         if (!_once)
@@ -288,6 +298,7 @@ public class MonsterShootingAttack1 : MonsterState
 
         if (control.isDie) return;
         anim.Play("ShootingAttack");
+        ShootingAnimationLoop(token).Forget();
         await UniTask.Delay((int)(1000f * (0.3f * animationWaitSecond)), cancellationToken: token);
         particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
         if (control.data.Type != MonsterType.Large && control.Type != MonsterType.Boss)
@@ -300,11 +311,24 @@ public class MonsterShootingAttack1 : MonsterState
         //
 
 
-        await bulletControl.PlayBullet(bulletPaterns, transform, target, token, control.data.Attack);
+        await bulletControl.PlayBullet(randomedBulletPaterns, transform, target, token, control.data.Attack);
         await UniTask.Delay((int)(1000f * 3.7f), cancellationToken: token);
         particle?.Despawn();
         particle = null;
         control.ChangeNextState();
+    }
+
+    async UniTask ShootingAnimationLoop(CancellationToken token)
+    {
+        if (randomedBulletPaterns.Count < 2) return;
+        for (int i = 1; i < randomedBulletPaterns.Count; i++)
+        {
+            await UniTask.Delay((int)(1000f * (randomedBulletPaterns[i].startTime - randomedBulletPaterns[i - 1].startTime)), cancellationToken: token);
+            anim.Play("ShootingAttack");
+            particle?.Despawn();
+            particle = null;
+            particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
+        }
     }
 
 
