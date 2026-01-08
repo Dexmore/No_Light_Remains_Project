@@ -994,15 +994,18 @@ public class MonsterControl : MonoBehaviour
 
         // Hit Small
         bool condition = true;
-        if (hData.attackName.Contains("Gear")) condition = false;
-        if (state == State.Pursuit) condition = false;
-        if (state == State.Reposition) condition = false;
-        if (state == State.NormalAttack) condition = false;
-        if (state == State.RangeAttack) condition = false;
-        if (state == State.BiteAttack) condition = false;
-        if (state == State.MovingAttack) condition = false;
+        float tempFloat = Random.value;
+        if (state != State.Idle && state != State.Wander)
+        {
+            condition = false;
+        }
+        if (state == State.NormalAttack && tempFloat < 0.6f) condition = true;
+        if (state == State.BiteAttack && tempFloat < 0.5f) condition = true;
+        if (state == State.MovingAttack && tempFloat < 0.4f) condition = true;
+        if (state == State.RangeAttack && tempFloat < 0.3f) condition = true;
         if (state.ToString().Contains("Sequence")) condition = false;
-        if (!condition && Random.value <= 0.53f)
+        if (hData.attackName.Contains("Gear")) condition = false;
+        if (condition && Random.value <= 0.53f)
         {
             curHitAmount += hData.damage;
             if (maxHitAmount == 0) maxHitAmount = 1.2f * Random.Range(0.1f, 0.23f) * Mathf.Clamp(data.HP, 280, 1100);

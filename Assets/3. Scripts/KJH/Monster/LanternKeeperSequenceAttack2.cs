@@ -186,7 +186,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
                 GameManager.I.PlayAfterImageEffect(sr, 2.3f);
             }
             await UniTask.Delay((int)(1000f * 0.3f), cancellationToken: token);
-            damageMultiplier = 1.7f;
+            damageMultiplier = 1.5f;
             attackIndex = 3;
             anim.Play("JumpAttack", 0, 0.8f);
             await UniTask.Yield(token);
@@ -233,12 +233,12 @@ public class LanternKeeperSequenceAttack2 : MonsterState
             if (attackIndex == 3)
             {
                 hitData.isCannotParry = true;
-                hitData.staggerType = HitData.StaggerType.Middle;
+                hitData.staggerType = HitData.StaggerType.Large;
             }
             else
             {
                 hitData.isCannotParry = false;
-                hitData.staggerType = HitData.StaggerType.None;
+                hitData.staggerType = HitData.StaggerType.Middle;
             }
             GameManager.I.onHit.Invoke
             (

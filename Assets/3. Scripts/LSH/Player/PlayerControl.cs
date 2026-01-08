@@ -455,6 +455,7 @@ public class PlayerControl : MonoBehaviour
             if (isHit2) return;
             if (isHit1) return;
             isHit1 = true;
+            hitCoolTime1speed = 1f;
             run.isStagger = true;
             StopCoroutine(nameof(HitCoolTime1));
             StartCoroutine(nameof(HitCoolTime1));
@@ -550,6 +551,8 @@ public class PlayerControl : MonoBehaviour
             }
             
 
+            hitCoolTime1speed = 1f;
+            hitCoolTime2speed = 1f;
             if (usePotion.cts != null && !usePotion.cts.IsCancellationRequested)
             {
                 usePotion.cts?.Cancel();

@@ -3,23 +3,25 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-public class LanternKeeperSequenceAttack3 : MonsterState
+public class MonsterShootingAttack1 : MonsterState
 {
-    public override MonsterControl.State mapping => MonsterControl.State.SequenceAttack3;
+    public override MonsterControl.State mapping => MonsterControl.State.ShootingAttack1;
+    BulletControl bulletControl;
     public float range;
-    public Vector2 durationRange;
-    float duration;
-    bool _once = false;
-    [SerializeField] LightPillar lightPillar;
+    public float animationWaitSecond;
+    bool _once;
     public override async UniTask Enter(CancellationToken token)
     {
+
+        if (bulletControl == null) bulletControl = FindAnyObjectByType<BulletControl>();
         await UniTask.Yield(token);
-        duration = Random.Range(durationRange.x, durationRange.y);
         Activate(token).Forget();
     }
     public override void Exit()
     {
         base.Exit();
+        particle?.Despawn();
+        particle = null;
     }
     // 낭떠러지 체크용
     Vector2 rayOrigin;
@@ -27,50 +29,38 @@ public class LanternKeeperSequenceAttack3 : MonsterState
     float rayLength;
     Ray2D checkRay;
     RaycastHit2D CheckRayHit;
-
+    Particle particle;
+    public List<BulletControl.BulletPatern> bulletPaterns = new List<BulletControl.BulletPatern>();
     public async UniTask Activate(CancellationToken token)
     {
-
         if (!_once)
         {
             _once = true;
-            float coolTime = 0;
-            for (int i = 0; i < control.patterns.Length; i++)
-            {
-                for (int j = 0; j < control.patterns[i].frequencies.Length; j++)
-                {
-                    if (mapping == control.patterns[i].frequencies[j].state)
-                    {
-                        coolTime = control.patterns[i].frequencies[j].coolTime;
-                        break;
-                    }
-                }
-            }
-            control.SetCoolTime(MonsterControl.State.RareAttack, Random.Range(0.1f * coolTime, 0.5f * coolTime));
+            control.SetCoolTime(MonsterControl.State.ShootingAttack1, 10f);
             await UniTask.Yield(token);
             control.ChangeNextState();
             return;
         }
-
-
-
         await UniTask.Yield(token);
         if (control.isDie) return;
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             anim.Play("Idle");
+
+        //
 
         Transform target;
         target = control.memories.First().Key.transform;
         float dist = Vector3.Distance(target.position, transform.position);
         float distX = Mathf.Abs(target.position.x - transform.position.x);
         float distY = Mathf.Abs(target.position.y - transform.position.y);
+        //float tempDist = Mathf.Clamp(0.333f * control.findRadius, 0f, 3f * control.width);
         float tempDist = 0.5f * (Mathf.Clamp(control.findRadius, 0f, 10f) + (3f * control.width));
         bool condition = false;
         if (dist < 0.6f * tempDist)
         {
             condition = true;
         }
-        if (dist > 1.8f * range + 4f)
+        if (dist > 1.1f * range + 2f)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -82,7 +72,7 @@ public class LanternKeeperSequenceAttack3 : MonsterState
             control.ChangeNextState();
             return;
         }
-        if (distX > 1.8f * range + 4f)
+        if (distX > 1.1f * range + 2f)
         {
             await UniTask.Yield(token);
             control.ChangeNextState();
@@ -93,16 +83,19 @@ public class LanternKeeperSequenceAttack3 : MonsterState
         Vector2 moveDirection;
         bool once = false;
 
-        // 적당히 넓게 트인 먼곳으로 이동
+        // 너무 가까우면 살짝 뒤로 이동
         if (condition)
         {
             moveDirection = transform.position - target.position;
             moveDirection.y = 0;
             moveDirection.Normalize();
-            float repositionDuration = Random.Range(0.1f, 0.5f);
+            float repositionDuration = 1.8f;
+
             // 만약 뒤가 (절벽으로 가로막히거나 낭떠러지라면) && (전방에 충분한 공간이 있다면)
             bool isBackBlocked = false;
             bool isFrontClear = false;
+
+
             // 뒤 절벽 체크
             rayOrigin = transform.position + control.height * Vector3.up;
             rayDirection = moveDirection;
@@ -161,7 +154,9 @@ public class LanternKeeperSequenceAttack3 : MonsterState
                     }
                 }
             }
+
             //Debug.Log($"{isBackBlocked} , {isFrontClear}");
+
             float moveSpeedMulti2 = 1f;
             // 위 여러 검사결과로 판단하여. 뒤 대신 전방으로 길게 직진해야 한다면.
             if (isBackBlocked && isFrontClear)
@@ -250,6 +245,17 @@ public class LanternKeeperSequenceAttack3 : MonsterState
             model.localRotation = Quaternion.Euler(0f, 180f, 0f);
         }
         if (control.isDie) return;
+        dist = Vector3.Distance(target.position, transform.position);
+        if (dist <= 0.2f * tempDist)
+        {
+            if (Random.value < 0.3f)
+            {
+                // 너무 가까워서 취소
+                await UniTask.Yield(token);
+                control.ChangeNextState();
+                return;
+            }
+        }
         RaycastHit2D[] raycastHits = Physics2D.LinecastAll((Vector2)control.eye.position, (Vector2)target.position + Vector2.up, control.groundLayer);
         bool isBlocked = false;
         for (int i = 0; i < raycastHits.Length; i++)
@@ -274,50 +280,30 @@ public class LanternKeeperSequenceAttack3 : MonsterState
 
 
 
+
         // -----------위치 재조정 끝------------
 
+
+
+
+        if (control.isDie) return;
         anim.Play("ShootingAttack");
-        LightPillar clone = null;
-        // if (control.HasCondition(MonsterControl.Condition.Phase3))
-        // {
+        await UniTask.Delay((int)(1000f * (0.3f * animationWaitSecond)), cancellationToken: token);
+        particle = ParticleManager.I.PlayParticle("DarkCharge", transform.position + 0.5f * control.height * Vector3.up, Quaternion.identity);
+        if (control.data.Type != MonsterType.Large && control.Type != MonsterType.Boss)
+            particle.transform.localScale = 0.3f * Vector3.one;
+        else
+            particle.transform.localScale = Vector3.one;
+
+        await UniTask.Delay((int)(1000f * (0.7f * animationWaitSecond)), cancellationToken: token);
+
+        //
 
 
-
-        // }
-        // else if (control.HasCondition(MonsterControl.Condition.Phase2))
-        // {
-
-
-        // }
-        // else
-        {
-            if (Random.value < 0.35f)
-            {
-                Vector3 pos;
-                float rndDist = Random.Range(0.55f, 1.1f);
-                Vector3 dir = target.transform.position - transform.position;
-                dir.y = 0f;
-                dir.Normalize();
-                pos = target.transform.position + rndDist * -dir;
-                // 추후 아랫방향 레이 검사로 정확한 지면위치 검출 필요
-                pos.y = transform.position.y;
-                clone = Instantiate(lightPillar);
-                clone.transform.position = pos;
-            }
-            else
-            {
-                Vector3 pos;
-                float rndDist = control.width + Random.Range(0f, 2f);
-                Vector3 dir = target.transform.position - transform.position;
-                dir.y = 0f;
-                dir.Normalize();
-                pos = transform.position + rndDist * dir;
-                clone = Instantiate(lightPillar);
-                clone.transform.position = pos;
-            }
-        }
-
-        await UniTask.Delay((int)(1000f * duration), cancellationToken: token);
+        await bulletControl.PlayBullet(bulletPaterns, transform, target, token, control.data.Attack);
+        await UniTask.Delay((int)(1000f * 3.7f), cancellationToken: token);
+        particle?.Despawn();
+        particle = null;
         control.ChangeNextState();
     }
 

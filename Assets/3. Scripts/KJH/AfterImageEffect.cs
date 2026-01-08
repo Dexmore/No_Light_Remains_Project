@@ -72,7 +72,7 @@ public class AfterImageEffect : MonoBehaviour
             float progress = current / lifeTime;
 
             // 팁 1: 지정된 색상에서 투명해지도록 설정
-            Color c = Color.Lerp(originColor, ghostColor, 0.3f);
+            Color c = Color.Lerp(originColor, ghostColor, 0.5f);
             c.a = Mathf.Lerp(1f, 0f, progress);
             sr.color = c;
 

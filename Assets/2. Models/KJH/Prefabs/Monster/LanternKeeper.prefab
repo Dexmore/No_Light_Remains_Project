@@ -1257,6 +1257,7 @@ GameObject:
   - component: {fileID: 2360094903198248376}
   - component: {fileID: 1651952747455098986}
   - component: {fileID: 6904959221262641927}
+  - component: {fileID: -7491002413972739017}
   m_Layer: 6
   m_Name: LanternKeeper
   m_TagString: Monster
@@ -1385,6 +1386,9 @@ MonoBehaviour:
     - state: 17
       weight: 150
       coolTime: 12
+    - state: 21
+      weight: 36
+      coolTime: 24
   - condition: 4
     frequencies:
     - state: 4
@@ -1404,6 +1408,9 @@ MonoBehaviour:
     - state: 20
       weight: 12
       coolTime: 35
+    - state: 21
+      weight: 13
+      coolTime: 25
   - condition: 16
     frequencies:
     - state: 16
@@ -1421,6 +1428,9 @@ MonoBehaviour:
     - state: 20
       weight: 25
       coolTime: 20
+    - state: 21
+      weight: 9
+      coolTime: 35
   attackRange: {fileID: 0}
   bgmName: Terra
   state: 0
@@ -1622,13 +1632,13 @@ MonoBehaviour:
   bulletPaterns:
   - bullet: {fileID: -4856176997232454425, guid: 6911e380c80556e468504c13d1e25e4b, type: 3}
     startTime: 0
-    force: 10.5
+    force: 12.5
     damageMultiplier: 0.37
     count: 1
     heuristic: {x: 0, y: 0}
   - bullet: {fileID: -4856176997232454425, guid: 6911e380c80556e468504c13d1e25e4b, type: 3}
     startTime: 1.6
-    force: 10.5
+    force: 13.5
     damageMultiplier: 0.52
     count: 1
     heuristic: {x: 0, y: 0}
@@ -1697,6 +1707,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack2
   coolTime: 0
   durationRange: {x: 2.8, y: 4.2}
+--- !u!114 &-7491002413972739017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8068371728270083225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef74663a3be79a746a822108d01a0e87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack3
+  coolTime: 0
+  range: 13
+  durationRange: {x: 1.7, y: 4.3}
+  lightPillar: {fileID: 4571254482419237688, guid: dadd3bf376d92554ba7f74824c58597c, type: 3}
 --- !u!1 &8351178544674619736
 GameObject:
   m_ObjectHideFlags: 0

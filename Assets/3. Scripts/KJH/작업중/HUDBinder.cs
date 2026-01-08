@@ -1,14 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using NaughtyAttributes;
-
+using Cysharp.Threading.Tasks;
 public class HUDBinder : MonoBehaviour
 {
-    // Player 오브젝트 지정
+    #region UniTask Setting
+    CancellationTokenSource cts;
+    void OnEnable()
+    {
+        cts = new CancellationTokenSource();
+        Application.quitting += UniTaskCancel;
+        OnEnable1();
+    }
+    void OnDisable() { UniTaskCancel(); OnDisable1(); }
+    void OnDestroy() { UniTaskCancel(); }
+    void UniTaskCancel()
+    {
+        cts?.Cancel();
+        try
+        {
+            cts?.Dispose();
+        }
+        catch (System.Exception e)
+        {
+
+            Debug.Log(e);
+        }
+        cts = null;
+    }
+    #endregion
     PlayerControl player;
     SlicedLiquidBar healthBarFill;
     [HideInInspector] public RectTransform healthRT;
@@ -45,13 +70,15 @@ public class HUDBinder : MonoBehaviour
         displayPotionCount = 5;
         itemNoticeParent = transform.Find("HUDCanvas/TopRight/ItemNoticeParent");
     }
-    void OnEnable()
+    void OnEnable1()
     {
         GameManager.I.onHitAfter += HandleHit;
+        GameManager.I.onParry += ParrySuccessHandler;
     }
-    void OnDisable()
+    void OnDisable1()
     {
         GameManager.I.onHitAfter -= HandleHit;
+        GameManager.I.onParry -= ParrySuccessHandler;
     }
     IEnumerator Start()
     {
@@ -76,6 +103,37 @@ public class HUDBinder : MonoBehaviour
 
 
     }
+
+    void ParrySuccessHandler(HitData hitData)
+    {
+        ParrySuccessHandler_ut(hitData, cts.Token).Forget();
+    }
+    async UniTask ParrySuccessHandler_ut(HitData hitData, CancellationToken token)
+    {
+        UIParticle localParticle = null;
+        try
+        {
+            await UniTask.Delay(730, cancellationToken: token);
+            int rnd = Random.Range(96, 138);
+            localParticle = ParticleManager.I.PlayUIParticle("UIElectricity", new Vector2(rnd, 910), Quaternion.identity);
+            AudioManager.I.PlaySFX("Electricity", transform.position, null, vol: 0.18f);
+            await UniTask.Delay(380, cancellationToken: token);
+        }
+        catch (System.OperationCanceledException)
+        {
+
+        }
+        finally
+        {
+            // 2. 어떤 상황에서도(성공 혹은 취소) 로컬 변수에 담긴 파티클만 안전하게 제거합니다.
+            if (localParticle != null)
+            {
+                localParticle.Despawn();
+                localParticle = null;
+            }
+        }
+    }
+
     void HandleHit(HitData hitData)
     {
         if (hitData.target.Root() != player.transform) return;
@@ -292,7 +350,7 @@ public class HUDBinder : MonoBehaviour
     {
 
     }
-    
+
     [Button]
     public void Test2()
     {
@@ -300,18 +358,13 @@ public class HUDBinder : MonoBehaviour
     }
 
 
-
-
-
-
-
     // 배터리 충전장소에서 조금씩 충전 중
 
     // 배터리 소모중 (소모곡선)
 
-    // 배터리 충격식(패링) 많은양 충전 연출
-
     // 배터리 너무오래켜둠 + 부족 경고
+
+
 
 
 
