@@ -41,8 +41,6 @@ public class WorkbenchUI : MonoBehaviour
     [SerializeField] private GameObject panelRoot; 
     [SerializeField] private Button closeButton;
     [SerializeField] private Transform slotContent;
-
-    [Header("부팅 연출")]
     [SerializeField] private BootTerminal bootTerminal;       
     [SerializeField] private GameObject mainContentRoot;      
 
@@ -101,6 +99,7 @@ public class WorkbenchUI : MonoBehaviour
     // [튜토리얼용 변수]
     private bool _isTutorialMode = false;
     private List<GearData> _tutorialDummyGears;
+    private int _tutorialDummyMaterialCount = 0; // 튜토리얼용 가짜 재료
 
     public bool IsUIActive()
     {
@@ -150,13 +149,14 @@ public class WorkbenchUI : MonoBehaviour
     {
         if (!IsUIActive() || Keyboard.current == null) return;
 
+        // [문제 1 해결] 튜토리얼 모드일 때는 키보드 입력을 차단하여 플로우 꼬임 방지
+        if (_isTutorialMode) return;
+
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             Close();
             return;
         }
-
-        if (mainContentRoot != null && !mainContentRoot.activeSelf) return;
 
         if (Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame)
         {
@@ -217,22 +217,41 @@ public class WorkbenchUI : MonoBehaviour
         OnClose?.Invoke();
     }
 
-    // [튜토리얼] 시작/종료 함수
+    // [튜토리얼 시작]
     public void BeginTutorialMode(List<GearData> dummyGears)
     {
         _isTutorialMode = true;
         _tutorialDummyGears = dummyGears;
+        _tutorialDummyMaterialCount = 0; // 가짜 재료 0개로 시작
+
+        // [핵심] 키보드/패드 네비게이션 기능 끄기 (마우스만 허용)
+        if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = false;
+
         InitWorkbenchLogic();
     }
 
+    // [튜토리얼 종료]
     public void EndTutorialMode()
     {
         _isTutorialMode = false;
         _tutorialDummyGears = null;
+        _tutorialDummyMaterialCount = 0;
+
+        // 네비게이션 기능 복구
+        if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = true;
+
         InitWorkbenchLogic();
     }
 
-    // [튜토리얼] 외부에서 UI 위치 가져오기
+    // [문제 2 해결] 튜토리얼용 가짜 재료 추가 함수
+    public void AddTutorialDummyMaterial(int count)
+    {
+        _tutorialDummyMaterialCount += count;
+        // UI 갱신
+        if (_targetGearData != null) UpdateInfoUI(_targetGearData);
+    }
+
+    // [튜토리얼 헬퍼] 슬롯 위치 가져오기
     public RectTransform GetSlotRect(int index)
     {
         if (index >= 0 && index < _preplacedSlots.Count)
@@ -240,16 +259,48 @@ public class WorkbenchUI : MonoBehaviour
         return null;
     }
     
+    // [튜토리얼 헬퍼] 버튼 위치 가져오기
     public RectTransform GetEnhanceButtonRect()
     {
         return enhanceButton.GetComponent<RectTransform>();
+    }
+
+    // [튜토리얼 헬퍼] 재료 텍스트 위치 가져오기
+    public RectTransform GetCostTextRect(int index)
+    {
+        if (costTexts != null && index >= 0 && index < costTexts.Length)
+        {
+            return costTexts[index].GetComponent<RectTransform>();
+        }
+        return null;
+    }
+
+    // [튜토리얼 헬퍼] 재료 패널(전체) 위치 가져오기
+    public RectTransform GetCostPanelRect()
+    {
+        if (costTexts != null && costTexts.Length > 0 && costTexts[0] != null)
+        {
+            return costTexts[0].transform.parent.GetComponent<RectTransform>();
+        }
+        return null;
+    }
+
+    // [튜토리얼 헬퍼] 강제 선택 해제
+    public void ForceDeselect()
+    {
+        if (_selectedSlotUI != null)
+        {
+            _selectedSlotUI.SetSelectedState(false);
+            _selectedSlotUI = null;
+        }
+        _targetGearData = null;
+        ClearInfo();
     }
 
     // ================= [사운드 시스템] =================
 
     public void PlayBootSound() => PlaySFX(bootUpClip, bootUpVolume);
     public void PlayClickSound() => PlaySFX(clickClip, clickVolume);
-    
     public void PlayDataScrollLoop() => PlayLoop(dataScrollClip, dataScrollVolume);
     public void PlayTypingLoop() => PlayLoop(typingLoopClip, typingVolume);
     
@@ -304,7 +355,7 @@ public class WorkbenchUI : MonoBehaviour
     {
         List<CharacterData.GearData> displayList = new List<CharacterData.GearData>();
 
-        // [튜토리얼] 더미 데이터 처리
+        // [튜토리얼] 더미 데이터 로드
         if (_isTutorialMode && _tutorialDummyGears != null)
         {
             foreach(var gearSO in _tutorialDummyGears)
@@ -414,7 +465,8 @@ public class WorkbenchUI : MonoBehaviour
         }
 
         int currentLevel = DBManager.I.GetGearLevel(data.name);
-        // [튜토리얼] 더미 데이터는 항상 레벨 0으로 취급 (DBManager 조회 안함)
+        
+        // [튜토리얼] 더미 모드에서는 항상 0레벨로 표시 (성공 후라도 레벨업 메시지만 띄우고 종료되므로)
         if (_isTutorialMode) currentLevel = 0;
 
         string textLv0 = data.GetEffectText(0);
@@ -504,19 +556,59 @@ public class WorkbenchUI : MonoBehaviour
         _activeTypingCoroutines.Clear();
     }
 
+    // [수정] 비용 체크 로직: 튜토리얼일 때는 '가짜 재료'를 확인
     private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info, bool isSelected)
     {
         bool isEnough = true;
         
-        // [튜토리얼] 더미 모드에서는 재료 체크 방식을 다르게 할 수 있음 (여기선 정석대로 체크)
-        if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
-        
+        // [문제 2 해결] 튜토리얼 분기
+        if (_isTutorialMode)
+        {
+            // 가짜 재료 개수 확인
+            if (info.requiredMaterials != null && info.requiredMaterials.Count > 0)
+            {
+                int reqCount = info.requiredMaterials[0].count;
+                if (_tutorialDummyMaterialCount < reqCount) isEnough = false;
+            }
+        }
+        else
+        {
+            // 실제 DB 확인 (기존 로직)
+            if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
+            if (info.requiredMaterials != null)
+            {
+                 for (int i = 0; i < info.requiredMaterials.Count; i++)
+                 {
+                    if (i >= 2) break;
+                    var mat = info.requiredMaterials[i];
+                    if (mat.item == null) continue;
+                    string targetName = mat.item.name;
+                    int totalCount = 0;
+                    if (DBManager.I.currData.itemDatas != null)
+                    {
+                        foreach (var dbItem in DBManager.I.currData.itemDatas)
+                            if (dbItem.Name == targetName) totalCount += dbItem.count;
+                    }
+                    if (totalCount < mat.count) isEnough = false;
+                 }
+            }
+        }
+
+        // 텍스트 표시
         string goldText = $"{info.goldCost} G";
         string mat1Text = "-";
         string mat2Text = "-";
-
-        if (info.requiredMaterials != null)
+        
+        // 튜토리얼 텍스트 표시 (가짜 변수 기준)
+        if (_isTutorialMode && info.requiredMaterials != null && info.requiredMaterials.Count > 0)
         {
+            var mat = info.requiredMaterials[0];
+            string color = (_tutorialDummyMaterialCount >= mat.count) ? "white" : "red";
+            mat1Text = $"<color={color}>{mat.item.localizedName} ( {_tutorialDummyMaterialCount} / {mat.count} )</color>";
+        }
+        else if (!_isTutorialMode && info.requiredMaterials != null)
+        {
+            // 실제 DB 표시
             for (int i = 0; i < info.requiredMaterials.Count; i++)
             {
                 if (i >= 2) break;
@@ -529,7 +621,6 @@ public class WorkbenchUI : MonoBehaviour
                     foreach (var dbItem in DBManager.I.currData.itemDatas)
                         if (dbItem.Name == targetName) totalCount += dbItem.count;
                 }
-                if (totalCount < mat.count) isEnough = false;
                 string color = (totalCount >= mat.count) ? "white" : "red";
                 string matString = $"<color={color}>{mat.item.localizedName} ( {totalCount} / {mat.count} )</color>";
                 if (i == 0) mat1Text = matString;
@@ -546,7 +637,6 @@ public class WorkbenchUI : MonoBehaviour
             string btnStr = isEnough 
                 ? GetLocStr(localizedStrings.btn_Enhance, "강화하기") 
                 : GetLocStr(localizedStrings.btn_NotEnough, "비용 부족");
-            
             UpdateEnhanceButtonState(isEnough, btnStr);
         }
         else
@@ -568,12 +658,36 @@ public class WorkbenchUI : MonoBehaviour
         if (buttonText != null) buttonText.text = btnText;
     }
 
+    // [수정] 강화 버튼 클릭: 튜토리얼일 때는 가짜 시뮬레이션
     private void OnClickEnhance()
     {
         if (_targetGearData == null) return; 
-        var result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
         
-        // [튜토리얼 이벤트 호출]
+        EnhancementManager.EnhancementResult result;
+
+        if (_isTutorialMode)
+        {
+            // [문제 2 해결] 가짜 로직 실행 (UI 내부 판단)
+            EnhancementManager.LevelInfo info = GetCostInfo(_targetGearData);
+            int reqCount = (info.requiredMaterials != null && info.requiredMaterials.Count > 0) ? info.requiredMaterials[0].count : 0;
+
+            if (_tutorialDummyMaterialCount >= reqCount)
+            {
+                result = EnhancementManager.EnhancementResult.Success;
+                _tutorialDummyMaterialCount -= reqCount; // 가짜 재료 소모
+            }
+            else
+            {
+                result = EnhancementManager.EnhancementResult.NotEnoughResources;
+            }
+        }
+        else
+        {
+            // 실제 매니저 호출
+            result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
+        }
+        
+        // 튜토리얼 이벤트 호출
         OnEnhanceTryEvent?.Invoke(result);
 
         if (result == EnhancementManager.EnhancementResult.Success)
@@ -600,38 +714,5 @@ public class WorkbenchUI : MonoBehaviour
     {
         if (locString == null || locString.IsEmpty) return fallback;
         return locString.GetLocalizedString();
-    }
-
-    //튜토리얼에서 재료 텍스트 위치를 알기 위한 함수
-    public RectTransform GetCostTextRect(int index)
-    {
-        if (costTexts != null && index >= 0 && index < costTexts.Length)
-        {
-            return costTexts[index].GetComponent<RectTransform>();
-        }
-        return null;
-    }
-
-    //재료 텍스트들이 모여있는 '전체 패널' 영역을 가져오는 함수
-    public RectTransform GetCostPanelRect()
-    {
-        if (costTexts != null && costTexts.Length > 0 && costTexts[0] != null)
-        {
-            // 첫 번째 텍스트의 부모(Parent)가 재료들을 담고 있는 패널이라고 가정합니다.
-            return costTexts[0].transform.parent.GetComponent<RectTransform>();
-        }
-        return null;
-    }
-
-    //튜토리얼에서 '다시 선택하게' 만들기 위해 강제로 선택 해제하는 함수
-    public void ForceDeselect()
-    {
-        if (_selectedSlotUI != null)
-        {
-            _selectedSlotUI.SetSelectedState(false);
-            _selectedSlotUI = null;
-        }
-        _targetGearData = null;
-        ClearInfo();
     }
 }
