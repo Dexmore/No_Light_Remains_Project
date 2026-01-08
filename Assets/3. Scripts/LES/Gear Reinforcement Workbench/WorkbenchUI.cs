@@ -1,20 +1,77 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Localization;          // [추가됨] Locale 클래스 사용을 위해 필수
-using UnityEngine.Localization.Settings; // 언어 감지용
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+
+[System.Serializable]
+public class WorkbenchStringData
+{
+    [Header("버튼 상태 텍스트")]
+    public LocalizedString btn_Enhance;
+    public LocalizedString btn_NotEnough;
+    public LocalizedString btn_MaxLevel;
+    public LocalizedString btn_Select;
+    public LocalizedString btn_SelectNeed;
+
+    [Header("알림 메시지")]
+    public LocalizedString msg_Success;
+    public LocalizedString msg_AlreadyMax;
+    public LocalizedString msg_NotEnough;
+    public LocalizedString msg_Condition;
+
+    [Header("기타 라벨")]
+    public LocalizedString label_MaxLevelDesc;
+    public LocalizedString label_EmptyTitle;
+}
 
 public class WorkbenchUI : MonoBehaviour
 {
     public System.Action OnClose;
 
+    // [튜토리얼 이벤트]
+    public System.Action<GearData> OnGearSelectedEvent;
+    public System.Action<EnhancementManager.EnhancementResult> OnEnhanceTryEvent;
+
     [Header("UI 연결")]
     [SerializeField] private GameObject panelRoot; 
     [SerializeField] private Button closeButton;
     [SerializeField] private Transform slotContent;
+    [SerializeField] private BootTerminal bootTerminal;       
+    [SerializeField] private GameObject mainContentRoot;      
+
+    [Header("사운드 시스템 (AudioSource 3개 필요)")]
+    [SerializeField] private AudioSource sfxSource;       
+    [SerializeField] private AudioSource loopSource;      
+    [SerializeField] private AudioSource ambienceSource;  
+
+    [Header("사운드 클립")]
+    [SerializeField] private AudioClip bootUpClip;        
+    [SerializeField] [Range(0f, 1f)] private float bootUpVolume = 1.0f;
+    [SerializeField] private AudioClip ambienceClip;      
+    [SerializeField] [Range(0f, 1f)] private float ambienceVolume = 0.3f;
+    [SerializeField] private AudioClip dataScrollClip;    
+    [SerializeField] [Range(0f, 1f)] private float dataScrollVolume = 0.5f;
+    [SerializeField] private AudioClip typingLoopClip;    
+    [SerializeField] [Range(0f, 1f)] private float typingVolume = 0.6f;
+    [SerializeField] private AudioClip clickClip;         
+    [SerializeField] [Range(0f, 1f)] private float clickVolume = 0.7f;
+    [SerializeField] private AudioClip selectClip;        
+    [SerializeField] [Range(0f, 1f)] private float selectVolume = 0.8f;
+    [SerializeField] private AudioClip cancelClip;        
+    [SerializeField] [Range(0f, 1f)] private float cancelVolume = 0.5f;
+    [SerializeField] private AudioClip successClip;       
+    [SerializeField] [Range(0f, 1f)] private float successVolume = 1.0f;
+    [SerializeField] private AudioClip failClip;          
+    [SerializeField] [Range(0f, 1f)] private float failVolume = 0.7f;
+    [SerializeField] private AudioClip errorClip;         
+    [SerializeField] [Range(0f, 1f)] private float errorVolume = 0.7f;
+    [SerializeField] private AudioClip bootDownClip;      
+    [SerializeField] [Range(0f, 1f)] private float bootDownVolume = 0.8f;
 
     [Header("정보 표시")]
     [SerializeField] private TextMeshProUGUI gearTitleText;
@@ -22,20 +79,31 @@ public class WorkbenchUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nextEffectText;
     [SerializeField] private Image targetGearImage;
 
+    [Header("타이핑 설정")]
+    [SerializeField] private float typingSpeed = 0.02f;
+
     [Header("강화 UI")]
     [SerializeField] private TextMeshProUGUI[] costTexts;
     [SerializeField] private Button enhanceButton;
     [SerializeField] private TextMeshProUGUI buttonText;
     [SerializeField] private NotificationUI notificationUI;
 
+    [Header("로컬라이징")]
+    [SerializeField] private WorkbenchStringData localizedStrings;
+
     private GearData _targetGearData;
     private WorkbenchSlotUI _selectedSlotUI;
     private List<WorkbenchSlotUI> _preplacedSlots = new List<WorkbenchSlotUI>();
+    private Dictionary<TextMeshProUGUI, Coroutine> _activeTypingCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
+
+    // [튜토리얼용 변수]
+    private bool _isTutorialMode = false;
+    private List<GearData> _tutorialDummyGears;
+    private int _tutorialDummyMaterialCount = 0; // 튜토리얼용 가짜 재료
 
     public bool IsUIActive()
     {
-        if (panelRoot != null)
-            return panelRoot.activeSelf;
+        if (panelRoot != null) return panelRoot.activeSelf;
         return false;
     }
 
@@ -44,10 +112,7 @@ public class WorkbenchUI : MonoBehaviour
         if(closeButton != null) closeButton.onClick.AddListener(Close);
         if(enhanceButton != null) enhanceButton.onClick.AddListener(OnClickEnhance);
         
-        if(panelRoot != null) 
-        {
-            panelRoot.SetActive(false);
-        }
+        if(panelRoot != null) panelRoot.SetActive(false);
 
         if (slotContent != null)
         {
@@ -58,21 +123,25 @@ public class WorkbenchUI : MonoBehaviour
             }
         }
         
-        // 언어 변경 감지 이벤트 연결
         LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
     }
 
     private void OnDestroy()
     {
-        // 이벤트 해제
         LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    private void OnDisable()
+    {
+        StopAllTyping();
+        if (ambienceSource != null) ambienceSource.Stop();
     }
 
     private void OnLocaleChanged(Locale locale)
     {
         if (IsUIActive() && _targetGearData != null)
         {
-            UpdateInfoUI(_targetGearData); // 언어 변경 시 텍스트 즉시 갱신
+            UpdateInfoUI(_targetGearData); 
         }
     }
     
@@ -80,8 +149,15 @@ public class WorkbenchUI : MonoBehaviour
     {
         if (!IsUIActive() || Keyboard.current == null) return;
 
-        if (Keyboard.current.escapeKey.wasPressedThisFrame) Close();
-        
+        // [문제 1 해결] 튜토리얼 모드일 때는 키보드 입력을 차단하여 플로우 꼬임 방지
+        if (_isTutorialMode) return;
+
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            Close();
+            return;
+        }
+
         if (Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame)
         {
             if (EventSystem.current.currentSelectedGameObject == enhanceButton.gameObject)
@@ -90,7 +166,8 @@ public class WorkbenchUI : MonoBehaviour
                 else 
                 {
                     notificationUI.gameObject.SetActive(true);
-                    notificationUI.ShowMessage("조건이 부족합니다.");
+                    PlaySFX(failClip, failVolume);
+                    notificationUI.ShowMessage(GetLocStr(localizedStrings.msg_Condition, "조건이 부족합니다."));
                 }
             }
         }
@@ -99,34 +176,223 @@ public class WorkbenchUI : MonoBehaviour
     public void Open()
     {
         if(panelRoot != null) panelRoot.SetActive(true);
+
+        PlayAmbienceLoop();
         
+        if (bootTerminal != null)
+        {
+            if (mainContentRoot != null) mainContentRoot.SetActive(false);
+            bootTerminal.PlayBootSequence(() => 
+            {
+                if (mainContentRoot != null) mainContentRoot.SetActive(true);
+                InitWorkbenchLogic();
+            });
+        }
+        else
+        {
+            if (mainContentRoot != null) mainContentRoot.SetActive(true);
+            InitWorkbenchLogic();
+        }
+    }
+    
+    private void InitWorkbenchLogic()
+    {
         RefreshSlotList(); 
         ClearInfo();
         _targetGearData = null;
         StartCoroutine(SelectFirstSlot());
     }
-    
+
     public void Close()
     {
+        if (sfxSource != null) sfxSource.Stop();
+        PlaySFX(bootDownClip, bootDownVolume);
+
+        if (bootTerminal != null) bootTerminal.StopBootSequence();
         if(panelRoot != null) panelRoot.SetActive(false);
+
+        StopAllTyping();
+        if (ambienceSource != null) ambienceSource.Stop();
+
         OnClose?.Invoke();
     }
 
+    // [튜토리얼 시작]
+    public void BeginTutorialMode(List<GearData> dummyGears)
+    {
+        _isTutorialMode = true;
+        _tutorialDummyGears = dummyGears;
+        _tutorialDummyMaterialCount = 0; // 가짜 재료 0개로 시작
+
+        // [핵심] 키보드/패드 네비게이션 기능 끄기 (마우스만 허용)
+        if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = false;
+
+        InitWorkbenchLogic();
+    }
+
+    // [튜토리얼 종료]
+    public void EndTutorialMode()
+    {
+        _isTutorialMode = false;
+        _tutorialDummyGears = null;
+        _tutorialDummyMaterialCount = 0;
+
+        // 네비게이션 기능 복구
+        if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = true;
+
+        InitWorkbenchLogic();
+    }
+
+    // [문제 2 해결] 튜토리얼용 가짜 재료 추가 함수
+    public void AddTutorialDummyMaterial(int count)
+    {
+        _tutorialDummyMaterialCount += count;
+        // UI 갱신
+        if (_targetGearData != null) UpdateInfoUI(_targetGearData);
+    }
+
+    // [튜토리얼 헬퍼] 슬롯 위치 가져오기
+    public RectTransform GetSlotRect(int index)
+    {
+        if (index >= 0 && index < _preplacedSlots.Count)
+            return _preplacedSlots[index].GetComponent<RectTransform>();
+        return null;
+    }
+    
+    // [튜토리얼 헬퍼] 버튼 위치 가져오기
+    public RectTransform GetEnhanceButtonRect()
+    {
+        return enhanceButton.GetComponent<RectTransform>();
+    }
+
+    // [튜토리얼 헬퍼] 재료 텍스트 위치 가져오기
+    public RectTransform GetCostTextRect(int index)
+    {
+        if (costTexts != null && index >= 0 && index < costTexts.Length)
+        {
+            return costTexts[index].GetComponent<RectTransform>();
+        }
+        return null;
+    }
+
+    // [튜토리얼 헬퍼] 재료 패널(전체) 위치 가져오기
+    public RectTransform GetCostPanelRect()
+    {
+        if (costTexts != null && costTexts.Length > 0 && costTexts[0] != null)
+        {
+            return costTexts[0].transform.parent.GetComponent<RectTransform>();
+        }
+        return null;
+    }
+
+    // [튜토리얼 헬퍼] 강제 선택 해제
+    public void ForceDeselect()
+    {
+        if (_selectedSlotUI != null)
+        {
+            _selectedSlotUI.SetSelectedState(false);
+            _selectedSlotUI = null;
+        }
+        _targetGearData = null;
+        ClearInfo();
+    }
+
+    // ================= [사운드 시스템] =================
+
+    public void PlayBootSound() => PlaySFX(bootUpClip, bootUpVolume);
+    public void PlayClickSound() => PlaySFX(clickClip, clickVolume);
+    public void PlayDataScrollLoop() => PlayLoop(dataScrollClip, dataScrollVolume);
+    public void PlayTypingLoop() => PlayLoop(typingLoopClip, typingVolume);
+    
+    public void StopLoopSound() 
+    {
+        if (_activeTypingCoroutines.Count == 0)
+        {
+            if (loopSource != null) loopSource.Stop();
+        }
+    }
+
+    public void PauseLoopSound()
+    {
+        if (loopSource != null) loopSource.Pause();
+    }
+    public void UnPauseLoopSound()
+    {
+        if (loopSource != null) loopSource.UnPause();
+    }
+
+    private void PlayAmbienceLoop()
+    {
+        if (ambienceSource != null && ambienceClip != null)
+        {
+            ambienceSource.clip = ambienceClip;
+            ambienceSource.loop = true;
+            ambienceSource.volume = ambienceVolume;
+            ambienceSource.Play();
+        }
+    }
+
+    private void PlaySFX(AudioClip clip, float volume)
+    {
+        if (sfxSource != null && clip != null)
+            sfxSource.PlayOneShot(clip, volume);
+    }
+
+    private void PlayLoop(AudioClip clip, float volume)
+    {
+        if (loopSource != null && clip != null)
+        {
+            if (loopSource.isPlaying && loopSource.clip == clip) return;
+            loopSource.clip = clip;
+            loopSource.loop = true;
+            loopSource.volume = volume;
+            loopSource.Play();
+        }
+    }
+    // =================================================
+
     private void RefreshSlotList()
     {
-        if (DBManager.I == null) return;
-        var userGears = DBManager.I.currData.gearDatas;
+        List<CharacterData.GearData> displayList = new List<CharacterData.GearData>();
+
+        // [튜토리얼] 더미 데이터 로드
+        if (_isTutorialMode && _tutorialDummyGears != null)
+        {
+            foreach(var gearSO in _tutorialDummyGears)
+            {
+                CharacterData.GearData dummyData = new CharacterData.GearData();
+                dummyData.Name = gearSO.name;
+                dummyData.level = 0;
+                dummyData.isEquipped = false;
+                dummyData.isNew = true;
+                displayList.Add(dummyData); 
+            }
+        }
+        else if (DBManager.I != null)
+        {
+            displayList = DBManager.I.currData.gearDatas;
+        }
 
         for (int i = 0; i < _preplacedSlots.Count; i++)
         {
             _preplacedSlots[i].gameObject.SetActive(true); 
             _preplacedSlots[i].SetSelectedState(false); 
 
-            if (i < userGears.Count)
+            if (i < displayList.Count)
             {
-                var userGear = userGears[i];
-                GearData gearData = DBManager.I.itemDatabase.FindGearByName(userGear.Name);
-                if (gearData != null) _preplacedSlots[i].Setup(gearData, this);
+                var savedGear = displayList[i];
+                GearData gearDataInfo = null;
+
+                if (_isTutorialMode)
+                {
+                    gearDataInfo = _tutorialDummyGears.Find(x => x.name == savedGear.Name);
+                }
+                else
+                {
+                    gearDataInfo = DBManager.I.itemDatabase.FindGearByName(savedGear.Name);
+                }
+
+                if (gearDataInfo != null) _preplacedSlots[i].Setup(gearDataInfo, this);
                 else _preplacedSlots[i].SetupEmpty(this);
             }
             else
@@ -152,28 +418,46 @@ public class WorkbenchUI : MonoBehaviour
 
     public void ConfirmSelection(WorkbenchSlotUI slotUI)
     {
+        if (_selectedSlotUI == slotUI)
+        {
+            PlaySFX(cancelClip, cancelVolume);
+            slotUI.SetSelectedState(false);
+            _selectedSlotUI = null;
+            _targetGearData = null;
+            ClearInfo(); 
+            return;
+        }
+
+        PlaySFX(selectClip, selectVolume);
+
         if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(false);
         _selectedSlotUI = slotUI;
         _targetGearData = slotUI.Data;
         if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(true);
         UpdateInfoUI(_targetGearData);
+        
+        // [튜토리얼 이벤트 호출]
+        if (_selectedSlotUI != null) OnGearSelectedEvent?.Invoke(_selectedSlotUI.Data);
     }
 
     private void ClearInfo()
     {
-        if (gearTitleText != null) gearTitleText.text = "[ 기어를 선택하세요 ]";
+        SetTextInstant(gearTitleText, GetLocStr(localizedStrings.label_EmptyTitle, "[ 기어를 선택하세요 ]"));
         if (targetGearImage != null) targetGearImage.gameObject.SetActive(false);
-        if (currentEffectText != null) currentEffectText.text = "";
-        if (nextEffectText != null) nextEffectText.text = "";
-
-        SetInteractable(false, "선택 필요", "-", "-", "-");
+        SetTextInstant(currentEffectText, "");
+        SetTextInstant(nextEffectText, "");
+        if (costTexts.Length > 0) SetTextInstant(costTexts[0], "-");
+        if (costTexts.Length > 1) SetTextInstant(costTexts[1], "-");
+        if (costTexts.Length > 2) SetTextInstant(costTexts[2], "-");
+        UpdateEnhanceButtonState(false, GetLocStr(localizedStrings.btn_SelectNeed, "선택 필요"));
     }
 
     private void UpdateInfoUI(GearData data)
     {
         if (data == null) { ClearInfo(); return; }
 
-        if (gearTitleText != null) gearTitleText.text = $"[ {data.localizedName} ]";
+        SetTextTyping(gearTitleText, $"[ {data.localizedName} ]");
+
         if (targetGearImage != null)
         {
             targetGearImage.sprite = data.gearIcon;
@@ -181,47 +465,150 @@ public class WorkbenchUI : MonoBehaviour
         }
 
         int currentLevel = DBManager.I.GetGearLevel(data.name);
+        
+        // [튜토리얼] 더미 모드에서는 항상 0레벨로 표시 (성공 후라도 레벨업 메시지만 띄우고 종료되므로)
+        if (_isTutorialMode) currentLevel = 0;
 
-        // [유지] GearData의 함수를 사용하여 로컬라이징(영어/한글) 완벽 동기화
         string textLv0 = data.GetEffectText(0);
         string textLv1 = data.GetEffectText(1);
 
         if (currentLevel >= 1)
         {
-            if (currentEffectText) currentEffectText.text = $"> {textLv1}";
-            
-            bool isKR = LocalizationSettings.SelectedLocale.Identifier.Code.Contains("ko");
-            if (nextEffectText) nextEffectText.text = isKR ? "> 강화 최종 단계" : "> Max Level Reached";
-            
-            SetInteractable(false, "강화 완료", "-", "-", "-");
+            SetTextTyping(currentEffectText, $"> {textLv1}");
+            SetTextTyping(nextEffectText, $"> {GetLocStr(localizedStrings.label_MaxLevelDesc, "Max Level")}");
+            if (costTexts.Length > 0) SetTextTyping(costTexts[0], "-");
+            if (costTexts.Length > 1) SetTextTyping(costTexts[1], "-");
+            if (costTexts.Length > 2) SetTextTyping(costTexts[2], "-");
+            UpdateEnhanceButtonState(false, GetLocStr(localizedStrings.btn_MaxLevel, "강화 완료"));
         }
         else
         {
-            if (currentEffectText) currentEffectText.text = $"> {textLv0}";
-            if (nextEffectText) nextEffectText.text = $"> {textLv1}";
-
-            if (_targetGearData == data)
-            {
-                EnhancementManager.LevelInfo info = GetCostInfo(data);
-                CheckCostAndEnableButton(info);
-            }
-            else
-            {
-                SetInteractable(false, "선택(Enter)", "-", "-", "-");
-            }
+            SetTextTyping(currentEffectText, $"> {textLv0}");
+            SetTextTyping(nextEffectText, $"> {textLv1}");
+            EnhancementManager.LevelInfo info = GetCostInfo(data);
+            bool isSelected = (_targetGearData == data);
+            CheckCostAndEnableButton(info, isSelected);
         }
     }
 
-    private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info)
+    private void SetTextTyping(TextMeshProUGUI target, string content)
+    {
+        if (target == null) return;
+        if (target.text == content) return;
+
+        if (_activeTypingCoroutines.ContainsKey(target) && _activeTypingCoroutines[target] != null)
+        {
+            StopCoroutine(_activeTypingCoroutines[target]);
+        }
+        _activeTypingCoroutines[target] = StartCoroutine(TypewriterRoutine(target, content));
+    }
+
+    private void SetTextInstant(TextMeshProUGUI target, string content)
+    {
+        if (target == null) return;
+        
+        if (_activeTypingCoroutines.ContainsKey(target) && _activeTypingCoroutines[target] != null)
+        {
+            StopCoroutine(_activeTypingCoroutines[target]);
+            _activeTypingCoroutines.Remove(target);
+        }
+        target.text = content;
+        target.maxVisibleCharacters = int.MaxValue; 
+        
+        if (_activeTypingCoroutines.Count == 0) StopLoopSound();
+    }
+
+    private IEnumerator TypewriterRoutine(TextMeshProUGUI tmp, string content)
+    {
+        tmp.text = content;
+        tmp.maxVisibleCharacters = 0; 
+        tmp.ForceMeshUpdate(); 
+        
+        int totalVisibleCharacters = tmp.textInfo.characterCount; 
+        int counter = 0;
+
+        PlayTypingLoop();
+
+        while (counter <= totalVisibleCharacters)
+        {
+            int visibleCount = counter;
+            tmp.maxVisibleCharacters = visibleCount; 
+            yield return new WaitForSeconds(typingSpeed); 
+            counter++;
+        }
+        
+        tmp.maxVisibleCharacters = int.MaxValue; 
+        _activeTypingCoroutines.Remove(tmp);
+
+        if (_activeTypingCoroutines.Count == 0)
+        {
+            StopLoopSound();
+        }
+    }
+
+    private void StopAllTyping()
+    {
+        StopLoopSound(); 
+        foreach (var coroutine in _activeTypingCoroutines.Values)
+        {
+            if (coroutine != null) StopCoroutine(coroutine);
+        }
+        _activeTypingCoroutines.Clear();
+    }
+
+    // [수정] 비용 체크 로직: 튜토리얼일 때는 '가짜 재료'를 확인
+    private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info, bool isSelected)
     {
         bool isEnough = true;
-        if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
-        string goldText = $"{info.goldCost} G";
-        string mat1Text = "";
-        string mat2Text = "";
-
-        if (info.requiredMaterials != null)
+        
+        // [문제 2 해결] 튜토리얼 분기
+        if (_isTutorialMode)
         {
+            // 가짜 재료 개수 확인
+            if (info.requiredMaterials != null && info.requiredMaterials.Count > 0)
+            {
+                int reqCount = info.requiredMaterials[0].count;
+                if (_tutorialDummyMaterialCount < reqCount) isEnough = false;
+            }
+        }
+        else
+        {
+            // 실제 DB 확인 (기존 로직)
+            if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
+            if (info.requiredMaterials != null)
+            {
+                 for (int i = 0; i < info.requiredMaterials.Count; i++)
+                 {
+                    if (i >= 2) break;
+                    var mat = info.requiredMaterials[i];
+                    if (mat.item == null) continue;
+                    string targetName = mat.item.name;
+                    int totalCount = 0;
+                    if (DBManager.I.currData.itemDatas != null)
+                    {
+                        foreach (var dbItem in DBManager.I.currData.itemDatas)
+                            if (dbItem.Name == targetName) totalCount += dbItem.count;
+                    }
+                    if (totalCount < mat.count) isEnough = false;
+                 }
+            }
+        }
+
+        // 텍스트 표시
+        string goldText = $"{info.goldCost} G";
+        string mat1Text = "-";
+        string mat2Text = "-";
+        
+        // 튜토리얼 텍스트 표시 (가짜 변수 기준)
+        if (_isTutorialMode && info.requiredMaterials != null && info.requiredMaterials.Count > 0)
+        {
+            var mat = info.requiredMaterials[0];
+            string color = (_tutorialDummyMaterialCount >= mat.count) ? "white" : "red";
+            mat1Text = $"<color={color}>{mat.item.localizedName} ( {_tutorialDummyMaterialCount} / {mat.count} )</color>";
+        }
+        else if (!_isTutorialMode && info.requiredMaterials != null)
+        {
+            // 실제 DB 표시
             for (int i = 0; i < info.requiredMaterials.Count; i++)
             {
                 if (i >= 2) break;
@@ -234,17 +621,28 @@ public class WorkbenchUI : MonoBehaviour
                     foreach (var dbItem in DBManager.I.currData.itemDatas)
                         if (dbItem.Name == targetName) totalCount += dbItem.count;
                 }
-                if (totalCount < mat.count) isEnough = false;
                 string color = (totalCount >= mat.count) ? "white" : "red";
                 string matString = $"<color={color}>{mat.item.localizedName} ( {totalCount} / {mat.count} )</color>";
                 if (i == 0) mat1Text = matString;
                 else if (i == 1) mat2Text = matString;
             }
         }
-
-        if (string.IsNullOrEmpty(mat1Text)) mat1Text = "-";
-        if (string.IsNullOrEmpty(mat2Text)) mat2Text = "-";
-        SetInteractable(isEnough, isEnough ? "강화하기" : "비용 부족", mat1Text, mat2Text, goldText);
+        
+        if (costTexts.Length > 0) SetTextTyping(costTexts[0], mat1Text);
+        if (costTexts.Length > 1) SetTextTyping(costTexts[1], mat2Text);
+        if (costTexts.Length > 2) SetTextTyping(costTexts[2], goldText);
+        
+        if (isSelected)
+        {
+            string btnStr = isEnough 
+                ? GetLocStr(localizedStrings.btn_Enhance, "강화하기") 
+                : GetLocStr(localizedStrings.btn_NotEnough, "비용 부족");
+            UpdateEnhanceButtonState(isEnough, btnStr);
+        }
+        else
+        {
+            UpdateEnhanceButtonState(true, GetLocStr(localizedStrings.btn_Select, "선택(Enter)")); 
+        }
     }
 
     private EnhancementManager.LevelInfo GetCostInfo(GearData data)
@@ -254,34 +652,67 @@ public class WorkbenchUI : MonoBehaviour
         return default;
     }
 
-    private void SetInteractable(bool interactable, string btnText, string info1, string info2, string info3)
+    private void UpdateEnhanceButtonState(bool interactable, string btnText)
     {
-        // 핵심 수정: 재료가 부족해도 알림을 띄워야 하므로 버튼은 항상 켜둡니다.
         if (enhanceButton != null) enhanceButton.interactable = true; 
-
-        // (옵션) 만약 재료 부족 시 버튼 색을 흐리게 하고 싶다면 여기서 Image 색상을 변경하는 로직 추가 가능
-        // 예: enhanceButton.image.color = isPossible ? Color.white : Color.gray;
-
         if (buttonText != null) buttonText.text = btnText;
-        if (costTexts.Length > 0) costTexts[0].text = info1;
-        if (costTexts.Length > 1) costTexts[1].text = info2;
-        if (costTexts.Length > 2) costTexts[2].text = info3;
     }
 
+    // [수정] 강화 버튼 클릭: 튜토리얼일 때는 가짜 시뮬레이션
     private void OnClickEnhance()
     {
         if (_targetGearData == null) return; 
-        var result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
+        
+        EnhancementManager.EnhancementResult result;
+
+        if (_isTutorialMode)
+        {
+            // [문제 2 해결] 가짜 로직 실행 (UI 내부 판단)
+            EnhancementManager.LevelInfo info = GetCostInfo(_targetGearData);
+            int reqCount = (info.requiredMaterials != null && info.requiredMaterials.Count > 0) ? info.requiredMaterials[0].count : 0;
+
+            if (_tutorialDummyMaterialCount >= reqCount)
+            {
+                result = EnhancementManager.EnhancementResult.Success;
+                _tutorialDummyMaterialCount -= reqCount; // 가짜 재료 소모
+            }
+            else
+            {
+                result = EnhancementManager.EnhancementResult.NotEnoughResources;
+            }
+        }
+        else
+        {
+            // 실제 매니저 호출
+            result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
+        }
+        
+        // 튜토리얼 이벤트 호출
+        OnEnhanceTryEvent?.Invoke(result);
+
         if (result == EnhancementManager.EnhancementResult.Success)
         {
-            notificationUI.ShowMessage("강화 성공!");
+            PlaySFX(successClip, successVolume);
+            notificationUI.ShowMessage(GetLocStr(localizedStrings.msg_Success, "강화 성공!"));
             UpdateInfoUI(_targetGearData);
             if (_selectedSlotUI != null) 
                  EventSystem.current.SetSelectedGameObject(_selectedSlotUI.gameObject);
         }
         else if (result == EnhancementManager.EnhancementResult.MaxLevel)
-            notificationUI.ShowMessage("이미 강화된 장비입니다.");
+        {
+            PlaySFX(errorClip, errorVolume);
+            notificationUI.ShowMessage(GetLocStr(localizedStrings.msg_AlreadyMax, "이미 강화된 장비입니다."));
+        }
         else
-            notificationUI.ShowMessage("비용이 부족합니다.");
+        {
+            PlaySFX(failClip, failVolume);
+            notificationUI.ShowMessage(GetLocStr(localizedStrings.msg_NotEnough, "비용이 부족합니다."));
+        }
+    }
+
+    private string GetLocStr(LocalizedString locString, string fallback)
+    {
+        if (locString == null || locString.IsEmpty) return fallback;
+        return locString.GetLocalizedString();
     }
 }
