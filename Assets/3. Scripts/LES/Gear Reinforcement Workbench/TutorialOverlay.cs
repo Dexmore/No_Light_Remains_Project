@@ -98,24 +98,33 @@ public class TutorialOverlay : MonoBehaviour, ICanvasRaycastFilter
         Vector2 bottomLeft = WorldToLocalPoint(worldCorners[0]);
         Vector2 topRight = WorldToLocalPoint(worldCorners[2]);
 
-        float minY = bottomLeft.y;
-        float maxY = topRight.y;
-        float minX = bottomLeft.x;
-        float maxX = topRight.x;
+        // 좌표 반올림 (기존 유지)
+        float minY = Mathf.Round(bottomLeft.y);
+        float maxY = Mathf.Round(topRight.y);
+        float minX = Mathf.Round(bottomLeft.x);
+        float maxX = Mathf.Round(topRight.x);
 
         float canvasWidth = _myRect.rect.width;
         float canvasHeight = _myRect.rect.height;
 
+        // [핵심 해결책] 틈새를 없애기 위한 겹침 수치 (2픽셀 정도면 충분)
+        float overlap = 2f; 
+
+        // 1. Top & Bottom (기존과 동일, 전체 폭 사용)
         topPanel.sizeDelta = new Vector2(canvasWidth, canvasHeight / 2 - maxY);
         topPanel.anchoredPosition = new Vector2(0, maxY + topPanel.sizeDelta.y / 2);
 
         bottomPanel.sizeDelta = new Vector2(canvasWidth, minY - (-canvasHeight / 2));
         bottomPanel.anchoredPosition = new Vector2(0, minY - bottomPanel.sizeDelta.y / 2);
 
-        leftPanel.sizeDelta = new Vector2(minX - (-canvasWidth / 2), maxY - minY);
+        // 2. Left & Right (수직으로 overlap 만큼 길게 만들어서 상/하 패널과 겹치게 함)
+        // 높이를 (maxY - minY)에 overlap을 더해 위아래로 조금씩 더 뻗게 만듭니다.
+        float sideHeight = (maxY - minY) + overlap; 
+
+        leftPanel.sizeDelta = new Vector2(minX - (-canvasWidth / 2), sideHeight);
         leftPanel.anchoredPosition = new Vector2(minX - leftPanel.sizeDelta.x / 2, (minY + maxY) / 2);
 
-        rightPanel.sizeDelta = new Vector2(canvasWidth / 2 - maxX, maxY - minY);
+        rightPanel.sizeDelta = new Vector2(canvasWidth / 2 - maxX, sideHeight);
         rightPanel.anchoredPosition = new Vector2(maxX + rightPanel.sizeDelta.x / 2, (minY + maxY) / 2);
     }
 
