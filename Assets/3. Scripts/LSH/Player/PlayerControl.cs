@@ -757,7 +757,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public bool isNearSavePoint;
     [HideInInspector] public bool isNearSconceLight;
     public AnimationCurve curve;
-    private bool isBatteryMalfunction;
+    [HideInInspector] public bool isBatteryMalfunction;
     IEnumerator DecreaseBattery()
     {
         float diffMultiplier = 1f;
@@ -787,13 +787,13 @@ public class PlayerControl : MonoBehaviour
             }
             hUDBinder.UpdateBatteryUI(isCharging, batteryPercent, lanternOnTime, isBatteryMalfunction);
             float malfunctionFactor = 1f;
-            if (!isCharging && GameManager.I.isLanternOn && lanternOnTime > 10f && !isBatteryMalfunction)
+            if (!isCharging && GameManager.I.isLanternOn && !hUDBinder.isWarring && lanternOnTime > 10f && !isBatteryMalfunction)
             {
-                if (Random.value < 0.004f)
+                if (Random.value < 0.006f)
                     isBatteryMalfunction = true;
             }
             if (!GameManager.I.isLanternOn) isBatteryMalfunction = false;
-            if (isBatteryMalfunction) malfunctionFactor = 1.6f;
+            if (isBatteryMalfunction) malfunctionFactor = 1.2f;
             if (isNearSavePoint)
             {
                 if (currBattery <= 100)

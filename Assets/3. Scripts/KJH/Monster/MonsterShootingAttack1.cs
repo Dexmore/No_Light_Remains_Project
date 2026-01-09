@@ -178,7 +178,7 @@ public class MonsterShootingAttack1 : MonsterState
             }
             if (!isBackBlocked)
             {
-                rb.AddForce(moveDirection * 6.8f, ForceMode2D.Impulse);
+                rb.AddForce(moveDirection * 3.8f, ForceMode2D.Impulse);
             }
             while (Time.time - startTime < repositionDuration)
             {

@@ -352,18 +352,23 @@ public class HUDBinder : MonoBehaviour
 
     private Tween icon1Tween;
     private Tween icon2Tween;
+    [HideInInspector] public bool isWarring;
 
     public void UpdateBatteryUI(bool isCharging, float batteryPercent, float lanternOnTime, bool hasDebuff)
     {
+        isWarring = false;
         // --- 1번 아이콘 (충전 vs 부족) 로직 ---
         int icon1Index = -1;
         if (isCharging) 
         {
             icon1Index = 0; // 충전 중 우선순위 1등
+            player.isBatteryMalfunction = false;
         }
-        else if (batteryPercent < 0.2f && lanternOnTime > 5f) 
+        else if (batteryPercent < 0.07f && lanternOnTime > 9f)
         {
             icon1Index = 1; // 충전 중이 아닐 때만 부족 경고
+            player.isBatteryMalfunction = false;
+            isWarring = true;
         }
 
         // --- 2번 아이콘 (잔고장) 로직 ---
@@ -390,7 +395,6 @@ public class HUDBinder : MonoBehaviour
         {
             // 아이콘 활성화 및 스프라이트 교체
             icon.sprite = batteryNoticeSprites[spriteIndex];
-            
             if (!icon.gameObject.activeSelf)
             {
                 icon.gameObject.SetActive(true);
@@ -400,7 +404,7 @@ public class HUDBinder : MonoBehaviour
                 icon.color = c;
 
                 tween?.Kill();
-                tween = icon.DOFade(0.2f, 0.6f)
+                tween = icon.DOFade(0.15f, 0.37f)
                     .SetLoops(-1, LoopType.Yoyo)
                     .SetEase(Ease.InOutSine)
                     .SetLink(icon.gameObject);
