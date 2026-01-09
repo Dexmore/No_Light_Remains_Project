@@ -483,6 +483,7 @@ public class PlayerInteraction : MonoBehaviour
             target2 = null;
         }
     }
+    Particle nearChargeParticle;
     async UniTask Sensor(CancellationToken token)
     {
         await UniTask.Yield(token);
@@ -529,6 +530,7 @@ public class PlayerInteraction : MonoBehaviour
             // Auto Interaction
             playerControl.isNearSavePoint = false;
             playerControl.isNearSconceLight = false;
+            bool isNearCharge = false;
             for (int i = 0; i < colliders.Length; i++)
             {
                 int find = sensorDatas.FindIndex(x => x.collider == colliders[i]);
@@ -540,6 +542,18 @@ public class PlayerInteraction : MonoBehaviour
                     if (savePoint_LSH != null)
                     {
                         playerControl.isNearSavePoint = true;
+                        if (!isNearCharge)
+                        {
+                            isNearCharge = true;
+                            float _rnd = Random.value;
+                            if (_rnd < 0.02f)
+                            {
+                                nearChargeParticle?.Despawn();
+                                nearChargeParticle = null;
+                                float angle = Vector3.Angle(Vector3.right, (transform.position - (savePoint_LSH.transform.position + 0.5f * Vector3.up)));
+                                nearChargeParticle = ParticleManager.I.PlayParticle("Electricity", (savePoint_LSH.transform.position + 0.5f * Vector3.up), Quaternion.Euler(0f, 0f, angle));
+                            }
+                        }
                     }
                     if (!interactable.isReady) continue;
                     SensorData data = new SensorData();
@@ -558,6 +572,18 @@ public class PlayerInteraction : MonoBehaviour
                     if (sconceLight != null && !sconceLight.isReady)
                     {
                         playerControl.isNearSconceLight = true;
+                        if (!isNearCharge)
+                        {
+                            isNearCharge = true;
+                            float _rnd = Random.value;
+                            if (_rnd < 0.02f)
+                            {
+                                nearChargeParticle?.Despawn();
+                                nearChargeParticle = null;
+                                float angle = Vector3.Angle(Vector3.right, (transform.position - sconceLight.transform.position));
+                                nearChargeParticle = ParticleManager.I.PlayParticle("Electricity", sconceLight.transform.position, Quaternion.Euler(0f, 0f, angle));
+                            }
+                        }
                     }
                     if (!lanternable.isReady) continue;
                     SensorData data = new SensorData();

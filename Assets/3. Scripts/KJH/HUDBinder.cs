@@ -116,7 +116,7 @@ public class HUDBinder : MonoBehaviour
             await UniTask.Delay(730, cancellationToken: token);
             int rnd = Random.Range(96, 138);
             localParticle = ParticleManager.I.PlayUIParticle("UIElectricity", new Vector2(rnd, 910), Quaternion.identity);
-            AudioManager.I.PlaySFX("Electricity", transform.position, null, vol: 0.18f);
+            AudioManager.I.PlaySFX("Electricity", transform.position, null, vol: 0.09f);
             await UniTask.Delay(380, cancellationToken: token);
         }
         catch (System.OperationCanceledException)
