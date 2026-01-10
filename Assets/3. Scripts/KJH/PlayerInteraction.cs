@@ -555,7 +555,7 @@ public class PlayerInteraction : MonoBehaviour
                             }
                             else
                             {
-                                batterySFX = AudioManager.I.PlaySFX("BatteryCharge", savePoint_LSH.transform.position, null, 0.8f, vol: 0.43f);
+                                batterySFX = AudioManager.I.PlaySFX("BatteryCharge", savePoint_LSH.transform.position, null, 0.4f, vol: 0.53f);
                             }
                             if (_rnd < 0.043f)
                             {
@@ -593,7 +593,7 @@ public class PlayerInteraction : MonoBehaviour
                             }
                             else
                             {
-                                batterySFX = AudioManager.I.PlaySFX("BatteryCharge", sconceLight.transform.position, null, 0.8f, vol: 0.43f);
+                                batterySFX = AudioManager.I.PlaySFX("BatteryCharge", sconceLight.transform.position, null, 0.4f, vol: 0.53f);
                             }
                             if (_rnd < 0.043f)
                             {

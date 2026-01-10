@@ -52,19 +52,22 @@ public class MonsterDie : MonsterState
                         }
                     }
                 }
-                find1 = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
-                if (find1 != -1)
+                if (DBManager.I.currData.killCounts != null && DBManager.I.currData.killCounts.Count > 0)
                 {
-                    var killCount = DBManager.I.currData.killCounts[find1];
-                    killCount.count++;
-                    DBManager.I.currData.killCounts[find1] = killCount;
-                }
-                else
-                {
-                    var killCount = new CharacterData.KillCount();
-                    killCount.Name = strimedName;
-                    killCount.count = 1;
-                    DBManager.I.currData.killCounts.Add(killCount);
+                    find1 = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+                    if (find1 != -1)
+                    {
+                        var killCount = DBManager.I.currData.killCounts[find1];
+                        killCount.count++;
+                        DBManager.I.currData.killCounts[find1] = killCount;
+                    }
+                    else
+                    {
+                        var killCount = new CharacterData.KillCount();
+                        killCount.Name = strimedName;
+                        killCount.count = 1;
+                        DBManager.I.currData.killCounts.Add(killCount);
+                    }
                 }
             }
         }
@@ -108,8 +111,8 @@ public class MonsterDie : MonsterState
             if (Random.value > element.probability) continue;
             if (element.probability <= 0.1f)
             {
-                // 0.001%같은 유니크 아이템이 한마리 잡고 바로 나오는 행위방지
-                float MinExpectation = (1 / element.probability) * 0.2717f;
+                // 유니크 아이템이 한마리 잡고 바로 나오는 행위방지
+                float MinExpectation = (1 / element.probability) * 0.1f;
                 if (killCount < MinExpectation) continue;
             }
             if (element.dropItem == null && element.record != null)
