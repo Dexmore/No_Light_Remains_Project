@@ -287,26 +287,28 @@ public class PlayerControl : MonoBehaviour
     float groundCheckTime;
     void CheckGroundedPrecise()
     {
-        _Grounded = false;
+        //_Grounded = false;
         if (collisions.Count > 0)
             foreach (var element in collisions)
                 if (Mathf.Abs(element.Value.y - transform.position.y) < 0.1f * capsuleCollider2D.size.y)
                 {
                     _Grounded = true;
-                    break;
+                    return;
                 }
-        if (!_Grounded)
+
+        if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
         {
-            if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
+            groundCheckTime = Time.time;
+            groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
+            groundRay.direction = Vector2.down;
+            groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
+            if (groundRayHit)
             {
-                groundCheckTime = Time.time;
-                groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
-                groundRay.direction = Vector2.down;
-                groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
-                if (groundRayHit)
-                {
-                    _Grounded = true;
-                }
+                _Grounded = true;
+            }
+            else
+            {
+                _Grounded = false;
             }
         }
     }
@@ -422,6 +424,7 @@ public class PlayerControl : MonoBehaviour
     }
     Camera _mainCamera;
     [HideInInspector] public Inventory inventoryUI;
+    float parrySuccessTime;
     void HitHandler(HitData hData)
     {
         if (hData.attacker.Root() == transform)
@@ -510,37 +513,42 @@ public class PlayerControl : MonoBehaviour
             {
                 if (!hData.isCannotParry)
                 {
-                    AudioManager.I.PlaySFX("Parry");
-                    ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
-                    GameManager.I.onParry.Invoke(hData);
-                    if (hData.attackType == HitData.AttackType.Bullet)
+                    if (Time.time - parrySuccessTime > 0.3f)
                     {
-                        Bullet bullet = hData.attacker.GetComponent<Bullet>();
-                        bullet.Despawn();
+                        parrySuccessTime = Time.time;
+                        AudioManager.I.PlaySFX("Parry");
+                        ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                        GameManager.I.onParry.Invoke(hData);
+                        if (hData.attackType == HitData.AttackType.Bullet)
+                        {
+                            Bullet bullet = hData.attacker.GetComponent<Bullet>();
+                            bullet.Despawn();
+                        }
+                        GameManager.I.HitEffect(hData.hitPoint, 0.25f);
+                        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
+
+                        OnParrySuccess(hData);
+
+                        if (_mainCamera == null) _mainCamera = Camera.main;
+                        UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
+                        AttractParticle ap = upa.GetComponent<AttractParticle>();
+                        Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
+                        ap.targetVector = pos;
+                        // MonsterControl monsterControl = hData.attacker.GetComponent<Monster>
+                        float tempFloat = 1f;
+                        if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
+                            if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
+                                tempFloat = 0.34f;
+
+                        currBattery += lanternParryAmount * tempFloat;
+                        currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
+                        hUDBinder.RefreshBattery();
+                        hitCoolTime1speed = 30f;
+                        hitCoolTime2speed = 30f;
+                        StartCoroutine(nameof(ReleaseParred));
+                        return;
                     }
-                    GameManager.I.HitEffect(hData.hitPoint, 0.25f);
-                    ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
 
-                    OnParrySuccess(hData);
-
-                    if (_mainCamera == null) _mainCamera = Camera.main;
-                    UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
-                    AttractParticle ap = upa.GetComponent<AttractParticle>();
-                    Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
-                    ap.targetVector = pos;
-                    // MonsterControl monsterControl = hData.attacker.GetComponent<Monster>
-                    float tempFloat = 1f;
-                    if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
-                        if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                            tempFloat = 0.34f;
-
-                    currBattery += lanternParryAmount * tempFloat;
-                    currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
-                    hUDBinder.RefreshBattery();
-                    hitCoolTime1speed = 30f;
-                    hitCoolTime2speed = 30f;
-                    StartCoroutine(nameof(ReleaseParred));
-                    return;
                 }
                 else
                 {

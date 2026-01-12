@@ -73,9 +73,13 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         var sceneBGMList = autoBGM[find].list;
 
         // 현재 재생 중인 클립 확인
-        AudioClip currentClip = currentAus.clip;
-        bool isAlreadyPlaying = sceneBGMList.Any(x => x.audioClip == currentClip);
-
+        bool isAlreadyPlaying = false;
+        if(currentAus)
+        {
+            AudioClip currentClip = currentAus.clip;
+            isAlreadyPlaying = sceneBGMList.Any(x => x.audioClip == currentClip);
+        }
+        
         if (isAlreadyPlaying && currentAus.isPlaying)
         {
             // 3. 이미 현재 씬의 음악 중 하나가 재생 중인 경우
@@ -205,7 +209,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
 
     public void FadeOutBGM(float duration)
     {
-        StartCoroutine(Co_FadeOut(currentAus, duration));
+        if (currentAus != null)
+            StartCoroutine(Co_FadeOut(currentAus, duration));
     }
 
     IEnumerator Co_FadeOut(AudioSource aus, float duration)

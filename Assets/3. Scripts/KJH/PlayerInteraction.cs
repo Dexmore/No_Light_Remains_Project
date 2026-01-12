@@ -146,7 +146,7 @@ public class PlayerInteraction : MonoBehaviour
                     RaycastHit2D[] raycastHits = Physics2D.LinecastAll
                     (
                         (Vector2)playerControl.transform.position + 1.4f * Vector2.up,
-                        (Vector2)targetCenter,
+                        (Vector2)targetCenter + 0.1f * Vector2.up,
                         playerControl.groundLayer
                     );
                     bool isBlocked = false;

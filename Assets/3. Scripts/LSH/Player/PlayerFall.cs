@@ -36,14 +36,14 @@ public class PlayerFall : IPlayerState
                 fsm.ChangeState(ctx.idle);
 
             SFX sfx;
-            float vol = Time.time - startTime;
-            if (vol > 0.2f)
+            float elapsed = Time.time - startTime;
+            if (elapsed > 0.2f)
             {
-                vol = Mathf.Clamp01(vol - 0.3f) * 0.4f;
+                elapsed = Mathf.Clamp01(elapsed - 0.3f) * 0.4f;
                 sfx = AudioManager.I.PlaySFX("Land");
                 if (sfx != null)
                     if (sfx.aus != null)
-                        sfx.aus.volume = vol * sfx.aus.volume;
+                        sfx.aus.volume = elapsed * sfx.aus.volume;
             }
         }
     }

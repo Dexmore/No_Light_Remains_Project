@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using NaughtyAttributes;
-using Cysharp.Threading.Tasks;
 public class HUDBinder : MonoBehaviour
 {
     #region UniTask Setting
@@ -299,7 +299,7 @@ public class HUDBinder : MonoBehaviour
                 0 => "Item acquired.",
                 1 => "Gear acquired.",
                 2 => "Lantern acquired.",
-                3 => "Document acquired.",
+                3 => "Record acquired.",
                 _ => "Item acquired."
             };
         }

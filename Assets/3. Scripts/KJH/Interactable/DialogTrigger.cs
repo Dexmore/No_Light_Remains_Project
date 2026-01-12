@@ -7,7 +7,7 @@ public class DialogTrigger : MonoBehaviour, ISavable
     #region ISavable Complement
     Transform ISavable.transform => transform;
     bool ISavable.IsComplete { get { return isComplete; } set { isComplete = value; } }
-    bool isComplete;
+    bool isComplete = false;
     bool ISavable.CanReplay => canReplay;
     int ISavable.ReplayWaitTimeSecond => replayWaitTimeSecond;
     public void SetCompletedImmediately()
@@ -43,27 +43,51 @@ public class DialogTrigger : MonoBehaviour, ISavable
         hUDBinder = FindAnyObjectByType<HUDBinder>();
     }
     PlayerControl playerControl;
-    void OnTriggerEnter2D(Collider2D collision)
+    float stayTimer;
+    void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.layer != playerLayer) return;
-        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
-        if (playerControl == null) playerControl = collision.gameObject.GetComponentInParent<PlayerControl>();
-        if (playerControl == null) return;
-        if (!playerControl.Grounded) return;
-        isComplete = true;
-        if (canReplay)
-        {
-            DBManager.I.SetLastTimeReplayObject(this);
-        }
-        coll2D.enabled = false;
-        GameManager.I.onDialog.Invoke(dialogIndex, transform);
-        if (sfxName != null && sfxName != "")
-        {
-            AudioManager.I.PlaySFX(sfxName, transform.position, null, 0.2f);
-        }
-        StopCoroutine(nameof(WaitDialogFinish));
-        StartCoroutine(nameof(WaitDialogFinish));
+        stayTimer = 0;
     }
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer != playerLayer) return;
+        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory)
+        {
+            stayTimer = 0;
+            return;
+        }
+        if (playerControl == null) playerControl = collision.gameObject.GetComponentInParent<PlayerControl>();
+        if (playerControl == null)
+        {
+            stayTimer = 0;
+            return;
+        }
+        if (!playerControl.Grounded)
+        {
+            stayTimer = 0;
+            return;
+        }
+        if (isComplete) return;
+        stayTimer += Time.deltaTime;
+        if (stayTimer >= 0.115f)
+        {
+            isComplete = true;
+            if (canReplay)
+            {
+                DBManager.I.SetLastTimeReplayObject(this);
+            }
+            coll2D.enabled = false;
+            GameManager.I.onDialog.Invoke(dialogIndex, transform);
+            if (!string.IsNullOrEmpty(sfxName))
+            {
+                AudioManager.I.PlaySFX(sfxName, transform.position, null, 0.2f);
+            }
+            StopCoroutine(nameof(WaitDialogFinish));
+            StartCoroutine(nameof(WaitDialogFinish));
+        }
+    }
+
     IEnumerator WaitDialogFinish()
     {
         yield return YieldInstructionCache.WaitForSeconds(0.37f);

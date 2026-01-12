@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 public class Portal : Interactable
 {
@@ -20,7 +21,7 @@ public class Portal : Interactable
         isReady = true;
         isRun = false;
     }
-    public override void Run()
+    public async override void Run()
     {
         if (!isReady) return;
         if (isRun) return;
@@ -29,6 +30,17 @@ public class Portal : Interactable
             GameManager.I.SetScene(targetPosition, false);
         else
             GameManager.I.SetScene(targetPosition, true);
+        
+        if (sceneName == "EndingCredit")
+        {
+            DBManager.I.Save();
+            DBManager.I.currData.sceneName = "Stage5";
+            DBManager.I.savedData.sceneName = "Stage5";
+            DBManager.I.currData.lastPos = new Vector2(-18, 2.05f);
+            DBManager.I.savedData.lastPos = new Vector2(-18, 2.05f);
+            await Task.Delay(50);
+        }
+        
         GameManager.I.LoadSceneAsync(sceneName, loadingPage);
     }
 

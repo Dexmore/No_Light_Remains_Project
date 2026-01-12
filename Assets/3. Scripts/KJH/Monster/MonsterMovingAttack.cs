@@ -214,11 +214,11 @@ public class MonsterMovingAttack : MonsterState
                     {
                         if (control.Type == MonsterType.Large || control.Type == MonsterType.Boss)
                         {
-                            GameManager.I.PlayAfterImageEffect(sr, 1.4f);
+                            GameManager.I.PlayAfterImageEffect(sr, 1.1f);
                         }
                         else
                         {
-                            GameManager.I.PlayAfterImageEffect(sr, 0.7f);
+                            GameManager.I.PlayAfterImageEffect(sr, 0.4f);
                         }
                     }
                 }

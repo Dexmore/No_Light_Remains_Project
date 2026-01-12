@@ -21,15 +21,22 @@ public class TutorialControl : MonoBehaviour
             yield return YieldInstructionCache.WaitForSeconds(1f);
             yield return new WaitUntil(() => !GameManager.I.isSceneWaiting);
             yield return YieldInstructionCache.WaitForSeconds(1f);
-            GameManager.I.onDialog.Invoke(0, transform);
-            Debug.Log("튜토리얼 시작 : 스토리 첫 대사 출력");
-            DBManager.I.SetProgress("Tutorial", 1);
-            currentProgress = 1;
-            yield return YieldInstructionCache.WaitForSeconds(1f);
-            yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
-            playerControl.fsm.ChangeState(playerControl.idle);
-            StartCoroutine(nameof(TutorialParryLoop));
-            StartCoroutine(nameof(TutorialAttackLoop));
+            if (playerControl.transform.position.x < 0)
+            {
+                Debug.Log("튜토리얼 시작 : 스토리 첫 대사 출력");
+                GameManager.I.onDialog.Invoke(0, transform);
+                DBManager.I.SetProgress("Tutorial", 1);
+                currentProgress = 1;
+                yield return YieldInstructionCache.WaitForSeconds(1f);
+                yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
+                playerControl.fsm.ChangeState(playerControl.idle);
+                StartCoroutine(nameof(TutorialParryLoop));
+                StartCoroutine(nameof(TutorialAttackLoop));
+            }
+            else
+            {
+                playerControl.fsm.ChangeState(playerControl.idle);
+            }
         }
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         Transform tutParryTr = transform.Find("TutorialParry");

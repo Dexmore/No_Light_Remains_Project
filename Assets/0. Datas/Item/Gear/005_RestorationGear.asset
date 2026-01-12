@@ -39,7 +39,15 @@ MonoBehaviour:
   isEquipped: 0
   isNew: 1
   currentLevel: 0
-  specificEnhancementSettings: []
+  specificEnhancementSettings:
+  - goldCost: 200
+    requiredMaterials:
+    - item: {fileID: 11400000, guid: 53f71a3dbfcdc634dbc41ad6b5bcf15f, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: e1b8a8fa6fa9b854094a2033bcf9e78f, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: 06178709ab366004ea23e9f1055a9bcd, type: 2}
+      count: 1
   references:
     version: 2
     RefIds: []

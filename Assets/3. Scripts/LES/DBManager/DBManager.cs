@@ -387,6 +387,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         {
             CharacterData.ItemData findData = currData.itemDatas[find];
             int _count = findData.count;
+            if (_count >= 999) return;
             if (_count + count <= 0)
             {
                 currData.itemDatas.Remove(findData);

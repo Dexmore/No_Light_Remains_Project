@@ -9,6 +9,10 @@ public class GearSlot : DropItem
         {
             if (DBManager.I.currData.maxGearCost != targetCount - 1) gameObject.SetActive(false);
         }
+        else
+        {
+            if (DBManager.I.currData.maxGearCost == 6) gameObject.SetActive(false);
+        }
     }
     public override void Run()
     {
