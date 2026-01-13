@@ -63,10 +63,10 @@ public class PlayerUsePotion : IPlayerState
                 adjustedTime = duration;
                 break;
             case 1:
-                adjustedTime = duration * 1.2f + 0.4f;
+                adjustedTime = duration * 1.1f + 0.1f;
                 break;
             case 2:
-                adjustedTime = duration * 1.3f + 0.6f;
+                adjustedTime = duration * 1.2f + 0.2f;
                 break;
         }
         //Gear 기어 (신복의 기어) 007_QuickHealGear
@@ -175,7 +175,7 @@ public class PlayerUsePotion : IPlayerState
         await UniTask.Yield(token);
         if (once) return;
         once = true;
-        float du = 3.5f;
+        float du = 3.6f;
         //Gear 기어 (신복의 기어) 007_QuickHealGear
         bool outValue = false;
         if (DBManager.I.HasGear("007_QuickHealGear", out outValue))

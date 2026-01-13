@@ -8,6 +8,7 @@ public class GearData : ScriptableObject
 {
     [Header("기본 정보")]
     public LocalizedString gearName;
+    public LocalizedString gearDescription;
     public Sprite gearIcon;
 
     [Space(10)]
@@ -46,6 +47,16 @@ public class GearData : ScriptableObject
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                     localizedName = handle.Result;
+            };
+        }
+
+        // 2. 설명 로드
+        if (!gearDescription.IsEmpty)
+        {
+            gearDescription.GetLocalizedStringAsync().Completed += (handle) =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                    localizedNormalDescription = handle.Result;
             };
         }
     }

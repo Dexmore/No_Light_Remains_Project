@@ -612,7 +612,7 @@ public class WorkbenchUI : MonoBehaviour
             // 실제 DB 표시
             for (int i = 0; i < info.requiredMaterials.Count; i++)
             {
-                if (i >= 2) break;
+                if (i >= 3) break;
                 var mat = info.requiredMaterials[i];
                 if (mat.item == null) continue;
                 string targetName = mat.item.name;

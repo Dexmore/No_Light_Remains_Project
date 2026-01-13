@@ -37,12 +37,12 @@ public class PlayerAttackCombo : IPlayerState
                 adjustedTime2 = comboAvailableTime;
                 break;
             case 1:
-                adjustedTime1 = duration + 0.08f;
-                adjustedTime2 = comboAvailableTime + 0.08f;
+                adjustedTime1 = duration + 0.05f;
+                adjustedTime2 = comboAvailableTime + 0.05f;
                 break;
             case 2:
-                adjustedTime1 = duration + 0.11f;
-                adjustedTime2 = comboAvailableTime + 0.11f;
+                adjustedTime1 = duration + 0.1f;
+                adjustedTime2 = comboAvailableTime + 0.1f;
                 break;
         }
         ctx.animator.Play("Player_Attack2");
@@ -145,12 +145,18 @@ public class PlayerAttackCombo : IPlayerState
             {
                 if (outValue)
                 {
-                    if (ctx.currHealth / ctx.maxHealth <= 0.25f)
+                    int level = DBManager.I.GetGearLevel("001_LastStandGear");
+                    if (level == 0 && ctx.currHealth / ctx.maxHealth <= 0.25f)
                     {
                         gearMultiplier = 1.3f;
                     }
+                    else if(level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
+                    {
+                        gearMultiplier = 1.35f;
+                    }
                 }
             }
+            
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
             if (GameManager.I.isSuperNovaGearEquip)
             {

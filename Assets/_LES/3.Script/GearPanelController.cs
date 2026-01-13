@@ -216,30 +216,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
             
             if (detailGearDescription != null)
             {
-                if(gear.currentLevel == 0)
-                {
-                    if(SettingManager.I.setting.locale == 0)
-                    {
-                        detailGearDescription.text = gear.upgradeMain_EN;
-                    }
-                    else if(SettingManager.I.setting.locale == 1)
-                    {
-                        detailGearDescription.text = gear.upgradeMain_KR;
-                    }
-                }
-                else if(gear.currentLevel == 1)
-                {
-                    if(SettingManager.I.setting.locale == 0)
-                    {
-                        detailGearDescription.text = gear.upgradeSub_EN;
-                    }
-                    else if(SettingManager.I.setting.locale == 1)
-                    {
-                        detailGearDescription.text = gear.upgradeSub_KR;
-                    }
-
-
-                }
+                detailGearDescription.text = gear.localizedNormalDescription;
             }
             // ------------------------------------------------------------------
 
