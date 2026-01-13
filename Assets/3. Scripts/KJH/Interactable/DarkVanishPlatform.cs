@@ -100,8 +100,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
         lp.DOFade(0f, 1.1f).SetEase(Ease.InSine).SetLink(gameObject);
         tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0f, 1.1f).SetEase(Ease.InSine)
         .OnComplete(() => lp.gameObject.SetActive(false)).Play();
-        var mainModule = lpParticle.main;
-        mainModule.loop = false;
+        lpParticle.Stop();
     }
     ParticleSystem lpParticle;
     ParticleSystem dvParticle;

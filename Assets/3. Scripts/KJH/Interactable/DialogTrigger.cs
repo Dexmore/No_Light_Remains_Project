@@ -70,7 +70,7 @@ public class DialogTrigger : MonoBehaviour, ISavable
         }
         if (isComplete) return;
         stayTimer += Time.deltaTime;
-        if (stayTimer >= 0.115f)
+        if (stayTimer >= 0.137f)
         {
             isComplete = true;
             if (canReplay)

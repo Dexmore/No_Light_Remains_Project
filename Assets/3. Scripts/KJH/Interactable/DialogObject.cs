@@ -53,6 +53,7 @@ public class DialogObject : Interactable, ISavable
     {
         if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         isReady = false;
+        isComplete = true;
         coll2D.enabled = false;
         GameManager.I.onDialog.Invoke(dialogIndex, transform);
         if (sfxName != null && sfxName != "")

@@ -36,13 +36,11 @@ public class DoorStage1To0 : Interactable
     public override bool isAuto => false;
     void Awake()
     {
-        Debug.Log("-2");
         isReady = true;
     }
     public override void Run()
     {
         if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
-        Debug.Log("-1");
         Run_ut(cts.Token).Forget();
         isReady = false;
         transform.SetParent(null);
@@ -54,13 +52,10 @@ public class DoorStage1To0 : Interactable
         GameManager.I.LoadSceneAsync("Stage0");
         ElevatorUp elevatorUp = null;
         elevatorUp = FindAnyObjectByType<ElevatorUp>();
-        Debug.Log($"0. {elevatorUp}");
         await UniTask.Delay(800, cancellationToken: token);
         if (elevatorUp == null) elevatorUp = FindAnyObjectByType<ElevatorUp>();
-        Debug.Log($"1. {elevatorUp}");
         await UniTask.WaitUntil(() => !GameManager.I.isSceneWaiting, cancellationToken: token);
         if (elevatorUp == null) elevatorUp = FindAnyObjectByType<ElevatorUp>();
-        Debug.Log($"2. {elevatorUp}");
         await UniTask.Delay(200, cancellationToken: token);
         if (elevatorUp == null) elevatorUp = FindAnyObjectByType<ElevatorUp>();
         //
@@ -73,7 +68,6 @@ public class DoorStage1To0 : Interactable
         await UniTask.Delay(500, cancellationToken: token);
         platform.DOLocalMoveY(0f,1.5f).SetEase(Ease.Linear).Play().SetLink(gameObject);
         //181.48 , 10
-        Debug.Log($"3. {elevatorUp}");
         await UniTask.Delay(1500, cancellationToken: token);
         elevatorUp.isReady = true;
         platform.transform.localPosition = Vector3.zero;
