@@ -10,9 +10,6 @@ public class GearData : ScriptableObject
     public LocalizedString gearName;
     public Sprite gearIcon;
 
-    [Header("기본설명")]
-    public LocalizedString gearDescription; 
-
     [Space(10)]
     [Header("==================================================")]
     [Header("[ 0강 텍스트 (신규) ] - 상단: 위(영어) / 아래(한글)")]
@@ -49,16 +46,6 @@ public class GearData : ScriptableObject
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                     localizedName = handle.Result;
-            };
-        }
-
-        // ✅ [복구됨] 설명 로드 로직
-        if (!gearDescription.IsEmpty)
-        {
-            gearDescription.GetLocalizedStringAsync().Completed += (handle) =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                    localizedNormalDescription = handle.Result;
             };
         }
     }

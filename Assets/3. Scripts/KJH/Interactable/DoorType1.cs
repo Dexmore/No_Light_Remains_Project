@@ -9,6 +9,7 @@ public class DoorType1 : MonoBehaviour, ISavable
     bool ISavable.CanReplay => true;
     int ISavable.ReplayWaitTimeSecond => _ReplayWaitTimeSecond;
     int _ReplayWaitTimeSecond = 0;
+    public Vector2Int ReplayWaitTimeSecondRange;
     public void SetCompletedImmediately()
     {
         isComplete = true;
@@ -17,6 +18,7 @@ public class DoorType1 : MonoBehaviour, ISavable
     }
     Collider2D col;
     #endregion
+    public bool isOneWay;
     Animator animator;
     void Awake()
     {
@@ -24,10 +26,11 @@ public class DoorType1 : MonoBehaviour, ISavable
         TryGetComponent(out animator);
         playerLayer = LayerMask.NameToLayer("Player");
         isOpen = false;
-        _ReplayWaitTimeSecond = Random.Range(500, 86400);
+        _ReplayWaitTimeSecond = Random.Range(ReplayWaitTimeSecondRange.x, ReplayWaitTimeSecondRange.y);
     }
     IEnumerator Start()
     {
+        if (!isOneWay) yield break;
         isPlayerRight = false;
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();

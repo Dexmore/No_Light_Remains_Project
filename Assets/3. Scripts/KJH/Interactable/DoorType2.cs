@@ -18,6 +18,7 @@ public class DoorType2 : MonoBehaviour, ISavable
     Collider2D col;
     #endregion
     Animator animator;
+    public bool isOneWay;
     void Awake()
     {
         TryGetComponent(out col);
@@ -28,6 +29,7 @@ public class DoorType2 : MonoBehaviour, ISavable
     }
     IEnumerator Start()
     {
+        if(!isOneWay) yield break;
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
         Debug.Log($"playerPos : {playerControl.transform.position.x} vs myPos : {transform.position.x}");

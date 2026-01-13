@@ -216,23 +216,29 @@ public class GearPanelController : MonoBehaviour, ITabContent
             
             if (detailGearDescription != null)
             {
-                if (!gear.gearDescription.IsEmpty)
+                if(gear.currentLevel == 0)
                 {
-                    // 비동기로 텍스트 요청 (항상 실행)
-                    gear.gearDescription.GetLocalizedStringAsync().Completed += (op) => 
+                    if(SettingManager.I.setting.locale == 0)
                     {
-                        // 로딩이 끝나면 UI에 반영 (UI가 여전히 켜져있는지 체크)
-                        if (detailGearDescription != null && gameObject.activeInHierarchy) 
-                        {
-                            detailGearDescription.text = op.Result;
-                            // 필요하다면 변수에도 업데이트 (선택 사항)
-                            gear.localizedNormalDescription = op.Result; 
-                        }
-                    };
+                        detailGearDescription.text = gear.upgradeMain_EN;
+                    }
+                    else if(SettingManager.I.setting.locale == 1)
+                    {
+                        detailGearDescription.text = gear.upgradeMain_KR;
+                    }
                 }
-                else
+                else if(gear.currentLevel == 1)
                 {
-                    detailGearDescription.text = ""; 
+                    if(SettingManager.I.setting.locale == 0)
+                    {
+                        detailGearDescription.text = gear.upgradeSub_EN;
+                    }
+                    else if(SettingManager.I.setting.locale == 1)
+                    {
+                        detailGearDescription.text = gear.upgradeSub_KR;
+                    }
+
+
                 }
             }
             // ------------------------------------------------------------------
