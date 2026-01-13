@@ -131,7 +131,7 @@ public class PlayerAttackCombo2 : IPlayerState
                     {
                         gearMultiplier = 1.3f;
                     }
-                    else if(level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
+                    else if (level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
                     {
                         gearMultiplier = 1.35f;
                     }
@@ -142,12 +142,23 @@ public class PlayerAttackCombo2 : IPlayerState
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
             if (GameManager.I.isSuperNovaGearEquip)
             {
-                if (GameManager.I.isLanternOn)
-                    gearMultiplier *= 1.2f;
-                else
-                    gearMultiplier *= 1.05f;
+                int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                if (level == 0)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.2f;
+                    else
+                        gearMultiplier *= 1.03f;
+                }
+                else if (level == 1)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.25f;
+                    else
+                        gearMultiplier *= 1.06f;
+                }
             }
-            
+
 
             GameManager.I.onHit.Invoke
             (

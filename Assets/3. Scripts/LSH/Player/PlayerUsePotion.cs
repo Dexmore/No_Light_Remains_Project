@@ -75,7 +75,15 @@ public class PlayerUsePotion : IPlayerState
         {
             if (outValue)
             {
-                adjustedTime = 0.8f * adjustedTime - 0.1f;
+                int level = DBManager.I.GetGearLevel("007_QuickHealGear");
+                if (level == 0)
+                {
+                    adjustedTime = 0.9f * adjustedTime - 0.05f;
+                }
+                else if (level == 1)
+                {
+                    adjustedTime = 0.8f * adjustedTime - 0.1f;
+                }
             }
         }
     }
@@ -182,7 +190,16 @@ public class PlayerUsePotion : IPlayerState
         {
             if (outValue)
             {
-                du = 1f;
+                int level = DBManager.I.GetGearLevel("007_QuickHealGear");
+                if (level == 0)
+                {
+                    du = 2f;
+                }
+                else if (level == 1)
+                {
+                    du = 1f;
+                }
+
             }
         }
         float e = 0;

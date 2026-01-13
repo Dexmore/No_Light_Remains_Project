@@ -181,11 +181,25 @@ public class PlayerControl : MonoBehaviour
         {
             if (outValue)
             {
-                DBManager.I.currData.maxPotionCount = 4;
-                if (DBManager.I.currData.currPotionCount <= 3)
+                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
+
+                if (level == 0)
                 {
-                    DBManager.I.currData.currPotionCount++;
+                    DBManager.I.currData.maxPotionCount = 4;
+                    if (DBManager.I.currData.currPotionCount <= 3)
+                    {
+                        DBManager.I.currData.currPotionCount++;
+                    }
                 }
+                else if (level == 1)
+                {
+                    DBManager.I.currData.maxPotionCount = 5;
+                    if (DBManager.I.currData.currPotionCount <= 4)
+                    {
+                        DBManager.I.currData.currPotionCount++;
+                    }
+                }
+
                 hUDBinder.Refresh(1f);
             }
             else
@@ -438,7 +452,15 @@ public class PlayerControl : MonoBehaviour
                 {
                     if (outValue)
                     {
-                        currHealth += 5f;
+                        int level = DBManager.I.GetGearLevel("005_RestorationGear");
+                        if (level == 0)
+                        {
+                            currHealth += 5f;
+                        }
+                        else if (level == 1)
+                        {
+                            currHealth += 10f;
+                        }
                         currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
                         hUDBinder.Refresh(1f);
                     }
@@ -599,10 +621,13 @@ public class PlayerControl : MonoBehaviour
             switch (DBManager.I.currData.difficulty)
             {
                 case 0:
-                    diffMultiplier = 0.7f;
+                    diffMultiplier = 0.79f;
+                    break;
+                case 1:
+                    diffMultiplier = 0.93f;
                     break;
                 case 2:
-                    diffMultiplier = 1.33f;
+                    diffMultiplier = 1.1f;
                     break;
             }
             currHealth -= (int)(hData.damage * diffMultiplier);
@@ -839,7 +864,15 @@ public class PlayerControl : MonoBehaviour
                     float gearMultiplier = 1f;
                     if (GameManager.I.isSuperNovaGearEquip)
                     {
-                        gearMultiplier = 1.5f;
+                        int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                        if (level == 0)
+                        {
+                            gearMultiplier = 1.5f;
+                        }
+                        else if (level == 1)
+                        {
+                            gearMultiplier = 1.2f;
+                        }
                     }
                     currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval * tempFloat2 * malfunctionFactor;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);

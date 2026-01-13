@@ -817,21 +817,21 @@ public class GameManager : SingletonBehaviour<GameManager>
                             System.DateTime deathTime = deathDate.AddSeconds(double.Parse(parts[1]));
                             // 3. 현재 시간과의 차이 계산 (TimeSpan)
                             System.TimeSpan timePassed = System.DateTime.Now - deathTime;
-                            // 4. 5분(300초) 이상 경과했는지 확인
-                            int waitMinutes = 3;
+                            // 4. 4분(240초) 이상 경과했는지 확인
+                            int waitMinutes = 4;
                             switch (allMonsters[i].data.Type)
                             {
                                 case MonsterType.Small:
-                                    waitMinutes = 3;
+                                    waitMinutes = 4;
                                     break;
                                 case MonsterType.Middle:
-                                    waitMinutes = 5;
-                                    break;
-                                case MonsterType.Large:
                                     waitMinutes = 12;
                                     break;
+                                case MonsterType.Large:
+                                    waitMinutes = 30;
+                                    break;
                                 case MonsterType.Boss:
-                                    waitMinutes = 18;
+                                    waitMinutes = 60;
                                     break;
                             }
                             if (timePassed.TotalMinutes >= waitMinutes)

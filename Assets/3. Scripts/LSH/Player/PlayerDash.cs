@@ -20,10 +20,10 @@ public class PlayerDash : IPlayerState
                 adjustedAvoidTime = avoidTime * 1.1f + 0.1f;
                 break;
             case 1:
-                adjustedAvoidTime = avoidTime * 0.85f + 0.05f;
+                adjustedAvoidTime = avoidTime * 0.95f + 0.05f;
                 break;
             case 2:
-                adjustedAvoidTime = avoidTime * 0.7f;
+                adjustedAvoidTime = avoidTime * 0.82f;
                 break;
         }
 
@@ -33,7 +33,16 @@ public class PlayerDash : IPlayerState
         {
             if (outValue)
             {
-                adjustedAvoidTime = 1.15f * adjustedAvoidTime + 0.27f;
+                int level = DBManager.I.GetGearLevel("004_GlitchGear");
+                if(level == 0)
+                {
+                    adjustedAvoidTime = 1.15f * adjustedAvoidTime + 0.06f;
+                }
+                else if(level == 1)
+                {
+                    adjustedAvoidTime = 1.2f * adjustedAvoidTime + 0.13f;
+                }
+                
             }
         }
         

@@ -216,7 +216,24 @@ public class GearPanelController : MonoBehaviour, ITabContent
             
             if (detailGearDescription != null)
             {
-                detailGearDescription.text = gear.localizedNormalDescription;
+                if (!gear.gearDescription.IsEmpty)
+                {
+                    // 비동기로 텍스트 요청 (항상 실행)
+                    gear.gearDescription.GetLocalizedStringAsync().Completed += (op) => 
+                    {
+                        // 로딩이 끝나면 UI에 반영 (UI가 여전히 켜져있는지 체크)
+                        if (detailGearDescription != null && gameObject.activeInHierarchy) 
+                        {
+                            detailGearDescription.text = op.Result;
+                            // 필요하다면 변수에도 업데이트 (선택 사항)
+                            gear.localizedNormalDescription = op.Result; 
+                        }
+                    };
+                }
+                else
+                {
+                    detailGearDescription.text = ""; 
+                }
             }
             // ------------------------------------------------------------------
 

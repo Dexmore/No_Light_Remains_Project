@@ -172,22 +172,34 @@ public class PlayerAttack : IPlayerState
                     {
                         gearMultiplier = 1.3f;
                     }
-                    else if(level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
+                    else if (level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
                     {
                         gearMultiplier = 1.35f;
                     }
                 }
             }
 
-            
+
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
             if (GameManager.I.isSuperNovaGearEquip)
             {
-                if (GameManager.I.isLanternOn)
-                    gearMultiplier *= 1.2f;
-                else
-                    gearMultiplier *= 1.05f;
+                int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                if (level == 0)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.2f;
+                    else
+                        gearMultiplier *= 1.03f;
+                }
+                else if (level == 1)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.25f;
+                    else
+                        gearMultiplier *= 1.06f;
+                }
             }
+
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             GameManager.I.onHit.Invoke
             (
