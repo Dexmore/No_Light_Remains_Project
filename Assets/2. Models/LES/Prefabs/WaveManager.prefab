@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4680529215180020551
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3375696656283654231}
+  - component: {fileID: 2879555009499100444}
+  m_Layer: 0
+  m_Name: WaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3375696656283654231
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4680529215180020551}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2879555009499100444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4680529215180020551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cdf36ccb1ccd074eb7ded0aa856a632, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaveManager
+  allSpawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  cameraBuffer: 1
+  waves:
+  - spawnEntries:
+    - monsterPrefab: {fileID: 3785753429681866502, guid: 727f219c1de3c63458dc8adfc850ecc8, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    - monsterPrefab: {fileID: 8038197678873106803, guid: 36475f527ebb1ec4fb0761256fa37695, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    delayBeforeWave: 0
+    waitForClear: 1
+    waveDuration: 2
+  - spawnEntries:
+    - monsterPrefab: {fileID: 8038197678873106803, guid: 36475f527ebb1ec4fb0761256fa37695, type: 3}
+      count: 5
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    delayBeforeWave: 0
+    waitForClear: 1
+    waveDuration: 2
+  - spawnEntries:
+    - monsterPrefab: {fileID: 8038197678873106803, guid: 36475f527ebb1ec4fb0761256fa37695, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    - monsterPrefab: {fileID: 5011160000589489447, guid: 967ccda8430daac4e9775fd1f36d9d22, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    delayBeforeWave: 0
+    waitForClear: 1
+    waveDuration: 2
+  - spawnEntries:
+    - monsterPrefab: {fileID: 5011160000589489447, guid: 967ccda8430daac4e9775fd1f36d9d22, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    - monsterPrefab: {fileID: 3673026413363454731, guid: aa1e503cce7081f4d837379a8e934da2, type: 3}
+      count: 1
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    delayBeforeWave: 0
+    waitForClear: 1
+    waveDuration: 2
+  - spawnEntries:
+    - monsterPrefab: {fileID: 3785753429681866502, guid: 727f219c1de3c63458dc8adfc850ecc8, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    - monsterPrefab: {fileID: 8038197678873106803, guid: 36475f527ebb1ec4fb0761256fa37695, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    - monsterPrefab: {fileID: 5011160000589489447, guid: 967ccda8430daac4e9775fd1f36d9d22, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    - monsterPrefab: {fileID: 3673026413363454731, guid: aa1e503cce7081f4d837379a8e934da2, type: 3}
+      count: 2
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 0}
+    delayBeforeWave: 0
+    waitForClear: 1
+    waveDuration: 2
+  chestPrefab: {fileID: 3655978220690790638, guid: 6149e91e5b1cb984aba40e6d42f09277, type: 3}
