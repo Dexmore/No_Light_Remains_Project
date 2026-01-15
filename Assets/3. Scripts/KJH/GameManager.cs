@@ -28,7 +28,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 ,
                 "Observing the patterns of stronger enemies is key to victory."
                 ,
-                "The Alchemists, in their pursuit of immortality, eventually monopolized the Helios energy."
+                "Enemies infected by TENEBRAE are weak against the ligt. \nUse the Lantern to aclaim victory."
             };
         }
         // 한글
@@ -42,7 +42,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 ,
                 "강한 적일수록 패턴을 관찰하는 것이 중요합니다."
                 ,
-                "불멸을 추구하던 알케미스트들은 결국 일리오스 에너지를 독점하고 말았습니다."
+                "테네브레에 잠식된 적들은 빛 앞에 약해집니다.\n랜턴을 활용해 승패를 결정지으세요."
                 ,
             };
         }
