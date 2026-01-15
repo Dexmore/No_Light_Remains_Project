@@ -18,10 +18,16 @@ public class LightTuto : MonoBehaviour
         transform.Find("Canvas").gameObject.SetActive(false);
         keyText.text = SettingManager.I.GetBindingName("Lantern");
     }
+    public void Stop()
+    {
+        playerControl.fsm.ChangeState(playerControl.stop);
+        playerControl.stop.duration = 5f;
+    }
     public async void ForceRun()
     {
         transform.Find("Canvas").gameObject.SetActive(true);
         playerControl.fsm.ChangeState(playerControl.stop);
+        playerControl.stop.duration = 5f;
         sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
         lineRenderer.enabled = true;
         lineRenderer.SetPosition(0, playerControl.transform.position + Vector3.up);
@@ -32,9 +38,10 @@ public class LightTuto : MonoBehaviour
             sconceLight.Run();
         sfxLanternInteraction?.Despawn();
         sfxLanternInteraction = null;
-        playerControl.fsm.ChangeState(playerControl.idle);
         lineRenderer.enabled = false;
         transform.Find("Canvas").gameObject.SetActive(false);
+        await Task.Delay(500);
+        playerControl.fsm.ChangeState(playerControl.idle);
     }
 
 }

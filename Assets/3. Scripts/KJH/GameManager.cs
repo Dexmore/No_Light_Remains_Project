@@ -22,13 +22,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             loadingTexts = new string[]
             {
-                "Regain your Lantern gage by parrying enemy's attacks.\nEnemies are stunned when parried certain times."
+                "Regain your Lantern gage by parrying enemy's attacks."
+                ,
+                "Enemies are stunned when parried certain times."
                 ,
                 "It's often better to use healing items early rather than waiting for an emergency."
                 ,
                 "Observing the patterns of stronger enemies is key to victory."
                 ,
-                "The Alchemists, in their pursuit of immortality, eventually monopolized the Helios energy."
+                "Purify the TENEBRAE using your Lantern."
+                ,
+                "Activate the Bifrost with your Lantern to cross the blocked path."
             };
         }
         // 한글
@@ -36,14 +40,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             loadingTexts = new string[]
             {
-                "적의 공격을 패링하면 랜턴 게이지가 충전됩니다.\n특정 횟수 이상 패링 시 적은 기절합니다."
+                "적의 공격을 패링하면 랜턴 게이지가 충전됩니다."
+                ,
+                "특정 횟수 이상 패링 시 적은 기절합니다."
                 ,
                 "회복은 위급할 때보다 더 미리 사용하는 것이 좋습니다."
                 ,
                 "강한 적일수록 패턴을 관찰하는 것이 중요합니다."
                 ,
-                "불멸을 추구하던 알케미스트들은 결국 일리오스 에너지를 독점하고 말았습니다."
+                "랜턴을 활용해 테네브레를 정화해 보세요."
                 ,
+                "랜턴으로 비프로스트를 가동해서 막힌길을을 이동해보세요."
             };
         }
     }
