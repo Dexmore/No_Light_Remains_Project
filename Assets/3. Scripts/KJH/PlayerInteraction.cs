@@ -50,7 +50,7 @@ public class PlayerInteraction : MonoBehaviour
     Transform camTR;
     PlayerControl playerControl;
     [ReadOnlyInspector][SerializeField] Interactable target1;
-    [ReadOnlyInspector][SerializeField] Lanternable target2;
+    [ReadOnlyInspector]public Lanternable target2;
     Vector3 distancePivot;
     PromptControl prompt;
     PlayerLight PlayerLight;
@@ -234,7 +234,7 @@ public class PlayerInteraction : MonoBehaviour
     private LineRenderer lanternLine;
     private Light2D lanternFreeform;    // 사각형 프리폼 라이트
     // 1. 애니메이션 시작 (Start)
-    async UniTask LanternAnimationStart(CancellationToken token)
+    public async UniTask LanternAnimationStart(CancellationToken token)
     {
         if (playerLightTr == null)
             playerLightTr = playerControl.transform.Find("PlayerLight");

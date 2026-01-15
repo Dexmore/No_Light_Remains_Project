@@ -204,7 +204,7 @@ public class PlayerControl : MonoBehaviour
                         {
                             GameManager.I.hasGivenExpansionBonus2 = true;
                             DBManager.I.currData.currPotionCount += 2;
-                            if(DBManager.I.currData.currPotionCount > 5)
+                            if (DBManager.I.currData.currPotionCount > 5)
                             {
                                 DBManager.I.currData.currPotionCount = 5;
                             }
@@ -620,8 +620,8 @@ public class PlayerControl : MonoBehaviour
             }
             Vector2 dir = 2.8f * multiplier * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
             dir.y = 2.1f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
-            if(Random.value < 0.23f) dir.y *= 0.2f;
-            if(Random.value < 0.23f) dir.y = 0f;
+            if (Random.value < 0.23f) dir.y *= 0.2f;
+            if (Random.value < 0.23f) dir.y = 0f;
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
@@ -771,6 +771,9 @@ public class PlayerControl : MonoBehaviour
     void LanternInput(InputAction.CallbackContext callback)
     {
         if (_Dead) return;
+        if (fsm.currentState == stop) return;
+        if (fsm.currentState == openInventory) return;
+        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;

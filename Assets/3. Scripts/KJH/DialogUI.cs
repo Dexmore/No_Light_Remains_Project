@@ -84,9 +84,9 @@ public class DialogUI : MonoBehaviour
                 //대사9 Log3
                 new string[]
                 {
-                    "몬스트라레 연구 일지.13",
-                    "하늘에 도전한 대가를 받는 것일까?\n그저 인류를 위해...잃어버린 기술을 다시 발굴하고 싶었던 것 뿐이었는데.",
-                    "젠장...감염된 상처가 낳지를 않는구만.\n피곤해...잠깐이라면...눈을...감아도..."
+                    "Monstrare Research Log.13",
+                    "Are we paying the price for defying the heavens?\nI only wanted to unearth the lost technologies... for the sake of humanity.",
+                    "Dammit... this infected wound just won't heal.\nI'm so tired... maybe just for a moment... I can close... my eyes..."
                 },
                 //대사10 세이브포인트
                 new string[]
@@ -94,7 +94,13 @@ public class DialogUI : MonoBehaviour
                     "It's a Data Save Module\nYou will be able to refill your Core Energy Package and Lantern.",
                     "I recommend you activate it everytime you find it since it's an important device."
                 },
-                
+                //대사11 랜턴 충전 라이트
+                new string[]
+                {
+                    "I can sense a faint trace of Lumen here.\nActivating it should provide a small charge to your Lantern.\nIt will be peak utility when your Lantern gauge is nearly empty.",
+                    "Some objects can be interacted with by 'holding down the Lantern key'."
+                },
+
             };
         }
         // 한국어
@@ -184,7 +190,8 @@ public class DialogUI : MonoBehaviour
                 //대사11 랜턴 충전 라이트
                 new string[]
                 {
-                    "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요."
+                    "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
+                    "'랜턴 키를 길게 누르고 있으면' 상호작용 가능합니다."
                 },
             };
         }
