@@ -15,11 +15,13 @@ public class DoorType1 : MonoBehaviour, ISavable
         isComplete = true;
         col.enabled = false;
         animator.Play("Open2");
+        doorType2.SetCompletedImmediately();
     }
     Collider2D col;
     #endregion
     public bool isOneWay;
     Animator animator;
+    public DoorType2 doorType2;
     void Awake()
     {
         TryGetComponent(out col);

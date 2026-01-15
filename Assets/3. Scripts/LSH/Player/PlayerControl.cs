@@ -177,18 +177,22 @@ public class PlayerControl : MonoBehaviour
 
         //Gear 기어 (확장의 기어) 008_ExpansionGear
         bool outValue = false;
+        HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
         if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
         {
             if (outValue)
             {
                 int level = DBManager.I.GetGearLevel("008_ExpansionGear");
-
                 if (level == 0)
                 {
                     DBManager.I.currData.maxPotionCount = 4;
                     if (DBManager.I.currData.currPotionCount <= 3)
                     {
-                        DBManager.I.currData.currPotionCount++;
+                        if (!GameManager.I.hasGivenExpansionBonus1)
+                        {
+                            GameManager.I.hasGivenExpansionBonus1 = true;
+                            DBManager.I.currData.currPotionCount++;
+                        }
                     }
                 }
                 else if (level == 1)
@@ -196,11 +200,18 @@ public class PlayerControl : MonoBehaviour
                     DBManager.I.currData.maxPotionCount = 5;
                     if (DBManager.I.currData.currPotionCount <= 4)
                     {
-                        DBManager.I.currData.currPotionCount++;
+                        if (!GameManager.I.hasGivenExpansionBonus2)
+                        {
+                            GameManager.I.hasGivenExpansionBonus2 = true;
+                            DBManager.I.currData.currPotionCount += 2;
+                            if(DBManager.I.currData.currPotionCount > 5)
+                            {
+                                DBManager.I.currData.currPotionCount = 5;
+                            }
+                        }
                     }
                 }
-
-                hUDBinder.Refresh(1f);
+                hUDBinder?.Refresh(1f);
             }
             else
             {
@@ -209,7 +220,7 @@ public class PlayerControl : MonoBehaviour
                 {
                     DBManager.I.currData.currPotionCount = 3;
                 }
-                hUDBinder.Refresh(1f);
+                hUDBinder?.Refresh(1f);
             }
         }
         else
@@ -219,7 +230,7 @@ public class PlayerControl : MonoBehaviour
             {
                 DBManager.I.currData.currPotionCount = 3;
             }
-            hUDBinder.Refresh(1f);
+            hUDBinder?.Refresh(1f);
         }
 
         //Gear 기어 (초신성 기어) 006_SuperNovaGear
@@ -609,6 +620,8 @@ public class PlayerControl : MonoBehaviour
             }
             Vector2 dir = 2.8f * multiplier * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
             dir.y = 2.1f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            if(Random.value < 0.23f) dir.y *= 0.2f;
+            if(Random.value < 0.23f) dir.y = 0f;
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
@@ -624,7 +637,7 @@ public class PlayerControl : MonoBehaviour
                     diffMultiplier = 0.79f;
                     break;
                 case 1:
-                    diffMultiplier = 0.93f;
+                    diffMultiplier = 0.9f;
                     break;
                 case 2:
                     diffMultiplier = 1.1f;

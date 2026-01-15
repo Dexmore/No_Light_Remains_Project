@@ -11,7 +11,7 @@ public class PlayerUsePotion : IPlayerState
 
 
     // 포션 1회 사용으로 차게 할 체력 회복량 (ex. 아래값이 1일경우 최대체력의 100%, 아래값이 0.8일경우 최대체력의 80%, 0.5일경우 최대체력의 50%가 참)
-    private const float healAmount = 0.5f;
+    private const float healAmount = 0.6f;
     // 포션사용 동작 길이
     private const float duration = 1.7f;
 

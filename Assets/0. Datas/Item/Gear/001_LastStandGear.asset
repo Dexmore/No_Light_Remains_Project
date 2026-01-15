@@ -21,7 +21,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  gearIcon: {fileID: -6587348829220065177, guid: f84886aee7e9d8d45bea1c5b07098b55, type: 3}
   gearDescription:
     m_TableReference:
       m_TableCollectionName: GUID:59f6a763860e4ee40abd1e516422d048
@@ -31,6 +30,7 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  gearIcon: {fileID: -6587348829220065177, guid: f84886aee7e9d8d45bea1c5b07098b55, type: 3}
   upgradeMain_EN: "When wearer\u2019s health is below 25%, attack becomes 30% stronger."
   upgradeMain_KR: "\uCC29\uC6A9\uC790\uC758 \uCCB4\uB825\uC774 25% \uBBF8\uB9CC\uC77C
     \uACBD\uC6B0 \uACF5\uACA9\uB825\uC774 30% \uC99D\uAC00\uD569\uB2C8\uB2E4."
@@ -44,8 +44,10 @@ MonoBehaviour:
   specificEnhancementSettings:
   - goldCost: 5
     requiredMaterials:
+    - item: {fileID: 11400000, guid: a53d8fceefb83254ca80dce1a99e2bcd, type: 2}
+      count: 1
     - item: {fileID: 11400000, guid: 3b431443ba3b1f24497789d005593fa8, type: 2}
-      count: 2
+      count: 7
   references:
     version: 2
     RefIds: []

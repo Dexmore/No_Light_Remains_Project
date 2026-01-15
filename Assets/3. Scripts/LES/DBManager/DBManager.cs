@@ -595,6 +595,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             // (선택사항) 저장 기능을 바로 호출하고 싶다면
             // Save(); 
             SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
+            GameManager.I.RefreshGears();
         }
     }
 

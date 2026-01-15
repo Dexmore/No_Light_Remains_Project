@@ -60,6 +60,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public int ach_chestCount;
     [HideInInspector] public int ach_parryCount;
     [HideInInspector] public int ach_NormalLKCount;
+    [HideInInspector] public bool hasGivenExpansionBonus1;
+    [HideInInspector] public bool hasGivenExpansionBonus2;
 
 
     // 게임의 중요 이벤트들
@@ -909,6 +911,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         ach_chestCount = 0;
         ach_parryCount = 0;
         ach_NormalLKCount = 0;
+        hasGivenExpansionBonus1 = false;
+        hasGivenExpansionBonus2 = false;
     }
 
     void SceneStartHandler()
@@ -949,6 +953,86 @@ public class GameManager : SingletonBehaviour<GameManager>
         AfterImageEffect clone = Instantiate(afterImageEffectPrefab);
         clone.transform.position = Vector3.zero;
         clone.Init(targetSR, duration, fps);
+    }
+
+    public void RefreshGears()
+    {
+        //Gear 기어 (확장의 기어) 008_ExpansionGear
+        bool outValue = false;
+        HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
+        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        {
+            if (outValue)
+            {
+                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
+                if (level == 0)
+                {
+                    DBManager.I.currData.maxPotionCount = 4;
+                    if (DBManager.I.currData.currPotionCount <= 3)
+                    {
+                        if (!hasGivenExpansionBonus1)
+                        {
+                            hasGivenExpansionBonus1 = true;
+                            DBManager.I.currData.currPotionCount++;
+                        }
+                    }
+                }
+                else if (level == 1)
+                {
+                    DBManager.I.currData.maxPotionCount = 5;
+                    if (DBManager.I.currData.currPotionCount <= 4)
+                    {
+                        if (!hasGivenExpansionBonus2)
+                        {
+                            hasGivenExpansionBonus2 = true;
+                            DBManager.I.currData.currPotionCount += 2;
+                            if(DBManager.I.currData.currPotionCount > 5)
+                            {
+                                DBManager.I.currData.currPotionCount = 5;
+                            }
+                        }
+                    }
+                }
+                hUDBinder?.Refresh(1f);
+            }
+            else
+            {
+                DBManager.I.currData.maxPotionCount = 3;
+                if (DBManager.I.currData.currPotionCount >= 4)
+                {
+                    DBManager.I.currData.currPotionCount = 3;
+                }
+                hUDBinder?.Refresh(1f);
+            }
+        }
+        else
+        {
+            DBManager.I.currData.maxPotionCount = 3;
+            if (DBManager.I.currData.currPotionCount >= 4)
+            {
+                DBManager.I.currData.currPotionCount = 3;
+            }
+            hUDBinder?.Refresh(1f);
+        }
+
+        //Gear 기어 (초신성 기어) 006_SuperNovaGear
+        bool outValue1 = false;
+        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
+        {
+            if (outValue1)
+            {
+                GameManager.I.isSuperNovaGearEquip = true;
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+        }
+        else
+        {
+            GameManager.I.isSuperNovaGearEquip = false;
+        }
+
     }
 
 
@@ -995,13 +1079,18 @@ public struct HitData
     }
 }
 
+
+
+
+
 // {
 //     English, // 영어
 //     Korean,  // 한국어
+//     ChineseSimplified, // 중국어(간체)
+
 //     German,  // 독일어
 //     French,  // 프랑스어
 //     Spanish, // 스페인어
-//     ChineseSimplified, // 중국어(간체)
 //     Japanese, // 일본어
 //     Russian,  // 러시아어
 //     PortugueseBrazil, // 브라질-포르투갈어

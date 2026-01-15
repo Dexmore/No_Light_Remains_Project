@@ -37,12 +37,12 @@ public class PlayerAttackCombo : IPlayerState
                 adjustedTime2 = comboAvailableTime;
                 break;
             case 1:
-                adjustedTime1 = duration + 0.05f;
-                adjustedTime2 = comboAvailableTime + 0.05f;
+                adjustedTime1 = duration + 0.04f;
+                adjustedTime2 = comboAvailableTime + 0.04f;
                 break;
             case 2:
-                adjustedTime1 = duration + 0.1f;
-                adjustedTime2 = comboAvailableTime + 0.1f;
+                adjustedTime1 = duration + 0.08f;
+                adjustedTime2 = comboAvailableTime + 0.08f;
                 break;
         }
         ctx.animator.Play("Player_Attack2");
