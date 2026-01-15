@@ -35,16 +35,16 @@ public class PopupUI : MonoBehaviour
     void OnEnable()
     {
         cancelAction.action.performed += InputESC;
-        GameManager.I.onHitAfter += HandleHit;
+        GameManager.I.onHitAfter += HitHandler;
         if (playerControl == null)
             playerControl = FindAnyObjectByType<PlayerControl>();
     }
     void OnDisable()
     {
         cancelAction.action.performed -= InputESC;
-        GameManager.I.onHitAfter -= HandleHit;
+        GameManager.I.onHitAfter -= HitHandler;
     }
-    void HandleHit(HitData hitData)
+    void HitHandler(HitData hitData)
     {
         if (hitData.target.Root().name != "Player") return;
         if (allPopups[1].gameObject.activeSelf)

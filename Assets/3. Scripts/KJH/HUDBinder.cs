@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using NaughtyAttributes;
+using UnityEngine.InputSystem;
 public class HUDBinder : MonoBehaviour
 {
     #region UniTask Setting
@@ -72,13 +73,33 @@ public class HUDBinder : MonoBehaviour
     }
     void OnEnable1()
     {
-        GameManager.I.onHitAfter += HandleHit;
+        GameManager.I.onHitAfter += HitHandler;
+        GameManager.I.onHitAfter += HitHandler2;
         GameManager.I.onParry += ParrySuccessHandler;
+        attackAction = inputActionAsset.FindActionMap("Player").FindAction("Attack");
+        parryAction = inputActionAsset.FindActionMap("Player").FindAction("Parry");
+        interactionAction = inputActionAsset.FindActionMap("Player").FindAction("Interaction");
+        attackAction.performed += AttackHandler;
+        parryAction.performed += ParryHandler;
+        interactionAction.performed += InteractionHandler;
+        attackAction.canceled += AttackCancelHandler;
+        parryAction.canceled += ParryCancelHandler;
+        interactionAction.canceled += InteractionCancelHandler;
     }
+    private InputAction attackAction;
+    private InputAction parryAction;
+    private InputAction interactionAction;
     void OnDisable1()
     {
-        GameManager.I.onHitAfter -= HandleHit;
+        GameManager.I.onHitAfter -= HitHandler;
+        GameManager.I.onHitAfter -= HitHandler2;
         GameManager.I.onParry -= ParrySuccessHandler;
+        attackAction.performed -= AttackHandler;
+        parryAction.performed -= ParryHandler;
+        interactionAction.performed -= InteractionHandler;
+        attackAction.canceled -= AttackCancelHandler;
+        parryAction.canceled -= ParryCancelHandler;
+        interactionAction.canceled -= InteractionCancelHandler;
     }
     IEnumerator Start()
     {
@@ -100,7 +121,7 @@ public class HUDBinder : MonoBehaviour
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 2;
         }
-
+        StarNavi();
 
     }
 
@@ -134,7 +155,7 @@ public class HUDBinder : MonoBehaviour
         }
     }
 
-    void HandleHit(HitData hitData)
+    void HitHandler(HitData hitData)
     {
         if (hitData.target.Root() != player.transform) return;
         if (player == null) return;
@@ -359,7 +380,7 @@ public class HUDBinder : MonoBehaviour
         isWarring = false;
         // --- 1번 아이콘 (충전 vs 부족) 로직 ---
         int icon1Index = -1;
-        if (isCharging) 
+        if (isCharging)
         {
             icon1Index = 0; // 충전 중 우선순위 1등
             player.isBatteryMalfunction = false;
@@ -412,6 +433,188 @@ public class HUDBinder : MonoBehaviour
         }
     }
 
+    // Go → 이런 형태의 텍스트로. right middle 정렬에 poxX -100 posY 0 으로 되어있음
+    // goal의 위치에 따라서
+    // right middle 정렬에 poxX -100 posY 0 상태에서 Go → , Go ↗ , Go ↘ , Go ↑ , Go ↓
+    // 또는 left middle 정렬에 poxX 100 posY 0 이 된다음 ← Go , ↖ Go , ... 등등이 되게 하기
+    // 아 그리고 이 어디로 가라고 나오는 안내의 기준은
+    // 일정시간동안 공격이나 히트당하기나 상호작용을 안할경우 드문드문 나오는 느낌인데
+    // 기본 알파값은 0.9고.  0.9에서 0으로 진동하면 좋을듯 
+
+    [SerializeField] private Text goText;
+    [SerializeField] private Transform goal;
+    private RectTransform uiRect;
+    [SerializeField] private InputActionAsset inputActionAsset;
+    // inputActionAsset.FindActionMap("Player").FindAction("Attack");
+    // inputActionAsset.FindActionMap("Player").FindAction("Parry");
+    // inputActionAsset.FindActionMap("Player").FindAction("Interaction");
+
+    private float idleTimer = 0f;
+    private const float idleThreshold = 5f; // 5초 동안 입력 없으면 실행
+    private const float showDuration = 3f;  // 안내가 노출되는 총 시간
+    private bool isRunning = false;
+
+    void StarNavi()
+    {
+        // 초기 상태: 텍스트 투명화 및 루프 시작
+        Color c = goText.color;
+        c.a = 0;
+        goText.color = c;
+        StartCoroutine(NavigationLoop());
+        uiRect = goText.transform.parent.GetComponent<RectTransform>();
+    }
+
+    // 전체 흐름을 관리하는 메인 루프
+    private IEnumerator NavigationLoop()
+    {
+        while (true)
+        {
+            // 1. 아이들 상태 체크 루프
+            while (idleTimer < idleThreshold)
+            {
+                idleTimer += Time.deltaTime;
+                yield return null;
+            }
+
+            // 2. 조건 충족 시 연출 코루틴 실행 및 대기
+            yield return StartCoroutine(ShowNavigationSequence());
+
+            // 3. 연출이 끝난 후 타이머 초기화 (반복 방지)
+            ResetIdleTimer();
+        }
+    }
+
+    private IEnumerator ShowNavigationSequence()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < showDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            // [레이아웃 및 화살표 업데이트]
+            UpdateNavigationLayout();
+
+            // [알파값 진동 (0.9 <-> 0)]
+            // PingPong을 사용해 부드럽게 깜빡이는 연출
+            float alpha = Mathf.PingPong(elapsed * 2f, 0.9f);
+            Color c = goText.color;
+            c.a = alpha;
+            goText.color = c;
+
+            yield return null;
+        }
+
+        // 연출 종료 후 투명하게 초기화
+        Color finalC = goText.color;
+        finalC.a = 0;
+        goText.color = finalC;
+    }
+
+    private void UpdateNavigationLayout()
+    {
+        if (goal == null || Camera.main == null) return;
+
+        // 목적지의 화면 좌표 계산
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(goal.position);
+
+        // 1. 목적지가 화면 중앙 기준 왼쪽/오른쪽 어디에 있는지 판별
+        bool isRight = screenPos.x > Screen.width / 2f;
+
+        // 2. RectTransform 정렬 및 위치 설정
+        if (isRight)
+        {
+            // Right Middle 정렬
+            uiRect.anchorMin = new Vector2(1, 0.5f);
+            uiRect.anchorMax = new Vector2(1, 0.5f);
+            uiRect.pivot = new Vector2(1, 0.5f);
+            uiRect.anchoredPosition = new Vector2(-100, 0);
+        }
+        else
+        {
+            // Left Middle 정렬
+            uiRect.anchorMin = new Vector2(0, 0.5f);
+            uiRect.anchorMax = new Vector2(0, 0.5f);
+            uiRect.pivot = new Vector2(0, 0.5f);
+            uiRect.anchoredPosition = new Vector2(100, 0);
+        }
+
+        // 3. 화살표 방향 계산 (카메라가 보는 방향 기준)
+        Vector3 dirToGoal = (goal.position - Camera.main.transform.position).normalized;
+        // 평면상의 각도 계산 (Y축 기준)
+        float angle = Vector3.SignedAngle(Camera.main.transform.forward, dirToGoal, Vector3.up);
+
+        string arrow = GetArrowByAngle(angle);
+
+        // 4. 텍스트 구성 (오른쪽이면 "Go →", 왼쪽이면 "← Go")
+        goText.text = isRight ? $"Go {arrow}" : $"{arrow} Go";
+    }
+
+    private string GetArrowByAngle(float angle)
+    {
+        // 각도에 따른 8방향 화살표 분기
+        if (angle > -22.5f && angle <= 22.5f) return "↑";
+        if (angle > 22.5f && angle <= 67.5f) return "↗";
+        if (angle > 67.5f && angle <= 112.5f) return "→";
+        if (angle > 112.5f && angle <= 157.5f) return "↘";
+        if (angle > -67.5f && angle <= -22.5f) return "↖";
+        if (angle > -112.5f && angle <= -67.5f) return "←";
+        if (angle > -157.5f && angle <= -112.5f) return "↙";
+        return "↓";
+    }
+
+    // 공격, 피격, 상호작용 발생 시 외부에서 호출
+    public void ResetIdleTimer()
+    {
+        idleTimer = 0f;
+    }
+
+    void HitHandler2(HitData hitData)
+    {
+        if (hitData.target.Root().name != "Player" && hitData.attacker.Root().name != "Player") return;
+        // 피격 시 타이머 리셋
+        ResetIdleTimer();
+    }
+
+    bool flag1;
+    bool flag2;
+    bool flag3;
+    void AttackHandler(InputAction.CallbackContext callbackContext)
+    {
+        if (!flag1)
+        {
+            flag1 = true;
+            ResetIdleTimer();
+        }
+    }
+    void ParryHandler(InputAction.CallbackContext callbackContext)
+    {
+        if (!flag2)
+        {
+            flag2 = true;
+            ResetIdleTimer();
+        }
+    }
+    void InteractionHandler(InputAction.CallbackContext callbackContext)
+    {
+        if (!flag3)
+        {
+            flag3 = true;
+            ResetIdleTimer();
+        }
+    }
+    void AttackCancelHandler(InputAction.CallbackContext callbackContext)
+    {
+        flag1 = false;
+    }
+    void ParryCancelHandler(InputAction.CallbackContext callbackContext)
+    {
+        flag2 = false;
+    }
+    void InteractionCancelHandler(InputAction.CallbackContext callbackContext)
+    {
+        flag3 = false;
+    }
 
 
 
