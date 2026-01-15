@@ -124,7 +124,7 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     //Page 1
-                    "문이 단단히 잠겨있습니다.\n다른 곳으로 가야합니다.",
+                    "문이 열리지 않습니다.\n다른 곳으로 가야합니다.",
                 },
                 //대사3 (스테이지 1의 테스트 기어발견 & & 기어 튜토리얼겸)
                 new string[]
