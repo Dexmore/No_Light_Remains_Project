@@ -37,19 +37,19 @@ public class TutorialControl : MonoBehaviour
             {
                 playerControl.fsm.ChangeState(playerControl.idle);
             }
-        }
-        yield return YieldInstructionCache.WaitForSeconds(1.5f);
-        Transform tutParryTr = transform.Find("TutorialParry");
-        if (slicer == null || !slicer.gameObject.activeInHierarchy)
-        {
-            StopCoroutine(nameof(TutorialParryLoop));
-            tutParryTr.gameObject.SetActive(false);
-        }
-        Transform tutAttackTr = transform.Find("TutorialAttack");
-        if (blob == null || !blob.gameObject.activeInHierarchy)
-        {
-            StopCoroutine(nameof(TutorialAttackLoop));
-            tutAttackTr.gameObject.SetActive(false);
+            yield return YieldInstructionCache.WaitForSeconds(1.5f);
+            Transform tutParryTr = transform.Find("TutorialParry");
+            if (slicer == null || !slicer.gameObject.activeInHierarchy)
+            {
+                StopCoroutine(nameof(TutorialParryLoop));
+                tutParryTr.gameObject.SetActive(false);
+            }
+            Transform tutAttackTr = transform.Find("TutorialAttack");
+            if (blob == null || !blob.gameObject.activeInHierarchy)
+            {
+                StopCoroutine(nameof(TutorialAttackLoop));
+                tutAttackTr.gameObject.SetActive(false);
+            }
         }
     }
     int playerLayer;
@@ -171,7 +171,7 @@ public class TutorialControl : MonoBehaviour
         Color highlightColor = Color.white;
         float blinkSpeed = 5.0f;
         float elapsedUnscaledTime = 0;
-        while (elapsedUnscaledTime < 1.5f)
+        while (elapsedUnscaledTime < 10f)
         {
             float timer = elapsedUnscaledTime * blinkSpeed;
             float t = (Mathf.Sin(timer) + 1f) * 0.5f;
