@@ -50,25 +50,35 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     }
 
     // 패널 전체를 현재 데이터 기준으로 새로고침합니다.
+    // 패널 전체를 현재 데이터 기준으로 새로고침합니다.
     private void RefreshPanel()
     {
         List<LanternFunctionData> playerFunctions = new List<LanternFunctionData>();
+        
+        // 1. DB에서 데이터 가져오기
         for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
             CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
             int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
             if (find == -1) continue;
+            
             LanternFunctionData d = Instantiate(DBManager.I.itemDatabase.allLanterns[find]);
             d.name = DBManager.I.itemDatabase.allLanterns[find].name;
             d.isEquipped = cd.isEquipped;
             d.isNew = cd.isNew;
+            
+            // [수정 1] 텍스트 로딩 함수 호출 (이게 빠져 있었음!)
+            d.LoadStrings(); 
+            
             playerFunctions.Add(d);
         }
         
-
+        // 2. 슬롯에 데이터 채우기
         for (int i = 0; i < functionSlots.Count; i++)
         {
-            if (i < playerFunctions.Count && playerFunctions[i] != null && !string.IsNullOrEmpty(playerFunctions[i].functionName.GetLocalizedString()))
+            // [수정 2] 이름이 로딩 중이라도(비어있어도) 데이터가 있으면 일단 슬롯은 보여줘야 함!
+            // !string.IsNullOrEmpty(...) 검사를 제거했습니다.
+            if (i < playerFunctions.Count && playerFunctions[i] != null)
             {
                 functionSlots[i].SetData(playerFunctions[i], this);
             }
@@ -81,7 +91,8 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         UpdateMainEquippedImage();
         SetupNavigation();
 
-        LanternFunctionData firstAvailableFunc = playerFunctions.FirstOrDefault(f => f != null && !string.IsNullOrEmpty(f.functionName.GetLocalizedString()));
+        // 첫 번째 아이템 상세 정보 표시
+        LanternFunctionData firstAvailableFunc = playerFunctions.FirstOrDefault(f => f != null);
         ShowFunctionDetails(firstAvailableFunc);
     }
 
