@@ -58,16 +58,16 @@ public class WaveManager : MonoBehaviour
         mainCam = Camera.main;
     }
     Vector2 _startPosition;
-    DoorType1 doorType1;
+    [SerializeField] DoorType1 doorType1;
     DoorType2 doorType2;
     public void StartBattle(Vector2 startPosition)
     {
         _startPosition = startPosition;
         if (isBattleStarted) return;
         isBattleStarted = true;
-        doorType1 = FindAnyObjectByType<DoorType1>();
         if (doorType1.isComplete || doorType1.isPlayerRight) return;
         doorType1?.Close();
+        doorType2 = doorType1.doorType2;
         StartCoroutine(ExecuteWaves());
     }
     IEnumerator ExecuteWaves()
@@ -149,14 +149,12 @@ public class WaveManager : MonoBehaviour
         }
 
         Debug.Log("🎉 STAGE CLEARED 🎉");
-        doorType2 = FindAnyObjectByType<DoorType2>();
         doorType2?.Open();
         doorType1?.Open();
         doorType1.isComplete = true;
-        //doorType2.isComplete = true;
 
         GameObject chest = Instantiate(chestPrefab);
-        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 8f * Vector2.up;
+        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 5f * Vector2.up;
         chest.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
     }

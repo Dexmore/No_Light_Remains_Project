@@ -4273,7 +4273,7 @@ MonoBehaviour:
   waves:
   - spawnEntries:
     - monsterPrefab: {fileID: 3785753429681866502, guid: 727f219c1de3c63458dc8adfc850ecc8, type: 3}
-      count: 2
+      count: 3
       spawnInterval: 1
       specificSpawnPoint: {fileID: 1385305425}
     - monsterPrefab: {fileID: 8038197678873106803, guid: 36475f527ebb1ec4fb0761256fa37695, type: 3}
@@ -4288,6 +4288,10 @@ MonoBehaviour:
       count: 5
       spawnInterval: 1
       specificSpawnPoint: {fileID: 1334250950}
+    - monsterPrefab: {fileID: 8038197678873106803, guid: 4f96ce876ecce324eb8c5da1738c631a, type: 3}
+      count: 3
+      spawnInterval: 1
+      specificSpawnPoint: {fileID: 1385305425}
     delayBeforeWave: 0
     waitForClear: 1
     waveDuration: 2
@@ -4344,14 +4348,11 @@ MonoBehaviour:
       count: 1
       spawnInterval: 5
       specificSpawnPoint: {fileID: 1911719898}
-    - monsterPrefab: {fileID: 3673026413363454731, guid: aa1e503cce7081f4d837379a8e934da2, type: 3}
-      count: 2
-      spawnInterval: 2
-      specificSpawnPoint: {fileID: 1385305425}
     delayBeforeWave: 0
     waitForClear: 1
     waveDuration: 2
   chestPrefab: {fileID: 3655978220690790638, guid: 6149e91e5b1cb984aba40e6d42f09277, type: 3}
+  doorType1: {fileID: 1504879612}
 --- !u!4 &997242751
 Transform:
   m_ObjectHideFlags: 0
@@ -5899,6 +5900,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5616492624714212492, guid: f5f4fb22c50171747b1ca1bf280b20b4, type: 3}
   m_PrefabInstance: {fileID: 1504879610}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1504879612 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3969903151890023658, guid: f5f4fb22c50171747b1ca1bf280b20b4, type: 3}
+  m_PrefabInstance: {fileID: 1504879610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0dfba33a62f8de459fb08d35faf3a68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1001 &1505683204
 PrefabInstance:
   m_ObjectHideFlags: 0

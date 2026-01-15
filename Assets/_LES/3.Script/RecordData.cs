@@ -10,6 +10,7 @@ public class RecordData : ScriptableObject
     // [중요] [TextArea] 속성이 있으면 Localization UI가 깨집니다. 반드시 지워주세요.
     public LocalizedString recordTitle; 
     public LocalizedString recordContent; 
+    public Sprite sprite;
     
     [Header("Runtime Localized Strings")]
     // [추가] 실제 UI에서 사용할 번역된 문자열들입니다.
