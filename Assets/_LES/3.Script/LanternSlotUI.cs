@@ -16,14 +16,17 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     private LanternFunctionData _myData;
     private LanternPanelController _controller;
     private Button _button;
-    private Color _originalIconColor;
+    
+    // [수정] 원본 색상을 Color.white로 고정 (투명도 문제 방지)
+    private Color _originalIconColor = Color.white;
 
     public LanternFunctionData MyData { get { return _myData; } }
 
     private void Awake()
     {
         _button = GetComponent<Button>();
-        if (functionIcon != null) _originalIconColor = functionIcon.color;
+        // Awake에서 색상을 가져오지 않고, 그냥 흰색(보이는 색)을 기준으로 잡습니다.
+        // if (functionIcon != null) _originalIconColor = functionIcon.color; 
 
         // Button의 onClick이 엔터 키와 클릭을 모두 처리함
         _button?.onClick.AddListener(HandleInteraction);
@@ -34,9 +37,22 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {
         _myData = data;
         _controller = controller;
-        if (functionIcon != null) { functionIcon.sprite = _myData.functionIcon; functionIcon.gameObject.SetActive(true); }
+        
+        if (functionIcon != null) 
+        { 
+            functionIcon.sprite = _myData.functionIcon; 
+            
+            // [핵심 수정] 데이터를 세팅할 때 무조건 '흰색(완전 불투명)'으로 초기화합니다.
+            // 기존에 투명했던 설정이 남아있지 않도록 합니다.
+            functionIcon.color = Color.white; 
+            
+            functionIcon.gameObject.SetActive(true); 
+        }
+        
         if (_button != null) _button.interactable = true;
-        UpdateEquipVisual();
+        
+        UpdateEquipVisual(); // 여기서 장착 여부에 따라 어둡게/밝게 조절됨
+        
         if (newIndicator != null) newIndicator.SetActive(_myData.isNew);
     }
 
@@ -44,7 +60,11 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {
         _myData = null;
         _controller = null;
-        if (functionIcon != null) { functionIcon.sprite = null; functionIcon.gameObject.SetActive(false); }
+        if (functionIcon != null) 
+        { 
+            functionIcon.sprite = null; 
+            functionIcon.gameObject.SetActive(false); 
+        }
         if (_button != null) _button.interactable = false;
         if (newIndicator != null) newIndicator.SetActive(false);
     }
@@ -52,6 +72,8 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     public void UpdateEquipVisual()
     {
         if (_myData == null || functionIcon == null) return;
+        
+        // 장착되었으면 밝게(흰색), 아니면 어둡게(흰색 * 0.5)
         functionIcon.color = _myData.isEquipped ? _originalIconColor : (_originalIconColor * dimFactor);
     }
 
@@ -73,9 +95,6 @@ public class LanternSlotUI : MonoBehaviour, ISelectHandler, IPointerEnterHandler
             _controller.ShowFunctionDetails(_myData);
         }
     }
-
-    // [삭제] OnSubmit 함수 전체 삭제
-    // public void OnSubmit(BaseEventData eventData) { ... }
 
     private void HandleInteraction()
     {
