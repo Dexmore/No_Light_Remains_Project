@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine.InputSystem;
+using TMPro; 
+using UnityEngine.EventSystems;
 
 namespace Project.UI
 {
@@ -10,47 +11,45 @@ namespace Project.UI
     public class TabGroup : MonoBehaviour
     {
         [Header("탭 버튼 (순서대로 등록)")]
-        [Tooltip("'소지템', '랜턴', '기어', '기록물' 순서로 Button을 등록하세요.")]
-        [SerializeField]
-        private List<Button> tabButtons;
+        [Tooltip("'랜턴', '기어', '소지템', '기록물' 순서로 Button을 등록하세요.")] // [수정] 순서 변경 반영
+        [SerializeField] private List<Button> tabButtons;
         
         [Header("콘텐츠 패널 (위 탭과 순서 일치)")]
-        [Tooltip("각 탭에 해당하는 콘텐츠 Panel의 CanvasGroup을 순서대로 등록하세요.")]
-        [SerializeField]
-        private List<CanvasGroup> contentPanels;
+        [SerializeField] private List<CanvasGroup> contentPanels;
 
         [Header("탭 전환 버튼")]
         [SerializeField] private Button prevTabButton;
         [SerializeField] private Button nextTabButton;
 
-        [Header("탭 상태 색상")]
+        [Space(10)]
+        [Header("탭 디자인 설정")]
+        [Header("1. 버튼 배경 색상")]
         [SerializeField] private Color tabIdleColor = Color.gray;
         [SerializeField] private Color tabHoverColor = Color.white;
         [SerializeField] private Color tabActiveColor = Color.white;
 
-        //각 패널의 기능 스크립트를 담을 리스트
+        [Header("2. 텍스트 색상")]
+        [Tooltip("비활성 상태 글자 색 (어둡게)")]
+        [SerializeField] private Color textIdleColor = new Color(0.5f, 0.5f, 0.5f, 1f); 
+        [Tooltip("활성/포커스 상태 글자 색 (밝게)")]
+        [SerializeField] private Color textActiveColor = Color.white; 
+
+        [Header("3. 크기 강조 (확정 선택 시)")]
+        [Tooltip("선택된 탭이 얼마나 커질지 (예: 1.15 = 15% 확대)")]
+        [SerializeField] private Vector3 selectedScale = new Vector3(1.15f, 1.15f, 1f); 
+        [SerializeField] private float animationSpeed = 15f;
+
         private List<ITabContent> _tabContents;
-
         private int _currentTabIndex = -1;
-        private Coroutine _tabSwitchCoroutine;
 
-        // Awake는 Start보다 먼저 호출됩니다. 초기화에 적합합니다.
         private void Awake()
         {
-            //contentPanels을 기반으로 기능 스크립트를 찾아 리스트에 저장
             _tabContents = new List<ITabContent>();
             foreach (var panel in contentPanels)
             {
-                // 각 패널 게임 오브젝트에서 ITabContent 인터페이스를 구현한 컴포넌트를 찾습니다.
                 ITabContent content = panel.GetComponent<ITabContent>();
-                if (content != null)
-                {
-                    _tabContents.Add(content);
-                }
-                else
-                {
-                    Debug.LogWarning($"{panel.name}에 ITabContent를 구현한 스크립트가 없습니다!", panel.gameObject);
-                }
+                if (content != null) _tabContents.Add(content);
+                else Debug.LogWarning($"{panel.name}에 ITabContent가 없습니다!", panel.gameObject);
             }
         }
 
@@ -59,7 +58,6 @@ namespace Project.UI
             for (int i = 0; i < tabButtons.Count; i++)
             {
                 int index = i;
-                // [소리] 탭 버튼 클릭음 추가
                 tabButtons[i].onClick.AddListener(() => 
                 {
                     AudioManager.I?.PlaySFX("InventoryUI_button1");
@@ -67,28 +65,20 @@ namespace Project.UI
                 });
             }
             
-            // [소리] 좌우 전환 버튼 클릭음 추가
-            prevTabButton?.onClick.AddListener(() => 
-            {
+            prevTabButton?.onClick.AddListener(() => {
                 AudioManager.I?.PlaySFX("InventoryUI_button1");
                 SelectPreviousTab();
             });
-            nextTabButton?.onClick.AddListener(() => 
-            {
+            nextTabButton?.onClick.AddListener(() => {
                 AudioManager.I?.PlaySFX("InventoryUI_button1");
                 SelectNextTab();
             });
         }
         
-        // OnEnable은 UI가 활성화될 때마다 호출됩니다.
         private void OnEnable()
         {
-            // UI가 켜질 때 첫 탭 콘텐츠가 바로 보이도록 수정
-            // 페이드 효과 없이 즉시 첫 탭의 상태를 설정합니다.
-            // 전체 UI의 페이드 효과는 부모인 InventoryUI가 담당하므로 여기서 또 페이드를 할 필요가 없습니다.
             if (tabButtons.Count > 0)
             {
-                // 모든 콘텐츠 패널을 일단 투명하게 초기화
                 foreach (var panel in contentPanels)
                 {
                     panel.alpha = 0f;
@@ -96,33 +86,99 @@ namespace Project.UI
                     panel.blocksRaycasts = false;
                 }
 
-                // 첫 번째 탭만 즉시 보이도록 설정
                 _currentTabIndex = 0;
                 contentPanels[0].alpha = 1f;
                 contentPanels[0].interactable = true;
                 contentPanels[0].blocksRaycasts = true;
                 
-                // 탭 버튼 색상도 첫 탭 기준으로 즉시 설정
-                UpdateTabButtonColors();
-
-                // 첫 탭의 OnShow() 호출
                 _tabContents[0]?.OnShow();
             }
         }
         
         private void Update()
         {
-            if (Keyboard.current == null) return;
-            // 키보드 입력 시에도 소리가 나게 하려면 여기서 PlaySFX 호출 가능
-            if (Keyboard.current[Key.Q].wasPressedThisFrame) 
+            // 키보드 탭 전환 (Q/E)
+            if (Keyboard.current != null)
             {
-                AudioManager.I?.PlaySFX("InventoryUI_button1");
-                SelectPreviousTab();
+                if (Keyboard.current[Key.Q].wasPressedThisFrame) 
+                {
+                    AudioManager.I?.PlaySFX("InventoryUI_button1");
+                    SelectPreviousTab();
+                }
+                if (Keyboard.current[Key.E].wasPressedThisFrame) 
+                {
+                    AudioManager.I?.PlaySFX("InventoryUI_button1");
+                    SelectNextTab();
+                }
             }
-            if (Keyboard.current[Key.E].wasPressedThisFrame) 
+
+            UpdateTabVisualsRealtime();
+        }
+
+        private void UpdateTabVisualsRealtime()
+        {
+            GameObject focusedObj = EventSystem.current.currentSelectedGameObject;
+            
+            // 1. "지금 탭 버튼들 중에 포커스 된 놈이 있는가?" 확인
+            bool isAnyTabFocused = false;
+            foreach(var btn in tabButtons)
             {
-                AudioManager.I?.PlaySFX("InventoryUI_button1");
-                SelectNextTab();
+                if (focusedObj == btn.gameObject) 
+                {
+                    isAnyTabFocused = true;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < tabButtons.Count; i++)
+            {
+                bool isPageActive = (i == _currentTabIndex);       // 현재 페이지인가?
+                bool isFocused = (focusedObj == tabButtons[i].gameObject); // 커서가 있는가?
+
+                // ---------------------------------------------------------
+                // A. 텍스트 색상 로직 (피드백 반영)
+                // ---------------------------------------------------------
+                Color targetTextColor = textIdleColor;
+
+                if (isAnyTabFocused)
+                {
+                    // 탭 버튼에 커서가 있다면 -> 오직 '커서 있는 놈'만 밝게 (Active여도 커서 없으면 어둡게)
+                    if (isFocused) targetTextColor = textActiveColor;
+                }
+                else
+                {
+                    // 탭 버튼에 커서가 없다면 (슬롯 조작 중) -> '현재 페이지'를 밝게
+                    if (isPageActive) targetTextColor = textActiveColor;
+                }
+                
+                var tmpText = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+                if (tmpText != null)
+                {
+                    tmpText.color = Color.Lerp(tmpText.color, targetTextColor, Time.unscaledDeltaTime * animationSpeed);
+                }
+
+                // ---------------------------------------------------------
+                // B. 크기 로직 (선택된 페이지는 항상 커짐)
+                // ---------------------------------------------------------
+                // "엔터로 선택하면 커짐" -> 즉 Active 상태일 때 커져 있으면 됩니다.
+                Vector3 targetScale = isPageActive ? selectedScale : Vector3.one;
+                tabButtons[i].transform.localScale = Vector3.Lerp(tabButtons[i].transform.localScale, targetScale, Time.unscaledDeltaTime * animationSpeed);
+            
+                // ---------------------------------------------------------
+                // C. 버튼 배경색 (Button 컴포넌트 동기화)
+                // ---------------------------------------------------------
+                var btnColors = tabButtons[i].colors;
+                if (isPageActive) 
+                {
+                    btnColors.normalColor = tabActiveColor; 
+                    btnColors.selectedColor = tabActiveColor;
+                }
+                else 
+                {
+                    btnColors.normalColor = tabIdleColor;
+                    btnColors.selectedColor = tabHoverColor;
+                }
+                tabButtons[i].colors = btnColors;
             }
         }
 
@@ -148,9 +204,7 @@ namespace Project.UI
             int oldIndex = _currentTabIndex;
             _currentTabIndex = newIndex;
             
-            UpdateTabButtonColors();
-            
-            // 이전 탭 즉시 숨김
+            // 이전 탭 닫기
             if (oldIndex != -1)
             {
                 _tabContents[oldIndex]?.OnHide();
@@ -159,22 +213,11 @@ namespace Project.UI
                 contentPanels[oldIndex].blocksRaycasts = false;
             }
 
-            // 새 탭 즉시 표시
+            // 새 탭 열기
             _tabContents[newIndex]?.OnShow();
             contentPanels[newIndex].alpha = 1f;
             contentPanels[newIndex].interactable = true;
             contentPanels[newIndex].blocksRaycasts = true;
-        }
-        
-        private void UpdateTabButtonColors()
-        {
-            for (int i = 0; i < tabButtons.Count; i++)
-            {
-                var colors = tabButtons[i].colors;
-                colors.normalColor = (i == _currentTabIndex) ? tabActiveColor : tabIdleColor;
-                colors.highlightedColor = (i == _currentTabIndex) ? tabActiveColor : tabHoverColor;
-                tabButtons[i].colors = colors;
-            }
         }
     }
 }

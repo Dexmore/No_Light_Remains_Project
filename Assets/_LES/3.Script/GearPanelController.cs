@@ -79,43 +79,66 @@ public class GearPanelController : MonoBehaviour, ITabContent
     {
         _currentEquippedCost = 0;
 
-        List<GearData> playerGears = new List<GearData>();
-        for (int i = 0; i < DBManager.I.currData.gearDatas.Count; i++)
-        {
-            CharacterData.GearData cd = DBManager.I.currData.gearDatas[i];
-            int find = DBManager.I.itemDatabase.allGears.FindIndex(x => x.name == cd.Name);
-            if (find == -1) continue;
-            GearData d = Instantiate(DBManager.I.itemDatabase.allGears[find]);
-            d.name = DBManager.I.itemDatabase.allGears[find].name;
-            d.isNew = cd.isNew;
-            d.isEquipped = cd.isEquipped;
-            playerGears.Add(d);
-        }
+        // 1. 전체 기어 도감(All Gears) 가져오기 (순서의 기준)
+        List<GearData> allMasterGears = DBManager.I.itemDatabase.allGears;
+        
+        // 2. 현재 플레이어의 저장 데이터 리스트
+        var playerGearDataList = DBManager.I.currData.gearDatas;
 
         for (int i = 0; i < gridSlots.Count; i++)
         {
-            if (i < playerGears.Count && playerGears[i] != null) // 이름 체크 조건 완화 (데이터가 확실하다면)
+            if (i < allMasterGears.Count)
             {
-                GearData data = playerGears[i];
-                gridSlots[i].SetData(data, this);
-                if (data.isEquipped)
+                GearData masterData = allMasterGears[i];
+
+                // [수정] 구조체/클래스 상관없이 안전하게 찾는 방법: FindIndex 사용
+                int findIndex = playerGearDataList.FindIndex(x => x.Name == masterData.name);
+
+                // 못 찾으면 -1을 반환함
+                if (findIndex != -1) 
                 {
-                    _currentEquippedCost += data.cost;
+                    // [케이스 A] 가지고 있다! (인덱스로 직접 가져옴)
+                    var savedData = playerGearDataList[findIndex];
+                    
+                    GearData runtimeData = Instantiate(masterData);
+                    runtimeData.name = masterData.name;
+                    runtimeData.isNew = savedData.isNew;
+                    runtimeData.isEquipped = savedData.isEquipped;
+                    
+                    
+                    runtimeData.currentLevel = savedData.level;
+                    
+                    runtimeData.LoadStrings();
+
+                    gridSlots[i].SetData(runtimeData, this);
+
+                    if (runtimeData.isEquipped)
+                    {
+                        _currentEquippedCost += runtimeData.cost;
+                    }
+                }
+                else 
+                {
+                    // [케이스 B] 없다! -> 빈 슬롯
+                    gridSlots[i].ClearSlot();
                 }
             }
             else
             {
-                gridSlots[i].ClearSlot(); 
+                gridSlots[i].ClearSlot();
             }
         }
 
+        // 3. UI 갱신
         totalCostMeter.SetMaxCost(DBManager.I.currData.maxGearCost);
         totalCostMeter.SetCost(_currentEquippedCost);
 
         SetupIndexBasedNavigation();
 
-        GearData firstAvailableGear = playerGears.FirstOrDefault(gear => gear != null);
-        ShowSelectedGearDetails(firstAvailableGear);
+        // 4. 상세 정보창 초기화
+        GearSlotUI firstActiveSlot = gridSlots.FirstOrDefault(s => s.MyData != null);
+        if (firstActiveSlot != null) ShowSelectedGearDetails(firstActiveSlot.MyData);
+        else ShowSelectedGearDetails(null);
     }
 
     private void SetupIndexBasedNavigation()

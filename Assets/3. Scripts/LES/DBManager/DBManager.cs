@@ -473,14 +473,28 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
     public bool HasGear(string Name, out bool isEquip)
     {
-        var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
         isEquip = false;
+
+        // [추가된 안전장치]
+        // 게임이 종료되는 시점에 데이터가 없거나 DBManager가 불안정하면 false 반환
+        if (currData.gearDatas == null) 
+        {
+            return false;
+        }
+
+        var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
+        
         if (findItems != -1)
         {
-            isEquip = currData.gearDatas[findItems].isEquipped;
+            // 인덱스 범위 안전 체크 (혹시 모를 에러 방지)
+            if (findItems < currData.gearDatas.Count)
+            {
+                isEquip = currData.gearDatas[findItems].isEquipped;
+            }
         }
         return findItems != -1;
     }
+    
     public bool HasLantern(string Name, out bool isEquip)
     {
         var findItems = currData.lanternDatas.FindIndex(x => x.Name == Name);
