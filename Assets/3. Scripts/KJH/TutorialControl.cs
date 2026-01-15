@@ -36,6 +36,9 @@ public class TutorialControl : MonoBehaviour
                 yield return YieldInstructionCache.WaitForSeconds(1f);
                 yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
                 playerControl.fsm.ChangeState(playerControl.idle);
+                DBManager.I.AddRecord("Data01");
+                HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
+                hUDBinder.PlayNoticeText(3);
                 StartCoroutine(nameof(TutorialParryLoop));
                 StartCoroutine(nameof(TutorialAttackLoop));
             }
