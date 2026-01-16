@@ -72,6 +72,7 @@ public class DialogTrigger : MonoBehaviour, ISavable
         stayTimer += Time.deltaTime;
         if (stayTimer >= 0.137f)
         {
+            Debug.Log("a");
             isComplete = true;
             coll2D.enabled = false;
             stayTimer = 0f;
