@@ -1,16 +1,32 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class CursorManager_LSH : MonoBehaviour
 {
-    [Header("Cursor Textures")]
-    public Texture2D normalCursor;
-    public Texture2D attackCursor;
-    public Texture2D interactCursor;
+    [Header("UI Components")]
+    public Image cursorImage;
+    private CanvasGroup _cursorCanvasGroup;
+    private RectTransform _cursorRect;
+
+    [Header("Cursor Sprites")]
+    public Sprite normalSprite;
+    public Sprite attackSprite;
+    public Sprite interactSprite;
 
     [Header("Option")]
+    [Tooltip("체크하면 마우스가 게임 창 밖으로 못 나가게 가둡니다.")]
     public bool lockInWindow = true;
 
+    [Header("Fade Settings")]
+    public float autoHideTime = 3.0f;
+    public float fadeDuration = 0.5f;
+
     private static CursorManager_LSH _instance;
+
+    private float _lastMoveTime;
+    private Vector2 _lastMousePos;
+    private bool _isFadingOut = false;
 
     void Awake()
     {
@@ -22,35 +38,112 @@ public class CursorManager_LSH : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (lockInWindow)
-            Cursor.lockState = CursorLockMode.Confined;
+        if (cursorImage != null)
+        {
+            _cursorRect = cursorImage.GetComponent<RectTransform>();
+            _cursorCanvasGroup = cursorImage.GetComponent<CanvasGroup>();
+            if (_cursorCanvasGroup == null)
+                _cursorCanvasGroup = cursorImage.gameObject.AddComponent<CanvasGroup>();
+
+            _cursorCanvasGroup.blocksRaycasts = false;
+            _cursorCanvasGroup.interactable = false;
+
+            // [추가됨] 시작 전(Awake)에는 투명하게(0) 만들어서 깜빡임 방지
+            _cursorCanvasGroup.alpha = 0f; 
+        }
+    }
+
+    void Start()
+    {
+        HideSystemCursor();
+        
+        _lastMoveTime = Time.time;
+        if (Mouse.current != null)
+            _lastMousePos = Mouse.current.position.ReadValue();
 
         SetNormal();
+
+        // [추가됨] 게임이 시작(Start)되면 즉시 보이게(1) 설정
+        if (_cursorCanvasGroup != null)
+        {
+            _cursorCanvasGroup.alpha = 1f;
+        }
     }
 
-    private void SetCursor(Texture2D tex, Vector2 hotspot)
+    void Update()
     {
-        Cursor.SetCursor(tex, hotspot, CursorMode.Auto);
+        Cursor.visible = false; 
+
+        if (lockInWindow)
+            Cursor.lockState = CursorLockMode.Confined;
+        else
+            Cursor.lockState = CursorLockMode.None;
+
+        HandleVisibility();
     }
 
-    private Vector2 GetCenterHotspot(Texture2D tex)
+    void LateUpdate()
     {
-        if (tex == null) return Vector2.zero;
-        return new Vector2(tex.width * 0.25f, tex.height * 0.2f);
+        if (_cursorRect != null && Mouse.current != null)
+        {
+            _cursorRect.position = Mouse.current.position.ReadValue();
+        }
     }
 
-    public void SetNormal()
+    void OnApplicationFocus(bool hasFocus)
     {
-        SetCursor(normalCursor, GetCenterHotspot(normalCursor));
+        if (hasFocus)
+        {
+            HideSystemCursor();
+        }
     }
 
-    public void SetAttack()
+    private void HideSystemCursor()
     {
-        SetCursor(attackCursor, GetCenterHotspot(attackCursor));
+        Cursor.visible = false;
+        if (lockInWindow)
+            Cursor.lockState = CursorLockMode.Confined;
     }
 
-    public void SetInteract()
+    private void HandleVisibility()
     {
-        SetCursor(interactCursor, GetCenterHotspot(interactCursor));
+        if (_cursorCanvasGroup == null || Mouse.current == null) return;
+
+        Vector2 currentPos = Mouse.current.position.ReadValue();
+
+        // 마우스 움직임 감지
+        if ((currentPos - _lastMousePos).sqrMagnitude > 0.1f)
+        {
+            _lastMoveTime = Time.time;
+            _lastMousePos = currentPos;
+
+            _cursorCanvasGroup.alpha = 1f;
+            _isFadingOut = false;
+        }
+        else
+        {
+            // 움직임이 멈추고 설정된 시간이 지나면 페이드 아웃 시작
+            if (Time.time - _lastMoveTime > autoHideTime)
+            {
+                _isFadingOut = true;
+            }
+        }
+
+        // 서서히 사라지는 연출
+        if (_isFadingOut)
+        {
+            _cursorCanvasGroup.alpha = Mathf.MoveTowards(_cursorCanvasGroup.alpha, 0f, Time.deltaTime / fadeDuration);
+        }
     }
+
+    private void SetCursorImage(Sprite sprite)
+    {
+        if (cursorImage == null || sprite == null) return;
+        cursorImage.sprite = sprite;
+        cursorImage.SetNativeSize();
+    }
+
+    public void SetNormal() { SetCursorImage(normalSprite); }
+    public void SetAttack() { SetCursorImage(attackSprite); }
+    public void SetInteract() { SetCursorImage(interactSprite); }
 }
