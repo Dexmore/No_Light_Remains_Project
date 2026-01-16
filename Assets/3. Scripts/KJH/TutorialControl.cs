@@ -18,7 +18,7 @@ public class TutorialControl : MonoBehaviour
     {
         yield return null;
         playerLayer = LayerMask.NameToLayer("Player");
-        if (DBManager.I.GetProgress("Tutorial") < 0)
+        if (DBManager.I.GetProgress("Tutorial") <= 1)
         {
             keyCount = -1;
             DBManager.I.Save();
@@ -39,13 +39,13 @@ public class TutorialControl : MonoBehaviour
                 DBManager.I.AddRecord("Data01");
                 HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
                 hUDBinder.PlayNoticeText(3);
-                StartCoroutine(nameof(TutorialParryLoop));
-                StartCoroutine(nameof(TutorialAttackLoop));
             }
             else
             {
                 playerControl.fsm.ChangeState(playerControl.idle);
             }
+            StartCoroutine(nameof(TutorialParryLoop));
+            StartCoroutine(nameof(TutorialAttackLoop));
         }
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         Transform tutParryTr = transform.Find("TutorialParry");
@@ -206,6 +206,8 @@ public class TutorialControl : MonoBehaviour
         Time.timeScale = 1f;
         DOVirtual.DelayedCall(0.15f, () => flag = 0);
         RecoverColorParryNotice();
+        if (DBManager.I.GetProgress("Tutorial") <= 1)
+            DBManager.I.SetProgress("Tutorial", 2);
     }
     void RecoverColorParryNotice()
     {
