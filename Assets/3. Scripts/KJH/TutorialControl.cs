@@ -25,6 +25,7 @@ public class TutorialControl : MonoBehaviour
             playerControl.stop.duration = 9999999;
             playerControl.fsm.ChangeState(playerControl.stop);
             yield return YieldInstructionCache.WaitForSeconds(1f);
+            playerControl.animator.Play("Idle");
             yield return new WaitUntil(() => !GameManager.I.isSceneWaiting);
             yield return YieldInstructionCache.WaitForSeconds(1f);
             if (playerControl.transform.position.x < 0)
@@ -44,9 +45,9 @@ public class TutorialControl : MonoBehaviour
             {
                 playerControl.fsm.ChangeState(playerControl.idle);
             }
-            StartCoroutine(nameof(TutorialParryLoop));
-            StartCoroutine(nameof(TutorialAttackLoop));
         }
+        StartCoroutine(nameof(TutorialParryLoop));
+        StartCoroutine(nameof(TutorialAttackLoop));
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         Transform tutParryTr = transform.Find("TutorialParry");
         if (slicer == null || !slicer.gameObject.activeInHierarchy)
@@ -225,7 +226,10 @@ public class TutorialControl : MonoBehaviour
     {
         if (graphic != null) graphic.color = targetColor;
     }
-
+    public void SetProgress()
+    {
+        DBManager.I.SetProgress("Tutorial", 2);
+    }
     public void TutorialTrigger(string Name)
     {
         if (Name == "TutorialMove")

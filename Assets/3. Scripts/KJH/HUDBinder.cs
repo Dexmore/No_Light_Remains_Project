@@ -74,17 +74,7 @@ public class HUDBinder : MonoBehaviour
     void OnEnable1()
     {
         GameManager.I.onHitAfter += HitHandler;
-        GameManager.I.onHitAfter += HitHandler2;
         GameManager.I.onParry += ParrySuccessHandler;
-        attackAction = inputActionAsset.FindActionMap("Player").FindAction("Attack");
-        parryAction = inputActionAsset.FindActionMap("Player").FindAction("Parry");
-        interactionAction = inputActionAsset.FindActionMap("Player").FindAction("Interaction");
-        attackAction.performed += AttackHandler;
-        parryAction.performed += ParryHandler;
-        interactionAction.performed += InteractionHandler;
-        attackAction.canceled += AttackCancelHandler;
-        parryAction.canceled += ParryCancelHandler;
-        interactionAction.canceled += InteractionCancelHandler;
     }
     private InputAction attackAction;
     private InputAction parryAction;
@@ -92,14 +82,7 @@ public class HUDBinder : MonoBehaviour
     void OnDisable1()
     {
         GameManager.I.onHitAfter -= HitHandler;
-        GameManager.I.onHitAfter -= HitHandler2;
         GameManager.I.onParry -= ParrySuccessHandler;
-        attackAction.performed -= AttackHandler;
-        parryAction.performed -= ParryHandler;
-        interactionAction.performed -= InteractionHandler;
-        attackAction.canceled -= AttackCancelHandler;
-        parryAction.canceled -= ParryCancelHandler;
-        interactionAction.canceled -= InteractionCancelHandler;
     }
     IEnumerator Start()
     {
@@ -121,8 +104,6 @@ public class HUDBinder : MonoBehaviour
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 2;
         }
-        StarNavi();
-
     }
 
     void ParrySuccessHandler(HitData hitData)
@@ -432,203 +413,6 @@ public class HUDBinder : MonoBehaviour
             }
         }
     }
-
-    // Go → 이런 형태의 텍스트로. right middle 정렬에 poxX -100 posY 0 으로 되어있음
-    // goal의 위치에 따라서
-    // right middle 정렬에 poxX -100 posY 0 상태에서 Go → , Go ↗ , Go ↘ , Go ↑ , Go ↓
-    // 또는 left middle 정렬에 poxX 100 posY 0 이 된다음 ← Go , ↖ Go , ... 등등이 되게 하기
-    // 아 그리고 이 어디로 가라고 나오는 안내의 기준은
-    // 일정시간동안 공격이나 히트당하기나 상호작용을 안할경우 드문드문 나오는 느낌인데
-    // 기본 알파값은 0.9고.  0.9에서 0으로 진동하면 좋을듯 
-    #region GO Arrow UI
-
-    [SerializeField] private Text goText;
-    [SerializeField] private Transform goal;
-    private RectTransform uiRect;
-    [SerializeField] private InputActionAsset inputActionAsset;
-
-    private float idleTimer = 0f;
-    private const float idleThreshold = 6.6f; // 8초 동안 입력 없으면 실행
-    private const float blinkSpeed = 1.8f;    // 깜박임 속도
-
-    private bool flag1;
-    private bool flag2;
-    private bool flag3;
-
-    public void StarNavi()
-    {
-        uiRect = goText.transform.parent.GetComponent<RectTransform>();
-        SetAlpha(0);
-        StartCoroutine(NavigationLoop());
-    }
-
-    private IEnumerator NavigationLoop()
-    {
-        while (true)
-        {
-            while (idleTimer < idleThreshold)
-            {
-                // UI가 열려있거나, 특정 스테이지거나, 목적지가 화면에 보이면 타이머 초기화
-                if (!IsGameUIVisible() && !IsExcludedStage() && !IsGoalVisibleOnScreen())
-                {
-                    idleTimer += Time.deltaTime;
-                }
-                else
-                {
-                    idleTimer = 0f;
-                }
-                yield return null;
-            }
-
-            yield return StartCoroutine(ShowNavigationSequence());
-            ResetIdleTimer();
-        }
-    }
-
-    private IEnumerator ShowNavigationSequence()
-    {
-        // 연출 시작 직전 최종 조건 체크
-        if (IsGameUIVisible() || IsExcludedStage() || IsGoalVisibleOnScreen()) yield break;
-
-        float t = 0f;
-        while (t < 4f)
-        {
-            // 연출 도중이라도 조건이 깨지면 즉시 종료
-            if (IsGameUIVisible() || IsGoalVisibleOnScreen()) { SetAlpha(0); yield break; }
-
-            t += Time.deltaTime * blinkSpeed;
-            float alpha = Mathf.PingPong(t, 0.9f);
-            SetAlpha(alpha);
-            UpdateNavigationLayout();
-            yield return null;
-        }
-
-        float fadeOutDuration = 1.0f;
-        float elapsed = 0f;
-        float startAlpha = goText.color.a;
-
-        while (elapsed < fadeOutDuration)
-        {
-            if (IsGameUIVisible() || IsGoalVisibleOnScreen()) { SetAlpha(0); yield break; }
-
-            elapsed += Time.deltaTime;
-            float alpha = Mathf.Lerp(startAlpha, 0f, elapsed / fadeOutDuration);
-            SetAlpha(alpha);
-            UpdateNavigationLayout();
-            yield return null;
-        }
-
-        SetAlpha(0);
-    }
-
-    // 1. 제외할 스테이지 체크 (Stage4, Stage5)
-    private bool IsExcludedStage()
-    {
-        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        return currentScene == "Stage4" || currentScene == "Stage5";
-    }
-
-    // 2. 목적지가 이미 화면(플레이어 시야) 안에 있는지 체크
-    private bool IsGoalVisibleOnScreen()
-    {
-        if (goal == null || Camera.main == null) return false;
-
-        // 월드 좌표를 뷰포트 좌표(0~1)로 변환
-        Vector3 viewPos = Camera.main.WorldToScreenPoint(goal.position);
-
-        // Z가 0보다 작으면 카메라 뒤에 있는 것임
-        if (viewPos.z < 0) return false;
-
-        // 화면 안(X: 0~ScreenW, Y: 0~ScreenH)에 위치하는지 확인
-        bool inX = viewPos.x > 0 && viewPos.x < Screen.width;
-        bool inY = viewPos.y > 0 && viewPos.y < Screen.height;
-
-        return inX && inY;
-    }
-
-    private void UpdateNavigationLayout()
-    {
-        if (goal == null || Camera.main == null) return;
-
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(goal.position);
-        bool isRight = screenPos.x > Screen.width / 2f;
-
-        if (isRight)
-        {
-            uiRect.anchorMin = new Vector2(1, 0.5f);
-            uiRect.anchorMax = new Vector2(1, 0.5f);
-            uiRect.pivot = new Vector2(1, 0.5f);
-            uiRect.anchoredPosition = new Vector2(-100, 0);
-        }
-        else
-        {
-            uiRect.anchorMin = new Vector2(0, 0.5f);
-            uiRect.anchorMax = new Vector2(0, 0.5f);
-            uiRect.pivot = new Vector2(0, 0.5f);
-            uiRect.anchoredPosition = new Vector2(100, 0);
-        }
-
-        Vector3 dirToGoal = (goal.position - Camera.main.transform.position).normalized;
-        float angle = Vector3.SignedAngle(Camera.main.transform.forward, dirToGoal, Vector3.up);
-        string arrow = GetArrowByAngle(angle);
-
-        goText.text = isRight ? $"Go {arrow}" : $"{arrow} Go";
-    }
-
-    private string GetArrowByAngle(float angle)
-    {
-        if (angle > -22.5f && angle <= 22.5f) return "↑";
-        if (angle > 22.5f && angle <= 67.5f) return "↗";
-        if (angle > 67.5f && angle <= 112.5f) return "→";
-        if (angle > 112.5f && angle <= 157.5f) return "↘";
-        if (angle > -67.5f && angle <= -22.5f) return "↖";
-        if (angle > -112.5f && angle <= -67.5f) return "←";
-        if (angle > -157.5f && angle <= -112.5f) return "↙";
-        return "↓";
-    }
-
-    private bool IsGameUIVisible()
-    {
-        return GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory;
-    }
-
-    private void SetAlpha(float a)
-    {
-        Color c = goText.color;
-        c.a = a;
-        goText.color = c;
-    }
-
-    public void ResetIdleTimer() { idleTimer = 0f; }
-
-    void HitHandler2(HitData hitData)
-    {
-        if (hitData.target.Root().name != "Player" && hitData.attacker.Root().name != "Player") return;
-        ResetIdleTimer();
-    }
-
-    // Input Action 핸들러들은 기존과 동일
-    void AttackHandler(InputAction.CallbackContext cb) { if (!flag1) { flag1 = true; ResetIdleTimer(); } }
-    void ParryHandler(InputAction.CallbackContext cb) { if (!flag2) { flag2 = true; ResetIdleTimer(); } }
-    void InteractionHandler(InputAction.CallbackContext cb) { if (!flag3) { flag3 = true; ResetIdleTimer(); } }
-    void AttackCancelHandler(InputAction.CallbackContext cb) { flag1 = false; }
-    void ParryCancelHandler(InputAction.CallbackContext cb) { flag2 = false; }
-    void InteractionCancelHandler(InputAction.CallbackContext cb) { flag3 = false; }
-
-    #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

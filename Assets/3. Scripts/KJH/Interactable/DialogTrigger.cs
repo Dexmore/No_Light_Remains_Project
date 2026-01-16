@@ -73,11 +73,12 @@ public class DialogTrigger : MonoBehaviour, ISavable
         if (stayTimer >= 0.137f)
         {
             isComplete = true;
+            coll2D.enabled = false;
+            stayTimer = 0f;
             if (canReplay)
             {
                 DBManager.I.SetLastTimeReplayObject(this);
             }
-            coll2D.enabled = false;
             GameManager.I.onDialog.Invoke(dialogIndex, transform);
             if (!string.IsNullOrEmpty(sfxName))
             {

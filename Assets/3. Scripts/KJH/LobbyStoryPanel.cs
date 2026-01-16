@@ -256,33 +256,7 @@ public class LobbyStoryPanel : MonoBehaviour
             else
                 thumbnail.sprite = noImage;
         }
-
-        // string mappingSceneName = "";
-        // switch (data.sceneName)
-        // {
-        //     case "Cinematic":
-        //         mappingSceneName = "Tutorial";
-        //         break;
-        //     case "Stage0":
-        //         mappingSceneName = "Tutorial";
-        //         break;
-        //     case "Stage1":
-        //         mappingSceneName = "Broken Road";
-        //         break;
-        //     case "Stage2":
-        //         mappingSceneName = "Facility Exterior";
-        //         break;
-        //     case "Stage3":
-        //         mappingSceneName = "Underground Lab";
-        //         break;
-        //     case "Stage4":
-        //         mappingSceneName = "Sector 12";
-        //         break;
-        //     case "Stage5":
-        //         mappingSceneName = "Sector 13";
-        //         break;
-        // }
-
+        
         wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
         string diffText = "";
         switch (data.difficulty)

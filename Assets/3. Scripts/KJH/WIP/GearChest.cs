@@ -1,5 +1,5 @@
 using UnityEngine;
-public class GearChest : MonoBehaviour
+public class GearTutorial : MonoBehaviour
 {
     public ChestInteractable_LSH chest;
     public void ForceOpen()
