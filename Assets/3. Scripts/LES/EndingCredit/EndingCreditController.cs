@@ -33,7 +33,7 @@ public class EndingCreditController : MonoBehaviour
     [SerializeField] private float fadeInTime = 1.0f;         
     [SerializeField] private float fadeOutTime = 1.0f;        
     [SerializeField] private float delayBetween = 0.5f;       
-    [SerializeField] private string lobbySceneName = "LobbyScene"; 
+    [SerializeField] private string lobbySceneName = "Lobby"; 
 
     [Header("이미지 크기 제한 (최대 폭/높이)")]
     // [신규] 이미지가 아무리 커도 이 사이즈 안쪽으로 리사이징 됨 (예: 800 x 500)
