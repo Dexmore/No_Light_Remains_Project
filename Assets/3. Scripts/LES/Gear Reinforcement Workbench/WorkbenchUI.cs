@@ -598,6 +598,7 @@ public class WorkbenchUI : MonoBehaviour
         string goldText = $"{info.goldCost} G";
         string mat1Text = "-";
         string mat2Text = "-";
+        string mat3Text = "-";
         
         // 튜토리얼 텍스트 표시 (가짜 변수 기준)
         if (_isTutorialMode && info.requiredMaterials != null && info.requiredMaterials.Count > 0)
@@ -611,7 +612,7 @@ public class WorkbenchUI : MonoBehaviour
             // 실제 DB 표시
             for (int i = 0; i < info.requiredMaterials.Count; i++)
             {
-                if (i >= 2) break;
+                if (i >= 3) break;
                 var mat = info.requiredMaterials[i];
                 if (mat.item == null) continue;
                 string targetName = mat.item.name;
@@ -625,12 +626,14 @@ public class WorkbenchUI : MonoBehaviour
                 string matString = $"<color={color}>{mat.item.localizedName} ( {totalCount} / {mat.count} )</color>";
                 if (i == 0) mat1Text = matString;
                 else if (i == 1) mat2Text = matString;
+                else if(i==2) mat3Text = matString;
             }
         }
         
         if (costTexts.Length > 0) SetTextTyping(costTexts[0], mat1Text);
         if (costTexts.Length > 1) SetTextTyping(costTexts[1], mat2Text);
-        if (costTexts.Length > 2) SetTextTyping(costTexts[2], goldText);
+        if (costTexts.Length > 2) SetTextTyping(costTexts[2], mat3Text);
+        if (costTexts.Length > 3) SetTextTyping(costTexts[3], goldText);
         
         if (isSelected)
         {

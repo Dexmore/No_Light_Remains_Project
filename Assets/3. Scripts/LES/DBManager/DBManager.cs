@@ -387,6 +387,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         {
             CharacterData.ItemData findData = currData.itemDatas[find];
             int _count = findData.count;
+            if (_count >= 999) return;
             if (_count + count <= 0)
             {
                 currData.itemDatas.Remove(findData);
@@ -594,6 +595,7 @@ public class DBManager : SingletonBehaviour<DBManager>
             // (선택사항) 저장 기능을 바로 호출하고 싶다면
             // Save(); 
             SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
+            GameManager.I.RefreshGears();
         }
     }
 

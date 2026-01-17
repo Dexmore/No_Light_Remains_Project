@@ -39,12 +39,12 @@ public class PlayerAttack : IPlayerState
                 adjustedTime2 = comboAvailableTime;
                 break;
             case 1:
-                adjustedTime1 = duration + 0.09f;
-                adjustedTime2 = comboAvailableTime + 0.11f;
+                adjustedTime1 = duration + 0.05f;
+                adjustedTime2 = comboAvailableTime + 0.05f;
                 break;
             case 2:
-                adjustedTime1 = duration + 0.16f;
-                adjustedTime2 = comboAvailableTime + 0.18f;
+                adjustedTime1 = duration + 0.1f;
+                adjustedTime2 = comboAvailableTime + 0.1f;
                 break;
         }
         attacked.Clear();
@@ -167,20 +167,39 @@ public class PlayerAttack : IPlayerState
             {
                 if (outValue)
                 {
-                    if (ctx.currHealth / ctx.maxHealth <= 0.25f)
+                    int level = DBManager.I.GetGearLevel("001_LastStandGear");
+                    if (level == 0 && ctx.currHealth / ctx.maxHealth <= 0.25f)
                     {
                         gearMultiplier = 1.3f;
                     }
+                    else if (level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
+                    {
+                        gearMultiplier = 1.35f;
+                    }
                 }
             }
+
+
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
             if (GameManager.I.isSuperNovaGearEquip)
             {
-                if (GameManager.I.isLanternOn)
-                    gearMultiplier *= 1.2f;
-                else
-                    gearMultiplier *= 1.05f;
+                int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                if (level == 0)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.2f;
+                    else
+                        gearMultiplier *= 1.03f;
+                }
+                else if (level == 1)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.25f;
+                    else
+                        gearMultiplier *= 1.06f;
+                }
             }
+
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             GameManager.I.onHit.Invoke
             (

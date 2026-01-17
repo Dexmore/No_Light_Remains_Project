@@ -90,7 +90,7 @@ public class PlayerIdle : IPlayerState
             fsm.ChangeState(ctx.fall);
 
         potionPressed = potionAction.IsPressed();
-        if (potionPressed && ctx.Grounded && (ctx.currHealth / ctx.maxHealth) < 0.95f)
+        if (potionPressed && ctx.Grounded && (ctx.currHealth / ctx.maxHealth) < 0.93f)
         {
             if (DBManager.I.currData.currPotionCount > 0
             || (DBManager.I.currData.currPotionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))

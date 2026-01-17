@@ -31,12 +31,12 @@ public class PlayerAttackCombo2 : IPlayerState
                 adjustedTime2 = comboAvailableTime;
                 break;
             case 1:
-                adjustedTime1 = duration + 0.08f;
-                adjustedTime2 = comboAvailableTime + 0.08f;
+                adjustedTime1 = duration + 0.045f;
+                adjustedTime2 = comboAvailableTime + 0.045f;
                 break;
             case 2:
-                adjustedTime1 = duration + 0.11f;
-                adjustedTime2 = comboAvailableTime + 0.11f;
+                adjustedTime1 = duration + 0.09f;
+                adjustedTime2 = comboAvailableTime + 0.09f;
                 break;
         }
         ctx.animator.Play("Player_Attack3");
@@ -122,25 +122,43 @@ public class PlayerAttackCombo2 : IPlayerState
             //Gear 기어 (배수의 기어) 001_LastStandGear
             float gearMultiplier = 1f;
             bool outValue = false;
-            if(DBManager.I.HasGear("001_LastStandGear",out outValue))
+            if (DBManager.I.HasGear("001_LastStandGear", out outValue))
             {
-                if(outValue)
+                if (outValue)
                 {
-                    if(ctx.currHealth/ctx.maxHealth <= 0.25f)
+                    int level = DBManager.I.GetGearLevel("001_LastStandGear");
+                    if (level == 0 && ctx.currHealth / ctx.maxHealth <= 0.25f)
                     {
                         gearMultiplier = 1.3f;
                     }
+                    else if (level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
+                    {
+                        gearMultiplier = 1.35f;
+                    }
                 }
             }
+
+
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
             if (GameManager.I.isSuperNovaGearEquip)
             {
-                if (GameManager.I.isLanternOn)
-                    gearMultiplier *= 1.2f;
-                else
-                    gearMultiplier *= 1.05f;
+                int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                if (level == 0)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.2f;
+                    else
+                        gearMultiplier *= 1.03f;
+                }
+                else if (level == 1)
+                {
+                    if (GameManager.I.isLanternOn)
+                        gearMultiplier *= 1.25f;
+                    else
+                        gearMultiplier *= 1.06f;
+                }
             }
-            
+
 
             GameManager.I.onHit.Invoke
             (

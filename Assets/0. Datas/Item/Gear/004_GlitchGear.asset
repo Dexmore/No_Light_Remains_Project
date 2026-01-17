@@ -21,7 +21,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  gearIcon: {fileID: 415368074, guid: 3ef3e486e8d7b5941ad67209c7140ce2, type: 3}
   gearDescription:
     m_TableReference:
       m_TableCollectionName: GUID:59f6a763860e4ee40abd1e516422d048
@@ -31,15 +30,24 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  upgradeMain_EN: When performing dodge, the wearer's invincible effect is 20% longer
-  upgradeMain_KR: "\uD68C\uD53C \uC2DC \uBB34\uC801 \uC2DC\uAC04\uC774 20% \uC99D\uAC00\uD569\uB2C8\uB2E4."
-  upgradeSub_EN: When performing dodge, the wearer's invincible effect is 25% longer
-  upgradeSub_KR: "\uD68C\uD53C \uC2DC \uBB34\uC801 \uC2DC\uAC04\uC774 25% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  gearIcon: {fileID: 415368074, guid: 3ef3e486e8d7b5941ad67209c7140ce2, type: 3}
+  upgradeMain_EN: When performing dodge, the wearer's invincible effect is 50% longer
+  upgradeMain_KR: "\uBB34\uC801 \uC2DC\uAC04\uC774 50% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  upgradeSub_EN: When performing dodge, the wearer's invincible effect is 100% longer
+  upgradeSub_KR: "\uBB34\uC801 \uC2DC\uAC04\uC774 100% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   cost: 2
   isEquipped: 0
   isNew: 1
   currentLevel: 0
-  specificEnhancementSettings: []
+  specificEnhancementSettings:
+  - goldCost: 200
+    requiredMaterials:
+    - item: {fileID: 11400000, guid: a53d8fceefb83254ca80dce1a99e2bcd, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: cc1ad3fd2baeb784a9c0ff892d15a7fe, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: fc2ded5513cfefa4c9c6137e1a40c6ef, type: 2}
+      count: 3
   references:
     version: 2
     RefIds: []

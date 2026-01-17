@@ -14,6 +14,7 @@ public class RecordPanelController : MonoBehaviour, ITabContent
 
     [Header("상세 내용(Detail) UI")]
     [SerializeField] private TextMeshProUGUI detailTitleText;
+    [SerializeField] private Image detailContentImage;
     [SerializeField] private TextMeshProUGUI detailContentText;
 
     [Header("내비게이션")]
@@ -139,17 +140,29 @@ public class RecordPanelController : MonoBehaviour, ITabContent
             {
                 detailTitleText.text = "로딩 중...";
                 detailContentText.text = "데이터를 불러오는 중입니다.";
+                detailContentImage.gameObject.SetActive(false);
             }
             else
             {
                 detailTitleText.text = data.localizedName;
                 detailContentText.text = data.localizedDescription;
+                if(data.sprite == null)
+                {
+                    detailContentImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    detailContentImage.gameObject.SetActive(true);
+                    detailContentImage.sprite = data.sprite;
+                    detailContentImage.preserveAspect = true;
+                }
             }
         }
         else
         {
             detailTitleText.text = "기록물 없음";
             detailContentText.text = "아직 습득한 기록물이 없습니다.";
+            detailContentImage.gameObject.SetActive(false);
         }
     }
 

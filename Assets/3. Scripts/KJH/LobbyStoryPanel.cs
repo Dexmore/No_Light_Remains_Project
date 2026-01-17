@@ -89,7 +89,7 @@ public class LobbyStoryPanel : MonoBehaviour
         if (DBManager.I.IsSteamInit() && DBManager.I.IsSteam())
         {
             isSteamSlot = true;
-            if( DBManager.I.allSaveDatasInSteam.characterDatas == null
+            if (DBManager.I.allSaveDatasInSteam.characterDatas == null
             || DBManager.I.allSaveDatasInSteam.characterDatas.Count == 0)
             {
                 for (int i = 0; i < 3; i++)
@@ -129,7 +129,7 @@ public class LobbyStoryPanel : MonoBehaviour
         else
         {
             isSteamSlot = false;
-            if( DBManager.I.allSaveDatasInLocal.characterDatas == null
+            if (DBManager.I.allSaveDatasInLocal.characterDatas == null
             || DBManager.I.allSaveDatasInLocal.characterDatas.Count == 0)
             {
                 for (int i = 0; i < 3; i++)
@@ -256,6 +256,7 @@ public class LobbyStoryPanel : MonoBehaviour
             else
                 thumbnail.sprite = noImage;
         }
+        
         wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
         string diffText = "";
         switch (data.difficulty)
@@ -391,7 +392,7 @@ public class LobbyStoryPanel : MonoBehaviour
         {
             DBManager.I.currSlot = select;
 
-            if(DBManager.I.allSaveDatasInSteam.characterDatas == null)
+            if (DBManager.I.allSaveDatasInSteam.characterDatas == null)
             {
                 DBManager.I.allSaveDatasInSteam.characterDatas = new List<CharacterData>();
             }
@@ -414,26 +415,26 @@ public class LobbyStoryPanel : MonoBehaviour
         {
             DBManager.I.currSlot = select + 3;
 
-            if(DBManager.I.allSaveDatasInLocal.characterDatas == null)
+            if (DBManager.I.allSaveDatasInLocal.characterDatas == null)
             {
                 DBManager.I.allSaveDatasInLocal.characterDatas = new List<CharacterData>();
             }
 
-                    int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.characterDatas.Count;
-                if (addEmptyCount > 0)
-                {
-                    CharacterData emptyData = new CharacterData();
-                    emptyData.maxHealth = 0;
-                    emptyData.itemDatas = new List<CharacterData.ItemData>();
-                    emptyData.gearDatas = new List<CharacterData.GearData>();
-                    emptyData.lanternDatas = new List<CharacterData.LanternData>();
-                    emptyData.recordDatas = new List<CharacterData.RecordData>();
-                    for (int i = 0; i < addEmptyCount; i++)
-                        DBManager.I.allSaveDatasInLocal.characterDatas.Add(emptyData);
-                }
-            
+            int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.characterDatas.Count;
+            if (addEmptyCount > 0)
+            {
+                CharacterData emptyData = new CharacterData();
+                emptyData.maxHealth = 0;
+                emptyData.itemDatas = new List<CharacterData.ItemData>();
+                emptyData.gearDatas = new List<CharacterData.GearData>();
+                emptyData.lanternDatas = new List<CharacterData.LanternData>();
+                emptyData.recordDatas = new List<CharacterData.RecordData>();
+                for (int i = 0; i < addEmptyCount; i++)
+                    DBManager.I.allSaveDatasInLocal.characterDatas.Add(emptyData);
+            }
 
-            
+
+
             DBManager.I.allSaveDatasInLocal.characterDatas.Add(newData);
         }
         DBManager.I.Save();

@@ -177,16 +177,41 @@ public class PlayerControl : MonoBehaviour
 
         //Gear 기어 (확장의 기어) 008_ExpansionGear
         bool outValue = false;
+        HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
         if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
         {
             if (outValue)
             {
-                DBManager.I.currData.maxPotionCount = 4;
-                if (DBManager.I.currData.currPotionCount <= 3)
+                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
+                if (level == 0)
                 {
-                    DBManager.I.currData.currPotionCount++;
+                    DBManager.I.currData.maxPotionCount = 4;
+                    if (DBManager.I.currData.currPotionCount <= 3)
+                    {
+                        if (!GameManager.I.hasGivenExpansionBonus1)
+                        {
+                            GameManager.I.hasGivenExpansionBonus1 = true;
+                            DBManager.I.currData.currPotionCount++;
+                        }
+                    }
                 }
-                hUDBinder.Refresh(1f);
+                else if (level == 1)
+                {
+                    DBManager.I.currData.maxPotionCount = 5;
+                    if (DBManager.I.currData.currPotionCount <= 4)
+                    {
+                        if (!GameManager.I.hasGivenExpansionBonus2)
+                        {
+                            GameManager.I.hasGivenExpansionBonus2 = true;
+                            DBManager.I.currData.currPotionCount += 2;
+                            if (DBManager.I.currData.currPotionCount > 5)
+                            {
+                                DBManager.I.currData.currPotionCount = 5;
+                            }
+                        }
+                    }
+                }
+                hUDBinder?.Refresh(1f);
             }
             else
             {
@@ -195,7 +220,7 @@ public class PlayerControl : MonoBehaviour
                 {
                     DBManager.I.currData.currPotionCount = 3;
                 }
-                hUDBinder.Refresh(1f);
+                hUDBinder?.Refresh(1f);
             }
         }
         else
@@ -205,7 +230,7 @@ public class PlayerControl : MonoBehaviour
             {
                 DBManager.I.currData.currPotionCount = 3;
             }
-            hUDBinder.Refresh(1f);
+            hUDBinder?.Refresh(1f);
         }
 
         //Gear 기어 (초신성 기어) 006_SuperNovaGear
@@ -287,26 +312,28 @@ public class PlayerControl : MonoBehaviour
     float groundCheckTime;
     void CheckGroundedPrecise()
     {
-        _Grounded = false;
+        //_Grounded = false;
         if (collisions.Count > 0)
             foreach (var element in collisions)
                 if (Mathf.Abs(element.Value.y - transform.position.y) < 0.1f * capsuleCollider2D.size.y)
                 {
                     _Grounded = true;
-                    break;
+                    return;
                 }
-        if (!_Grounded)
+
+        if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
         {
-            if (Time.time - groundCheckTime > Random.Range(0.1f, 0.3f))
+            groundCheckTime = Time.time;
+            groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
+            groundRay.direction = Vector2.down;
+            groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
+            if (groundRayHit)
             {
-                groundCheckTime = Time.time;
-                groundRay.origin = (Vector2)transform.position + 0.08f * Vector2.up;
-                groundRay.direction = Vector2.down;
-                groundRayHit = Physics2D.Raycast(groundRay.origin, groundRay.direction, 0.1f, groundLayer);
-                if (groundRayHit)
-                {
-                    _Grounded = true;
-                }
+                _Grounded = true;
+            }
+            else
+            {
+                _Grounded = false;
             }
         }
     }
@@ -422,6 +449,7 @@ public class PlayerControl : MonoBehaviour
     }
     Camera _mainCamera;
     [HideInInspector] public Inventory inventoryUI;
+    float parrySuccessTime;
     void HitHandler(HitData hData)
     {
         if (hData.attacker.Root() == transform)
@@ -435,7 +463,15 @@ public class PlayerControl : MonoBehaviour
                 {
                     if (outValue)
                     {
-                        currHealth += 5f;
+                        int level = DBManager.I.GetGearLevel("005_RestorationGear");
+                        if (level == 0)
+                        {
+                            currHealth += 5f;
+                        }
+                        else if (level == 1)
+                        {
+                            currHealth += 10f;
+                        }
                         currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
                         hUDBinder.Refresh(1f);
                     }
@@ -510,37 +546,42 @@ public class PlayerControl : MonoBehaviour
             {
                 if (!hData.isCannotParry)
                 {
-                    AudioManager.I.PlaySFX("Parry");
-                    ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
-                    GameManager.I.onParry.Invoke(hData);
-                    if (hData.attackType == HitData.AttackType.Bullet)
+                    if (Time.time - parrySuccessTime > 0.3f)
                     {
-                        Bullet bullet = hData.attacker.GetComponent<Bullet>();
-                        bullet.Despawn();
+                        parrySuccessTime = Time.time;
+                        AudioManager.I.PlaySFX("Parry");
+                        ParticleManager.I.PlayText("Parry", hData.hitPoint, ParticleManager.TextType.PlayerNotice);
+                        GameManager.I.onParry.Invoke(hData);
+                        if (hData.attackType == HitData.AttackType.Bullet)
+                        {
+                            Bullet bullet = hData.attacker.GetComponent<Bullet>();
+                            bullet.Despawn();
+                        }
+                        GameManager.I.HitEffect(hData.hitPoint, 0.25f);
+                        ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
+
+                        OnParrySuccess(hData);
+
+                        if (_mainCamera == null) _mainCamera = Camera.main;
+                        UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
+                        AttractParticle ap = upa.GetComponent<AttractParticle>();
+                        Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
+                        ap.targetVector = pos;
+                        // MonsterControl monsterControl = hData.attacker.GetComponent<Monster>
+                        float tempFloat = 1f;
+                        if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
+                            if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
+                                tempFloat = 0.34f;
+
+                        currBattery += lanternParryAmount * tempFloat;
+                        currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
+                        hUDBinder.RefreshBattery();
+                        hitCoolTime1speed = 30f;
+                        hitCoolTime2speed = 30f;
+                        StartCoroutine(nameof(ReleaseParred));
+                        return;
                     }
-                    GameManager.I.HitEffect(hData.hitPoint, 0.25f);
-                    ParticleManager.I.PlayParticle("RadialLines", hData.hitPoint, Quaternion.identity);
 
-                    OnParrySuccess(hData);
-
-                    if (_mainCamera == null) _mainCamera = Camera.main;
-                    UIParticle upa = ParticleManager.I.PlayUIParticle("UIAttBattery", MethodCollection.WorldTo1920x1080Position(transform.position, _mainCamera), Quaternion.identity);
-                    AttractParticle ap = upa.GetComponent<AttractParticle>();
-                    Vector3 pos = _mainCamera.ViewportToWorldPoint(new Vector3(0.07f, 0.85f, 0f));
-                    ap.targetVector = pos;
-                    // MonsterControl monsterControl = hData.attacker.GetComponent<Monster>
-                    float tempFloat = 1f;
-                    if (hData.attacker.TryGetComponent(out MonsterControl monsterControl))
-                        if (monsterControl.data.Type == MonsterType.Large || monsterControl.data.Type == MonsterType.Boss)
-                            tempFloat = 0.34f;
-
-                    currBattery += lanternParryAmount * tempFloat;
-                    currBattery = Mathf.Clamp(currBattery, 0, maxBattery);
-                    hUDBinder.RefreshBattery();
-                    hitCoolTime1speed = 30f;
-                    hitCoolTime2speed = 30f;
-                    StartCoroutine(nameof(ReleaseParred));
-                    return;
                 }
                 else
                 {
@@ -579,6 +620,8 @@ public class PlayerControl : MonoBehaviour
             }
             Vector2 dir = 2.8f * multiplier * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
             dir.y = 2.1f * Mathf.Sqrt(multiplier) + (multiplier - 1f);
+            if (Random.value < 0.23f) dir.y *= 0.2f;
+            if (Random.value < 0.23f) dir.y = 0f;
             Vector3 velo = rb.linearVelocity;
             rb.linearVelocity = 0.4f * velo;
             rb.AddForce(dir, ForceMode2D.Impulse);
@@ -591,10 +634,13 @@ public class PlayerControl : MonoBehaviour
             switch (DBManager.I.currData.difficulty)
             {
                 case 0:
-                    diffMultiplier = 0.7f;
+                    diffMultiplier = 0.79f;
+                    break;
+                case 1:
+                    diffMultiplier = 0.9f;
                     break;
                 case 2:
-                    diffMultiplier = 1.33f;
+                    diffMultiplier = 1.1f;
                     break;
             }
             currHealth -= (int)(hData.damage * diffMultiplier);
@@ -725,6 +771,9 @@ public class PlayerControl : MonoBehaviour
     void LanternInput(InputAction.CallbackContext callback)
     {
         if (_Dead) return;
+        if (fsm.currentState == stop) return;
+        if (fsm.currentState == openInventory) return;
+        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
@@ -757,7 +806,7 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector] public bool isNearSavePoint;
     [HideInInspector] public bool isNearSconceLight;
     public AnimationCurve curve;
-    private bool isBatteryMalfunction;
+    [HideInInspector] public bool isBatteryMalfunction;
     IEnumerator DecreaseBattery()
     {
         float diffMultiplier = 1f;
@@ -787,13 +836,13 @@ public class PlayerControl : MonoBehaviour
             }
             hUDBinder.UpdateBatteryUI(isCharging, batteryPercent, lanternOnTime, isBatteryMalfunction);
             float malfunctionFactor = 1f;
-            if (!isCharging && GameManager.I.isLanternOn && lanternOnTime > 10f && !isBatteryMalfunction)
+            if (!isCharging && GameManager.I.isLanternOn && !hUDBinder.isWarring && lanternOnTime > 10f && !isBatteryMalfunction)
             {
-                if (Random.value < 0.004f)
+                if (Random.value < 0.006f)
                     isBatteryMalfunction = true;
             }
             if (!GameManager.I.isLanternOn) isBatteryMalfunction = false;
-            if (isBatteryMalfunction) malfunctionFactor = 1.6f;
+            if (isBatteryMalfunction) malfunctionFactor = 1.2f;
             if (isNearSavePoint)
             {
                 if (currBattery <= 100)
@@ -831,7 +880,15 @@ public class PlayerControl : MonoBehaviour
                     float gearMultiplier = 1f;
                     if (GameManager.I.isSuperNovaGearEquip)
                     {
-                        gearMultiplier = 1.5f;
+                        int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                        if (level == 0)
+                        {
+                            gearMultiplier = 1.5f;
+                        }
+                        else if (level == 1)
+                        {
+                            gearMultiplier = 1.2f;
+                        }
                     }
                     currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval * tempFloat2 * malfunctionFactor;
                     currBattery = Mathf.Clamp(currBattery, 0f, maxBattery);

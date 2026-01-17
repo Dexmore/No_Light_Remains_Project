@@ -8,10 +8,8 @@ public class GearData : ScriptableObject
 {
     [Header("기본 정보")]
     public LocalizedString gearName;
+    public LocalizedString gearDescription;
     public Sprite gearIcon;
-
-    [Header("기본설명")]
-    public LocalizedString gearDescription; 
 
     [Space(10)]
     [Header("==================================================")]
@@ -52,7 +50,7 @@ public class GearData : ScriptableObject
             };
         }
 
-        // ✅ [복구됨] 설명 로드 로직
+        // 2. 설명 로드
         if (!gearDescription.IsEmpty)
         {
             gearDescription.GetLocalizedStringAsync().Completed += (handle) =>

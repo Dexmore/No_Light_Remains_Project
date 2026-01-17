@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using NaughtyAttributes;
 using System.Threading.Tasks;
 public class SconceLight : Lanternable, ISavable
 {
@@ -20,27 +19,32 @@ public class SconceLight : Lanternable, ISavable
     public void SetCompletedImmediately()
     {
         _isReady = false;
-        isComplete = false;
+        isComplete = true;
         _lightPoint.gameObject.SetActive(true);
         _particle.gameObject.SetActive(true);
         _light2D.gameObject.SetActive(true);
         _particle.Play();
     }
     #endregion
-    [SerializeField] bool firstIsComplete;
+    bool firstIsComplete;
     ParticleSystem _particle;
     SpriteRenderer _lightPoint;
     GameObject _light2D;
     void Awake()
     {
         base.fillSpeed = 2.2f;
-        replayWaitTimeSecond = Random.Range(600, 10000);
+        replayWaitTimeSecond = Random.Range(86400, 864000);
         _lightPoint = transform.Find("LightPoint").GetComponent<SpriteRenderer>();
         _particle = transform.GetComponentInChildren<ParticleSystem>(true);
         _light2D = transform.GetComponentInChildren<Light2D>().gameObject;
         if (firstIsComplete)
         {
-            SetCompletedImmediately();
+            _isReady = false;
+            isComplete = true;
+            _lightPoint.gameObject.SetActive(true);
+            _particle.gameObject.SetActive(true);
+            _light2D.gameObject.SetActive(true);
+            _particle.Play();
         }
         else
         {
@@ -57,7 +61,7 @@ public class SconceLight : Lanternable, ISavable
         AudioManager.I.PlaySFX("UIClick2");
         SetCompletedImmediately();
         await Task.Delay(200);
-        while(!_lightPoint.gameObject.activeSelf)
+        while (!_lightPoint.gameObject.activeSelf)
         {
             _lightPoint.gameObject.SetActive(true);
             await Task.Delay(200);

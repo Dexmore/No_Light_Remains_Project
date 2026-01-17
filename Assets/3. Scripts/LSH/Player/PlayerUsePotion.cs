@@ -11,7 +11,7 @@ public class PlayerUsePotion : IPlayerState
 
 
     // 포션 1회 사용으로 차게 할 체력 회복량 (ex. 아래값이 1일경우 최대체력의 100%, 아래값이 0.8일경우 최대체력의 80%, 0.5일경우 최대체력의 50%가 참)
-    private const float healAmount = 0.5f;
+    private const float healAmount = 0.6f;
     // 포션사용 동작 길이
     private const float duration = 1.7f;
 
@@ -63,10 +63,10 @@ public class PlayerUsePotion : IPlayerState
                 adjustedTime = duration;
                 break;
             case 1:
-                adjustedTime = duration * 1.2f + 0.4f;
+                adjustedTime = duration * 1.1f + 0.1f;
                 break;
             case 2:
-                adjustedTime = duration * 1.3f + 0.6f;
+                adjustedTime = duration * 1.2f + 0.2f;
                 break;
         }
         //Gear 기어 (신복의 기어) 007_QuickHealGear
@@ -75,7 +75,15 @@ public class PlayerUsePotion : IPlayerState
         {
             if (outValue)
             {
-                adjustedTime = 0.8f * adjustedTime - 0.1f;
+                int level = DBManager.I.GetGearLevel("007_QuickHealGear");
+                if (level == 0)
+                {
+                    adjustedTime = 0.9f * adjustedTime - 0.05f;
+                }
+                else if (level == 1)
+                {
+                    adjustedTime = 0.8f * adjustedTime - 0.1f;
+                }
             }
         }
     }
@@ -175,14 +183,23 @@ public class PlayerUsePotion : IPlayerState
         await UniTask.Yield(token);
         if (once) return;
         once = true;
-        float du = 3.5f;
+        float du = 3.6f;
         //Gear 기어 (신복의 기어) 007_QuickHealGear
         bool outValue = false;
         if (DBManager.I.HasGear("007_QuickHealGear", out outValue))
         {
             if (outValue)
             {
-                du = 1f;
+                int level = DBManager.I.GetGearLevel("007_QuickHealGear");
+                if (level == 0)
+                {
+                    du = 2f;
+                }
+                else if (level == 1)
+                {
+                    du = 1f;
+                }
+
             }
         }
         float e = 0;

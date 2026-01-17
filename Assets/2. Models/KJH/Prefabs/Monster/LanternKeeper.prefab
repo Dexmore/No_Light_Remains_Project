@@ -1397,9 +1397,6 @@ MonoBehaviour:
     - state: 10
       weight: 750
       coolTime: 0.7
-    - state: 20
-      weight: 250
-      coolTime: 2
   - condition: 8
     frequencies:
     - state: 16
@@ -1409,8 +1406,8 @@ MonoBehaviour:
       weight: 5
       coolTime: 140
     - state: 20
-      weight: 12
-      coolTime: 35
+      weight: 88
+      coolTime: 31
     - state: 21
       weight: 18
       coolTime: 22
@@ -1429,8 +1426,8 @@ MonoBehaviour:
       weight: 2.5
       coolTime: 100
     - state: 20
-      weight: 25
-      coolTime: 20
+      weight: 95
+      coolTime: 16
     - state: 21
       weight: 17
       coolTime: 29
@@ -1491,41 +1488,41 @@ MonoBehaviour:
   coolTime: 0
   duration: 1.55
   dropTables:
+  - dropItem: {fileID: 8795925312805560522, guid: fc57feb0a5784874e9c776d339c7b94b, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 1
+  - dropItem: {fileID: 0}
+    gold: 0
+    record: {fileID: 11400000, guid: 44609a5e350bb804fbff65321833ee2d, type: 2}
+    countRange: {x: 1, y: 1}
+    probability: 1
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 19
+    gold: 4
     record: {fileID: 0}
-    countRange: {x: 12, y: 18}
-    probability: 1
-  - dropItem: {fileID: 4763553941841542288, guid: 26fc945b6b8bcb44fa279a675027f0b9, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 1, y: 1}
-    probability: 0.5
-  - dropItem: {fileID: 3186855454627004636, guid: f13bf82d8f85c3640aaa7c0112eca45a, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 1, y: 1}
-    probability: 0.5
-  - dropItem: {fileID: 255965422636804604, guid: 5ec6e4ed15d0302438994e22becd66aa, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 1, y: 1}
-    probability: 1
-  - dropItem: {fileID: 557120464238281856, guid: b67e75d6e421f1345ab06ffe0a5af4ce, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 1, y: 1}
-    probability: 0.5
-  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 3, y: 4}
+    countRange: {x: 10, y: 18}
     probability: 1
   - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 3, y: 4}
     probability: 1
+  - dropItem: {fileID: 5344959320511088854, guid: ea564f5d89a40cc4f91b71299f41d2fe, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.5
+  - dropItem: {fileID: 7734159570341034884, guid: 9baccfc36a41f1d4080ed66eca2db1ff, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.3
+  - dropItem: {fileID: 2862447776934047986, guid: 75c81236b8b67e94eb6db9a820ef4167, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.35
 --- !u!114 &969003863410519774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1599,7 +1596,7 @@ MonoBehaviour:
   coolTime: 0
   damageMultiplier1: 0.6
   staggerType1: 1
-  damageMultiplier2: 1.75
+  damageMultiplier2: 1.6
   staggerType2: 3
   damageMultiplier3: 0.9
   staggerType3: 2
@@ -1694,7 +1691,7 @@ MonoBehaviour:
   coolTime: 0
   damageMultiplier: 0.4
   staggerType: 3
-  durationRange: {x: 5.5, y: 6.3}
+  durationRange: {x: 3.5, y: 6.3}
   canParry: 0
 --- !u!114 &6904959221262641927
 MonoBehaviour:
@@ -1709,7 +1706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack2
   coolTime: 0
-  durationRange: {x: 2.8, y: 4.2}
+  durationRange: {x: 2.8, y: 3.8}
 --- !u!114 &-7491002413972739017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1724,7 +1721,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LanternKeeperSequenceAttack3
   coolTime: 0
   range: 13
-  durationRange: {x: 1.7, y: 4.3}
+  durationRange: {x: 2.4, y: 5.1}
   lightPillar: {fileID: 4571254482419237688, guid: dadd3bf376d92554ba7f74824c58597c, type: 3}
 --- !u!1 &8351178544674619736
 GameObject:

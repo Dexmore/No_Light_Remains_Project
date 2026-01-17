@@ -21,7 +21,6 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  gearIcon: {fileID: -1672994948, guid: 3ef3e486e8d7b5941ad67209c7140ce2, type: 3}
   gearDescription:
     m_TableReference:
       m_TableCollectionName: GUID:59f6a763860e4ee40abd1e516422d048
@@ -31,17 +30,26 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  upgradeMain_EN: The parry window time increases 15%
+  gearIcon: {fileID: -1672994948, guid: 3ef3e486e8d7b5941ad67209c7140ce2, type: 3}
+  upgradeMain_EN: The parry window time increases 30%
   upgradeMain_KR: "\uD328\uB9C1\uC758 \uC131\uACF5 \uD310\uC815 \uC2DC\uAC04\uC774
-    1.5\uBC30 \uC99D\uAC00\uD569\uB2C8\uB2E4"
-  upgradeSub_EN: The parry window time increases 20%
+    30% \uC99D\uAC00\uD569\uB2C8\uB2E4"
+  upgradeSub_EN: The parry window time increases 60%
   upgradeSub_KR: "\uD328\uB9C1\uC758 \uC131\uACF5 \uD310\uC815 \uC2DC\uAC04\uC774
-    2\uBC30 \uC99D\uAC00\uD569\uB2C8\uB2E4"
+    60% \uC99D\uAC00\uD569\uB2C8\uB2E4"
   cost: 2
   isEquipped: 0
   isNew: 1
   currentLevel: 0
-  specificEnhancementSettings: []
+  specificEnhancementSettings:
+  - goldCost: 200
+    requiredMaterials:
+    - item: {fileID: 11400000, guid: a53d8fceefb83254ca80dce1a99e2bcd, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: cc1ad3fd2baeb784a9c0ff892d15a7fe, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: c090950a9d2f39b4cb582cde45420615, type: 2}
+      count: 3
   references:
     version: 2
     RefIds: []

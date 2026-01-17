@@ -61,16 +61,16 @@ public class MonsterControl : MonoBehaviour
         switch (DBManager.I.currData.difficulty)
         {
             case 0:
-                adjustedAttack = data.Attack * 0.85f;
+                adjustedAttack = data.Attack * 0.8f;
                 maxHealth = data.HP;
                 break;
             case 1:
-                adjustedAttack = data.Attack * 1.15f;
-                maxHealth = data.HP * 1.3f;
+                adjustedAttack = data.Attack * 1.12f;
+                maxHealth = data.HP * 1.2f;
                 break;
             case 2:
-                adjustedAttack = data.Attack * 1.3f;
-                maxHealth = data.HP * 1.6f;
+                adjustedAttack = data.Attack * 1.28f;
+                maxHealth = data.HP * 1.58f;
                 break;
         }
         currHealth = maxHealth;

@@ -6,7 +6,7 @@ public class PlayerDash : IPlayerState
     private readonly PlayerStateMachine fsm;
     public PlayerDash(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.5f;   // 총 길이
-    private const float avoidTime = 0.19f;   // 무적 시간
+    private const float avoidTime = 0.16f;   // 무적 시간
     private const float dashForce = 18f;   // 대시 세기
     private float _elapsedTime;
     public bool isLeft;
@@ -20,21 +20,32 @@ public class PlayerDash : IPlayerState
                 adjustedAvoidTime = avoidTime * 1.1f + 0.1f;
                 break;
             case 1:
-                adjustedAvoidTime = avoidTime * 0.85f + 0.05f;
+                adjustedAvoidTime = avoidTime * 0.95f + 0.05f;
                 break;
             case 2:
-                adjustedAvoidTime = avoidTime * 0.7f;
+                adjustedAvoidTime = avoidTime * 0.82f;
                 break;
         }
+
         //Gear 기어 (섬광의 기어) 004_GlitchGear
         bool outValue = false;
         if (DBManager.I.HasGear("004_GlitchGear", out outValue))
         {
             if (outValue)
             {
-                adjustedAvoidTime = 1.15f * adjustedAvoidTime + 0.27f;
+                int level = DBManager.I.GetGearLevel("004_GlitchGear");
+                if(level == 0)
+                {
+                    adjustedAvoidTime = 1.15f * adjustedAvoidTime + 0.06f;
+                }
+                else if(level == 1)
+                {
+                    adjustedAvoidTime = 1.2f * adjustedAvoidTime + 0.13f;
+                }
+                
             }
         }
+        
         _elapsedTime = 0f;
     }
     public void Exit()

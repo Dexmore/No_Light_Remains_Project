@@ -22,13 +22,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             loadingTexts = new string[]
             {
-                "Regain your Lantern gage by parrying enemy's attacks.\nEnemies are stunned when parried certain times."
+                "Regain your Lantern gage by parrying enemy's attacks."
+                ,
+                "Enemies are stunned when parried certain times."
                 ,
                 "It's often better to use healing items early rather than waiting for an emergency."
                 ,
                 "Observing the patterns of stronger enemies is key to victory."
                 ,
-                "Enemies infected by TENEBRAE are weak against the ligt. \nUse the Lantern to aclaim victory."
+                "Purify the TENEBRAE using your Lantern."
+                ,
+                "Activate the Bifrost with your Lantern to cross the blocked path."
             };
         }
         // 한글
@@ -36,14 +40,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             loadingTexts = new string[]
             {
-                "적의 공격을 패링하면 랜턴 게이지가 충전됩니다.\n특정 횟수 이상 패링 시 적은 기절합니다."
+                "적의 공격을 패링하면 랜턴 게이지가 충전됩니다."
+                ,
+                "특정 횟수 이상 패링 시 적은 기절합니다."
                 ,
                 "회복은 위급할 때보다 더 미리 사용하는 것이 좋습니다."
                 ,
                 "강한 적일수록 패턴을 관찰하는 것이 중요합니다."
                 ,
-                "테네브레에 잠식된 적들은 빛 앞에 약해집니다.\n랜턴을 활용해 승패를 결정지으세요."
+                "랜턴을 활용해 테네브레를 정화해 보세요."
                 ,
+                "랜턴으로 비프로스트를 가동해서 막힌길을을 이동해보세요."
             };
         }
     }
@@ -60,6 +67,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public int ach_chestCount;
     [HideInInspector] public int ach_parryCount;
     [HideInInspector] public int ach_NormalLKCount;
+    [HideInInspector] public bool hasGivenExpansionBonus1;
+    [HideInInspector] public bool hasGivenExpansionBonus2;
 
 
     // 게임의 중요 이벤트들
@@ -817,21 +826,21 @@ public class GameManager : SingletonBehaviour<GameManager>
                             System.DateTime deathTime = deathDate.AddSeconds(double.Parse(parts[1]));
                             // 3. 현재 시간과의 차이 계산 (TimeSpan)
                             System.TimeSpan timePassed = System.DateTime.Now - deathTime;
-                            // 4. 5분(300초) 이상 경과했는지 확인
-                            int waitMinutes = 3;
+                            // 4. 4분(240초) 이상 경과했는지 확인
+                            int waitMinutes = 4;
                             switch (allMonsters[i].data.Type)
                             {
                                 case MonsterType.Small:
-                                    waitMinutes = 3;
+                                    waitMinutes = 4;
                                     break;
                                 case MonsterType.Middle:
-                                    waitMinutes = 5;
-                                    break;
-                                case MonsterType.Large:
                                     waitMinutes = 12;
                                     break;
+                                case MonsterType.Large:
+                                    waitMinutes = 30;
+                                    break;
                                 case MonsterType.Boss:
-                                    waitMinutes = 18;
+                                    waitMinutes = 60;
                                     break;
                             }
                             if (timePassed.TotalMinutes >= waitMinutes)
@@ -909,6 +918,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         ach_chestCount = 0;
         ach_parryCount = 0;
         ach_NormalLKCount = 0;
+        hasGivenExpansionBonus1 = false;
+        hasGivenExpansionBonus2 = false;
     }
 
     void SceneStartHandler()
@@ -949,6 +960,86 @@ public class GameManager : SingletonBehaviour<GameManager>
         AfterImageEffect clone = Instantiate(afterImageEffectPrefab);
         clone.transform.position = Vector3.zero;
         clone.Init(targetSR, duration, fps);
+    }
+
+    public void RefreshGears()
+    {
+        //Gear 기어 (확장의 기어) 008_ExpansionGear
+        bool outValue = false;
+        HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
+        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        {
+            if (outValue)
+            {
+                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
+                if (level == 0)
+                {
+                    DBManager.I.currData.maxPotionCount = 4;
+                    if (DBManager.I.currData.currPotionCount <= 3)
+                    {
+                        if (!hasGivenExpansionBonus1)
+                        {
+                            hasGivenExpansionBonus1 = true;
+                            DBManager.I.currData.currPotionCount++;
+                        }
+                    }
+                }
+                else if (level == 1)
+                {
+                    DBManager.I.currData.maxPotionCount = 5;
+                    if (DBManager.I.currData.currPotionCount <= 4)
+                    {
+                        if (!hasGivenExpansionBonus2)
+                        {
+                            hasGivenExpansionBonus2 = true;
+                            DBManager.I.currData.currPotionCount += 2;
+                            if(DBManager.I.currData.currPotionCount > 5)
+                            {
+                                DBManager.I.currData.currPotionCount = 5;
+                            }
+                        }
+                    }
+                }
+                hUDBinder?.Refresh(1f);
+            }
+            else
+            {
+                DBManager.I.currData.maxPotionCount = 3;
+                if (DBManager.I.currData.currPotionCount >= 4)
+                {
+                    DBManager.I.currData.currPotionCount = 3;
+                }
+                hUDBinder?.Refresh(1f);
+            }
+        }
+        else
+        {
+            DBManager.I.currData.maxPotionCount = 3;
+            if (DBManager.I.currData.currPotionCount >= 4)
+            {
+                DBManager.I.currData.currPotionCount = 3;
+            }
+            hUDBinder?.Refresh(1f);
+        }
+
+        //Gear 기어 (초신성 기어) 006_SuperNovaGear
+        bool outValue1 = false;
+        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
+        {
+            if (outValue1)
+            {
+                GameManager.I.isSuperNovaGearEquip = true;
+            }
+            else
+            {
+                GameManager.I.isSuperNovaGearEquip = false;
+            }
+        }
+        else
+        {
+            GameManager.I.isSuperNovaGearEquip = false;
+        }
+
     }
 
 
@@ -995,13 +1086,18 @@ public struct HitData
     }
 }
 
+
+
+
+
 // {
 //     English, // 영어
 //     Korean,  // 한국어
+//     ChineseSimplified, // 중국어(간체)
+
 //     German,  // 독일어
 //     French,  // 프랑스어
 //     Spanish, // 스페인어
-//     ChineseSimplified, // 중국어(간체)
 //     Japanese, // 일본어
 //     Russian,  // 러시아어
 //     PortugueseBrazil, // 브라질-포르투갈어

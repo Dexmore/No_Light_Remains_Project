@@ -94,6 +94,7 @@ public class BossHUD : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSeconds(0.4f);
         Test1();
+        StartCoroutine(nameof(WaitBossDie));
     }
     void HitHandler(HitData hData)
     {
@@ -170,11 +171,32 @@ public class BossHUD : MonoBehaviour
             barImage.color = currColor;
         }
     }
+    IEnumerator WaitBossDie()
+    {
+        yield return YieldInstructionCache.WaitForSeconds(1.5f);
+        yield return new WaitUntil(() => target == null || !target.gameObject.activeInHierarchy);
+        yield return YieldInstructionCache.WaitForSeconds(1.5f);
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        int find;
+        find = AudioManager.I.autoBGM.FindIndex(x => x.scneneName == sceneName);
+        if (find == -1)
+        {
+            AudioManager.I.PlayBGMWithFade("", 3f);
+        }
+        else
+        {
+            if (AudioManager.I.autoBGM[find].list == null || AudioManager.I.autoBGM[find].list.Count == 0)
+            {
+                AudioManager.I.PlayBGMWithFade("", 3f);
+            }
+            else
+            {
+                AudioManager.I.PlayBGMWithFade(AudioManager.I.autoBGM[find].list[0].audioClip);
+            }
 
-
-
-
-
+        }
+        canvas.gameObject.SetActive(false);
+    }
     Transform openingChildTr;
     Tween tweenAlpha;
     Tween tweenAlpha2;
@@ -294,23 +316,23 @@ public class BossHUD : MonoBehaviour
         yield return null;
         AudioManager.I.PlaySFX("BossPhase");
         horLines = ParticleManager.I.PlayUIParticle("UIHorizontalLines", new Vector2(960, 540), Quaternion.identity);
-        Text text = canvas.Find("Wrap/Text(Phase)").GetComponent<Text>();
-        text.DOKill();
-        if (phaseProgress == 2)
-        {
-            text.DOFade(1f, 0.3f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
-            text.text = "Phase2";
-        }
-        else if (phaseProgress == 3)
-        {
-            text.DOFade(1f, 0.3f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
-            text.text = "Phase3";
-        }
+        // Text text = canvas.Find("Wrap/Text(Phase)").GetComponent<Text>();
+        // text.DOKill();
+        // if (phaseProgress == 2)
+        // {
+        //     text.DOFade(1f, 0.3f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
+        //     text.text = "Phase2";
+        // }
+        // else if (phaseProgress == 3)
+        // {
+        //     text.DOFade(1f, 0.3f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
+        //     text.text = "Phase3";
+        // }
         yield return YieldInstructionCache.WaitForSeconds(2.7f);
         horLines?.Despawn();
         horLines = null;
-        text.DOKill();
-        text.DOFade(0f, 0.5f).SetLink(gameObject);
+        // text.DOKill();
+        // text.DOFade(0f, 0.5f).SetLink(gameObject);
     }
 
 

@@ -10,13 +10,17 @@ public class ElevatorUp : Interactable
     
     #endregion
     Transform platform;
+    GameObject collision;
     void Awake()
     {
         platform = transform.Find("Platform");
         platfomrInitPos = platform.position;
+        collision = transform.Find("Collision").gameObject;
+        collision.SetActive(false);
     }
     public override void Run()
     {
+        collision.SetActive(true);
         sfx = AudioManager.I.PlaySFX("ElevatorUp");
         tween = platform.DOLocalMoveY(15f,5f).SetEase(Ease.Linear).Play().SetLink(gameObject);
         isReady = false;

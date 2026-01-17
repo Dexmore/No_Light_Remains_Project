@@ -1,55 +1,21 @@
 using System.Collections;
 using UnityEngine;
-public class DoorType2 : MonoBehaviour, ISavable
+public class DoorType2 : MonoBehaviour
 {
-    #region ISavable Complement
-    Transform ISavable.transform => transform;
-    bool ISavable.IsComplete { get { return isComplete; } set { isComplete = value; } }
-    [HideInInspector] public bool isComplete;
-    bool ISavable.CanReplay => true;
-    int ISavable.ReplayWaitTimeSecond => _ReplayWaitTimeSecond;
-    int _ReplayWaitTimeSecond = 0;
+    Collider2D col;
     public void SetCompletedImmediately()
     {
-        isComplete = true;
         if(col) col.enabled = false;
         animator.Play("Open2");
     }
-    Collider2D col;
-    #endregion
     Animator animator;
+    public bool isOneWay;
     void Awake()
     {
         TryGetComponent(out col);
         TryGetComponent(out animator);
         playerLayer = LayerMask.NameToLayer("Player");
         isOpen = false;
-        _ReplayWaitTimeSecond = Random.Range(500, 86400);
-    }
-    IEnumerator Start()
-    {
-        yield return YieldInstructionCache.WaitForSeconds(0.2f);
-        PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
-        Debug.Log($"playerPos : {playerControl.transform.position.x} vs myPos : {transform.position.x}");
-        if (playerControl == null)
-        {
-            yield break;
-        }
-        // 플레이어가 오른쪽에서 씬 이동해온 경우
-        if (playerControl.transform.position.x > transform.position.x + 3)
-        {
-            // 오른쪽에서 씬 이동해왔다는것은 어떤 경우에라도 양쪽 문 다 열고 웨이브 발동 안되게 해야함.
-            Debug.Log("Player Is Right");
-            if(col) col.enabled = false;
-            animator.Play("Open2");
-            yield break;
-        }
-        // 플레이어가 왼쪽에서 씬 이동해온 경우
-        else if (playerControl.transform.position.x < transform.position.x - 3)
-        {
-            Debug.Log("Player Is Left");
-        }
-
     }
     bool isOpen;
     int playerLayer;

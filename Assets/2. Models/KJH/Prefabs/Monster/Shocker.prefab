@@ -888,7 +888,7 @@ Transform:
   m_GameObject: {fileID: 3673026413363454731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.01, y: 0.04, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1069,30 +1069,65 @@ MonoBehaviour:
   duration: 1.5
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 10
+    gold: 8
     record: {fileID: 0}
-    countRange: {x: 3, y: 4}
-    probability: 0.95
-  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+    countRange: {x: 1, y: 4}
+    probability: 0.8
+  - dropItem: {fileID: 1756889964413240501, guid: ba06d29287611474680e039ee0a911a6, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
-    probability: 0.7
-  - dropItem: {fileID: 5864044104820566245, guid: 817f170ec7a12f748b53d17e433a1142, type: 3}
+    probability: 0.85
+  - dropItem: {fileID: 0}
+    gold: 0
+    record: {fileID: 11400000, guid: a6eacbbb5d9e86441a873b5f67582001, type: 2}
+    countRange: {x: 1, y: 1}
+    probability: 1
+  - dropItem: {fileID: 4105194811937685722, guid: 9b00a9288af30734386668e5f3faf5a0, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.25
+  - dropItem: {fileID: 912058018567122980, guid: 78d650c95f4985043b9c5050f500c25a, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.2
+  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.3
+  - dropItem: {fileID: 7734159570341034884, guid: 9baccfc36a41f1d4080ed66eca2db1ff, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05
+  - dropItem: {fileID: 5344959320511088854, guid: ea564f5d89a40cc4f91b71299f41d2fe, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.018
+  - dropItem: {fileID: 4979463441819310489, guid: e219225b53990f043bcd0a43606e2f24, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.1
+  - dropItem: {fileID: 620777080605811870, guid: 687930f41ce1b304e82f440cbc08367a, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
     probability: 0.01
-  - dropItem: {fileID: 5740257142740369428, guid: 2914aaaa417bb21449d6879f8408f972, type: 3}
+  - dropItem: {fileID: 255965422636804604, guid: 46d5227d29a0c5642882559ee6062bc5, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
     probability: 0.01
-  - dropItem: {fileID: 5004745406220570011, guid: 34b1495757423a9409fa1e1f321c12e4, type: 3}
+  - dropItem: {fileID: 192663809291661158, guid: ed94ad57616c94e489f99a50928090e3, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
-    probability: 0.02
+    probability: 0.004
 --- !u!114 &4554582582220120778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1147,7 +1182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterNormalAttack
   coolTime: 0
-  damageMultiplier: 1.1
+  damageMultiplier: 1
   staggerType: 2
   durationRange: {x: 2.8, y: 3.4}
   range: 1.4
@@ -1165,7 +1200,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterRangeAttack
   coolTime: 0
   range: 6.4
-  damageMultiplier: 0.9
+  damageMultiplier: 1.2
   staggerType: 2
   durationRange: {x: 2.8, y: 3.4}
 --- !u!114 &8071523120717943492

@@ -81,6 +81,12 @@ public class RandomGear : DropItem
             gameObject.SetActive(false);
             yield break;
         }
+        bool outValue = false;
+        if(DBManager.I.HasGear(gearData.name, out outValue))
+        {
+            gameObject.SetActive(false);
+            yield break;
+        }
         if (TryGetComponent(out sr))
         {
             switch (gearData.name)

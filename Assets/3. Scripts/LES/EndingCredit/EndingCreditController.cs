@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -116,8 +115,8 @@ public class EndingCreditController : MonoBehaviour
             
             yield return new WaitForSeconds(delayBetween);
         }
-
-        SceneManager.LoadScene(lobbySceneName);
+        
+        GameManager.I.LoadSceneAsync(lobbySceneName);
     }
 
     // [핵심 수정] 이미지 크기 자동 조절 로직

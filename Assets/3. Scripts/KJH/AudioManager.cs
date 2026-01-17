@@ -21,7 +21,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         public int weight;
     }
 
-    [SerializeField] List<MyStruct1> autoBGM;
+    public List<MyStruct1> autoBGM;
     [Space(50)]
     [SerializeField] List<AudioClip> bgmList = new List<AudioClip>();
     [SerializeField] List<AudioClip> sfxList = new List<AudioClip>();
@@ -73,9 +73,13 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         var sceneBGMList = autoBGM[find].list;
 
         // 현재 재생 중인 클립 확인
-        AudioClip currentClip = currentAus.clip;
-        bool isAlreadyPlaying = sceneBGMList.Any(x => x.audioClip == currentClip);
-
+        bool isAlreadyPlaying = false;
+        if(currentAus)
+        {
+            AudioClip currentClip = currentAus.clip;
+            isAlreadyPlaying = sceneBGMList.Any(x => x.audioClip == currentClip);
+        }
+        
         if (isAlreadyPlaying && currentAus.isPlaying)
         {
             // 3. 이미 현재 씬의 음악 중 하나가 재생 중인 경우
@@ -147,38 +151,66 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     public void PlayBGMWithFade(string bgmName, float duration = 1f)
     {
         StopCoroutine("PlayBGM_co");
-        // 소스 스위칭 (0 -> 1, 1 -> 0)
+        // bgmName이 비어있거나 null인 경우: 현재 BGM만 페이드 아웃 후 정지
+        if (string.IsNullOrEmpty(bgmName))
+        {
+            // 다음 소스는 null로 전달하여 페이드 인을 수행하지 않음
+            StartCoroutine(PlayBGM_co(currentAus, null, duration));
+            currentAus = null; // 현재 재생 중인 소스 초기화
+            return;
+        }
         int find = bgmList.FindIndex(x => x.name == bgmName);
-        if(find == -1) return;
+        if (find == -1)
+        {
+            Debug.LogWarning($"BGM {bgmName}을 찾을 수 없습니다.");
+            return;
+        }
         AudioSource nextAus = (currentAus == ausBGM0) ? ausBGM1 : ausBGM0;
         nextAus.clip = bgmList[find];
+        nextAus.volume = 0f; // 시작 시 볼륨 0
         nextAus.Play();
         StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
         currentAus = nextAus;
     }
 
-
     IEnumerator PlayBGM_co(AudioSource fadeOutAus, AudioSource fadeInAus, float duration)
     {
         float startTime = Time.time;
-        float startVol = fadeOutAus.volume;
+        // 페이드 아웃할 소스가 있다면 현재 볼륨 저장, 없다면 0
+        float startVol = (fadeOutAus != null) ? fadeOutAus.volume : 0f;
 
         while (Time.time - startTime < duration)
         {
             float t = (Time.time - startTime) / duration;
-            fadeInAus.volume = Mathf.Lerp(0f, volumeBGM, t);
-            fadeOutAus.volume = Mathf.Lerp(startVol, 0f, t);
+
+            // 페이드 인 (새 음악)
+            if (fadeInAus != null)
+                fadeInAus.volume = Mathf.Lerp(0f, volumeBGM, t);
+
+            // 페이드 아웃 (기존 음악)
+            if (fadeOutAus != null)
+                fadeOutAus.volume = Mathf.Lerp(startVol, 0f, t);
+
             yield return null;
         }
 
-        fadeInAus.volume = volumeBGM;
-        fadeOutAus.volume = 0f;
-        fadeOutAus.Stop();
+        // 최종 값 확정 및 정리
+        if (fadeInAus != null)
+        {
+            fadeInAus.volume = volumeBGM;
+        }
+
+        if (fadeOutAus != null)
+        {
+            fadeOutAus.volume = 0f;
+            fadeOutAus.Stop();
+        }
     }
 
     public void FadeOutBGM(float duration)
     {
-        StartCoroutine(Co_FadeOut(currentAus, duration));
+        if (currentAus != null)
+            StartCoroutine(Co_FadeOut(currentAus, duration));
     }
 
     IEnumerator Co_FadeOut(AudioSource aus, float duration)
@@ -204,7 +236,11 @@ public class AudioManager : SingletonBehaviour<AudioManager>
                 break;
             }
         }
-        if (find == -1) return null;
+        if (find == -1)
+        {
+            Debug.Log($"{Name}라는 이름의 효과음은 AudioManager에 등록되지 않았습니다.");
+            return null;
+        }
         if (parent == null) parent = transform;
         PoolBehaviour pb = PoolManager.I?.Spawn(sfxPrefab, pos, Quaternion.identity, parent);
         SFX _pb = pb as SFX;
@@ -232,7 +268,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         // 1. 기존 풀링 시스템을 이용해 SFX 객체 소환 (부모를 null이나 Manager로 지정해 몬스터가 죽어도 유지됨)
         // 기존 PlaySFX 로직을 활용하되, 리스트 검색 없이 바로 스폰합니다.
         PoolBehaviour pb = PoolManager.I?.Spawn(sfxPrefab, pos, Quaternion.identity, transform);
-        
+
         if (pb == null) return;
 
         // 2. SFX 프리팹 내부의 AudioSource 접근

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.InputSystem;
 
 public class TutorialControl : MonoBehaviour
 {
@@ -9,28 +10,44 @@ public class TutorialControl : MonoBehaviour
     [SerializeField] MonsterControl blob;
     [SerializeField] MonsterControl slicer;
     [ReadOnlyInspector][SerializeField] int currentProgress = -1;
+    void Awake()
+    {
+        parryAction = inputActionAsset.FindActionMap("Player").FindAction("Parry");
+    }
     IEnumerator Start()
     {
         yield return null;
         playerLayer = LayerMask.NameToLayer("Player");
-        if (DBManager.I.GetProgress("Tutorial") < 0)
+        if (DBManager.I.GetProgress("Tutorial") <= 1)
         {
+            keyCount = -1;
             DBManager.I.Save();
             playerControl.stop.duration = 9999999;
             playerControl.fsm.ChangeState(playerControl.stop);
             yield return YieldInstructionCache.WaitForSeconds(1f);
+            playerControl.animator.Play("Idle");
             yield return new WaitUntil(() => !GameManager.I.isSceneWaiting);
             yield return YieldInstructionCache.WaitForSeconds(1f);
-            GameManager.I.onDialog.Invoke(0, transform);
-            Debug.Log("튜토리얼 시작 : 스토리 첫 대사 출력");
-            DBManager.I.SetProgress("Tutorial", 1);
-            currentProgress = 1;
-            yield return YieldInstructionCache.WaitForSeconds(1f);
-            yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
-            playerControl.fsm.ChangeState(playerControl.idle);
-            StartCoroutine(nameof(TutorialParryLoop));
-            StartCoroutine(nameof(TutorialAttackLoop));
+            if (playerControl.transform.position.x < 0)
+            {
+                Debug.Log("튜토리얼 시작 : 스토리 첫 대사 출력");
+                GameManager.I.onDialog.Invoke(0, transform);
+                DBManager.I.SetProgress("Tutorial", 1);
+                currentProgress = 1;
+                yield return YieldInstructionCache.WaitForSeconds(1f);
+                yield return new WaitUntil(() => !GameManager.I.isOpenDialog && !GameManager.I.isOpenPop && !GameManager.I.isOpenInventory);
+                playerControl.fsm.ChangeState(playerControl.idle);
+                DBManager.I.AddRecord("Data01");
+                HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
+                hUDBinder.PlayNoticeText(3);
+            }
+            else
+            {
+                playerControl.fsm.ChangeState(playerControl.idle);
+            }
         }
+        StartCoroutine(nameof(TutorialParryLoop));
+        StartCoroutine(nameof(TutorialAttackLoop));
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         Transform tutParryTr = transform.Find("TutorialParry");
         if (slicer == null || !slicer.gameObject.activeInHierarchy)
@@ -49,10 +66,13 @@ public class TutorialControl : MonoBehaviour
     void OnEnable()
     {
         GameManager.I.onHit += HitHandler;
+        parryAction.performed += ParryHandler;
+
     }
     void OnDisable()
     {
         GameManager.I.onHit -= HitHandler;
+        parryAction.performed -= ParryHandler;
     }
     void HitHandler(HitData hitData)
     {
@@ -113,7 +133,7 @@ public class TutorialControl : MonoBehaviour
                 switch (slicer.state)
                 {
                     case MonsterControl.State.NormalAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.42f, 0.46f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.44f, 0.47f, collider, isPlayerReady);
                         break;
                     case MonsterControl.State.MovingAttack:
                         condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.53f, 0.58f, collider, isPlayerReady);
@@ -154,6 +174,13 @@ public class TutorialControl : MonoBehaviour
         StopCoroutine(nameof(BlinkParryNotice));
         RecoverColorParryNotice();
     }
+    public InputActionAsset inputActionAsset;
+    private InputAction parryAction;
+    int keyCount = -1;
+    void ParryHandler(InputAction.CallbackContext callbackContext)
+    {
+        if (keyCount >= 0) keyCount++;
+    }
     IEnumerator BlinkParryNotice()
     {
         Transform wrap = transform.Find("TutorialParry/Canvas/Wrap");
@@ -164,7 +191,8 @@ public class TutorialControl : MonoBehaviour
         Color highlightColor = Color.white;
         float blinkSpeed = 5.0f;
         float elapsedUnscaledTime = 0;
-        while (elapsedUnscaledTime < 1.5f)
+        keyCount = 0;
+        while (elapsedUnscaledTime < 6.7f)
         {
             float timer = elapsedUnscaledTime * blinkSpeed;
             float t = (Mathf.Sin(timer) + 1f) * 0.5f;
@@ -173,10 +201,14 @@ public class TutorialControl : MonoBehaviour
             SetColor(buttonText, targetColor);
             yield return null;
             elapsedUnscaledTime += Time.unscaledDeltaTime;
+            if (keyCount >= 3) break;
         }
+        keyCount = -1;
         Time.timeScale = 1f;
         DOVirtual.DelayedCall(0.15f, () => flag = 0);
         RecoverColorParryNotice();
+        if (DBManager.I.GetProgress("Tutorial") <= 1)
+            DBManager.I.SetProgress("Tutorial", 2);
     }
     void RecoverColorParryNotice()
     {
@@ -194,7 +226,10 @@ public class TutorialControl : MonoBehaviour
     {
         if (graphic != null) graphic.color = targetColor;
     }
-
+    public void SetProgress()
+    {
+        DBManager.I.SetProgress("Tutorial", 2);
+    }
     public void TutorialTrigger(string Name)
     {
         if (Name == "TutorialMove")

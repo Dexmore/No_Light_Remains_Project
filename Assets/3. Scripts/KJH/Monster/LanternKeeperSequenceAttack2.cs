@@ -202,7 +202,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
             await UniTask.Delay((int)(1000f * 0.6f), cancellationToken: token);
             verticalLines?.Despawn();
             verticalLines = null;
-            await UniTask.Delay((int)(1000f * 1.9f), cancellationToken: token);
+            await UniTask.Delay((int)(1000f * 1.1f), cancellationToken: token);
         }
 
         await UniTask.Delay((int)(1000f * duration), cancellationToken: token);

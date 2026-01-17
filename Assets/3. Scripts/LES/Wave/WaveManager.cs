@@ -40,7 +40,7 @@ public class WaveManager : MonoBehaviour
     public List<Transform> allSpawnPoints;
 
     [Tooltip("카메라 화면 밖으로 간주할 여유 범위 (0이면 화면 딱 끝, 0.1이면 화면보다 조금 더 밖)")]
-    public float cameraBuffer = 0.1f;
+    public float cameraBuffer = -8f;
 
     [Header("--- Waves Config ---")]
     public List<Wave> waves;
@@ -58,16 +58,16 @@ public class WaveManager : MonoBehaviour
         mainCam = Camera.main;
     }
     Vector2 _startPosition;
-    DoorType1 doorType1;
+    [SerializeField] DoorType1 doorType1;
     DoorType2 doorType2;
     public void StartBattle(Vector2 startPosition)
     {
         _startPosition = startPosition;
         if (isBattleStarted) return;
         isBattleStarted = true;
-        doorType1 = FindAnyObjectByType<DoorType1>();
         if (doorType1.isComplete || doorType1.isPlayerRight) return;
         doorType1?.Close();
+        doorType2 = doorType1.doorType2;
         StartCoroutine(ExecuteWaves());
     }
     IEnumerator ExecuteWaves()
@@ -149,14 +149,12 @@ public class WaveManager : MonoBehaviour
         }
 
         Debug.Log("🎉 STAGE CLEARED 🎉");
-        doorType2 = FindAnyObjectByType<DoorType2>();
         doorType2?.Open();
         doorType1?.Open();
         doorType1.isComplete = true;
-        doorType2.isComplete = true;
 
         GameObject chest = Instantiate(chestPrefab);
-        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 8f * Vector2.up;
+        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 2.4f * Vector2.up;
         chest.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
     }

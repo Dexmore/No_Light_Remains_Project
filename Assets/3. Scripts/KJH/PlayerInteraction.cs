@@ -50,7 +50,7 @@ public class PlayerInteraction : MonoBehaviour
     Transform camTR;
     PlayerControl playerControl;
     [ReadOnlyInspector][SerializeField] Interactable target1;
-    [ReadOnlyInspector][SerializeField] Lanternable target2;
+    [ReadOnlyInspector]public Lanternable target2;
     Vector3 distancePivot;
     PromptControl prompt;
     PlayerLight PlayerLight;
@@ -69,6 +69,8 @@ public class PlayerInteraction : MonoBehaviour
         interactionAction.canceled -= CancelInteract;
         lanternAction.performed -= InputLanternInteract;
         lanternAction.canceled -= CancelLanternInteract;
+        batterySFX?.Despawn();
+        batterySFX = null;
     }
     void Init()
     {
@@ -144,7 +146,7 @@ public class PlayerInteraction : MonoBehaviour
                     RaycastHit2D[] raycastHits = Physics2D.LinecastAll
                     (
                         (Vector2)playerControl.transform.position + 1.4f * Vector2.up,
-                        (Vector2)targetCenter,
+                        (Vector2)targetCenter + 0.1f * Vector2.up,
                         playerControl.groundLayer
                     );
                     bool isBlocked = false;
@@ -232,7 +234,7 @@ public class PlayerInteraction : MonoBehaviour
     private LineRenderer lanternLine;
     private Light2D lanternFreeform;    // 사각형 프리폼 라이트
     // 1. 애니메이션 시작 (Start)
-    async UniTask LanternAnimationStart(CancellationToken token)
+    public async UniTask LanternAnimationStart(CancellationToken token)
     {
         if (playerLightTr == null)
             playerLightTr = playerControl.transform.Find("PlayerLight");
@@ -484,6 +486,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
     Particle nearChargeParticle;
+    SFX batterySFX;
     async UniTask Sensor(CancellationToken token)
     {
         await UniTask.Yield(token);
@@ -546,12 +549,20 @@ public class PlayerInteraction : MonoBehaviour
                         {
                             isNearCharge = true;
                             float _rnd = Random.value;
-                            if (_rnd < 0.02f)
+                            if (batterySFX != null && batterySFX.gameObject.activeInHierarchy && batterySFX.aus.isPlaying)
+                            {
+
+                            }
+                            else
+                            {
+                                batterySFX = AudioManager.I.PlaySFX("BatteryCharge", savePoint_LSH.transform.position, null, 0.4f, vol: 0.53f);
+                            }
+                            if (_rnd < 0.043f)
                             {
                                 nearChargeParticle?.Despawn();
                                 nearChargeParticle = null;
-                                float angle = Vector3.Angle(Vector3.right, (transform.position - (savePoint_LSH.transform.position + 0.5f * Vector3.up)));
-                                nearChargeParticle = ParticleManager.I.PlayParticle("Electricity", (savePoint_LSH.transform.position + 0.5f * Vector3.up), Quaternion.Euler(0f, 0f, angle));
+                                nearChargeParticle = ParticleManager.I.PlayParticle("Electricity", (savePoint_LSH.transform.position + 0.5f * Vector3.up), Quaternion.identity);
+                                nearChargeParticle.transform.right = transform.position - (savePoint_LSH.transform.position + 0.5f * Vector3.up);
                             }
                         }
                     }
@@ -576,12 +587,20 @@ public class PlayerInteraction : MonoBehaviour
                         {
                             isNearCharge = true;
                             float _rnd = Random.value;
-                            if (_rnd < 0.02f)
+                            if (batterySFX != null && batterySFX.gameObject.activeInHierarchy && batterySFX.aus.isPlaying)
+                            {
+
+                            }
+                            else
+                            {
+                                batterySFX = AudioManager.I.PlaySFX("BatteryCharge", sconceLight.transform.position, null, 0.4f, vol: 0.53f);
+                            }
+                            if (_rnd < 0.043f)
                             {
                                 nearChargeParticle?.Despawn();
                                 nearChargeParticle = null;
-                                float angle = Vector3.Angle(Vector3.right, (transform.position - sconceLight.transform.position));
-                                nearChargeParticle = ParticleManager.I.PlayParticle("Electricity", sconceLight.transform.position, Quaternion.Euler(0f, 0f, angle));
+                                nearChargeParticle = ParticleManager.I.PlayParticle("Electricity", sconceLight.transform.position, Quaternion.identity);
+                                nearChargeParticle.transform.right = transform.position - sconceLight.transform.position;
                             }
                         }
                     }

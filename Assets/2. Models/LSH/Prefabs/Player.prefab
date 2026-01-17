@@ -381,7 +381,7 @@ MonoBehaviour:
   currBattery: 100
   moveSpeed: 7.1
   airMoveMultiplier: 0.6
-  jumpForce: 21.5
+  jumpForce: 21.73
   inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   rb: {fileID: 0}
   animator: {fileID: 0}
@@ -526,7 +526,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.3
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 136
@@ -535,25 +535,25 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 0.05
-      value: 0.5
-      inSlope: 5.1063156
-      outSlope: 5.1063156
+      value: 0.8
+      inSlope: 3.6250174
+      outSlope: 3.6250174
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.1521644
-      value: 1.0769994
-      inSlope: 4.617992
-      outSlope: 4.617992
+      time: 0.13549417
+      value: 0.99116874
+      inSlope: 1.8113335
+      outSlope: 1.8113335
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.29583332
-      value: 1.6352563
+      time: 0.2708318
+      value: 1.2
       inSlope: 0
       outSlope: 0
       tangentMode: 136
@@ -563,8 +563,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0.49583334
       value: 1.1155262
-      inSlope: -1.1194046
-      outSlope: -1.1194046
+      inSlope: -0.46339843
+      outSlope: -0.46339843
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
@@ -581,6 +581,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  isBatteryMalfunction: 0
   startPosition: {x: 0, y: 0}
   lanternDecreaseTick: -3.8
   lanternParryAmount: 20
@@ -653,10 +654,6 @@ PrefabInstance:
     - target: {fileID: 908388223021132469, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
-      propertyPath: m_Intensity
-      value: 2.2
       objectReference: {fileID: 0}
     - target: {fileID: 5128489353773589176, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Name

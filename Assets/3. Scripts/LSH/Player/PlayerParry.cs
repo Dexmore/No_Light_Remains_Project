@@ -6,7 +6,7 @@ public class PlayerParry : IPlayerState
     private readonly PlayerStateMachine fsm;
     public PlayerParry(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.6f;   // 총 길이
-    private const float parryTime = 0.24f;   // 패링 시간
+    private const float parryTime = 0.247f;   // 패링 시간
     private float _elapsedTime;
     SFX sfxWait;
     public void Enter()
@@ -24,15 +24,15 @@ public class PlayerParry : IPlayerState
         {
             case 0:
                 adjustedTime2 = duration;
-                adjustedTime1 = parryTime * 1.2f + 0.1f;
+                adjustedTime1 = parryTime * 1.1f + 0.1f;
                 break;
             case 1:
                 adjustedTime2 = duration * 1.025f + 0.02f;
-                adjustedTime1 = parryTime * 0.8f + 0.05f;
+                adjustedTime1 = parryTime * 0.9f + 0.05f;
                 break;
             case 2:
                 adjustedTime2 = duration * 1.05f + 0.04f;
-                adjustedTime1 = parryTime * 0.7f;
+                adjustedTime1 = parryTime * 0.85f;
                 break;
         }
         //Gear 기어 (격퇴의 기어) 009_ParryGear
@@ -41,7 +41,17 @@ public class PlayerParry : IPlayerState
         {
             if (outValue)
             {
-                adjustedTime1 *= 1.4f + 0.15f;
+                int level = DBManager.I.GetGearLevel("009_ParryGear");
+                if (level == 0)
+                {
+                    adjustedTime1 *= 1.28f;
+                    adjustedTime1 += 0.05f;
+                }
+                else if (level == 1)
+                {
+                    adjustedTime1 *= 1.58f;
+                    adjustedTime1 += 0.09f;
+                }
             }
         }
     }
@@ -91,9 +101,19 @@ public class PlayerParry : IPlayerState
             {
                 Transform target = hitData.attacker;
                 float monsterDamage = hitData.damage;
-                // 기본데미지 20f
+                // 기본 데미지 20f
                 // 반사데미지 0.1f * damage
-                float gearDamage = 20f + 0.1f * monsterDamage;
+
+                int level = DBManager.I.GetGearLevel("002_CounterGear");
+                float gearDamage = 0;
+                if(level == 0)
+                {
+                    gearDamage = 20f + 0.1f * monsterDamage;
+                }
+                else if(level == 1)
+                {
+                    gearDamage = 28f + 0.13f * monsterDamage;
+                }
                 Vector2 hitPoint = 0.25f * hitData.hitPoint + 0.75f * (target.transform.position + 1.3f * Vector3.up);
                 GameManager.I.onHit.Invoke
                 (

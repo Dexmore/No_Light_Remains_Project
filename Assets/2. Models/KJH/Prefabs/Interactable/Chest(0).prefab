@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 3655978220690790638}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.185, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -81,8 +81,8 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 797531032354794308, guid: 0ef04f39085246f4aa25d5f3145abed6, type: 3}
+  m_SortingOrder: -1
+  m_Sprite: {fileID: -4016409860439001671, guid: c7b27491bef3ea84d8f6f6dec40e13da, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -103,7 +103,7 @@ Animator:
   m_GameObject: {fileID: 3655978220690790638}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e7bc2546f5239a241a968c6cd6fb9ccc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 01125c38ca845a04eb4050312c1fefe9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -149,17 +149,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.19, y: 0.58}
+  m_Offset: {x: -0.1, y: 0.25}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 3.5853658, y: 1.804878}
+    oldSize: {x: 5, y: 2.857143}
     newSize: {x: 2.55, y: 1.25}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.8, y: 1.2}
+  m_Size: {x: 1.5, y: 0.55}
   m_EdgeRadius: 0
 --- !u!114 &2332946335329316979
 MonoBehaviour:
@@ -177,8 +177,43 @@ MonoBehaviour:
   canReplay: 0
   replayWaitTimeSecond: 0
   dropTables:
-  - dropItem: {fileID: 5095229721796556872, guid: c0881090116ba99419f91a7e8393ccae, type: 3}
+  - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
+    gold: 10
+    record: {fileID: 0}
+    countRange: {x: 2, y: 4}
+    probability: 1
+  - dropItem: {fileID: 7734159570341034884, guid: 9baccfc36a41f1d4080ed66eca2db1ff, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
-    probability: 1
+    probability: 0.14
+  - dropItem: {fileID: 4105194811937685722, guid: 9b00a9288af30734386668e5f3faf5a0, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.08
+  - dropItem: {fileID: 5344959320511088854, guid: ea564f5d89a40cc4f91b71299f41d2fe, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.08
+  - dropItem: {fileID: 4979463441819310489, guid: e219225b53990f043bcd0a43606e2f24, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.24
+  - dropItem: {fileID: 2862447776934047986, guid: 75c81236b8b67e94eb6db9a820ef4167, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.18
+  - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05
+  - dropItem: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 0.05

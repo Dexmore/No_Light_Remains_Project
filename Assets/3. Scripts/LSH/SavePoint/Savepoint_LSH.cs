@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,9 +9,10 @@ public class SavePoint_LSH : Interactable
     public override bool isAuto => false;
     public override Type type => Type.Normal;
     float startTime = 0;
-    public override void Run()
+    public async override void Run()
     {
-        if(Time.time - startTime < 1.5f) return;
+        isReady = false;
+        if (Time.time - startTime < 1.5f) return;
         startTime = Time.time;
         Vector2 pos2D = transform.position;
         string sceneName = SceneManager.GetActiveScene().name;
@@ -18,23 +20,17 @@ public class SavePoint_LSH : Interactable
         DBManager.I.currData.lastPos = pos2D;
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
         Vector3 dir = Vector3.zero;
-        if (!_activatedOnce)
-        {
-            if (playerControl)
-                playerControl.currHealth = DBManager.I.currData.maxHealth;
-
-            DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
-
-            PlayActivateOnce();
-            _activatedOnce = true;
-        }
 
         AudioManager.I.PlaySFX("Save");
         ParticleManager.I.PlayText("Save", transform.position + 1.2f * Vector3.up + 0.8f * dir, ParticleManager.TextType.PlayerNotice);
-        DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
-        DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
-        hUDBinder?.Refresh(1f);
+        DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
+        if(playerControl)
+        {
+            playerControl.currHealth = DBManager.I.currData.maxHealth;
+        }
+        DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
+        hUDBinder?.Refresh(2f);
         _ = GameManager.I.SaveAllMonsterAndObject();
         System.DateTime now = System.DateTime.Now;
         string datePart = now.ToString("yyyy.MM.dd");
@@ -42,22 +38,10 @@ public class SavePoint_LSH : Interactable
         DBManager.I.currData.lastTime = $"{datePart}-{secondsOfDay}";
         DBManager.I.Save();
         CaptureArea();
-
         Debug.Log($"[SavePoint] Saved at {pos2D} in scene {sceneName}");
-
-        if (s_current != null && s_current != this)
-        {
-            s_current.SetInactive();
-        }
-
-        s_current = this;
-
-        if (!_activatedOnce)
-        {
-            // 처음 밟았을 때만 Activate → Idle
-            PlayActivateOnce();
-            _activatedOnce = true;
-        }
+        PlayActivateOnce();
+        await Task.Delay(1200);
+        isReady = true;
     }
     [Header("Components")]
     [SerializeField] private Animator animator;
@@ -65,9 +49,7 @@ public class SavePoint_LSH : Interactable
     [SerializeField] private string activateTriggerName = "Activate";
     [SerializeField] private string deactivateTriggerName = "Deactivate";
 
-    // 마지막으로 활성화된 세이브포인트
-    private static SavePoint_LSH s_current;
-    private bool _activatedOnce = false;
+
 
     void Awake()
     {

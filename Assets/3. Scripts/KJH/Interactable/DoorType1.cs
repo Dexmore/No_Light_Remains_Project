@@ -9,29 +9,34 @@ public class DoorType1 : MonoBehaviour, ISavable
     bool ISavable.CanReplay => true;
     int ISavable.ReplayWaitTimeSecond => _ReplayWaitTimeSecond;
     int _ReplayWaitTimeSecond = 0;
+    public Vector2Int ReplayWaitTimeSecondRange;
     public void SetCompletedImmediately()
     {
         isComplete = true;
         col.enabled = false;
         animator.Play("Open2");
+        doorType2.SetCompletedImmediately();
     }
     Collider2D col;
     #endregion
+    public bool isOneWay;
     Animator animator;
+    public DoorType2 doorType2;
     void Awake()
     {
         TryGetComponent(out col);
         TryGetComponent(out animator);
         playerLayer = LayerMask.NameToLayer("Player");
         isOpen = false;
-        _ReplayWaitTimeSecond = Random.Range(500, 86400);
+        _ReplayWaitTimeSecond = Random.Range(ReplayWaitTimeSecondRange.x, ReplayWaitTimeSecondRange.y);
     }
     IEnumerator Start()
     {
+        if (!isOneWay) yield break;
         isPlayerRight = false;
         yield return YieldInstructionCache.WaitForSeconds(0.2f);
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
-        Debug.Log($"playerPos : {playerControl.transform.position.x} vs myPos : {transform.position.x}");
+        //Debug.Log($"playerPos : {playerControl.transform.position.x} vs myPos : {transform.position.x}");
         if (playerControl == null)
         {
             yield break;
@@ -40,7 +45,7 @@ public class DoorType1 : MonoBehaviour, ISavable
         if (playerControl.transform.position.x > transform.position.x + 3)
         {
             // 오른쪽에서 씬 이동해왔다는것은 어떤 경우에라도 양쪽 문 다 열고 웨이브 발동 안되게 해야함.
-            Debug.Log("Player Is Right");
+            //Debug.Log("Player Is Right");
             col.enabled = false;
             animator.Play("Open2");
             isPlayerRight = true;
@@ -49,7 +54,7 @@ public class DoorType1 : MonoBehaviour, ISavable
         // 플레이어가 왼쪽에서 씬 이동해온 경우
         else if (transform.position.x < playerControl.transform.position.x - 3)
         {
-            Debug.Log("Player Is Left");
+            //Debug.Log("Player Is Left");
         }
 
     }

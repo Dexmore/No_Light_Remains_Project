@@ -53,6 +53,7 @@ public class DialogObject : Interactable, ISavable
     {
         if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         isReady = false;
+        isComplete = true;
         coll2D.enabled = false;
         GameManager.I.onDialog.Invoke(dialogIndex, transform);
         if (sfxName != null && sfxName != "")
@@ -85,24 +86,36 @@ public class DialogObject : Interactable, ISavable
         {
             foreach (var element in gearDatas)
             {
-                DBManager.I.AddGear(element.name);
-                hUDBinder.PlayNoticeText(1);
+                bool outValue;
+                if (!DBManager.I.HasGear(element.name, out outValue))
+                {
+                    DBManager.I.AddGear(element.name);
+                    hUDBinder.PlayNoticeText(1);
+                }
             }
         }
         if (lanternDatas != null && lanternDatas.Length > 0)
         {
             foreach (var element in lanternDatas)
             {
-                DBManager.I.AddLantern(element.name);
-                hUDBinder.PlayNoticeText(2);
+                bool outValue;
+                if (!DBManager.I.HasLantern(element.name, out outValue))
+                {
+                    DBManager.I.AddLantern(element.name);
+                    hUDBinder.PlayNoticeText(2);
+                }
+
             }
         }
         if (recordDatas != null && recordDatas.Length > 0)
         {
             foreach (var element in recordDatas)
             {
-                DBManager.I.AddRecord(element.name);
-                hUDBinder.PlayNoticeText(3);
+                if (!DBManager.I.HasRecord(element.name))
+                {
+                    DBManager.I.AddRecord(element.name);
+                    hUDBinder.PlayNoticeText(3);
+                }
             }
         }
         if (gold != 0)
