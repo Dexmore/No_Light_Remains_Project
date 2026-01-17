@@ -102,6 +102,7 @@ public class PlayerInteraction : MonoBehaviour
     public bool press2;
     void InputInteract(InputAction.CallbackContext callback)
     {
+        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
         if (!press1)
@@ -189,6 +190,7 @@ public class PlayerInteraction : MonoBehaviour
     }
     void InputLanternInteract(InputAction.CallbackContext callback)
     {
+        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
         if (playerControl.fsm.currentState != playerControl.idle) return;

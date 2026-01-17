@@ -2176,19 +2176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2550870971561687062, guid: 85fedf67ce6681e48b7362056c7d8db5, type: 3}
       propertyPath: m_Name
-      value: GaerComputer_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7123697776407630602, guid: 85fedf67ce6681e48b7362056c7d8db5, type: 3}
-      propertyPath: m_Size.x
-      value: 3.04
-      objectReference: {fileID: 0}
-    - target: {fileID: 7123697776407630602, guid: 85fedf67ce6681e48b7362056c7d8db5, type: 3}
-      propertyPath: m_Size.y
-      value: 2.47
-      objectReference: {fileID: 0}
-    - target: {fileID: 7123697776407630602, guid: 85fedf67ce6681e48b7362056c7d8db5, type: 3}
-      propertyPath: m_Offset.x
-      value: -0.42
+      value: GaerComputer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5616,7 +5604,7 @@ GameObject:
   - component: {fileID: 7575849449274565254}
   - component: {fileID: 8991900976389934361}
   m_Layer: 8
-  m_Name: Chest(0)
+  m_Name: ChestGear(0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5697,6 +5685,11 @@ MonoBehaviour:
   replayWaitTimeSecond: 0
   dropTables:
   - dropItem: {fileID: 5864044104820566245, guid: 817f170ec7a12f748b53d17e433a1142, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 1
+  - dropItem: {fileID: 1527187661142453504, guid: 01b66d75ef9bfd441b4b795edf0ca558, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}

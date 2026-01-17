@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-public class LightTuto : MonoBehaviour
+public class LightTutorial : MonoBehaviour
 {
     public SconceLight sconceLight;
     SFX sfxLanternInteraction;

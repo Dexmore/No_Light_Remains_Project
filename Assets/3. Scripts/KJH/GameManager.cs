@@ -32,7 +32,9 @@ public class GameManager : SingletonBehaviour<GameManager>
                 ,
                 "Purify the TENEBRAE using your Lantern."
                 ,
-                "Activate the Bifrost with your Lantern to cross the blocked path."
+                "Activate the Bifrost to cross the blocked path."
+                ,
+                "The past spread of TENEBRAE caused widespread malfunctions in machines."
             };
         }
         // 한글
@@ -50,7 +52,9 @@ public class GameManager : SingletonBehaviour<GameManager>
                 ,
                 "랜턴을 활용해 테네브레를 정화해 보세요."
                 ,
-                "랜턴으로 비프로스트를 가동해서 막힌길을을 이동해보세요."
+                "비프로스트를 가동해서 막힌길을 이동해보세요."
+                ,
+                "과거 발생한 테네브레 확산은 기계들의 광범위한 오작동을 초래했습니다."
             };
         }
     }

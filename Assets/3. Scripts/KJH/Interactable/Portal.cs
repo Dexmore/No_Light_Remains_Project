@@ -27,7 +27,7 @@ public class Portal : Interactable
         if (!isReady) return;
         if (isRun) return;
         isRun = true;
-        if(sfxName != "")
+        if (sfxName != "" && sceneName != null)
         {
             AudioManager.I.PlaySFX(sfxName);
             await Task.Delay(500);
@@ -56,7 +56,7 @@ public class Portal : Interactable
             // await Task.Delay(100);
             return;
         }
-        
+
         GameManager.I.LoadSceneAsync(sceneName, loadingPage);
     }
 

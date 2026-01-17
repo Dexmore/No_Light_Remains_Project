@@ -1,5 +1,5 @@
 using UnityEngine;
-public class GearSlot : DropItem
+public class GearSlotUp : DropItem
 {
     public int targetCount;
     protected override void OnEnable()
@@ -21,14 +21,12 @@ public class GearSlot : DropItem
         if (targetCount > 0)
         {
             DBManager.I.currData.maxGearCost = targetCount;
-            DBManager.I.savedData.maxGearCost = targetCount;
         }
         else
         {
             int count = DBManager.I.currData.maxGearCost;
             count = Mathf.Clamp(count + 1, 3, 6);
             DBManager.I.currData.maxGearCost = count;
-            DBManager.I.savedData.maxGearCost = count;
         }
         ParticleManager.I.PlayText("Gear Slot Up!", transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 2.3f);
     }
