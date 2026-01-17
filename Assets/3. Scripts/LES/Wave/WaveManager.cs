@@ -154,7 +154,7 @@ public class WaveManager : MonoBehaviour
         doorType1.isComplete = true;
 
         GameObject chest = Instantiate(chestPrefab);
-        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 5f * Vector2.up;
+        chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 2.4f * Vector2.up;
         chest.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
     }

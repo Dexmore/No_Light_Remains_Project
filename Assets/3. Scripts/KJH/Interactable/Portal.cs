@@ -9,6 +9,7 @@ public class Portal : Interactable
     [SerializeField] string sceneName;
     [SerializeField] Vector2 targetPosition;
     [SerializeField] Direction direction;
+    [SerializeField] string sfxName;
     [System.Serializable]
     public enum Direction
     {
@@ -26,11 +27,15 @@ public class Portal : Interactable
         if (!isReady) return;
         if (isRun) return;
         isRun = true;
+        if(sfxName != "")
+        {
+            AudioManager.I.PlaySFX(sfxName);
+            await Task.Delay(500);
+        }
         if (direction == Direction.right)
             GameManager.I.SetScene(targetPosition, false);
         else
             GameManager.I.SetScene(targetPosition, true);
-        
         if (sceneName == "EndingCredit")
         {
             //Debug.Log("aaa");
