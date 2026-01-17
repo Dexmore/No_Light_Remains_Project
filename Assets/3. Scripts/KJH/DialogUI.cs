@@ -100,6 +100,11 @@ public class DialogUI : MonoBehaviour
                     "I can sense a faint trace of Lumen here.\nActivating it should provide a small charge to your Lantern.\nIt will be peak utility when your Lantern gauge is nearly empty.",
                     "Some objects can be interacted with by 'holding down the Lantern key'."
                 },
+                //대사12 하이퍼셀 회수
+                new string[]
+                {
+                    "Hyper-Cell secured. I never expected a giant android\nknown as a Lantern Keeper to be carrying it.\nThat was one hell of a battle."
+                },
 
             };
         }
@@ -192,6 +197,11 @@ public class DialogUI : MonoBehaviour
                 {
                     "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
                     "'랜턴 키를 길게 누르고 있으면' 상호작용 가능합니다."
+                },
+                //대사12 하이퍼셀 회수
+                new string[]
+                {
+                    "하이퍼셀을 회수했다.\n랜턴키퍼라는 대형 안드로이드가 가지고 있었을 줄은..\n힘든 전투였어."
                 },
             };
         }
