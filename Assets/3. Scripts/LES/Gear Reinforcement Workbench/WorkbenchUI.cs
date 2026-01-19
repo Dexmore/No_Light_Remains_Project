@@ -96,10 +96,9 @@ public class WorkbenchUI : MonoBehaviour
     private List<WorkbenchSlotUI> _preplacedSlots = new List<WorkbenchSlotUI>();
     private Dictionary<TextMeshProUGUI, Coroutine> _activeTypingCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
 
-    // [튜토리얼용 변수]
     private bool _isTutorialMode = false;
     private List<GearData> _tutorialDummyGears;
-    private int _tutorialDummyMaterialCount = 0; // 튜토리얼용 가짜 재료
+    private int _tutorialDummyMaterialCount = 0;
 
     public bool IsUIActive()
     {
@@ -135,6 +134,8 @@ public class WorkbenchUI : MonoBehaviour
     {
         StopAllTyping();
         if (ambienceSource != null) ambienceSource.Stop();
+        // [추가] 비활성화 시 모든 루프 사운드 확실히 정지
+        if (loopSource != null) loopSource.Stop();
     }
 
     private void OnLocaleChanged(Locale locale)
@@ -149,7 +150,6 @@ public class WorkbenchUI : MonoBehaviour
     {
         if (!IsUIActive() || Keyboard.current == null) return;
 
-        // [문제 1 해결] 튜토리얼 모드일 때는 키보드 입력을 차단하여 플로우 꼬임 방지
         if (_isTutorialMode) return;
 
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -211,47 +211,40 @@ public class WorkbenchUI : MonoBehaviour
         if (bootTerminal != null) bootTerminal.StopBootSequence();
         if(panelRoot != null) panelRoot.SetActive(false);
 
-        StopAllTyping();
+        StopAllTyping(); // 여기서 타이핑 소리 멈춤
         if (ambienceSource != null) ambienceSource.Stop();
 
         OnClose?.Invoke();
     }
 
-    // [튜토리얼 시작]
     public void BeginTutorialMode(List<GearData> dummyGears)
     {
         _isTutorialMode = true;
         _tutorialDummyGears = dummyGears;
-        _tutorialDummyMaterialCount = 0; // 가짜 재료 0개로 시작
+        _tutorialDummyMaterialCount = 0;
 
-        // [핵심] 키보드/패드 네비게이션 기능 끄기 (마우스만 허용)
         if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = false;
 
         InitWorkbenchLogic();
     }
 
-    // [튜토리얼 종료]
     public void EndTutorialMode()
     {
         _isTutorialMode = false;
         _tutorialDummyGears = null;
         _tutorialDummyMaterialCount = 0;
 
-        // 네비게이션 기능 복구
         if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = true;
 
         InitWorkbenchLogic();
     }
 
-    // [문제 2 해결] 튜토리얼용 가짜 재료 추가 함수
     public void AddTutorialDummyMaterial(int count)
     {
         _tutorialDummyMaterialCount += count;
-        // UI 갱신
         if (_targetGearData != null) UpdateInfoUI(_targetGearData);
     }
 
-    // [튜토리얼 헬퍼] 슬롯 위치 가져오기
     public RectTransform GetSlotRect(int index)
     {
         if (index >= 0 && index < _preplacedSlots.Count)
@@ -259,33 +252,22 @@ public class WorkbenchUI : MonoBehaviour
         return null;
     }
     
-    // [튜토리얼 헬퍼] 버튼 위치 가져오기
-    public RectTransform GetEnhanceButtonRect()
-    {
-        return enhanceButton.GetComponent<RectTransform>();
-    }
+    public RectTransform GetEnhanceButtonRect() => enhanceButton.GetComponent<RectTransform>();
 
-    // [튜토리얼 헬퍼] 재료 텍스트 위치 가져오기
     public RectTransform GetCostTextRect(int index)
     {
         if (costTexts != null && index >= 0 && index < costTexts.Length)
-        {
             return costTexts[index].GetComponent<RectTransform>();
-        }
         return null;
     }
 
-    // [튜토리얼 헬퍼] 재료 패널(전체) 위치 가져오기
     public RectTransform GetCostPanelRect()
     {
         if (costTexts != null && costTexts.Length > 0 && costTexts[0] != null)
-        {
             return costTexts[0].transform.parent.GetComponent<RectTransform>();
-        }
         return null;
     }
 
-    // [튜토리얼 헬퍼] 강제 선택 해제
     public void ForceDeselect()
     {
         if (_selectedSlotUI != null)
@@ -306,20 +288,16 @@ public class WorkbenchUI : MonoBehaviour
     
     public void StopLoopSound() 
     {
+        // 현재 활성화된 타이핑이 하나도 없을 때만 소리를 멈춤
+        // (Close나 StopAllTyping에서는 강제로 멈춰야 함)
         if (_activeTypingCoroutines.Count == 0)
         {
             if (loopSource != null) loopSource.Stop();
         }
     }
 
-    public void PauseLoopSound()
-    {
-        if (loopSource != null) loopSource.Pause();
-    }
-    public void UnPauseLoopSound()
-    {
-        if (loopSource != null) loopSource.UnPause();
-    }
+    public void PauseLoopSound() { if (loopSource != null) loopSource.Pause(); }
+    public void UnPauseLoopSound() { if (loopSource != null) loopSource.UnPause(); }
 
     private void PlayAmbienceLoop()
     {
@@ -355,7 +333,6 @@ public class WorkbenchUI : MonoBehaviour
     {
         List<CharacterData.GearData> displayList = new List<CharacterData.GearData>();
 
-        // [튜토리얼] 더미 데이터 로드
         if (_isTutorialMode && _tutorialDummyGears != null)
         {
             foreach(var gearSO in _tutorialDummyGears)
@@ -383,22 +360,13 @@ public class WorkbenchUI : MonoBehaviour
                 var savedGear = displayList[i];
                 GearData gearDataInfo = null;
 
-                if (_isTutorialMode)
-                {
-                    gearDataInfo = _tutorialDummyGears.Find(x => x.name == savedGear.Name);
-                }
-                else
-                {
-                    gearDataInfo = DBManager.I.itemDatabase.FindGearByName(savedGear.Name);
-                }
+                if (_isTutorialMode) gearDataInfo = _tutorialDummyGears.Find(x => x.name == savedGear.Name);
+                else gearDataInfo = DBManager.I.itemDatabase.FindGearByName(savedGear.Name);
 
                 if (gearDataInfo != null) _preplacedSlots[i].Setup(gearDataInfo, this);
                 else _preplacedSlots[i].SetupEmpty(this);
             }
-            else
-            {
-                _preplacedSlots[i].SetupEmpty(this);
-            }
+            else _preplacedSlots[i].SetupEmpty(this);
         }
     }
 
@@ -436,7 +404,6 @@ public class WorkbenchUI : MonoBehaviour
         if (_selectedSlotUI != null) _selectedSlotUI.SetSelectedState(true);
         UpdateInfoUI(_targetGearData);
         
-        // [튜토리얼 이벤트 호출]
         if (_selectedSlotUI != null) OnGearSelectedEvent?.Invoke(_selectedSlotUI.Data);
     }
 
@@ -465,8 +432,6 @@ public class WorkbenchUI : MonoBehaviour
         }
 
         int currentLevel = DBManager.I.GetGearLevel(data.name);
-        
-        // [튜토리얼] 더미 모드에서는 항상 0레벨로 표시 (성공 후라도 레벨업 메시지만 띄우고 종료되므로)
         if (_isTutorialMode) currentLevel = 0;
 
         string textLv0 = data.GetEffectText(0);
@@ -515,6 +480,7 @@ public class WorkbenchUI : MonoBehaviour
         target.text = content;
         target.maxVisibleCharacters = int.MaxValue; 
         
+        // 인스턴트 설정 시에도 활성 코루틴이 없으면 소리 끄기 체크
         if (_activeTypingCoroutines.Count == 0) StopLoopSound();
     }
 
@@ -540,31 +506,34 @@ public class WorkbenchUI : MonoBehaviour
         tmp.maxVisibleCharacters = int.MaxValue; 
         _activeTypingCoroutines.Remove(tmp);
 
+        // 마지막 코루틴이 끝났을 때 소리 멈춤
         if (_activeTypingCoroutines.Count == 0)
         {
             StopLoopSound();
         }
     }
 
+    // [핵심 수정] 타이핑 전체 중지 및 소리 강제 종료
     private void StopAllTyping()
     {
-        StopLoopSound(); 
+        // 1. 모든 코루틴 중지
         foreach (var coroutine in _activeTypingCoroutines.Values)
         {
             if (coroutine != null) StopCoroutine(coroutine);
         }
-        _activeTypingCoroutines.Clear();
+        _activeTypingCoroutines.Clear(); // 리스트 비우기
+
+        // 2. [수정됨] 소리를 강제로 끔
+        // 기존에는 StopLoopSound()를 불렀으나, 리스트가 비워지기 전이라면 소리가 안 꺼지는 버그가 있었음
+        if (loopSource != null) loopSource.Stop(); 
     }
 
-    // [수정] 비용 체크 로직: 튜토리얼일 때는 '가짜 재료'를 확인
     private void CheckCostAndEnableButton(EnhancementManager.LevelInfo info, bool isSelected)
     {
         bool isEnough = true;
         
-        // [문제 2 해결] 튜토리얼 분기
         if (_isTutorialMode)
         {
-            // 가짜 재료 개수 확인
             if (info.requiredMaterials != null && info.requiredMaterials.Count > 0)
             {
                 int reqCount = info.requiredMaterials[0].count;
@@ -573,7 +542,6 @@ public class WorkbenchUI : MonoBehaviour
         }
         else
         {
-            // 실제 DB 확인 (기존 로직)
             if (DBManager.I.currData.gold < info.goldCost) isEnough = false;
             if (info.requiredMaterials != null)
             {
@@ -594,13 +562,11 @@ public class WorkbenchUI : MonoBehaviour
             }
         }
 
-        // 텍스트 표시
         string goldText = $"{info.goldCost} G";
         string mat1Text = "-";
         string mat2Text = "-";
         string mat3Text = "-";
         
-        // 튜토리얼 텍스트 표시 (가짜 변수 기준)
         if (_isTutorialMode && info.requiredMaterials != null && info.requiredMaterials.Count > 0)
         {
             var mat = info.requiredMaterials[0];
@@ -609,7 +575,6 @@ public class WorkbenchUI : MonoBehaviour
         }
         else if (!_isTutorialMode && info.requiredMaterials != null)
         {
-            // 실제 DB 표시
             for (int i = 0; i < info.requiredMaterials.Count; i++)
             {
                 if (i >= 3) break;
@@ -661,7 +626,6 @@ public class WorkbenchUI : MonoBehaviour
         if (buttonText != null) buttonText.text = btnText;
     }
 
-    // [수정] 강화 버튼 클릭: 튜토리얼일 때는 가짜 시뮬레이션
     private void OnClickEnhance()
     {
         if (_targetGearData == null) return; 
@@ -670,14 +634,13 @@ public class WorkbenchUI : MonoBehaviour
 
         if (_isTutorialMode)
         {
-            // [문제 2 해결] 가짜 로직 실행 (UI 내부 판단)
             EnhancementManager.LevelInfo info = GetCostInfo(_targetGearData);
             int reqCount = (info.requiredMaterials != null && info.requiredMaterials.Count > 0) ? info.requiredMaterials[0].count : 0;
 
             if (_tutorialDummyMaterialCount >= reqCount)
             {
                 result = EnhancementManager.EnhancementResult.Success;
-                _tutorialDummyMaterialCount -= reqCount; // 가짜 재료 소모
+                _tutorialDummyMaterialCount -= reqCount;
             }
             else
             {
@@ -686,11 +649,9 @@ public class WorkbenchUI : MonoBehaviour
         }
         else
         {
-            // 실제 매니저 호출
             result = EnhancementManager.I.TryEnhance(_targetGearData.name, _targetGearData);
         }
         
-        // 튜토리얼 이벤트 호출
         OnEnhanceTryEvent?.Invoke(result);
 
         if (result == EnhancementManager.EnhancementResult.Success)
