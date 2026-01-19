@@ -58,7 +58,7 @@ public class PlayerControl : MonoBehaviour
     CapsuleCollider2D capsuleCollider2D;
     [HideInInspector] public float height;
     [HideInInspector] public float width;
-    private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
+    // private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
     [HideInInspector] public Dictionary<Collider2D, Vector2> collisions = new Dictionary<Collider2D, Vector2>();
     // Runtime
     [Tooltip("특정 플랫폼을 통과할 수 있는지 확인 여부")] public bool fallThroughPlatform;
