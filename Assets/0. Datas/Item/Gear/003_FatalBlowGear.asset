@@ -31,15 +31,25 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   gearIcon: {fileID: 1071097616, guid: 3ef3e486e8d7b5941ad67209c7140ce2, type: 3}
-  upgradeMain_EN: Unlocks a second combo attack.
-  upgradeMain_KR: "\uB450\uBC88\uC9F8 \uCF64\uBCF4\uACF5\uACA9\uC774 \uAC00\uB2A5\uD574\uC9D1\uB2C8\uB2E4."
-  upgradeSub_EN: 
-  upgradeSub_KR: 
+  upgradeMain_EN: Enables an additional attack that deals 1.7x damage.
+  upgradeMain_KR: "\uACF5\uACA9\uB825\uC758 1.7\uBC30\uB97C \uAC00\uD558\uB294 \uCD94\uAC00
+    \uACF5\uACA9\uC744 \uD560 \uC218 \uC788\uAC8C \uB429\uB2C8\uB2E4."
+  upgradeSub_EN: Enables an additional attack that deals 2x damage.
+  upgradeSub_KR: "\uACF5\uACA9\uB825\uC758 2\uBC30\uB97C \uAC00\uD558\uB294 \uCD94\uAC00
+    \uACF5\uACA9\uC744 \uD560 \uC218 \uC788\uAC8C \uB429\uB2C8\uB2E4."
   cost: 2
   isEquipped: 0
   isNew: 1
   currentLevel: 0
-  specificEnhancementSettings: []
+  specificEnhancementSettings:
+  - goldCost: 200
+    requiredMaterials:
+    - item: {fileID: 11400000, guid: a53d8fceefb83254ca80dce1a99e2bcd, type: 2}
+      count: 2
+    - item: {fileID: 11400000, guid: cc1ad3fd2baeb784a9c0ff892d15a7fe, type: 2}
+      count: 1
+    - item: {fileID: 11400000, guid: 54353fb33b7595c4da390371e6aab83b, type: 2}
+      count: 5
   references:
     version: 2
     RefIds: []

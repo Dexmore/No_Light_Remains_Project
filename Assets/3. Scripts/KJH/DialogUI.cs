@@ -22,15 +22,17 @@ public class DialogUI : MonoBehaviour
                 {
                     "[BOOT SEQUENCE INITIATED]\nCORE TEMPERATURE STABLEIZING...COMPLETE.\nNEURAL RESPONSE CORE CONNECTION...COMPLETE",
                     "COMBAT MODULE PARTIALLY DAMAGED.\nINITIATE REPAIR PROCESS.\nMUSCULOSKELETAL ASSISTANT FRAME...FULLY FUNCTIONAL",
-                    "HIGH CONTAMINATION LEVEL DECTECTED...\n'TENEBRAE' LEVEL DANGEROUSLY HIGH",
+                    "HIGH EXTERNAL CONTAMINATION LEVEL DECTECTED...\n'TENEBRAE' LEVEL: Critical",
                     "LANTERN SYSTEM OFFLINE\nREBOOTING...25%...50%...84%...100%.",
-                    "L-07, This is L.U.M.O.S, your Assistant AI for this operation.\nYour mission is to enter Sector 13 and retrieve the HyperCell",
-                    "Good luck, L-07."
+                    "ALL SYSTEMS ONLINE. STATUS: READY TO GO.\nOperation REKINDLE: COMMENCING.",
+                    "Greeting, P-07., This is L.U.M.O.S, your Assistant AI.\nSurface conditions are currently at a breaking point due to the 'Black Mist' incident.",
+                    "Your mission is to cleanse the TENEBRAE erosion and retrieve the ASTRA Cell from Sector 13",
+                    "Good luck, P-07."
                 },
                 //대사1 (튜토리얼 씬 중앙의 컴퓨터 대사)
                 new string[]
                 {
-                    "LANTERN Test Log.37",
+                    "LANTERN Test Log #37",
                     "Stablizing the core has finally succeeded.\nProcess of recharging using TENBRAE as scource is ongoing.\nNeed more tests."
                 },
                 //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
@@ -43,9 +45,10 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     //1페이지
-                    "An old equiptable assistant gear... It will help you on your mission",
+                    "An old Auxiliary Gear Module... It will help you on your mission",
+                    "Finding an active Gear Enhancement Machine allows you to upgrade your gear's capabilities.\nHowever, it is uncertain such machines remain functional in this desolate state",
                     //2페이지
-                    "Gears can be equipped in the Gear tab of your inventory.\nWarning: You cannot exceed the Gear Install Capacity. Select wisely."
+                    "Gears can be equipped in the Gear tab of your inventory.\nWarning: You cannot exceed the Gear Install Capacity.\n I advise you select wisely."
                 },
                 //대사4 (lightAppear 튜토리얼)
                 new string[]
@@ -64,29 +67,29 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "I detect a still working machine. Inspection is advised.\nIt's a Gear Amplifier Machine. I am still surpized that it works given the state of it.",
-                    "It will be done if you have the materials needed.\nI expect it will help our mission greatly."
+                    "You will be able to upgrade your gear's capabilities if you have the materials needed.\nI expect it will help your mission greatly."
                 },
-                //대사7 Log1
+                //대사7 Log1(Stage2)
                 new string[]
                 {
-                    "Damn it. Even the machines are affected by TENEBRAE...\nI can't feel my legs.",
-                    "I don't wanna die. I don't wanna die",
+                    "Damn it. Even the machines are corrupted by TENEBRAE...\nI can't feel my legs.",
+                    "I can't die here. I don't wanna die",
                     "Idon'twannadieIdon'twannadieIdon'twannadieIdon'twannadieIdon'twannadieIdon'twannadieIdon'twannadieIdon'twannadie",
                     "I...don'...t...wa...nna..."
                 },
-                //대사8 Log2
+                //대사8 Log2(Stage1)
                 new string[]
                 {
                     "Every time I look at the darkness and around me, I wonder.\nIs this divine judgement?",
                     "Is this the price of trying to build the Tower of Bable?\nAll we wanted...was to rediscover the technology lost in time.",
-                    "Damn it...the infection is not being healed.\nI'm so tired...Maybe...A quick nap...might...help..."
+                    "Damn it...the infection from the wound is getting worse.\nI'm so tired...Maybe...A quick nap...might...help..."
                 },
-                //대사9 Log3
+                //대사9 Log3(Stage3)
                 new string[]
                 {
-                    "Monstrare Research Log.13",
-                    "Are we paying the price for defying the heavens?\nI only wanted to unearth the lost technologies... for the sake of humanity.",
-                    "Dammit... this infected wound just won't heal.\nI'm so tired... maybe just for a moment... I can close... my eyes..."
+                    "Monstrare Research Log #03",
+                    "Energy readings from Monstrare are off the charts.\nWe may be looking at the ultimate energy substitute.",
+                    "If SOLARIS Company is able to monopolize this…\nIt would allow the company to grow on an unprecedented scale."
                 },
                 //대사10 세이브포인트
                 new string[]
@@ -100,10 +103,38 @@ public class DialogUI : MonoBehaviour
                     "I can sense a faint trace of Lumen here.\nActivating it should provide a small charge to your Lantern.\nIt will be peak utility when your Lantern gauge is nearly empty.",
                     "Some objects can be interacted with by 'holding down the Lantern key'."
                 },
-                //대사12 하이퍼셀 회수
+                //대사12 아폴리온 처치
                 new string[]
                 {
-                    "Hyper-Cell secured. I never expected a giant android\nknown as a Lantern Keeper to be carrying it.\nThat was one hell of a battle."
+                    "Apollyon: Deactivation confirmed.\nThreat level was critical; however, combat efficiency was optimal. Excellent work."
+                },
+                //대사13 아스트라 셀 회수
+                new string[]
+                {
+                    "Scanning...High-Level LUMEN signature detected.\nEstimated Astra Cell position reached.",
+                    "Astra Cell successfully retrieved.\nRelocating to the uploaded coordinates. Awaiting your arrival."
+                },
+                //대사14 실험실
+                new string[]
+                {
+                    "Welcome, to the Deep Research Facility in Zion; the City of Glory\nThis unit serves as a stasis chamber for the last shard of the MONSTRARE.",
+                    "To counter the Tenebrae outbreak after the 'Black Mist' Incident, Operation REKINDLE was launched",
+                    "Awaiting Astra Cell integration...",
+                    "Integration verified.\n[Analyzing...] Core Restoration 27%...45%\n[Scanning...] TENEBRAE contamination in Zion, 78%...58%",
+                    "TENEBRAE corruption has been decelerated. MONSTRARE core is stable.",
+                    "Operation REKINDLE: Phase 1 marked as Success.\nYour contribution has been invaluable."
+                },
+                //대사15 Log4(Stage1)
+                new string[]
+                {
+                    "Monstrare Research Log #107",
+                    "We have a problem. A massive one.\nA mysterious substance known as 'Tenebrae' has been detected\nA substance toxic and corrupting organic life, causing severe genetic mutations.",
+                    "In the beginning, it seemed insignificant\nIt would vanish almost as soon as it appeared.",
+                    "But as the concentration levels rose, so did the danger.\nIt started on the outskirts of Zion; the Outer Rim.",
+                    "But now, traces are being detected even in the heart of the city.",
+                    "The outskirts are now crawling with those... things\nCan we even call them living beings anymore?",
+                    "Regardless, casualties are mounting due to these unknown entities and the Tenebrae itself.",
+                    "Outside, the world is swallowed by a thick, dark haze saturated with lethal Tenebrae levels.\nWe have come to call this catastrophe 'The Black Mist.'"
                 },
 
             };
@@ -120,16 +151,15 @@ public class DialogUI : MonoBehaviour
                     "전투 모듈 부분 손상\n복구 프로세스 진행.\n근골격 보조 프레임… 정상 가동",
                     "외부 오염 감지...\n'테네브레' 수치 매우 위험.",
                     "랜턴 시스템 오프라인\n재부팅 중. 25%...50%...84%...100%.",
-                    "전 시스템 온라인. 이상 무.\n프로젝트 'GEPPETTO' 성공적으로 가동 완료",
-                    "오퍼레이션 REKINDLE. 가동 시작.",
-                    "반갑습니다, P-07. 보조 AI 'L.U.M.O.S'입니다.\n당신의 임무는 섹터 13에서 하이퍼셀을 회수해오는 것 입니다.",
+                    "전 시스템 온라인. 이상 무.\n오퍼레이션 REKINDLE. 가동 시작.",
+                    "반갑습니다 P-07, 보조 AI 'L.U.M.O.S'입니다.\n현재 지상은 '검은 안개' 사태로 인해 절체절명의 위기입니다.\n당신의 임무는 테네브레 침식 정화 및 섹터 13에서 아스트라 셀을 회수해오는 것 입니다.",
                     "그럼, 행운을 빕니다. P-07."
                 },
                 //대사1  (튜토리얼 씬 중앙의 컴퓨터 대사)
                 new string[]
                 {
-                    "랜턴 테스트 로그.37",
-                    "코어의 안정화에 성공했다.\n테네브레를 활용한 충전은 현재 개발 중.\n더 많은 실험이 필요하다."
+                    "랜턴 테스트 로그 #37",
+                    "코어의 안정화에 성공했다.\n테네브레 정화를 활용한 충전은 현재 개발 중.\n더 많은 실험이 필요하다."
                 },
                 //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
                 new string[]
@@ -142,6 +172,7 @@ public class DialogUI : MonoBehaviour
                 {
                     //1페이지
                     "오래된 보조 장착 기어군요. 장착하면 도움이 될 것 같습니다.",
+                    "작동하는 기어 강화 기계를 발견한다는 기어의 성능을 강화할 수 있습니다.\n아직 작동하는게 있을지는 미지수군요.",
                     //2페이지
                     "인벤토리 내 기어 탭을 통해 장착이 가능합니다.\n기어는 기어 장착 용량을 초과할 수 없습니다. 현명하게 장착해야 합니다."
                 },
@@ -168,7 +199,7 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "젠장. 테네브레가 기계에도 영향을 미치다니...\n다리가 느껴지지 않아.",
-                    "죽고 싶지 않아. 죽고 싶지 않아",
+                    "여기서 죽을 수는 없어. 죽고 싶지 않아",
                     "죽고싶지않아죽고싶지않아죽고싶지않아죽고싶지않아죽고싶지않아죽고싶지않아죽고싶지않아죽고싶지않아",
                     "죽고...싶...지...않..."
                 },
@@ -182,9 +213,9 @@ public class DialogUI : MonoBehaviour
                 //대사9 Log3
                 new string[]
                 {
-                    "몬스트라레 연구 일지.13",
-                    "하늘에 도전한 대가를 받는 것일까?\n그저 인류를 위해...잃어버린 기술을 다시 발굴하고 싶었던 것 뿐이었는데.",
-                    "젠장...감염된 상처가 낳지를 않는구만.\n피곤해...잠깐이라면...눈을...감아도..."
+                    "몬스트라레 연구 일지 #03",
+                    "몬스트라레에서 확인되는 에너지량이 가히 상상을 초월한다.\n어쩌면 우리는 모든 에너지를 대체할 수 있는 새로운 물질을 발견한 것이 아닐까 싶다.",
+                    "이 기술만 독점할 수 있다면…\n솔라리온 컴퍼니는 지금과는 상상을 초월하는 규모로 성장할 수 있을지도 모르겠다."
                 },
                 //대사10 세이브포인트
                 new string[]
@@ -198,10 +229,43 @@ public class DialogUI : MonoBehaviour
                     "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
                     "'랜턴 키를 길게 누르고 있으면' 상호작용 가능합니다."
                 },
-                //대사12 하이퍼셀 회수
+                //대사12 아폴리온 처치
                 new string[]
                 {
-                    "하이퍼셀을 회수했다.\n랜턴키퍼라는 대형 안드로이드가 가지고 있었을 줄은..\n힘든 전투였어."
+                    "아폴리온 기능 정지 확인.\n수고하셨습니다. 까다로운 상대였지만 잘하셨습니다."
+                },
+                //대사13 아스트라 셀 회수
+                new string[]
+                {
+                    "고동노의 루멘이 관측됩니다.\n아스트라 셀은 이곳에 있을 것으로 예상됩니다.",
+                    "아스트라 셀을 확보 완료.\n전송한 좌표로 이동하시길 바랍니다."
+                },
+                //대사14 실험실
+                new string[]
+                {
+                    "영광의 도시, 자이온의 심층 연구실에 환영합니다.\n당신 앞에 있는 기계는 남아있는 몬스트라레를 보존시키는 장치입니다.",
+                    "'검은 안개' 사태 이후 자이온의 테네브레 침식 저지 및 몬스트라레 복구를 위해 오퍼레이션 REKINDLE이 기획되고 1차 작전 실행이 성공적으로 완료되었습니다.",
+                    "아스트라 셀을 기계에 장착해주시길 바랍니다.",
+                    "아스트라 셀 장착 확인.\n몬스트라레 코어 복구율 27%...45% 상승 완료.\n자이온 내 테네브레 수치 78%...58% 감소 확인",
+                    "자이온 내 테네브레 침식 지연 및 몬스트라레 일부 복구 성공.",
+                    "제 1차 오퍼레이션 REKINDLE, 성공적으로 완료되었습니다.\n노고에 감사합니다."
+                },
+                //대사15 Log4
+                new string[]
+                {
+                    "몬스트라레 연구 일지 #107",
+                    "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는 미지의 물질 '테네브레'가 관측되고 있다.",
+                    "처음에는 별거 아니었다. 생성되도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
+                    "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
+                    "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
+                },
+                //대사16 Log4
+                new string[]
+                {
+                    "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는 미지의 물질 '테네브레'가 관측되고 있다.",
+                    "처음에는 별거 아니었다. 생성되도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
+                    "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
+                    "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
                 },
             };
         }
