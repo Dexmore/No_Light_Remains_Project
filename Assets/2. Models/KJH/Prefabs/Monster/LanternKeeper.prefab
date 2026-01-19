@@ -1399,7 +1399,7 @@ MonoBehaviour:
       coolTime: 0.7
     - state: 20
       weight: 200
-      coolTime: 1
+      coolTime: 6
   - condition: 8
     frequencies:
     - state: 16
@@ -1408,12 +1408,12 @@ MonoBehaviour:
     - state: 18
       weight: 5
       coolTime: 140
-    - state: 20
-      weight: 88
-      coolTime: 31
     - state: 21
       weight: 18
       coolTime: 22
+    - state: 20
+      weight: 100
+      coolTime: 26
   - condition: 16
     frequencies:
     - state: 16
@@ -1428,14 +1428,14 @@ MonoBehaviour:
     - state: 25
       weight: 2.5
       coolTime: 100
-    - state: 20
-      weight: 95
-      coolTime: 16
     - state: 21
       weight: 17
       coolTime: 29
+    - state: 20
+      weight: 130
+      coolTime: 16
   attackRange: {fileID: 0}
-  bgmName: Terra
+  bgmName: TerraFix
   state: 0
   prevState: 0
   condition: 0
@@ -1491,11 +1491,6 @@ MonoBehaviour:
   coolTime: 0
   duration: 1.55
   dropTables:
-  - dropItem: {fileID: 8795925312805560522, guid: fc57feb0a5784874e9c776d339c7b94b, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 1, y: 1}
-    probability: 1
   - dropItem: {fileID: 0}
     gold: 0
     record: {fileID: 11400000, guid: 44609a5e350bb804fbff65321833ee2d, type: 2}
