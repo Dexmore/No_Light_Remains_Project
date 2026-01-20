@@ -153,7 +153,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
 
 
         //1타
-        damageMultiplier = 1.1f;
+        damageMultiplier = 0.9f;
         attackIndex = 0;
         anim.Play("SequenceAttack2");
         await UniTask.Yield(token);
@@ -161,7 +161,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         await UniTask.Delay((int)(1000f * 1.2f), cancellationToken: token);
 
         //2타
-        damageMultiplier = 1.3f;
+        damageMultiplier = 0.9f;
         attackIndex = 1;
         anim.Play("NormalAttack", 0, 0.28f);
         await UniTask.Yield(token);
@@ -169,7 +169,7 @@ public class LanternKeeperSequenceAttack2 : MonsterState
         await UniTask.Delay((int)(1000f * 1f), cancellationToken: token);
 
         //3타
-        damageMultiplier = 1.1f;
+        damageMultiplier = 0.9f;
         attackIndex = 2;
         anim.Play("SequenceAttack2", 0, 0.25f);
         await UniTask.Yield(token);

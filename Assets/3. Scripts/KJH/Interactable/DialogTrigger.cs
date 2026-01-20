@@ -70,7 +70,7 @@ public class DialogTrigger : MonoBehaviour, ISavable
         }
         if (isComplete) return;
         stayTimer += Time.deltaTime;
-        if (stayTimer >= 0.137f)
+        if (stayTimer >= 0.117f)
         {
             //Debug.Log("a");
             isComplete = true;
