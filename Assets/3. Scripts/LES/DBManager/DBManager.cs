@@ -603,6 +603,8 @@ public class DBManager : SingletonBehaviour<DBManager>
     public void SteamAchievement(string API_Name)
     {
         if (!IsSteam()) return;
+        if (!SteamAPI.Init()) return;
+        
         SteamUserStats.GetAchievement(API_Name, out bool isUnlocked);
         if (!isUnlocked)
         {
