@@ -132,7 +132,7 @@ public class PromptControl : MonoBehaviour
             .OnComplete(() =>
             {
                 text.material.DOVector(new Vector4(18f, 18f, 18f, 0.9f), "_EmissionColor", 0.05f);
-            });
+            }).SetLink(gameObject);
         }
         else
         {
@@ -146,7 +146,7 @@ public class PromptControl : MonoBehaviour
             .OnComplete(() =>
             {
                 text.material.DOVector(new Vector4(18f, 18f, 18f, 0.9f), "_EmissionColor", 0.05f);
-            });
+            }).SetLink(gameObject);
         }
     }
     async UniTask Open_ut(int type, CancellationToken token)
@@ -187,7 +187,7 @@ public class PromptControl : MonoBehaviour
             float x = length * 100f * Mathf.Sin(angle * Mathf.Deg2Rad);
             DOTween.Kill(wrap);
             wrap.localPosition = new Vector3(0.13f * x, 0.13f * y, 0);
-            wrap.DOLocalMove(new Vector3(x, y, 0), 0.28f).SetEase(Ease.OutQuad);
+            wrap.DOLocalMove(new Vector3(x, y, 0), 0.28f).SetEase(Ease.OutQuad).SetLink(gameObject);
             if (type == 0)
             {
                 lr.SetPosition(0, new Vector3(0.13f * x, 0.13f * y, 0));
@@ -198,7 +198,7 @@ public class PromptControl : MonoBehaviour
                     (v) => lr.SetPosition(0, v),
                     new Vector3(x, y, 0),
                     0.28f
-                ).SetEase(Ease.OutQuad);
+                ).SetEase(Ease.OutQuad).SetLink(gameObject);
             }
             else if (type == 1)
             {
@@ -210,7 +210,7 @@ public class PromptControl : MonoBehaviour
                     (v) => lr.SetPosition(0, v),
                     new Vector3(x, y, 0),
                     0.28f
-                ).SetEase(Ease.OutQuad);
+                ).SetEase(Ease.OutQuad).SetLink(gameObject);
                 pressRing.color = new Color(0f, 0f, 0f, 0f);
                 DOTween.Kill(pressRing);
                 pressRing.DOFade(0.2f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
@@ -226,7 +226,7 @@ public class PromptControl : MonoBehaviour
             text.material.SetVector("_EmissionColor", new Vector4(18f, 18f, 18f, 0.9f));
             Color color1 = text.color;
             text.color = new Color(color1.r, color1.g, color1.b, 0f);
-            text.DOFade(0.8f, 1f).SetEase(Ease.InSine).SetLink(gameObject).SetLink(gameObject);
+            text.DOFade(0.8f, 1f).SetEase(Ease.InSine).SetLink(gameObject);
         }
         else if (type == 1)
         {
@@ -260,7 +260,7 @@ public class PromptControl : MonoBehaviour
             float x = length * 100f * Mathf.Sin(angle * Mathf.Deg2Rad);
             DOTween.Kill(wrap);
             wrap.localPosition = new Vector3(0.13f * x, 0.13f * y, 0);
-            wrap.DOLocalMove(new Vector3(x, y, 0), 0.28f).SetEase(Ease.OutQuad);
+            wrap.DOLocalMove(new Vector3(x, y, 0), 0.28f).SetEase(Ease.OutQuad).SetLink(gameObject);
             if (type == 0)
             {
                 lr.SetPosition(0, new Vector3(0.13f * x, 0.13f * y, 0));
@@ -271,7 +271,7 @@ public class PromptControl : MonoBehaviour
                     (v) => lr.SetPosition(0, v),
                     new Vector3(x, y, 0),
                     0.28f
-                ).SetEase(Ease.OutQuad);
+                ).SetEase(Ease.OutQuad).SetLink(gameObject);
             }
             else if (type == 1)
             {
@@ -283,7 +283,7 @@ public class PromptControl : MonoBehaviour
                     (v) => lr.SetPosition(0, v),
                     new Vector3(x, y, 0),
                     0.28f
-                ).SetEase(Ease.OutQuad);
+                ).SetEase(Ease.OutQuad).SetLink(gameObject);
                 pressRing.color = new Color(0f, 0f, 0f, 0f);
                 DOTween.Kill(pressRing);
                 pressRing.DOFade(0.2f, 1f).SetEase(Ease.InSine).SetLink(gameObject);

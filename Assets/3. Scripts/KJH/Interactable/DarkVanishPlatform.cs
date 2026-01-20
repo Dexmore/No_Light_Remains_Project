@@ -70,7 +70,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
         lp.color = new Color(lp.color.r, lp.color.g, lp.color.b, 0f);
         lpLight.intensity = 0f;
         lp.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject);
-        tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
+        tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0.5f, 0.5f).SetLink(gameObject).SetEase(Ease.InSine).Play();
         lpParticle.gameObject.SetActive(true);
         lpParticle.Stop();
         lpParticle.Play();
@@ -99,7 +99,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
         tweenLpLight?.Kill();
         lp.DOFade(0f, 1.1f).SetEase(Ease.InSine).SetLink(gameObject);
         tweenLpLight = DOTween.To(() => lpLight.intensity, x => lpLight.intensity = x, 0f, 1.1f).SetEase(Ease.InSine)
-        .OnComplete(() => lp.gameObject.SetActive(false)).Play();
+        .SetLink(gameObject).OnComplete(() => lp.gameObject.SetActive(false)).Play();
         lpParticle.Stop();
     }
     ParticleSystem lpParticle;
@@ -120,7 +120,7 @@ public class DarkVanishPlatform : Lanternable, ISavable
             if (renderer != null)
             {
                 renderer.material.SetFloat("_DissolveAmount", 1f);
-                renderer.material.DOFloat(0f, "_DissolveAmount", 3.2f).SetEase(Ease.InSine);
+                renderer.material.DOFloat(0f, "_DissolveAmount", 3.2f).SetEase(Ease.InSine).SetLink(gameObject);
             }
         }
         await Task.Delay(200);

@@ -20,7 +20,7 @@ public class LockedDoor : MonoBehaviour
                .Append(transform.DOBlendableLocalMoveBy(new Vector3(-xRange * 2, 0, 0), duration))
                .Append(transform.DOBlendableLocalMoveBy(new Vector3(xRange, 0, 0), duration))
                .Append(transform.DOBlendableLocalMoveBy(new Vector3(-xRange * 2, 0, 0), duration))
-               .Append(transform.DOBlendableLocalMoveBy(new Vector3(xRange, 0, 0), duration));
+               .Append(transform.DOBlendableLocalMoveBy(new Vector3(xRange, 0, 0), duration)).SetLink(gameObject);
         AudioManager.I.PlaySFX("Locked");
     }
 

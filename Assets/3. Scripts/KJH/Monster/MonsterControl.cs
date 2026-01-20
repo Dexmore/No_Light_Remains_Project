@@ -1173,7 +1173,7 @@ public class MonsterControl : MonoBehaviour
                     new Vector4(color.r, color.g, color.b, 0f),
                     "_TintColor",
                     0.22f
-                ).SetEase(Ease.OutBounce);
+                ).SetEase(Ease.OutBounce).SetLink(gameObject);
                 currentElement.sequences[materialIndex].Append(colorTween);
                 currentElement.sequences[materialIndex].OnComplete(() =>
                 {
@@ -1182,7 +1182,7 @@ public class MonsterControl : MonoBehaviour
                     currentElement.spriteRenderer.materials = currentMats;
                     // 인스턴스화된 hitTintMat을 제거합니다. (메모리 누수 방지)
                     Destroy(newMats[materialIndex]);
-                });
+                }).SetLink(gameObject);;
                 currentElement.sequences[materialIndex].Play();
             }
             currentElement.spriteRenderer.materials = newMats;

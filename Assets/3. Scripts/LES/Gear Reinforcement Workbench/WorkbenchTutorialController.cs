@@ -144,7 +144,7 @@ public class WorkbenchTutorialController : MonoBehaviour
         
         // 저장 (DBManager에 저장)
         DBManager.I.SetProgress("Tutorial_Workbench", 1);
-        DBManager.I.Save();
+        //DBManager.I.Save();
         
         Destroy(gameObject); 
     }

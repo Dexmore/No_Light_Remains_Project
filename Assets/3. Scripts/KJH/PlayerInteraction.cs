@@ -325,7 +325,7 @@ public class PlayerInteraction : MonoBehaviour
         sfxLanternInteraction = AudioManager.I.PlaySFX("ElectricityUsing");
 
         // 단계 1: 부상 및 활성화
-        playerLightTr.DOLocalMove(floatPosLocal, duration).SetEase(Ease.OutCubic);
+        playerLightTr.DOLocalMove(floatPosLocal, duration).SetEase(Ease.OutCubic).SetLink(gameObject);
         lanternSprite.DOFade(1f, duration).SetLink(gameObject);
 
         // [수정] ID 부여: 이제 Kill("LanternIntensity")로 멈출 수 있습니다.
@@ -337,7 +337,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // 단계 2: 회전 조준
         Quaternion targetRot = Quaternion.FromToRotation(Vector3.right, (targetBasePos - floatPosWorld).normalized);
-        lanternGroup.DORotateQuaternion(targetRot, duration * 0.5f).SetEase(Ease.OutBack);
+        lanternGroup.DORotateQuaternion(targetRot, duration * 0.5f).SetEase(Ease.OutBack).SetLink(gameObject);
 
         await UniTask.Delay((int)(duration * 0.4f * 1000), cancellationToken: token);
 
@@ -347,7 +347,7 @@ public class PlayerInteraction : MonoBehaviour
         bool isTweenFinished = false;
 
         // 라인 렌더러 끝점 설정
-        DOTween.To(() => lanternLine.GetPosition(1), x => lanternLine.SetPosition(1, x), new Vector3(distance, 0, 0), 0.06f);
+        DOTween.To(() => lanternLine.GetPosition(1), x => lanternLine.SetPosition(1, x), new Vector3(distance, 0, 0), 0.06f).SetLink(gameObject);
 
         // 프리폼 라이트 노드 확장
         DOTween.To(() => 0f, (val) =>
@@ -360,7 +360,7 @@ public class PlayerInteraction : MonoBehaviour
             lanternFreeform.SetShapePath(path);
         }, distance, 0.06f)
         .SetEase(Ease.OutCubic)
-        .OnComplete(() => isTweenFinished = true);
+        .OnComplete(() => isTweenFinished = true).SetLink(gameObject).SetLink(gameObject);
 
         await UniTask.WaitUntil(() => isTweenFinished, cancellationToken: token);
     }
@@ -400,10 +400,10 @@ public class PlayerInteraction : MonoBehaviour
         lanternFreeform.SetShapePath(new Vector3[4]);
 
         bool isExitFinished = false;
-        lanternGroup.DOLocalRotateQuaternion(Quaternion.identity, exitDuration);
+        lanternGroup.DOLocalRotateQuaternion(Quaternion.identity, exitDuration).SetLink(gameObject);
         playerLightTr.DOLocalMove(new Vector3(0f, 0.5f, 0f), exitDuration)
             .SetEase(Ease.InCubic)
-            .OnComplete(() => { isExitFinished = true; });
+            .OnComplete(() => { isExitFinished = true; }).SetLink(gameObject);
 
         try
         {

@@ -205,7 +205,7 @@ public class TutorialControl : MonoBehaviour
         }
         keyCount = -1;
         Time.timeScale = 1f;
-        DOVirtual.DelayedCall(0.15f, () => flag = 0);
+        DOVirtual.DelayedCall(0.15f, () => flag = 0).SetLink(gameObject);
         RecoverColorParryNotice();
         if (DBManager.I.GetProgress("Tutorial") <= 1)
             DBManager.I.SetProgress("Tutorial", 2);
