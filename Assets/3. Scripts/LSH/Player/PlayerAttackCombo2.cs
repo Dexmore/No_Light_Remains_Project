@@ -31,12 +31,12 @@ public class PlayerAttackCombo2 : IPlayerState
                 adjustedTime2 = comboAvailableTime;
                 break;
             case 1:
-                adjustedTime1 = duration + 0.045f;
-                adjustedTime2 = comboAvailableTime + 0.045f;
+                adjustedTime1 = duration + 0.04f;
+                adjustedTime2 = comboAvailableTime + 0.04f;
                 break;
             case 2:
-                adjustedTime1 = duration + 0.09f;
-                adjustedTime2 = comboAvailableTime + 0.09f;
+                adjustedTime1 = duration + 0.08f;
+                adjustedTime2 = comboAvailableTime + 0.08f;
                 break;
         }
         ctx.animator.Play("Player_Attack3");
@@ -110,11 +110,27 @@ public class PlayerAttackCombo2 : IPlayerState
             attacked.Add(coll);
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.78f, 1.38f);
-            float damage = 120.8f;
+            int level = DBManager.I.GetGearLevel("003_FatalBlowGear");
+            float damage = 120f;
+            if (level == 0)
+            {
+                damage = 120.8f;
+            }
+            else if (level == 1)
+            {
+                damage = 140.8f;
+            }
             if (rnd >= 1.24f)
             {
                 rnd = Random.Range(0.8f, 0.999f);
-                damage = 180f;
+                if (level == 0)
+                {
+                    damage = 160.8f;
+                }
+                else if (level == 1)
+                {
+                    damage = 170.8f;
+                }
             }
             float lanternOn = 1f;
             if (GameManager.I.isLanternOn) lanternOn = 1.33f;
@@ -126,7 +142,7 @@ public class PlayerAttackCombo2 : IPlayerState
             {
                 if (outValue)
                 {
-                    int level = DBManager.I.GetGearLevel("001_LastStandGear");
+                    level = DBManager.I.GetGearLevel("001_LastStandGear");
                     if (level == 0 && ctx.currHealth / ctx.maxHealth <= 0.25f)
                     {
                         gearMultiplier = 1.3f;
@@ -138,11 +154,10 @@ public class PlayerAttackCombo2 : IPlayerState
                 }
             }
 
-
             //Gear 기어 (초신성 기어) 006_SuperNovaGear
             if (GameManager.I.isSuperNovaGearEquip)
             {
-                int level = DBManager.I.GetGearLevel("006_SuperNovaGear");
+                level = DBManager.I.GetGearLevel("006_SuperNovaGear");
                 if (level == 0)
                 {
                     if (GameManager.I.isLanternOn)
@@ -158,8 +173,7 @@ public class PlayerAttackCombo2 : IPlayerState
                         gearMultiplier *= 1.06f;
                 }
             }
-
-
+            
             GameManager.I.onHit.Invoke
             (
                 new HitData

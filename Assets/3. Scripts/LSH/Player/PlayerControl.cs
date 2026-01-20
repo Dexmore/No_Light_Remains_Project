@@ -58,7 +58,7 @@ public class PlayerControl : MonoBehaviour
     CapsuleCollider2D capsuleCollider2D;
     [HideInInspector] public float height;
     [HideInInspector] public float width;
-    private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
+    // private readonly ContactPoint2D[] _contactPts = new ContactPoint2D[8];
     [HideInInspector] public Dictionary<Collider2D, Vector2> collisions = new Dictionary<Collider2D, Vector2>();
     // Runtime
     [Tooltip("특정 플랫폼을 통과할 수 있는지 확인 여부")] public bool fallThroughPlatform;
@@ -466,11 +466,11 @@ public class PlayerControl : MonoBehaviour
                         int level = DBManager.I.GetGearLevel("005_RestorationGear");
                         if (level == 0)
                         {
-                            currHealth += 5f;
+                            currHealth += 4f;
                         }
                         else if (level == 1)
                         {
-                            currHealth += 10f;
+                            currHealth += 8f;
                         }
                         currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
                         hUDBinder.Refresh(1f);

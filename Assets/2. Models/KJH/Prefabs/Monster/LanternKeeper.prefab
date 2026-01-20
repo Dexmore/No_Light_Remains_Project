@@ -1397,6 +1397,9 @@ MonoBehaviour:
     - state: 10
       weight: 750
       coolTime: 0.7
+    - state: 20
+      weight: 250
+      coolTime: 15
   - condition: 8
     frequencies:
     - state: 16
@@ -1405,12 +1408,12 @@ MonoBehaviour:
     - state: 18
       weight: 5
       coolTime: 140
-    - state: 20
-      weight: 88
-      coolTime: 31
     - state: 21
       weight: 18
       coolTime: 22
+    - state: 20
+      weight: 100
+      coolTime: 26
   - condition: 16
     frequencies:
     - state: 16
@@ -1425,14 +1428,14 @@ MonoBehaviour:
     - state: 25
       weight: 2.5
       coolTime: 100
-    - state: 20
-      weight: 95
-      coolTime: 16
     - state: 21
       weight: 17
       coolTime: 29
+    - state: 20
+      weight: 130
+      coolTime: 16
   attackRange: {fileID: 0}
-  bgmName: Terra
+  bgmName: TerraFix
   state: 0
   prevState: 0
   condition: 0
@@ -1488,41 +1491,36 @@ MonoBehaviour:
   coolTime: 0
   duration: 1.55
   dropTables:
-  - dropItem: {fileID: 8795925312805560522, guid: fc57feb0a5784874e9c776d339c7b94b, type: 3}
-    gold: 0
-    record: {fileID: 0}
-    countRange: {x: 1, y: 1}
-    probability: 1
   - dropItem: {fileID: 0}
     gold: 0
     record: {fileID: 11400000, guid: 44609a5e350bb804fbff65321833ee2d, type: 2}
     countRange: {x: 1, y: 1}
     probability: 1
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 4
+    gold: 3
     record: {fileID: 0}
     countRange: {x: 10, y: 18}
     probability: 1
   - dropItem: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
     gold: 0
     record: {fileID: 0}
-    countRange: {x: 3, y: 4}
-    probability: 1
+    countRange: {x: 1, y: 2}
+    probability: 0.1
   - dropItem: {fileID: 5344959320511088854, guid: ea564f5d89a40cc4f91b71299f41d2fe, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
-    probability: 0.5
+    probability: 0.6
   - dropItem: {fileID: 7734159570341034884, guid: 9baccfc36a41f1d4080ed66eca2db1ff, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
-    probability: 0.3
+    probability: 0.4
   - dropItem: {fileID: 2862447776934047986, guid: 75c81236b8b67e94eb6db9a820ef4167, type: 3}
     gold: 0
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
-    probability: 0.35
+    probability: 0.4
 --- !u!114 &969003863410519774
 MonoBehaviour:
   m_ObjectHideFlags: 0
