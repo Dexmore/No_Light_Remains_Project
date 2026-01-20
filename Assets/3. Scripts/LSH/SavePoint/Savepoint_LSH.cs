@@ -25,6 +25,7 @@ public class SavePoint_LSH : Interactable
         ParticleManager.I.PlayText("Save", transform.position + 1.2f * Vector3.up + 0.8f * dir, ParticleManager.TextType.PlayerNotice);
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
         DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
+        GameManager.I.potionDebt = 0;
         if(playerControl)
         {
             playerControl.currHealth = DBManager.I.currData.maxHealth;

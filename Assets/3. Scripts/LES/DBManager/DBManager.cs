@@ -79,8 +79,11 @@ public class DBManager : SingletonBehaviour<DBManager>
             dataToSave.sceneDatas[i] = sData;
         }
 
-        //
-        savedData = dataToSave;
+        // savedData = dataToSave;(이줄 제거)
+        // 깊은 복사
+        string json = JsonUtility.ToJson(dataToSave);
+        savedData = JsonUtility.FromJson<CharacterData>(json);
+
         if (currSlot >= 0 && currSlot <= 2)
         {
             if (allSaveDatasInSteam.characterDatas == null)
@@ -478,13 +481,13 @@ public class DBManager : SingletonBehaviour<DBManager>
 
         // [추가된 안전장치]
         // 게임이 종료되는 시점에 데이터가 없거나 DBManager가 불안정하면 false 반환
-        if (currData.gearDatas == null) 
+        if (currData.gearDatas == null)
         {
             return false;
         }
 
         var findItems = currData.gearDatas.FindIndex(x => x.Name == Name);
-        
+
         if (findItems != -1)
         {
             // 인덱스 범위 안전 체크 (혹시 모를 에러 방지)
@@ -495,7 +498,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
         return findItems != -1;
     }
-    
+
     public bool HasLantern(string Name, out bool isEquip)
     {
         var findItems = currData.lanternDatas.FindIndex(x => x.Name == Name);
@@ -604,7 +607,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         if (!IsSteam()) return;
         if (!SteamAPI.Init()) return;
-        
+
         SteamUserStats.GetAchievement(API_Name, out bool isUnlocked);
         if (!isUnlocked)
         {

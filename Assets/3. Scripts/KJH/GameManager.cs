@@ -71,8 +71,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public int ach_chestCount;
     [HideInInspector] public int ach_parryCount;
     [HideInInspector] public int ach_NormalLKCount;
-    [HideInInspector] public bool hasGivenExpansionBonus1;
-    [HideInInspector] public bool hasGivenExpansionBonus2;
+    [HideInInspector] public int potionDebt = 0;
 
 
     // 게임의 중요 이벤트들
@@ -101,49 +100,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         onSceneChange -= SceneStartHandler;
     }
     #region Load Scene
-    // public async void LoadSceneAsync(int index, bool loadingScreen = false, bool isDie = false)
-    // {
-    //     isSceneWaiting = true;
-    //     loadingSlider.value = 0f;
-    //     FadeOut(0.8f);
-    //     await Task.Delay(500);
-    //     if (!isDie)
-    //     {
-    //         await SaveAllMonsterAndObject();
-    //     }
-    //     else
-    //     {
-    //         // 죽어서 씬 이동하는 경우는 currData 에서 savedData로 롤백
-    //         DBManager.I.currData = DBManager.I.savedData;
-    //     }
-    //     await Task.Delay(500);
-    //     AsyncOperation ao = SceneManager.LoadSceneAsync(index);
-    //     onSceneChangeBefore.Invoke();
-    //     if (loadingScreen)
-    //     {
-    //         StartLoading();
-    //     }
-    //     while (!ao.isDone)
-    //     {
-    //         await Task.Delay(10);
-    //         loadingProgress = ao.progress;
-    //     }
-    //     if (loadingScreen)
-    //     {
-    //         while (!isLoadingDone)
-    //         {
-    //             await Task.Delay(10);
-    //         }
-    //     }
-    //     await Task.Delay(10);
-    //     isSceneWaiting = false;
-    //     onSceneChange.Invoke();
-    //     await Task.Delay(500);
-    //     FadeIn(0.4f);
-    //     await Task.Delay(500);
-    // }
+    string prevSceneName;
+    string nextSceneName;
     public async void LoadSceneAsync(string name, bool loadingScreen = false, bool isDie = false)
     {
+        prevSceneName = SceneManager.GetActiveScene().name;
+        nextSceneName = name;
         isSceneWaiting = true;
         loadingSlider.value = 0f;
         FadeOut(0.8f);
@@ -154,7 +116,20 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         else
         {
-            DBManager.I.currData = DBManager.I.savedData;
+            // Debug.Log($"시작 DBManager.I.currData.gold : {DBManager.I.currData.gold} ");
+            // Debug.Log($"시작 DBManager.I.currData.gearDatas.Count : {DBManager.I.currData.gearDatas.Count}");
+            // Debug.Log($"비교 DBManager.I.savedData.gold : {DBManager.I.savedData.gold} ");
+            // Debug.Log($"비교 DBManager.I.savedData.gearDatas.Count : {DBManager.I.savedData.gearDatas.Count}");
+            //DBManager.I.currData = DBManager.I.savedData; (기존 --> 얕은복사 --> 리스트가 제대로 세이브순간으로 안돌아가지는 오류발생했었음)
+            // ---> 깊은 복사 방식으로 수정
+            // savedData의 내용을 문자열로 바꿨다가 다시 currData 객체로 생성 (깊은복사)
+            string json = JsonUtility.ToJson(DBManager.I.savedData);
+            DBManager.I.currData = JsonUtility.FromJson<CharacterData>(json);
+            // Debug.Log("가장 마지막 savedData를 currData에 덮기 진행.....");
+            // Debug.Log($"바뀐 결과 DBManager.I.currData.gold : {DBManager.I.currData.gold} ");
+            // Debug.Log($"바뀐 결과 DBManager.I.savedData.gearDatas.Count : {DBManager.I.savedData.gearDatas.Count}");
+
+
         }
         if (name == "Lobby")
         {
@@ -554,6 +529,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         return sb.ToString();
     }
     #endregion
+
+
+    #region 불러오기 씬 세팅 관련
+
+
+
     public void SetSceneFromDB(bool isLeftDirection = false)
     {
         SetScene(DBManager.I.currData.lastPos, isLeftDirection);
@@ -621,6 +602,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             sceneData = new CharacterData.SceneData();
             sceneData.sceneName = sceneName;
+
             // 몬스터 부분
             sceneData.monsterPositionDatas = new List<CharacterData.MonsterPositionData>();
             for (int i = 0; i < allMonsters.Length; i++)
@@ -635,7 +617,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                     monsterPositionData.lastPos = allMonsters[i].transform.position;
                     if (allMonsters[i].gameObject.activeInHierarchy)
                     {
-                        monsterPositionData.lastDeathTime = "";
+                        continue;
                     }
                     else
                     {
@@ -648,6 +630,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 }
                 else continue;
             }
+
             // 오브젝트 부분
             sceneData.objectPositionDatas = new List<CharacterData.ObjectPositionData>();
             for (int i = 0; i < allSavableObjects.Length; i++)
@@ -683,53 +666,32 @@ public class GameManager : SingletonBehaviour<GameManager>
             // 몬스터 부분
             for (int i = 0; i < allMonsters.Length; i++)
             {
+                if (allMonsters[i].gameObject.activeInHierarchy) continue;
                 if (!allMonsters[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allMonsters[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
                     string mName = allMonsters[i].transform.name.Split("(")[0];
+                    CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
+                    monsterPositionData.Name = allMonsters[i].transform.name.Split("(")[0];
+                    monsterPositionData.index = result;
+                    monsterPositionData.lastHealth = allMonsters[i].currHealth;
+                    monsterPositionData.lastPos = allMonsters[i].transform.position;
+                    System.DateTime now = System.DateTime.Now;
+                    string datePart = now.ToString("yyyy.MM.dd");
+                    int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                    monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
                     int find2 = sceneData.monsterPositionDatas.FindIndex(x => x.Name == mName && x.index == result);
                     if (find2 == -1)
                     {
-                        CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
-                        monsterPositionData.Name = allMonsters[i].transform.name.Split("(")[0];
-                        monsterPositionData.index = result;
-                        monsterPositionData.lastHealth = allMonsters[i].currHealth;
-                        monsterPositionData.lastPos = allMonsters[i].transform.position;
-                        if (allMonsters[i].gameObject.activeInHierarchy)
-                        {
-                            monsterPositionData.lastDeathTime = "";
-                        }
-                        else
-                        {
-                            System.DateTime now = System.DateTime.Now;
-                            string datePart = now.ToString("yyyy.MM.dd");
-                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                            monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
-                        }
                         sceneData.monsterPositionDatas.Add(monsterPositionData);
                     }
                     else
                     {
-                        CharacterData.MonsterPositionData monsterPositionData = sceneData.monsterPositionDatas[find2];
-                        monsterPositionData.index = result;
-                        monsterPositionData.lastHealth = allMonsters[i].currHealth;
-                        monsterPositionData.lastPos = allMonsters[i].transform.position;
-                        if (allMonsters[i].gameObject.activeInHierarchy)
-                        {
-                            monsterPositionData.lastDeathTime = "";
-                        }
-                        else if (monsterPositionData.lastDeathTime == "")
-                        {
-                            System.DateTime now = System.DateTime.Now;
-                            string datePart = now.ToString("yyyy.MM.dd");
-                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                            monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
-                        }
                         sceneData.monsterPositionDatas[find2] = monsterPositionData;
                     }
                 }
-                else continue;
             }
+
             // 오브젝트 부분
             for (int i = 0; i < allSavableObjects.Length; i++)
             {
@@ -800,6 +762,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (find != -1)
         {
             sceneData = sceneDatas[find];
+
             //몬스터 불러오기
             for (int i = 0; i < allMonsters.Length; i++)
             {
@@ -809,59 +772,47 @@ public class GameManager : SingletonBehaviour<GameManager>
                     int findIndex = sceneData.monsterPositionDatas.FindIndex(x => x.Name == allMonsters[i].transform.name.Split("(")[0] && x.index == result);
                     if (findIndex == -1) continue;
                     var monsterPositionData = sceneData.monsterPositionDatas[findIndex];
-                    // 서버 저장데이터상 현재 몬스터가 살아있는걸로 되어있는경우
-                    if (monsterPositionData.lastDeathTime == "")
+                    // 서버 저장데이터상 이 몬스터가 죽어있는걸로 되어있는경우. 
+
+                    if (prevSceneName == nextSceneName)
                     {
-                        allMonsters[i].transform.Root().position = monsterPositionData.lastPos;
-                        allMonsters[i].currHealth = monsterPositionData.lastHealth;
-                        //allMonsters[i].transform.Root().gameObject.SetActive(true);
+                        allMonsters[i].transform.Root().gameObject.SetActive(false);
+                        // 시간 재갱신
+                        System.DateTime now = System.DateTime.Now;
+                        string datePart = now.ToString("yyyy.MM.dd");
+                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+                        monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                        sceneData.monsterPositionDatas[findIndex] = monsterPositionData;
+                        continue;
                     }
-                    // 서버 저장데이터상 이 몬스터가 죽어있는걸로 되어있는경우. 씬 시작시 아래처럼 셋팅
-                    else
+
+                    // 자기자신씬 말고 다른씬으로 넘어갈시 시작시 시간조건에 따라 아래처럼 셋팅 (유사 리스폰)
+                    // 스트링 분리 (날짜와 초)
+                    string[] parts = monsterPositionData.lastDeathTime.Split('-');
+                    if (parts.Length == 2)
                     {
-                        // 1. 저장된 스트링 분리 (날짜와 초)
-                        string[] parts = monsterPositionData.lastDeathTime.Split('-');
-                        if (parts.Length == 2)
+                        // 2. 날짜 파싱 및 시간 복구
+                        // ParseExact를 사용하여 "2025.05.30" 형태를 날짜로 바꿉니다.
+                        System.DateTime deathDate = System.DateTime.ParseExact(parts[0], "yyyy.MM.dd", null);
+                        // 날짜에 '하루 중 지난 초'를 더해 정확한 사망 시점을 만듭니다.
+                        System.DateTime deathTime = deathDate.AddSeconds(double.Parse(parts[1]));
+                        // 3. 현재 시간과의 차이 계산 (TimeSpan)
+                        System.TimeSpan timePassed = System.DateTime.Now - deathTime;
+                        int waitMinutes = 5;
+                        if (timePassed.TotalMinutes >= waitMinutes)
                         {
-                            // 2. 날짜 파싱 및 시간 복구
-                            // ParseExact를 사용하여 "2025.05.30" 형태를 날짜로 바꿉니다.
-                            System.DateTime deathDate = System.DateTime.ParseExact(parts[0], "yyyy.MM.dd", null);
-                            // 날짜에 '하루 중 지난 초'를 더해 정확한 사망 시점을 만듭니다.
-                            System.DateTime deathTime = deathDate.AddSeconds(double.Parse(parts[1]));
-                            // 3. 현재 시간과의 차이 계산 (TimeSpan)
-                            System.TimeSpan timePassed = System.DateTime.Now - deathTime;
-                            // 4. 4분(240초) 이상 경과했는지 확인
-                            int waitMinutes = 4;
-                            switch (allMonsters[i].data.Type)
-                            {
-                                case MonsterType.Small:
-                                    waitMinutes = 4;
-                                    break;
-                                case MonsterType.Middle:
-                                    waitMinutes = 12;
-                                    break;
-                                case MonsterType.Large:
-                                    waitMinutes = 30;
-                                    break;
-                                case MonsterType.Boss:
-                                    waitMinutes = 60;
-                                    break;
-                            }
-                            if (timePassed.TotalMinutes >= waitMinutes)
-                            {
-                                // [부활 조건 충족] 
-                                // 아무것도 안 함 = 하이라키에 배치된 프리팹 상태(활성화) 그대로 유지
-                            }
-                            else
-                            {
-                                // [아직 죽어있어야 함]
-                                allMonsters[i].transform.Root().gameObject.SetActive(false);
-                            }
+                            // [부활 조건 충족] 
+                            // 아무것도 안 함 = 하이라키에 배치된 프리팹 상태(활성화) 그대로 유지
+                        }
+                        else
+                        {
+                            // [아직 죽어있어야 함]
+                            allMonsters[i].transform.Root().gameObject.SetActive(false);
                         }
                     }
                 }
-                else continue;
             }
+
             //오브젝트 불러오기
             for (int i = 0; i < allSavableObjects.Length; i++)
             {
@@ -911,6 +862,18 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
 
+
+
+
+
+    #endregion
+
+
+
+
+
+
+
     void BackToLobbyHandler()
     {
         isLanternOn = false;
@@ -922,8 +885,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         ach_chestCount = 0;
         ach_parryCount = 0;
         ach_NormalLKCount = 0;
-        hasGivenExpansionBonus1 = false;
-        hasGivenExpansionBonus2 = false;
     }
 
     void SceneStartHandler()
@@ -936,7 +897,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             isOpenInventory = false;
             isShowPop0 = false;
             isSuperNovaGearEquip = false; //검사 필요
-            //Gear 기어 (초신성 기어) 006_SuperNovaGear
+                                          //Gear 기어 (초신성 기어) 006_SuperNovaGear
             bool outValue1 = false;
             if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
             {
@@ -954,6 +915,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 GameManager.I.isSuperNovaGearEquip = false;
             }
         }
+        RefreshGears();
     }
 
 
@@ -966,84 +928,48 @@ public class GameManager : SingletonBehaviour<GameManager>
         clone.Init(targetSR, duration, fps);
     }
 
+
     public void RefreshGears()
     {
-        //Gear 기어 (확장의 기어) 008_ExpansionGear
-        bool outValue = false;
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
-        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        bool isEquippedNow = DBManager.I.HasGear("008_ExpansionGear", out bool outValue) && outValue;
+
+        int currentMax = DBManager.I.currData.maxPotionCount;
+        int targetMax = 3;
+        if (isEquippedNow) targetMax = (DBManager.I.GetGearLevel("008_ExpansionGear") == 1) ? 5 : 4;
+
+        if (currentMax < targetMax) // 장착/강화 상황
         {
-            if (outValue)
+            int diff = targetMax - currentMax;
+
+            // 부채 탕감 로직
+            if (GameManager.I.potionDebt > 0)
             {
-                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
-                if (level == 0)
-                {
-                    DBManager.I.currData.maxPotionCount = 4;
-                    if (DBManager.I.currData.currPotionCount <= 3)
-                    {
-                        if (!hasGivenExpansionBonus1)
-                        {
-                            hasGivenExpansionBonus1 = true;
-                            DBManager.I.currData.currPotionCount++;
-                        }
-                    }
-                }
-                else if (level == 1)
-                {
-                    DBManager.I.currData.maxPotionCount = 5;
-                    if (DBManager.I.currData.currPotionCount <= 4)
-                    {
-                        if (!hasGivenExpansionBonus2)
-                        {
-                            hasGivenExpansionBonus2 = true;
-                            DBManager.I.currData.currPotionCount += 2;
-                            if(DBManager.I.currData.currPotionCount > 5)
-                            {
-                                DBManager.I.currData.currPotionCount = 5;
-                            }
-                        }
-                    }
-                }
-                hUDBinder?.Refresh(1f);
+                int clear = Mathf.Min(diff, GameManager.I.potionDebt);
+                diff -= clear;
+                GameManager.I.potionDebt -= clear;
+            }
+            DBManager.I.currData.currPotionCount += diff;
+        }
+        else if (currentMax > targetMax) // 해제 상황
+        {
+            int penalty = currentMax - targetMax;
+            if (DBManager.I.currData.currPotionCount < penalty)
+            {
+                GameManager.I.potionDebt += (penalty - DBManager.I.currData.currPotionCount);
+                DBManager.I.currData.currPotionCount = 0;
             }
             else
             {
-                DBManager.I.currData.maxPotionCount = 3;
-                if (DBManager.I.currData.currPotionCount >= 4)
-                {
-                    DBManager.I.currData.currPotionCount = 3;
-                }
-                hUDBinder?.Refresh(1f);
+                DBManager.I.currData.currPotionCount -= penalty;
             }
-        }
-        else
-        {
-            DBManager.I.currData.maxPotionCount = 3;
-            if (DBManager.I.currData.currPotionCount >= 4)
-            {
-                DBManager.I.currData.currPotionCount = 3;
-            }
-            hUDBinder?.Refresh(1f);
         }
 
-        //Gear 기어 (초신성 기어) 006_SuperNovaGear
-        bool outValue1 = false;
-        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
-        {
-            if (outValue1)
-            {
-                GameManager.I.isSuperNovaGearEquip = true;
-            }
-            else
-            {
-                GameManager.I.isSuperNovaGearEquip = false;
-            }
-        }
-        else
-        {
-            GameManager.I.isSuperNovaGearEquip = false;
-        }
+        DBManager.I.currData.maxPotionCount = targetMax;
+        DBManager.I.currData.currPotionCount = Mathf.Clamp(DBManager.I.currData.currPotionCount, 0, DBManager.I.currData.maxPotionCount);
 
+        hUDBinder?.Refresh(1f);
+        GameManager.I.isSuperNovaGearEquip = DBManager.I.HasGear("006_SuperNovaGear", out bool sn) && sn;
     }
 
 

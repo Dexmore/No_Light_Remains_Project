@@ -156,9 +156,14 @@ public class PlayerAttack : IPlayerState
         }
         if (!attacked.Contains(coll))
         {
+            
+            MonsterControl monsterControl = coll.GetComponentInParent<MonsterControl>();
+            if(monsterControl != null && monsterControl.isDie) return;
+            attacked.Add(coll);
+
+
             float lanternOn = 1f;
             if (GameManager.I.isLanternOn) lanternOn = 1.32f;
-            attacked.Add(coll);
 
             //Gear 기어 (배수의 기어) 001_LastStandGear
             float gearMultiplier = 1f;
