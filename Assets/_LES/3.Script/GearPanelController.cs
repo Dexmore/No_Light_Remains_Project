@@ -5,6 +5,8 @@ using System.Linq;
 using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.Localization.Settings;
+using Steamworks;
+using System.Runtime.Serialization.Formatters;
 
 public class GearPanelController : MonoBehaviour, ITabContent
 {
@@ -275,12 +277,33 @@ public class GearPanelController : MonoBehaviour, ITabContent
         else
         {
             // 선택 해제 시 초기화
-            detailGearName.text = "기어 슬롯";
+            if(detailGearName.text != null)
+            {
+                if(SettingManager.I.setting.locale == 0)
+                {
+                    detailGearName.text = "GEAR NAME.";
+                }
+                else if(SettingManager.I.setting.locale == 1)
+                {
+                    detailGearName.text = "기어 이름.";
+                }
+            }
             detailGearImage.sprite = null;
             detailGearImage.gameObject.SetActive(false);
             
             if (detailGearDescription != null) detailGearDescription.text = "";
-            if (detailEnhanceText != null) detailEnhanceText.text = "기어를 선택하세요.";
+            if (detailEnhanceText != null) 
+            {
+                if(SettingManager.I.setting.locale == 0)
+                {
+                    detailEnhanceText.text = "Select the Gear.";
+                }
+                else if(SettingManager.I.setting.locale == 1)
+                {
+                    detailEnhanceText.text = "기어를 선택해주세요.";
+                    
+                }
+            }
 
             detailCostMeter.SetMaxCost(detailCostMeter.GetTotalPipCount());
             detailCostMeter.SetCost(0);
