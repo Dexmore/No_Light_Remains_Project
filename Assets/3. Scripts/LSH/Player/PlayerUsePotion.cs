@@ -193,11 +193,11 @@ public class PlayerUsePotion : IPlayerState
                 int level = DBManager.I.GetGearLevel("007_QuickHealGear");
                 if (level == 0)
                 {
-                    du = 2f;
+                    du = 2.4f;
                 }
                 else if (level == 1)
                 {
-                    du = 1f;
+                    du = 1.95f;
                 }
 
             }

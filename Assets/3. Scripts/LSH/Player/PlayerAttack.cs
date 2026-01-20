@@ -39,12 +39,12 @@ public class PlayerAttack : IPlayerState
                 adjustedTime2 = comboAvailableTime;
                 break;
             case 1:
-                adjustedTime1 = duration + 0.05f;
-                adjustedTime2 = comboAvailableTime + 0.05f;
+                adjustedTime1 = duration + 0.03f;
+                adjustedTime2 = comboAvailableTime + 0.03f;
                 break;
             case 2:
-                adjustedTime1 = duration + 0.1f;
-                adjustedTime2 = comboAvailableTime + 0.1f;
+                adjustedTime1 = duration + 0.06f;
+                adjustedTime2 = comboAvailableTime + 0.06f;
                 break;
         }
         attacked.Clear();

@@ -466,11 +466,11 @@ public class PlayerControl : MonoBehaviour
                         int level = DBManager.I.GetGearLevel("005_RestorationGear");
                         if (level == 0)
                         {
-                            currHealth += 5f;
+                            currHealth += 4f;
                         }
                         else if (level == 1)
                         {
-                            currHealth += 10f;
+                            currHealth += 8f;
                         }
                         currHealth = Mathf.Clamp(currHealth, 0, maxHealth);
                         hUDBinder.Refresh(1f);
