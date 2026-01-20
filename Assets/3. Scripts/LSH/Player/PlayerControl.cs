@@ -178,64 +178,6 @@ public class PlayerControl : MonoBehaviour
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
 
-        //Gear 기어 (확장의 기어) 008_ExpansionGear
-        bool outValue = false;
-        HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
-        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
-        {
-            if (outValue)
-            {
-                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
-                if (level == 0)
-                {
-                    DBManager.I.currData.maxPotionCount = 4;
-                    if (DBManager.I.currData.currPotionCount <= 3)
-                    {
-                        if (!GameManager.I.hasGivenExpansionBonus1)
-                        {
-                            GameManager.I.hasGivenExpansionBonus1 = true;
-                            DBManager.I.currData.currPotionCount++;
-                        }
-                    }
-                }
-                else if (level == 1)
-                {
-                    DBManager.I.currData.maxPotionCount = 5;
-                    if (DBManager.I.currData.currPotionCount <= 4)
-                    {
-                        if (!GameManager.I.hasGivenExpansionBonus2)
-                        {
-                            GameManager.I.hasGivenExpansionBonus2 = true;
-                            DBManager.I.currData.currPotionCount += 2;
-                            if (DBManager.I.currData.currPotionCount > 5)
-                            {
-                                DBManager.I.currData.currPotionCount = 5;
-                            }
-                        }
-                    }
-                }
-                hUDBinder?.Refresh(1f);
-            }
-            else
-            {
-                DBManager.I.currData.maxPotionCount = 3;
-                if (DBManager.I.currData.currPotionCount >= 4)
-                {
-                    DBManager.I.currData.currPotionCount = 3;
-                }
-                hUDBinder?.Refresh(1f);
-            }
-        }
-        else
-        {
-            DBManager.I.currData.maxPotionCount = 3;
-            if (DBManager.I.currData.currPotionCount >= 4)
-            {
-                DBManager.I.currData.currPotionCount = 3;
-            }
-            hUDBinder?.Refresh(1f);
-        }
-
         //Gear 기어 (초신성 기어) 006_SuperNovaGear
         bool outValue1 = false;
         if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
