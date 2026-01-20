@@ -29,6 +29,7 @@ public class Portal : Interactable
         isRun = true;
         if (sfxName != "" && sceneName != null)
         {
+            Debug.Log(sfxName);
             AudioManager.I.PlaySFX(sfxName);
             await Task.Delay(500);
         }

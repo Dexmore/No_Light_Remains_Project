@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 public class DoorType1 : MonoBehaviour, ISavable
 {
@@ -10,12 +11,14 @@ public class DoorType1 : MonoBehaviour, ISavable
     int ISavable.ReplayWaitTimeSecond => _ReplayWaitTimeSecond;
     int _ReplayWaitTimeSecond = 0;
     public Vector2Int ReplayWaitTimeSecondRange;
-    public void SetCompletedImmediately()
+    public async void SetCompletedImmediately()
     {
         isComplete = true;
         col.enabled = false;
         animator.Play("Open2");
+        await Task.Delay(500);
         doorType2.SetCompletedImmediately();
+        Debug.Log(transform.name);
     }
     Collider2D col;
     #endregion
@@ -45,9 +48,10 @@ public class DoorType1 : MonoBehaviour, ISavable
         if (playerControl.transform.position.x > transform.position.x + 3)
         {
             // 오른쪽에서 씬 이동해왔다는것은 어떤 경우에라도 양쪽 문 다 열고 웨이브 발동 안되게 해야함.
-            //Debug.Log("Player Is Right");
+            Debug.Log($"{transform.name} : Player Is Right");
             col.enabled = false;
             animator.Play("Open2");
+            doorType2.SetCompletedImmediately();
             isPlayerRight = true;
             yield break;
         }

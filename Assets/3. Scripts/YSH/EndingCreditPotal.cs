@@ -19,6 +19,21 @@ public class EndingCreditPotal : Interactable
         transform.SetParent(null);
         //AudioManager.I.PlaySFX("DoorOpen2");
         await Task.Delay(200);
+
+        //if (sceneName == "EndingCredit")
+        //{
+            //Debug.Log("aaa");
+            DBManager.I.currData.sceneName = "Stage5";
+            DBManager.I.savedData.sceneName = "Stage5";
+            DBManager.I.currData.lastPos = new Vector2(-18, 2.05f);
+            DBManager.I.savedData.lastPos = new Vector2(-18, 2.05f);
+            DBManager.I.Save();
+            // transform.SetParent(null);
+            // DontDestroyOnLoad(gameObject);
+            // await Task.Delay(100);
+        //}
+
+        await Task.Delay(200);
         GameManager.I.LoadSceneAsync(sceneName);
     }
 
