@@ -71,8 +71,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public int ach_chestCount;
     [HideInInspector] public int ach_parryCount;
     [HideInInspector] public int ach_NormalLKCount;
-    [HideInInspector] public bool hasGivenExpansionBonus1;
-    [HideInInspector] public bool hasGivenExpansionBonus2;
+    [HideInInspector] public int potionDebt = 0;
 
 
     // 게임의 중요 이벤트들
@@ -886,8 +885,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         ach_chestCount = 0;
         ach_parryCount = 0;
         ach_NormalLKCount = 0;
-        hasGivenExpansionBonus1 = false;
-        hasGivenExpansionBonus2 = false;
     }
 
     void SceneStartHandler()
@@ -918,6 +915,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 GameManager.I.isSuperNovaGearEquip = false;
             }
         }
+        RefreshGears();
     }
 
 
@@ -930,84 +928,48 @@ public class GameManager : SingletonBehaviour<GameManager>
         clone.Init(targetSR, duration, fps);
     }
 
+
     public void RefreshGears()
     {
-        //Gear 기어 (확장의 기어) 008_ExpansionGear
-        bool outValue = false;
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
-        if (DBManager.I.HasGear("008_ExpansionGear", out outValue))
+        bool isEquippedNow = DBManager.I.HasGear("008_ExpansionGear", out bool outValue) && outValue;
+
+        int currentMax = DBManager.I.currData.maxPotionCount;
+        int targetMax = 3;
+        if (isEquippedNow) targetMax = (DBManager.I.GetGearLevel("008_ExpansionGear") == 1) ? 5 : 4;
+
+        if (currentMax < targetMax) // 장착/강화 상황
         {
-            if (outValue)
+            int diff = targetMax - currentMax;
+
+            // 부채 탕감 로직
+            if (GameManager.I.potionDebt > 0)
             {
-                int level = DBManager.I.GetGearLevel("008_ExpansionGear");
-                if (level == 0)
-                {
-                    DBManager.I.currData.maxPotionCount = 4;
-                    if (DBManager.I.currData.currPotionCount <= 3)
-                    {
-                        if (!hasGivenExpansionBonus1)
-                        {
-                            hasGivenExpansionBonus1 = true;
-                            DBManager.I.currData.currPotionCount++;
-                        }
-                    }
-                }
-                else if (level == 1)
-                {
-                    DBManager.I.currData.maxPotionCount = 5;
-                    if (DBManager.I.currData.currPotionCount <= 4)
-                    {
-                        if (!hasGivenExpansionBonus2)
-                        {
-                            hasGivenExpansionBonus2 = true;
-                            DBManager.I.currData.currPotionCount += 2;
-                            if (DBManager.I.currData.currPotionCount > 5)
-                            {
-                                DBManager.I.currData.currPotionCount = 5;
-                            }
-                        }
-                    }
-                }
-                hUDBinder?.Refresh(1f);
+                int clear = Mathf.Min(diff, GameManager.I.potionDebt);
+                diff -= clear;
+                GameManager.I.potionDebt -= clear;
+            }
+            DBManager.I.currData.currPotionCount += diff;
+        }
+        else if (currentMax > targetMax) // 해제 상황
+        {
+            int penalty = currentMax - targetMax;
+            if (DBManager.I.currData.currPotionCount < penalty)
+            {
+                GameManager.I.potionDebt += (penalty - DBManager.I.currData.currPotionCount);
+                DBManager.I.currData.currPotionCount = 0;
             }
             else
             {
-                DBManager.I.currData.maxPotionCount = 3;
-                if (DBManager.I.currData.currPotionCount >= 4)
-                {
-                    DBManager.I.currData.currPotionCount = 3;
-                }
-                hUDBinder?.Refresh(1f);
+                DBManager.I.currData.currPotionCount -= penalty;
             }
-        }
-        else
-        {
-            DBManager.I.currData.maxPotionCount = 3;
-            if (DBManager.I.currData.currPotionCount >= 4)
-            {
-                DBManager.I.currData.currPotionCount = 3;
-            }
-            hUDBinder?.Refresh(1f);
         }
 
-        //Gear 기어 (초신성 기어) 006_SuperNovaGear
-        bool outValue1 = false;
-        if (DBManager.I.HasGear("006_SuperNovaGear", out outValue1))
-        {
-            if (outValue1)
-            {
-                GameManager.I.isSuperNovaGearEquip = true;
-            }
-            else
-            {
-                GameManager.I.isSuperNovaGearEquip = false;
-            }
-        }
-        else
-        {
-            GameManager.I.isSuperNovaGearEquip = false;
-        }
+        DBManager.I.currData.maxPotionCount = targetMax;
+        DBManager.I.currData.currPotionCount = Mathf.Clamp(DBManager.I.currData.currPotionCount, 0, DBManager.I.currData.maxPotionCount);
 
+        hUDBinder?.Refresh(1f);
+        GameManager.I.isSuperNovaGearEquip = DBManager.I.HasGear("006_SuperNovaGear", out bool sn) && sn;
     }
 
 
