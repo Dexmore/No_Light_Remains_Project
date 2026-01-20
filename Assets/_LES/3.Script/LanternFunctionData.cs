@@ -11,6 +11,14 @@ public class LanternFunctionData : ScriptableObject // [수정] ScriptableObject
     //[TextArea(3, 10)]
     public LocalizedString functionDescription;
 
+    [Space(10)]
+    [Header("플라즈마 색상 설정 (신규)")]
+    [Tooltip("중심부 번개 색상 (기본: 연한 핑크/흰색)")]
+    public Color coreColor = new Color(1f, 0.8f, 0.9f, 1f); 
+    
+    [Tooltip("외곽 글로우 색상 (기본: 보라색)")]
+    public Color glowColor = new Color(0.8f, 0.1f, 0.5f, 1f);
+
     [Header("Runtime Localized Strings")]
     // [추가] 실제 UI에서 사용할 번역된 문자열들입니다.
     // 인스펙터에 보일 필요가 없으므로 NonSerialized를 붙입니다.
