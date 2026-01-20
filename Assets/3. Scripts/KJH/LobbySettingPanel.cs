@@ -70,7 +70,7 @@ public class LobbySettingPanel : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(0.3f);
         if (brightnessPanel == null)
             brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<Image>();
-        
+
     }
     public void ApplyAndSaveChanges()
     {
@@ -89,7 +89,7 @@ public class LobbySettingPanel : MonoBehaviour
     {
         SetupResolutions();
         SettingData settings = SettingManager.I.setting;
-        tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b , 0.5f * Mathf.Clamp01(settings.brightness - 0.75f));
+        tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b, 0.5f * Mathf.Clamp01(settings.brightness - 0.75f));
         SetMasterVolume(settings.masterVolume);
         SetBGMVolume(settings.bgmVolume);
         SetSFXVolume(settings.sfxVolume);
@@ -188,7 +188,7 @@ public class LobbySettingPanel : MonoBehaviour
             float _value = Mathf.Clamp(1 - value, 0, 1 - MIN_BRIGHTNESS);
             float alpha = Mathf.Lerp(0f, 0.66511f, _value);
             brightnessPanel.color = new Color(0, 0, 0, alpha);
-            tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b , 0.5f * Mathf.Clamp01(value - 0.75f));
+            tipText.color = new Color(tipText.color.r, tipText.color.g, tipText.color.b, 0.5f * Mathf.Clamp01(value - 0.75f));
         }
         SettingManager.I.setting.brightness = Mathf.Clamp(value, MIN_BRIGHTNESS, 1f);
     }
@@ -331,60 +331,68 @@ public class LobbySettingPanel : MonoBehaviour
         }
 
         rebindingOperation = action.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsExcluding("<Mouse>/delta")
-            .WithControlsExcluding("<Pointer>/position")
-            .OnMatchWaitForAnother(0.1f)
-            .OnComplete(operation =>
+        .WithControlsExcluding("<Mouse>")
+        .WithControlsExcluding("<Keyboard>/escape")
+        .WithControlsExcluding("<Keyboard>/printScreen")
+        .WithControlsExcluding("<Keyboard>/backquote")
+        .WithControlsExcluding("<Keyboard>/leftMeta")
+        .WithControlsExcluding("<Keyboard>/rightMeta")
+        .WithCancelingThrough("<Keyboard>/escape")
+        .WithControlsExcluding("<Pointer")
+        .WithControlsExcluding("<Mouse>")
+        .OnMatchWaitForAnother(0.1f)
+        .OnComplete(operation =>
+        {
+            // 1. UI 텍스트 업데이트 (화살표 변환 포함)
+            buttonText.text = GetReadableKeyName(action, bindingIndex);
+
+            // 2. 현재 새롭게 설정된 키의 경로(Path) 저장
+            string newPath = action.bindings[bindingIndex].effectivePath;
+
+            // 3. Dash 액션 동기화 (Move 변경 시)
+            if (action.name == "Move")
             {
-                // 1. UI 텍스트 업데이트 (화살표 변환 포함)
-                buttonText.text = GetReadableKeyName(action, bindingIndex);
+                // bindingIndex가 3이면 Left, 4면 Right (표준 2D Vector 기준)
+                // 만약 본인의 Input Actions 설정 순서가 다르다면 이 숫자를 맞추세요.
+                string dashActionName = "";
+                if (bindingIndex == 3) dashActionName = "LeftDash";
+                else if (bindingIndex == 4) dashActionName = "RightDash";
 
-                // 2. 현재 새롭게 설정된 키의 경로(Path) 저장
-                string newPath = action.bindings[bindingIndex].effectivePath;
-
-                // 3. Dash 액션 동기화 (Move 변경 시)
-                if (action.name == "Move")
+                if (!string.IsNullOrEmpty(dashActionName))
                 {
-                    string dashActionName = (index == 0) ? "LeftDash" : "RightDash";
                     var dashAction = inputActions.FindAction(dashActionName);
-
                     if (dashAction != null)
                     {
-                        bool dashWasEnabled = dashAction.enabled;
-                        if (dashWasEnabled) dashAction.Disable();
-
-                        // 이동 키와 동일한 경로로 대시 키 덮어쓰기
                         dashAction.ApplyBindingOverride(0, newPath);
-
-                        if (dashWasEnabled) dashAction.Enable();
                     }
                 }
+            }
 
-                // 4. LanternInteraction 액션 동기화 (Lantern 변경 시)
-                if (action.name == "Lantern")
+            // 4. LanternInteraction 액션 동기화 (Lantern 변경 시)
+            if (action.name == "Lantern")
+            {
+                string targetName = "LanternInteraction";
+                var interactionAction = inputActions.FindAction(targetName);
+
+                if (interactionAction != null)
                 {
-                    string targetName = "LanternInteraction";
-                    var interactionAction = inputActions.FindAction(targetName);
+                    bool interactionWasEnabled = interactionAction.enabled;
+                    if (interactionWasEnabled) interactionAction.Disable();
 
-                    if (interactionAction != null)
-                    {
-                        bool interactionWasEnabled = interactionAction.enabled;
-                        if (interactionWasEnabled) interactionAction.Disable();
+                    // 랜턴 키와 동일한 경로로 랜턴 상호작용 키 덮어쓰기
+                    interactionAction.ApplyBindingOverride(0, newPath);
 
-                        // 랜턴 키와 동일한 경로로 랜턴 상호작용 키 덮어쓰기
-                        interactionAction.ApplyBindingOverride(0, newPath);
-
-                        if (interactionWasEnabled) interactionAction.Enable();
-                    }
+                    if (interactionWasEnabled) interactionAction.Enable();
                 }
+            }
 
-                // [중요] 메인 액션 다시 활성화
-                if (wasEnabled) action.Enable();
+            // [중요] 메인 액션 다시 활성화
+            if (wasEnabled) action.Enable();
 
-                OnKeyBindingChanged(); // 변경 사항 JSON 저장
-                CleanUpOperation();
-                ResetColor();
-            })
+            OnKeyBindingChanged(); // 변경 사항 JSON 저장
+            CleanUpOperation();
+            ResetColor();
+        })
             .OnCancel(operation =>
             {
                 buttonText.text = originalText;
