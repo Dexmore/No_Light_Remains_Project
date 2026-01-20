@@ -37,26 +37,27 @@ public class Portal : Interactable
             GameManager.I.SetScene(targetPosition, false);
         else
             GameManager.I.SetScene(targetPosition, true);
-        if (sceneName == "EndingCredit")
-        {
-            //Debug.Log("aaa");
-            DBManager.I.currData.sceneName = "Stage5";
-            DBManager.I.savedData.sceneName = "Stage5";
-            DBManager.I.currData.lastPos = new Vector2(-18, 2.05f);
-            DBManager.I.savedData.lastPos = new Vector2(-18, 2.05f);
-            DBManager.I.Save();
-            // transform.SetParent(null);
-            // DontDestroyOnLoad(gameObject);
-            await Task.Delay(100);
-            GameManager.I.LoadSceneAsync(sceneName, loadingPage);
-            // await Task.Delay(700);
-            // while(!GameManager.I.isSceneWaiting)
-            // {
-            //     await Task.Delay(100);
-            // }
-            // await Task.Delay(100);
-            return;
-        }
+        
+        // if (sceneName == "EndingCredit")
+        // {
+        //     //Debug.Log("aaa");
+        //     DBManager.I.currData.sceneName = "Stage5";
+        //     DBManager.I.savedData.sceneName = "Stage5";
+        //     DBManager.I.currData.lastPos = new Vector2(-18, 2.05f);
+        //     DBManager.I.savedData.lastPos = new Vector2(-18, 2.05f);
+        //     DBManager.I.Save();
+        //     // transform.SetParent(null);
+        //     // DontDestroyOnLoad(gameObject);
+        //     await Task.Delay(100);
+        //     GameManager.I.LoadSceneAsync(sceneName, loadingPage);
+        //     // await Task.Delay(700);
+        //     // while(!GameManager.I.isSceneWaiting)
+        //     // {
+        //     //     await Task.Delay(100);
+        //     // }
+        //     // await Task.Delay(100);
+        //     return;
+        // }
 
         GameManager.I.LoadSceneAsync(sceneName, loadingPage);
     }

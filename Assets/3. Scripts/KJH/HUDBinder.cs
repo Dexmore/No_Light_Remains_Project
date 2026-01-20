@@ -262,7 +262,7 @@ public class HUDBinder : MonoBehaviour
         {
             goldText.text = displayGold.ToString("F0");
         })
-        .OnComplete(StartFadeOutSequence);
+        .OnComplete(StartFadeOutSequence).SetLink(gameObject);
     }
     private void StartFadeOutSequence()
     {
@@ -270,7 +270,7 @@ public class HUDBinder : MonoBehaviour
         Sequence fadeSeq = DOTween.Sequence();
         fadeSeq.AppendInterval(1.5f);
         fadeSeq.Append(goldCanvasGroup.DOFade(0f, 2f).SetLink(gameObject));
-        fadeSeq.SetLink(gameObject);
+        fadeSeq.SetLink(gameObject).SetLink(gameObject);;
         goldFadeTween = fadeSeq;
     }
     void RefreshPotionInLoop()

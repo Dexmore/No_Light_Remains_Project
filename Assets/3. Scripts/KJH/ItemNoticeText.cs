@@ -22,7 +22,7 @@ public class ItemNoticeText : MonoBehaviour
         rect.anchoredPosition = new Vector2(targetPos.x + 500f, targetPos.y); // 오른쪽으로 500 유닛 밀기
 
         // 2. 안으로 들어오는 트윈
-        rect.DOAnchorPosX(targetPos.x, 1f).SetEase(Ease.OutBack);
+        rect.DOAnchorPosX(targetPos.x, 1f).SetEase(Ease.OutBack).SetLink(gameObject);
 
         // 3. 2초 대기 후 페이드 아웃하며 파괴
         Sequence seq = DOTween.Sequence();

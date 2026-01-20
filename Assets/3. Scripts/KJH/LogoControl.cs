@@ -42,15 +42,15 @@ public class LogoControl : MonoBehaviour
         logoChildrenRT[16].anchoredPosition = new Vector2(logoChildrenInitPos[16].x + (480 - logoChildrenInitPos[7].x), logoChildrenInitPos[16].y);
         yield return YieldInstructionCache.WaitForSeconds(1.3f);
         logoChildrenImg[16].DOFade(1f, 1.5f).SetLink(gameObject);
-        logoChildrenRT[7].DOAnchorPos(logoChildrenInitPos[7], 0.55f).SetEase(Ease.OutQuad);
-        logoChildrenRT[16].DOAnchorPos(logoChildrenInitPos[16], 0.55f).SetEase(Ease.OutQuad);
+        logoChildrenRT[7].DOAnchorPos(logoChildrenInitPos[7], 0.55f).SetEase(Ease.OutQuad).SetLink(gameObject);
+        logoChildrenRT[16].DOAnchorPos(logoChildrenInitPos[16], 0.55f).SetEase(Ease.OutQuad).SetLink(gameObject);
         yield return null;
         // 나머지 글자 켜지면서 오른쪽으로 펼치기
         for (int i = 0; i < logoChildrenRT.Length; i++)
         {
             if (i == 7 || i == 16) continue;
             logoChildrenRT[i].anchoredPosition = new Vector2(480, logoChildrenInitPos[7].y);
-            logoChildrenRT[i].DOAnchorPos(logoChildrenInitPos[i], 0.55f).SetEase(Ease.OutQuad);
+            logoChildrenRT[i].DOAnchorPos(logoChildrenInitPos[i], 0.55f).SetEase(Ease.OutQuad).SetLink(gameObject);
             logoChildrenImg[i].DOFade(1f, 0.3f).SetEase(Ease.InSine).SetLink(gameObject);
         }
         AudioManager.I.PlaySFX("Logo");

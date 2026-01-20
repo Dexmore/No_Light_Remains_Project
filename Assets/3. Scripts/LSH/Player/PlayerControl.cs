@@ -120,6 +120,7 @@ public class PlayerControl : MonoBehaviour
         if (characterData.sceneName == "" && characterData.maxHealth == 0)
         {
             // 테스트 플레이어 시작 영역 (정상적인 로비-캐릭터 선택씬을 거친 게임흐름과 무관함)
+            DBManager.I.CloseLoginUI();
             CharacterData newData = new CharacterData();
             newData.gold = 0;
             newData.death = 0;
@@ -716,7 +717,7 @@ public class PlayerControl : MonoBehaviour
                     new Vector4(color.r, color.g, color.b, 0f),
                     "_TintColor",
                     _dur
-                ).SetEase(hitColorCurve);
+                ).SetEase(hitColorCurve).SetLink(gameObject);
                 currentElement.sequences[materialIndex].Append(colorTween);
                 currentElement.sequences[materialIndex].OnComplete(() =>
                 {

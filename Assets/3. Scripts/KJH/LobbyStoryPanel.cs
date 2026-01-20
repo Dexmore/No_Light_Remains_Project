@@ -213,7 +213,7 @@ public class LobbyStoryPanel : MonoBehaviour
         Vector2 size = rtFrame.sizeDelta;
         Vector2 size2 = new Vector2(size.x, 100f);
         rtFrame.sizeDelta = size2;
-        rtFrame.DOSizeDelta(size, 0.55f).SetEase(Ease.InBack);
+        rtFrame.DOSizeDelta(size, 0.55f).SetEase(Ease.InBack).SetLink(gameObject);
         imgFrame.color = new Color(imgFrame.color.r, imgFrame.color.g, imgFrame.color.b, 0f);
         imgFrame.DOFade(1f, 4f).SetLink(gameObject);
         CanvasGroup canvasGroup = leftMonitor.transform.Find("Wrap").GetComponent<CanvasGroup>();
@@ -306,7 +306,7 @@ public class LobbyStoryPanel : MonoBehaviour
         Image imgFrame = slots[index].Find("Frame").GetComponent<Image>();
         DOTween.Kill(imgFrame);
         imgFrame.color = color1;
-        imgFrame.DOColor(color2, 0.2f);
+        imgFrame.DOColor(color2, 0.2f).SetLink(gameObject);
     }
     void ColorRecoverSlot(int index)
     {
@@ -314,7 +314,7 @@ public class LobbyStoryPanel : MonoBehaviour
         slots[index].transform.DOScale(1f, 0.2f).SetEase(Ease.OutQuad).SetLink(gameObject);
         Image imgFrame = slots[index].Find("Frame").GetComponent<Image>();
         DOTween.Kill(imgFrame);
-        imgFrame.DOColor(color1, 0.2f);
+        imgFrame.DOColor(color1, 0.2f).SetLink(gameObject);
     }
     /////////////////
     Button[] buttons;
@@ -326,6 +326,7 @@ public class LobbyStoryPanel : MonoBehaviour
     }
     public async void StartButton()
     {
+        DBManager.I.CloseLoginUI();
         AudioManager.I.PlaySFX("SciFiConfirm");
         DisableAllButtons();
         await Task.Delay(200);
@@ -346,6 +347,7 @@ public class LobbyStoryPanel : MonoBehaviour
     [ReadOnlyInspector] public int diff;
     public async void StartNewGameButton()
     {
+        DBManager.I.CloseLoginUI();
         AudioManager.I.PlaySFX("SciFiConfirm");
         DisableAllButtons();
         PopupUI.ClosePop(3, false);

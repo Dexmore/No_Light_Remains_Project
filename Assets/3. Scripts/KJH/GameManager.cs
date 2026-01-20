@@ -263,13 +263,13 @@ public class GameManager : SingletonBehaviour<GameManager>
         //진행
         Tween tween;
         tween = dimImg.DOFade(0f, 2.3f).SetEase(Ease.InSine).SetLink(gameObject);
-        tween.OnComplete(() =>
+        tween.SetLink(gameObject).OnComplete(() =>
         {
             fadeScreen.SetActive(false);
             dimImg.gameObject.SetActive(false);
             dimImg.color = new Color(0f, 0f, 0f, 0f);
         });
-        sequenceFade?.Append(tween);
+        sequenceFade?.Append(tween).SetLink(gameObject);
     }
     #endregion
     #region Loading Page
@@ -361,7 +361,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         float randomness = 60f; // 랜덤성
         if (duration > 0.22f) duration = 0.22f;
         DOTween.Kill(camMainTr);
-        await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).AsyncWaitForCompletion();
+        await camMainTr.DOShakePosition(duration, strength, vibrato, randomness).SetLink(gameObject).AsyncWaitForCompletion();
     }
     #endregion
     #region Glitch Effect

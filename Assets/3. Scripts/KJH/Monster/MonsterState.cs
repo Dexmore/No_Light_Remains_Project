@@ -16,14 +16,13 @@ public abstract class MonsterState : MonoBehaviour
     [HideInInspector] public CancellationTokenSource cts;
     protected virtual void OnEnable()
     {
+        cts?.Cancel();
         cts = new CancellationTokenSource();
-        Application.quitting += UniTaskCancel;
     }
     protected virtual void OnDisable()
     {
         UniTaskCancel();
     }
-    protected virtual void OnDestroy() { UniTaskCancel(); }
     void UniTaskCancel()
     {
         cts?.Cancel();

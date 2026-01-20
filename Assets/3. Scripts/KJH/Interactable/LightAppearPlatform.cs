@@ -63,7 +63,7 @@ public class LightAppearPlatform : Lanternable, ISavable
         lp.color = new Color(lp.color.r, lp.color.g, lp.color.b, 0f);
         childLight.intensity = 0f;
         lp.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject);
-        tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
+        tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject).Play();
     }
     public override void PromptCancel()
     {
@@ -71,7 +71,7 @@ public class LightAppearPlatform : Lanternable, ISavable
         tweenChildLight?.Kill();
         lp.DOFade(0f, 2.2f).SetEase(Ease.InSine).SetLink(gameObject);
         tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0f, 2.2f).SetEase(Ease.InSine)
-        .OnComplete(() => lp.gameObject.SetActive(false)).Play();
+        .SetLink(gameObject).OnComplete(() => lp.gameObject.SetActive(false)).Play();
     }
 
     // 단계적 작업.
@@ -97,7 +97,7 @@ public class LightAppearPlatform : Lanternable, ISavable
         DOTween.Kill(lp);
         tweenChildLight?.Kill();
         lp.DOFade(1f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject);
-        tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).Play();
+        tweenChildLight = DOTween.To(() => childLight.intensity, x => childLight.intensity = x, 0.5f, 0.5f).SetEase(Ease.InSine).SetLink(gameObject).Play();
         light2?.gameObject.SetActive(true);
         tweenLight2?.Kill();
         light2.intensity = 0f;

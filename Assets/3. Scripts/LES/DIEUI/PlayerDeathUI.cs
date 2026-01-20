@@ -84,7 +84,7 @@ public class PlayerDeathUI : MonoBehaviour
         if (deathImage != null && uiMat != null)
         {
             // 설정한 dissolveDuration 동안 나타남
-            uiMat.DOFloat(0f, "_DissolveAmount", dissolveDuration).SetEase(Ease.OutQuad);
+            uiMat.DOFloat(0f, "_DissolveAmount", dissolveDuration).SetEase(Ease.OutQuad).SetLink(gameObject);
         }
 
         // [중요] 글자가 나타나는 시간 + 대기 시간(3초)만큼 기다림

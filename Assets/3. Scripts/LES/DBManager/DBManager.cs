@@ -625,6 +625,16 @@ public class DBManager : SingletonBehaviour<DBManager>
         // ACH_BOSS_LANTERN_NO_POTION_HARD (MonsterDie)
     }
 
+    public void OpenLoginUI()
+    {
+        transform.GetChild(0).gameObject.SetActive(true);
+    }
+    public void CloseLoginUI()
+    {
+        transform.GetChild(0).gameObject.SetActive(false);
+    }
+
+
 
 
 

@@ -126,7 +126,7 @@ public class PopupUI : MonoBehaviour
         if (find == -1)
         {
             canvasGo.SetActive(false);
-            DOVirtual.DelayedCall(0.4f, () => GameManager.I.isOpenPop = false).Play();
+            DOVirtual.DelayedCall(0.4f, () => GameManager.I.isOpenPop = false).Play().SetLink(gameObject);
         }
         openPopCount--;
         if (index == 0)

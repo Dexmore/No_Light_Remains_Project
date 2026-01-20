@@ -83,9 +83,10 @@ public class LobbyControl : MonoBehaviour
         var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
         float alpha = Mathf.Lerp(0f, 0.66511f, 1 - SettingManager.I.setting.brightness);
         brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
-
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         InitSteam();
+        yield return null;
+        DBManager.I.OpenLoginUI();
     }
 
     Button[] allButtons;
