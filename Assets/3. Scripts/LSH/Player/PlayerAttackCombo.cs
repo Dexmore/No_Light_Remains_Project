@@ -133,7 +133,13 @@ public class PlayerAttackCombo : IPlayerState
         }
         if (!attacked.Contains(coll))
         {
+            
+            MonsterControl monsterControl = coll.GetComponentInParent<MonsterControl>();
+            if(monsterControl != null && monsterControl.isDie) return;
             attacked.Add(coll);
+
+
+
             Vector2 hitPoint = 0.7f * coll.ClosestPoint(ctx.transform.position) + 0.3f * (Vector2)coll.transform.position + Vector2.up;
             float rnd = Random.Range(0.78f, 1.38f);
             float damage = 36.8f;

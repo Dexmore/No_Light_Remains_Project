@@ -27,50 +27,53 @@ public class MonsterDie : MonsterState
             chafe = transform.GetChild(0).Find("Chafe").gameObject;
         chafe?.SetActive(false);
         Activate(token).Forget();
-        if (DBManager.I.currData.sceneDatas != null)
-        {
-            if (transform.name.Contains("("))
-            {
-                string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-                int find1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
-                string strimedName = transform.name.Split("(")[0];
-                if (find1 != -1)
-                {
-                    if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
-                    {
-                        int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
-                        if (find2 != -1)
-                        {
-                            var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
-                            var mData = monsterList[find2];
-                            System.DateTime now = System.DateTime.Now;
-                            string datePart = now.ToString("yyyy.MM.dd");
-                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                            mData.lastDeathTime = $"{datePart}-{secondsOfDay}";
-                            mData.lastHealth = 0;
-                            monsterList[find2] = mData;
-                        }
-                    }
-                }
-                if (DBManager.I.currData.killCounts != null && DBManager.I.currData.killCounts.Count > 0)
-                {
-                    find1 = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
-                    if (find1 != -1)
-                    {
-                        var killCount = DBManager.I.currData.killCounts[find1];
-                        killCount.count++;
-                        DBManager.I.currData.killCounts[find1] = killCount;
-                    }
-                    else
-                    {
-                        var killCount = new CharacterData.KillCount();
-                        killCount.Name = strimedName;
-                        killCount.count = 1;
-                        DBManager.I.currData.killCounts.Add(killCount);
-                    }
-                }
-            }
-        }
+
+        // if (DBManager.I.currData.sceneDatas != null)
+        // {
+        //     if (transform.name.Contains("("))
+        //     {
+        //         string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        //         int find1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == sceneName);
+        //         string strimedName = transform.name.Split("(")[0];
+        //         if (find1 != -1)
+        //         {
+        //             if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
+        //             {
+        //                 int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
+        //                 if (find2 != -1)
+        //                 {
+        //                     var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
+        //                     var mData = monsterList[find2];
+        //                     System.DateTime now = System.DateTime.Now;
+        //                     string datePart = now.ToString("yyyy.MM.dd");
+        //                     int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
+        //                     mData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+        //                     mData.lastHealth = 0;
+        //                     monsterList[find2] = mData;
+        //                 }
+        //             }
+        //         }
+        //         if (DBManager.I.currData.killCounts != null && DBManager.I.currData.killCounts.Count > 0)
+        //         {
+        //             find1 = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+        //             if (find1 != -1)
+        //             {
+        //                 var killCount = DBManager.I.currData.killCounts[find1];
+        //                 killCount.count++;
+        //                 DBManager.I.currData.killCounts[find1] = killCount;
+        //             }
+        //             else
+        //             {
+        //                 var killCount = new CharacterData.KillCount();
+        //                 killCount.Name = strimedName;
+        //                 killCount.count = 1;
+        //                 DBManager.I.currData.killCounts.Add(killCount);
+        //             }
+        //         }
+        //     }
+        // }
+
+
     }
     public async UniTask Activate(CancellationToken token)
     {

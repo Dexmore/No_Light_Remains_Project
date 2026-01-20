@@ -149,8 +149,10 @@ public class PlayerControl : MonoBehaviour
             int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
             newData.lastTime = $"{datePart}-{secondsOfDay}";
             DBManager.I.currData = newData;
-            DBManager.I.savedData = newData;
-            //
+            // DBManager.I.savedData = newData; (이줄 제거)
+            // 깊은 복사
+            string json = JsonUtility.ToJson(newData);
+            DBManager.I.savedData = JsonUtility.FromJson<CharacterData>(json);
             light0.SetActive(false);
             light1.SetActive(false);
             light2.SetActive(true);
