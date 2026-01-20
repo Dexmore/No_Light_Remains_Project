@@ -59,13 +59,20 @@ public class RecordPanelController : MonoBehaviour, ITabContent
             return;
         }
 
-        // 3. 저장된 데이터를 하나씩 순회하며 슬롯 생성
+        // [핵심 수정] -------------------------------------------------------
+        // 원본 DB 리스트를 건드리지 않기 위해 '복사본 리스트'를 만듭니다.
+        List<CharacterData.RecordData> displayList = new List<CharacterData.RecordData>(savedRecords);
+        
+        // 리스트를 뒤집습니다. (가장 마지막에 추가된 데이터가 0번 인덱스로 옴 -> 최신순)
+        displayList.Reverse();
+        // -------------------------------------------------------------------
+
+        // 3. 뒤집힌 리스트(displayList)를 하나씩 순회하며 슬롯 생성
         bool hasAnyRecord = false;
 
-        foreach (var savedData in savedRecords)
+        foreach (var savedData in displayList)
         {
             // 이름으로 원본 에셋 찾기 (ItemDatabase에서 검색)
-            // [주의] savedData.Name과 에셋의 파일 이름(name)이 정확히 일치해야 합니다.
             int findIndex = DBManager.I.itemDatabase.allRecords.FindIndex(x => x.name == savedData.Name);
             
             if (findIndex != -1)
@@ -73,12 +80,12 @@ public class RecordPanelController : MonoBehaviour, ITabContent
                 // 원본 에셋 찾음
                 RecordData originalAsset = DBManager.I.itemDatabase.allRecords[findIndex];
                 
-                // [중요] 런타임 복제본 생성 (원본 오염 방지 + 번역 데이터 담을 공간)
+                // 런타임 복제본 생성
                 RecordData runtimeRecord = Instantiate(originalAsset);
-                runtimeRecord.name = originalAsset.name; // (Clone) 이름 떼기
-                runtimeRecord.isNew = savedData.isNew;   // DB에 저장된 New 상태 적용
+                runtimeRecord.name = originalAsset.name; 
+                runtimeRecord.isNew = savedData.isNew;   
                 
-                // [핵심] 여기서 번역 로드를 실행해야 글자가 나옵니다!
+                // 번역 로드
                 runtimeRecord.LoadStrings(); 
 
                 // 슬롯 프리팹 생성 및 데이터 주입
@@ -97,17 +104,11 @@ public class RecordPanelController : MonoBehaviour, ITabContent
 
         SetupSlotNavigation();
 
-        // 4. 첫 번째 아이템 정보 표시 (있다면)
+        // 4. 첫 번째 아이템 정보 표시 (최신 아이템이 선택됨)
         if (hasAnyRecord && _spawnedSlots.Count > 0)
         {
-            // _spawnedSlots[0]의 데이터를 가져와서 보여줌 (SetData에서 할당된 데이터)
-            // RecordSlotUI에 public getter가 없다면 추가하거나, 여기서 리스트를 관리해야 함.
-            // 일단 RecordSlotUI의 구조상 클릭/선택 시 ShowDetails가 호출되므로,
-            // 첫 슬롯을 강제 선택(Select)하는 것으로 대체 가능하지만, 텍스트 갱신을 위해 명시적 호출 권장
-             
-             // (이 부분은 RecordSlotUI에 'MyData' 프로퍼티가 있다고 가정하거나, 
-             // 방금 만든 runtimeRecord를 임시 저장해서 넘겨줘야 합니다. 
-             // 가장 쉬운 방법은 SelectFirstSlot()에서 처리되도록 두는 것입니다.)
+             // 첫 번째 슬롯(가장 최신 기록물)의 정보를 갱신하기 위해 강제 선택 처리
+             // (Coroutine에서 SelectFirstSlot이 호출되므로 여기선 놔둬도 무방하나 로직 흐름상 유지)
         }
         else
         {
