@@ -189,10 +189,9 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     // (2번 요청) 메인 장착부(빨간 원)의 이미지를 갱신합니다.
     private void UpdateMainEquippedImage()
     {
-        // 1. DB에서 현재 장착 중인(isEquipped == true) 랜턴 데이터를 찾습니다.
+        // 1. 장착된 데이터 찾기
         CharacterData.LanternData cd = DBManager.I.currData.lanternDatas.FirstOrDefault(f => f.isEquipped);
 
-        // 2. 장착된 데이터가 없다면 (이름이 비어있다면) -> 이미지를 끄고 종료
         if (string.IsNullOrEmpty(cd.Name))
         {
             if (equippedFunctionImage != null)
@@ -203,23 +202,31 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             return;
         }
 
-        // 3. 아이템 데이터베이스에서 원본 데이터(.asset)를 찾습니다.
-        // [수정] functionName이 아니라 .name(파일 이름)으로 찾아야 정확합니다.
+        // 2. 원본 에셋 찾기
         int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
         
         if(find != -1)
         {
-            // 4. 찾았으면 이미지 교체 및 활성화
             LanternFunctionData equippedFunction = DBManager.I.itemDatabase.allLanterns[find];
             if (equippedFunctionImage != null)
             {
                 equippedFunctionImage.sprite = equippedFunction.functionIcon;
                 equippedFunctionImage.gameObject.SetActive(true);
+
+                // [추가] 색상 적용 로직! ------------------------------------------
+                // 이미지 오브젝트에 붙어있는 PlasmaInteract 스크립트를 가져옵니다.
+                PlasmaInteract plasma = equippedFunctionImage.GetComponent<PlasmaInteract>();
+                
+                if (plasma != null)
+                {
+                    // 데이터에 설정된 색상을 쉐이더로 쏘세요!
+                    plasma.SetThemeColor(equippedFunction.coreColor, equippedFunction.glowColor);
+                }
+                // ------------------------------------------------------------------
             }
         }
         else
         {
-            // 5. DB에는 있는데 에셋을 못 찾은 경우 (에러 방지용으로 끄기)
             if (equippedFunctionImage != null)
             {
                 equippedFunctionImage.sprite = null;
