@@ -161,9 +161,19 @@ public class RecordPanelController : MonoBehaviour, ITabContent
         }
         else
         {
-            detailTitleText.text = "기록물 없음";
-            detailContentText.text = "아직 습득한 기록물이 없습니다.";
-            detailContentImage.gameObject.SetActive(false);
+            if(SettingManager.I.setting.locale == 0) //영어
+            {
+                detailContentText.text = "No Record";
+                detailContentText.text = "No Record Text";
+            }
+            else if(SettingManager.I.setting.locale == 1) //한글
+            {
+                detailTitleText.text = "기록물 없음";
+                detailContentText.text = "아직 습득한 기록물이 없습니다.";
+            }
+            //else if(SettingManager.I.setting.locale == 2)//중국어
+
+            detailContentImage.gameObject.SetActive(false);                
         }
     }
 

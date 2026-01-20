@@ -167,9 +167,17 @@ public class ItemPanelController : MonoBehaviour, ITabContent
         }
         else
         {
-            detailItemNameText.text = "재료 없음";
+            if(SettingManager.I.setting.locale == 0)
+            {
+                detailItemNameText.text = "Currently No Item.";
+                detailItemDescriptionText.text = "No gear enhancement materials detected in inventory.";
+            }
+            else if(SettingManager.I.setting.locale == 1)
+            {
+                detailItemNameText.text = "아이템 미소지.";       
+                detailItemDescriptionText.text = "보유 중인 기어 강화 재료 아이템이 없습니다.";
+            }
             detailItemImage.sprite = null;
-            detailItemDescriptionText.text = "보유 중인 재료 아이템이 없습니다.";
             detailItemImage.gameObject.SetActive(false); 
         }
     }
