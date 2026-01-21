@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 6111152596428394946}
   - component: {fileID: 6575594781731226632}
   - component: {fileID: 1665691495219155482}
+  - component: {fileID: 8055816691677827562}
   m_Layer: 0
   m_Name: RecordSlot
   m_TagString: Untagged
@@ -273,6 +274,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecordSlotUI
   recordTitleText: {fileID: 5502483426131029537}
   newIndicator: {fileID: 6515891217331138635}
+--- !u!114 &8055816691677827562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8097373529725117268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52ba06ab1e6fa014dad62940f73aee5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_FocusScaler
+  defaultScale: 1
+  focusedScale: 1.15
+  animSpeed: 10
 --- !u!1001 &6280327510636393229
 PrefabInstance:
   m_ObjectHideFlags: 0
