@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using DG.Tweening;
-
+using TMPro;
 public class LobbyControl : MonoBehaviour
 {
     [Header("Input Action")]
@@ -80,6 +80,7 @@ public class LobbyControl : MonoBehaviour
         yield return null;
         DBManager.I.LoadLocal();
         yield return YieldInstructionCache.WaitForSeconds(0.5f);
+        StartCoroutine(nameof(SetDropdownsSortOrderLoop));
         var brightnessPanel = GameManager.I.transform.Find("BrightnessCanvas").GetComponentInChildren<UnityEngine.UI.Image>();
         float alpha = Mathf.Lerp(0f, 0.66511f, 1 - SettingManager.I.setting.brightness);
         brightnessPanel.color = new Color(brightnessPanel.color.r, brightnessPanel.color.g, brightnessPanel.color.b, alpha);
@@ -87,7 +88,32 @@ public class LobbyControl : MonoBehaviour
         InitSteam();
         yield return null;
         DBManager.I.OpenLoginUI();
+
     }
+    TMP_Dropdown[] tMP_Dropdowns;
+    IEnumerator SetDropdownsSortOrderLoop()
+    {
+        tMP_Dropdowns = FindObjectsByType<TMP_Dropdown>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        while (true)
+        {
+            yield return YieldInstructionCache.WaitForSeconds(0.7f);
+            for (int i = 0; i < tMP_Dropdowns.Length; i++)
+            {
+                Canvas[] canvases = tMP_Dropdowns[i].GetComponentsInChildren<Canvas>(true);
+                for (int j = 0; j < canvases.Length; j++)
+                {
+                    Canvas canvas = canvases[j];
+                    if (canvas != null && canvas.sortingOrder != 100)
+                    {
+                        canvas.sortingOrder = 100;
+                    }
+                }
+            }
+        }
+    }
+
+
+
 
     Button[] allButtons;
     PopupUI PopupUI;
