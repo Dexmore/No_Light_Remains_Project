@@ -360,6 +360,7 @@ GameObject:
   - component: {fileID: 6111152596428394946}
   - component: {fileID: 6575594781731226632}
   - component: {fileID: 6702849984472516847}
+  - component: {fileID: 5663100676205824408}
   m_Layer: 0
   m_Name: ItemSlot_0
   m_TagString: Untagged
@@ -488,6 +489,21 @@ MonoBehaviour:
   itemNameText: {fileID: 5502483426131029537}
   newIndicator: {fileID: 6515891217331138635}
   quantityText: {fileID: 3286517609077855838}
+--- !u!114 &5663100676205824408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8097373529725117268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52ba06ab1e6fa014dad62940f73aee5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_FocusScaler
+  defaultScale: 1
+  focusedScale: 1.15
+  animSpeed: 10
 --- !u!1001 &6280327510636393229
 PrefabInstance:
   m_ObjectHideFlags: 0
