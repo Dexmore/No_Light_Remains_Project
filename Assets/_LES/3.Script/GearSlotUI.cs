@@ -12,24 +12,27 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
     [Header("밝기 및 애니메이션 설정")]
     [Tooltip("선택되지 않았을 때의 어두운 정도 (0~1)")]
     [Range(0f, 1f)]
-    [SerializeField] private float dimFactor = 0.4f; 
-    [SerializeField] private float animationSpeed = 15f; 
+    [SerializeField] private float dimFactor = 0.4f;
+    [SerializeField] private float animationSpeed = 15f;
+    // 기존 변수 선언 부분에 추가
+    [Header("선택 효과")]
+    [SerializeField] private GameObject selectionOutline; // 빛나는 테두리 이미지 연결 
 
     private GearData _myData;
     private GearPanelController _controller;
     private Button _button;
-    
+
     private Color _originalIconColor;
     private Color _targetColor;
-    private bool _isFocused = false; 
+    private bool _isFocused = false;
 
     public GearData MyData { get { return _myData; } }
 
     private void Awake()
     {
         _button = GetComponent<Button>();
-        
-        if (gearIcon != null) 
+
+        if (gearIcon != null)
         {
             _originalIconColor = gearIcon.color;
             // 초기화
@@ -38,8 +41,11 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
         }
 
         _button?.onClick.AddListener(HandleInteraction);
+
+        // [추가] 시작할 때 아웃라인은 무조건 끕니다!
+        if (selectionOutline != null) selectionOutline.SetActive(false);
     }
-    
+
     private void Update()
     {
         if (gearIcon != null)
@@ -87,17 +93,17 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
         _myData = data;
         _controller = controller;
 
-        if (gearIcon != null) 
-        { 
-            gearIcon.sprite = _myData.gearIcon; 
-            gearIcon.gameObject.SetActive(true); 
+        if (gearIcon != null)
+        {
+            gearIcon.sprite = _myData.gearIcon;
+            gearIcon.gameObject.SetActive(true);
         }
         if (_button != null) _button.interactable = true;
         if (newIndicator != null) newIndicator.SetActive(_myData.isNew);
 
         _isFocused = (EventSystem.current.currentSelectedGameObject == gameObject);
         RecalculateTargetColor();
-        
+
         if (gearIcon != null) gearIcon.color = _targetColor;
     }
 
@@ -110,9 +116,10 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
         if (gearIcon != null) { gearIcon.sprite = null; gearIcon.gameObject.SetActive(false); }
         if (_button != null) _button.interactable = false;
         if (newIndicator != null) newIndicator.SetActive(false);
-        
+
         RecalculateTargetColor();
         if (gearIcon != null) gearIcon.color = _targetColor;
+        if (selectionOutline != null) selectionOutline.SetActive(false);
     }
 
     public void UpdateEquipVisual()
@@ -134,16 +141,23 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
         _isFocused = true;
         RecalculateTargetColor();
 
+        // [추가] 아웃라인 켜기
+        if (selectionOutline != null) selectionOutline.SetActive(true);
+
         if (_myData != null && _controller != null)
         {
             _controller.ShowSelectedGearDetails(_myData);
         }
     }
 
+    // OnDeselect 함수 수정
     public void OnDeselect(BaseEventData eventData)
     {
         _isFocused = false;
         RecalculateTargetColor();
+
+        // [추가] 아웃라인 끄기
+        if (selectionOutline != null) selectionOutline.SetActive(false);
     }
 
     private void HandleInteraction()
@@ -154,16 +168,16 @@ public class GearSlotUI : MonoBehaviour, ISelectHandler, IDeselectHandler, IPoin
             {
                 _myData.isNew = false;
                 if (newIndicator != null) newIndicator.SetActive(false);
-                
+
                 int find = DBManager.I.currData.gearDatas.FindIndex(x => x.Name == _myData.name);
-                if(find != -1)
+                if (find != -1)
                 {
                     CharacterData.GearData cd = DBManager.I.currData.gearDatas[find];
                     cd.isNew = false;
                     DBManager.I.currData.gearDatas[find] = cd;
                 }
             }
-            
+
             _controller.ToggleEquipGear(_myData);
         }
     }
