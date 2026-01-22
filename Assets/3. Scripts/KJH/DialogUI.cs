@@ -20,10 +20,9 @@ public class DialogUI : MonoBehaviour
                 //대사0 (게임시작 (이 대사 이후 바로 튜토리얼 시작))
                 new string[]
                 {
-                    "[BOOT SEQUENCE INITIATED]\nCORE TEMPERATURE STABLEIZING...COMPLETE.\nNEURAL RESPONSE CORE CONNECTION...COMPLETE",
+                    "[SEQUENCE BOOTING INITIATED]\nCORE TEMPERATURE STABLEIZING...COMPLETE.\nNEURAL RESPONSE CORE CONNECTION...COMPLETE",
                     "COMBAT MODULE PARTIALLY DAMAGED.\nINITIATE REPAIR PROCESS.\nMUSCULOSKELETAL ASSISTANT FRAME...FULLY FUNCTIONAL",
                     "HIGH EXTERNAL CONTAMINATION LEVEL DECTECTED...\n'TENEBRAE' LEVEL: Critical",
-                    "LANTERN SYSTEM OFFLINE\nREBOOTING...25%...50%...84%...100%.",
                     "ALL SYSTEMS ONLINE. STATUS: READY TO GO.\nOperation REKINDLE: COMMENCING.",
                     "Greeting, P-07., This is L.U.M.O.S, your Assistant AI.\nSurface conditions are currently at a breaking point due to the 'Black Mist' incident.",
                     "Your mission is to cleanse the TENEBRAE erosion and retrieve the ASTRA Cell from Sector 13",
@@ -33,18 +32,19 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "LANTERN Test Log #37",
-                    "Stablizing the core has finally succeeded.\nProcess of recharging using TENBRAE as scource is ongoing.\nNeed more tests."
+                    "Stablizing the core has finally succeeded.\nResearch regarding purifying TENBRAE into LUMEN is ongoing.\nNeed more tests."
                 },
                 //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
                 new string[]
                 {
-                    "The door is locked tight.\nI should look elsewhere."
+                    //Page 1
+                    "Detecting a broken door.\nThere seems to be no way to open it.\nI advise you move on."
                 },
                 //대사3 (스테이지 1의 테스트 기어발견 & 기어 튜토리얼겸)
                 new string[]
                 {
                     "An old Auxiliary Gear Module... It will help you on your mission",
-                    "Finding an active Gear Enhancement Machine allows you to upgrade your gear's capabilities.\nHowever, it is uncertain such machines remain functional in this desolate state",
+                    "Finding an active Gear Enhancement Machine allows you to upgrade your gear's capabilities.\nHowever, it is uncertain such machines currently remain functional.",
                     "Gears can be equipped in the Gear tab of your inventory.\nWarning: You cannot exceed the Gear Install Capacity.\n I advise you select wisely."
                 },
                 //대사4 (lightAppear 튜토리얼)
@@ -56,7 +56,7 @@ public class DialogUI : MonoBehaviour
                 //대사5 (DarkVanish 튜토리얼)
                 new string[]
                 {
-                    "Halt. TENEBRAE Level is off the charts.\n Status. Limited Vision and Unable to Move Forward.",
+                    "Halt. TENEBRAE Level is off the charts.\nStatus. Limited Vision and Unable to Move Forward.",
                     "Use the Lantern to purify the TENEBRAE.",
                     "Remember. In the midst of darkness, light persists."
                 },
@@ -97,8 +97,9 @@ public class DialogUI : MonoBehaviour
                 //대사11 랜턴 충전 라이트
                 new string[]
                 {
-                    "I can sense a faint trace of Lumen here.\nActivating it should provide a small charge to your Lantern.\nIt will be peak utility when your Lantern gauge is nearly empty.",
-                    "Some objects can be interacted with by 'holding down the Lantern key'."
+                    "Faint traces of LUMEN detectect.\nIt's a miniaturized LUMEN amplifier.",
+                    "This should help when the room is dark or when the Lantern is low on LUMEN.\nActivating it should charge your Lantern half full.",
+                    "[SYSTEM] Some objects can be interacted with by 'pressing the Lantern key '."
                 },
                 //대사12 아폴리온 처치
                 new string[]
@@ -109,14 +110,15 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "Scanning...High-Level LUMEN signature detected.\nEstimated Astra Cell position reached.",
+                    "......",                    
                     "Astra Cell successfully retrieved.\nRelocating to the uploaded coordinates. Awaiting your arrival."
                 },
                 //대사14 실험실
                 new string[]
                 {
-                    "Welcome, to the Deep Research Facility in Zion; the City of Glory\nThis unit serves as a stasis chamber for the last shard of the MONSTRARE.",
+                    "Welcome P-07, to the Deep Research Facility in Zion.\nThis unit serves as a stasis chamber for the last shard of the MONSTRARE.",
                     "To counter the Tenebrae outbreak after the 'Black Mist' Incident, Operation REKINDLE was launched",
-                    "Awaiting Astra Cell integration...",
+                    "Awaiting Astra Cell integration...\n......",
                     "Integration verified.\n[Analyzing...] Core Restoration 27%...45%\n[Scanning...] TENEBRAE contamination in Zion, 78%...58%",
                     "TENEBRAE corruption has been decelerated. MONSTRARE core is stable.",
                     "Operation REKINDLE: Phase 1 marked as Success.\nYour contribution has been invaluable."
@@ -129,23 +131,29 @@ public class DialogUI : MonoBehaviour
                     "In the beginning, it seemed insignificant\nIt would vanish almost as soon as it appeared.",
                     "But as the concentration levels rose, so did the danger.\nIt started on the outskirts of Zion; the Outer Rim.",
                     "But now, traces are being detected even in the heart of the city.",
-                    "The outskirts are now crawling with those... things\nCan we even call them living beings anymore?",
-                    "Regardless, casualties are mounting due to these unknown entities and the Tenebrae itself.",
-                    "Outside, the world is swallowed by a thick, dark haze saturated with lethal Tenebrae levels.\nWe have come to call this catastrophe 'The Black Mist.'"
                 },
                 //대사16 Log4
                 new string[]
                 {
-                    "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는 미지의 물질 '테네브레'가 관측되고 있다.",
-                    "처음에는 별거 아니었다. 생성되도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
-                    "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
-                    "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
+                    "The outskirts are now crawling with those... things\nCan we even call them living beings anymore?",
+                    "Regardless, casualties are mounting due to these unknown entities and the Tenebrae itself.",
+                    "Outside, the world is swallowed by a thick, dark haze saturated with lethal Tenebrae levels.\nWe have come to call this catastrophe 'The Black Mist.'"
                 },
                 //대사17 상자 튜토리얼
                 new string[]
                 {
-                    "Chest Tutorial\nChest Tutorial\nChest Tutorial",
-                    "Chest Tutorial"
+                    "It's an ARCA-05. It was used for storing supplies.\nIt might contain things that could come handy later."
+                },
+                //대사18 적 처음 감지
+                new string[]
+                {
+                    "Beings corrupted by TENEBRAE...\nThe surface is currently saturated with these hostile lifeforms."
+                },
+                //대사19 랜턴 활성화
+                new string[]
+                {
+                    "LANTERN SYSTEM OFFLINE\nREBOOTING...25%...50%...84%...100%.",
+                    "LANTERN SYSTEM ONLINE.\nThe Light of ASTRUM: Operational status confirmed. Machine ready."
                 },
 
             };
@@ -158,31 +166,31 @@ public class DialogUI : MonoBehaviour
                 //대사0 (게임시작 (이 대사 이후 바로 튜토리얼 시작))
                 new string[]
                 {
-                    "[시스템 시작 활성화]\n코어 온도 안정화 중…완료\n신경 반응 회로…연결 확인",
-                    "전투 모듈 부분 손상\n복구 프로세스 진행.\n근골격 보조 프레임… 정상 가동",
-                    "외부 오염 감지...\n'테네브레' 수치 매우 위험.",
-                    "랜턴 시스템 오프라인\n재부팅 중. 25%...50%...84%...100%.",
+                    "[시스템 시작 활성화]\n코어 온도 안정화 중...완료\n신경 반응 회로...연결 확인",
+                    "전투 모듈 부분 손상\n복구 프로세스 진행.\n근골격 보조 프레임...정상 가동",
                     "전 시스템 온라인. 이상 무.\n오퍼레이션 REKINDLE. 가동 시작.",
-                    "반갑습니다 P-07, 보조 AI 'L.U.M.O.S'입니다.\n현재 지상은 '검은 안개' 사태로 인해 절체절명의 위기입니다.\n당신의 임무는 테네브레 침식 정화 및 섹터 13에서 아스트라 셀을 회수해오는 것 입니다.",
+                    "반갑습니다 P-07, 보조 AI 'L.U.M.O.S'입니다.\n현재 지상은 '검은 안개' 사태로 인해 절체절명의 위기입니다.\n당신의 임무는 테네브레 침식 정화 및 섹터 13에서 아스트라 셀을\n회수해 오는 것입니다.",
                     "그럼, 행운을 빕니다. P-07."
                 },
                 //대사1  (튜토리얼 씬 중앙의 컴퓨터 대사)
                 new string[]
                 {
                     "랜턴 테스트 로그 #37",
-                    "코어의 안정화에 성공했다.\n테네브레 정화를 활용한 충전은 현재 개발 중.\n더 많은 실험이 필요하다."
+                    "코어의 안정화에 성공했다.\n테네브레를 루멘으로 변환시키는 기술은 현재 개발 중이다.\n더 많은 실험이 필요할 것으로 예상된다."
                 },
                 //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
                 new string[]
                 {
                     //Page 1
-                    "문이 열리지 않습니다.\n다른 곳으로 가야합니다.",
+                    "망가진 문이군요.\n열 방법은 없어 보입니다.\n이동하시는 걸 추천합니다.",
                 },
                 //대사3 (스테이지 1의 테스트 기어발견 & & 기어 튜토리얼겸)
                 new string[]
                 {
+                    //1페이지
                     "오래된 보조 장착 기어군요. 장착하면 도움이 될 것 같습니다.",
                     "작동하는 기어 강화 기계를 발견한다는 기어의 성능을 강화할 수 있습니다.\n아직 작동하는게 있을지는 미지수군요.",
+                    //2페이지
                     "인벤토리 내 기어 탭을 통해 장착이 가능합니다.\n기어는 기어 장착 용량을 초과할 수 없습니다. 현명하게 장착해야 합니다."
                 },
                 //대사4 (lightAppear 튜토리얼)
@@ -236,7 +244,7 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
-                    "'랜턴 키를 길게 누르고 있으면' 상호작용 가능합니다."
+                    "[시스템] 랜턴 키를 길게 누르고 있으면 상호작용이 가능합니다."
                 },
                 //대사12 아폴리온 처치
                 new string[]
@@ -247,15 +255,16 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "고동노의 루멘이 관측됩니다.\n아스트라 셀은 이곳에 있을 것으로 예상됩니다.",
+                    "......",
                     "아스트라 셀을 확보 완료.\n전송한 좌표로 이동하시길 바랍니다."
                 },
                 //대사14 실험실
                 new string[]
                 {
-                    "영광의 도시, 자이온의 심층 연구실에 환영합니다.\n당신 앞에 있는 기계는 남아있는 몬스트라레를 보존시키는 장치입니다.",
+                    "자이온의 심층 연구실에 환영합니다.\n당신 앞에 있는 기계는 남아있는 몬스트라레를 보존시키는 장치입니다.",
                     "'검은 안개' 사태 이후 자이온의 테네브레 침식 저지 및 몬스트라레 복구를 위해 오퍼레이션 REKINDLE이 기획되고 1차 작전 실행이 성공적으로 완료되었습니다.",
-                    "아스트라 셀을 기계에 장착해주시길 바랍니다.",
-                    "아스트라 셀 장착 확인.\n몬스트라레 코어 복구율 27%...45% 상승 완료.\n자이온 내 테네브레 수치 78%...58% 감소 확인",
+                    "아스트라 셀을 기계에 장착해주시길 바랍니다.\n......\n......",
+                    "아스트라 셀 장착 확인.\n몬스트라레 코어 복구율 27%...45%.\n자이온 내 테네브레 수치 78%...58%",
                     "자이온 내 테네브레 침식 지연 및 몬스트라레 일부 복구 성공.",
                     "제 1차 오퍼레이션 REKINDLE, 성공적으로 완료되었습니다.\n노고에 감사합니다."
                 },
@@ -264,24 +273,31 @@ public class DialogUI : MonoBehaviour
                 {
                     "몬스트라레 연구 일지 #107",
                     "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는 미지의 물질 '테네브레'가 관측되고 있다.",
-                    "처음에는 별거 아니었다. 생성되도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
-                    "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
-                    "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
+                    "처음에는 별거 아니었다. 생성돼도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
+                    "죽음이...눈앞까지 다가오고 있다."
                 },
                 //대사16 Log4
                 new string[]
                 {
-                    "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는 미지의 물질 '테네브레'가 관측되고 있다.",
-                    "처음에는 별거 아니었다. 생성되도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
                     "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
                     "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
                 },
                 //대사17 상자 튜토리얼
                 new string[]
                 {
-                    "상자 튜토리얼\n상자 튜토리얼\n상자 튜토리얼",
-                    "상자 튜토리얼"
+                    "아르카-05군요. 보급을 저장하기 위해 사용된 상자입니다.\n차후 도움이 될 물건들이 담겨있을 수도 있겠군요."
                 },
+                //대사18 적 처음 감지
+                new string[]
+                {
+                    "테네브레에 침식된 존재입니다.\n지상은 현재 이러한 존재들로 가득합니다."
+                },
+                //대사19 랜턴 활성화
+                new string[]
+                {
+                    "랜턴 시스템 오프라인 확인.\n재부팅 중. 25%...50%...84%...100%.",
+                    "랜턴 시스템 온라인.\n아스트룸의 불빛: 가동 상태 정상. 장비 활성화가 가능합니다."
+                },                
             };
         }
     }
@@ -411,7 +427,6 @@ public class DialogUI : MonoBehaviour
         Open(index);
     }
 
-
     void InputButton(InputAction.CallbackContext callbackContext)
     {
         // 1. performed 상태일 때만 실행 (누르는 순간만 체크)
@@ -420,93 +435,72 @@ public class DialogUI : MonoBehaviour
         // 2. 대화창이 꺼져있거나 인덱스가 비정상일 때 무시
         if (!GameManager.I.isOpenDialog || currentDialogIndex == -1) return;
 
-        // 3. 입력 쿨타임 체크 (실제 시간 기준으로 중복 클릭 방지)
+        // 3. 입력 쿨타임 체크 (Time.realtimeSinceStartup으로 더 정확하게 체크)
         if (Time.realtimeSinceStartup - lastInputTime < inputCooldown) return;
+        lastInputTime = Time.realtimeSinceStartup;
 
-        // 인덱스 범위 초과 방지 가드
         if (currentDialogIndex >= allDialogTexts.Count) return;
         int numPages = allDialogTexts[currentDialogIndex].Length;
 
         switch (currentState)
         {
             case DialogState.TypingSlow:
-                // 타이핑 속도를 빠르게 변경
                 currentState = DialogState.TypingFast;
-                lastInputTime = Time.realtimeSinceStartup; // 입력 시점 기록
                 break;
 
             case DialogState.TypingFast:
-                // 타이핑 연출 생략하고 즉시 전체 출력
                 SkipTyping();
-                lastInputTime = Time.realtimeSinceStartup; // 입력 시점 기록
                 break;
 
             case DialogState.TypingComplete:
-                // 모든 글자가 출력된 상태에서 버튼을 눌렀을 때
                 if (currentPageIndex >= numPages - 1)
                 {
-                    // 마지막 페이지라면 닫기
                     Close();
                 }
                 else
                 {
-                    // [수정 핵심] 다음 페이지로 넘어가기 전, 상태를 즉시 '전환 중'으로 변경
-                    // 이렇게 하면 다음 프레임에서 중복 입력이 들어와도 이 switch문에 걸리지 않습니다.
+                    // [중요] 여기서도 중복 방지를 위해 상태를 즉시 변경
                     currentState = DialogState.ReadyForAdvance;
-
-                    // 쿨타임을 한 번 더 갱신하여 연타 방지
-                    lastInputTime = Time.realtimeSinceStartup;
-
                     AudioManager.I.PlaySFX("UIClick2");
                     NextPage();
                 }
                 break;
 
             case DialogState.ReadyForAdvance:
-                // 페이지 전환 애니메이션 중에는 아무 로직도 타지 않음 (중복 방지)
+                // 이미 페이지 전환 중이므로 아무것도 하지 않음
                 break;
         }
     }
 
     public void NextPage()
     {
-        // [보안] 현재 다이얼로그가 유효하지 않으면 중단
+        // [수정] 현재 다이얼로그가 유효한지 가장 먼저 체크
         if (currentDialogIndex == -1) return;
 
         int numPages = allDialogTexts[currentDialogIndex].Length;
 
-        // [중요] 다음 페이지가 있는지 먼저 확인
-        if (currentPageIndex < numPages - 1)
+        // [수정] 인덱스 범위를 초과하지 않는지 미리 확인
+        if (currentPageIndex >= numPages - 1)
         {
-            // 1. 인덱스를 먼저 안전하게 증가
-            currentPageIndex++;
-
-            // 2. 상태를 확실하게 초기화 (InputButton에서도 하지만 이중 잠금)
-            currentState = DialogState.ReadyForAdvance;
-
-            // 3. 증가된 인덱스의 텍스트를 가져와서 타이핑 시작
-            string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
-            StartTyping(nextText);
-
-            // --- UI 연출 부분 ---
-            // 기존 실행 중인 연출이 있다면 중단 (중복 방지)
-            RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
-            canvasObject.transform.GetChild(0).DOKill();
-            rt.DOKill();
-
-            // 약간 작아졌다가 커지는 탄성 효과
-            canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
-            canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
-
-            // 대사창 크기 조절 (높이가 약간 늘어나는 연출)
-            rt.sizeDelta = new Vector2(800, 160);
-            rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad).SetLink(gameObject);
-        }
-        else
-        {
-            // 더 이상 페이지가 없는데 호출되었다면 닫기 처리
             Close();
+            return;
         }
+
+        currentState = DialogState.ReadyForAdvance;
+        currentPageIndex++; // 인덱스 증가
+
+        // [추가] 텍스트 내용을 가져온 후 즉시 StartTyping 호출
+        string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
+        StartTyping(nextText);
+
+        // UI 연출 (기존 유지)
+        RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
+        canvasObject.transform.GetChild(0).DOKill();
+        rt.DOKill();
+        canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
+        canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
+        rt.sizeDelta = new Vector2(800, 160);
+        rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad).SetLink(gameObject);
     }
 
     public void Open(int index)
@@ -571,40 +565,24 @@ public class DialogUI : MonoBehaviour
 
     IEnumerator ShowTextCoroutine(string text)
     {
-        // 1. 초기화: 시작하자마자 텍스트를 비우고 상태를 고정
         triangle.gameObject.SetActive(false);
-        currentState = DialogState.ReadyForAdvance; // 애니메이션 도중 입력 방지
 
-        contentText.text = text;
+        // [중요] 텍스트 대입 전 초기화
+        contentText.text = string.Empty;
         contentText.maxVisibleCharacters = 0;
-        contentText.ForceMeshUpdate();
 
-        // 2. [핵심] UI 애니메이션 대기
-        // Open 시 SizeDelta 애니메이션이 1.4초이므로, 최소 0.5초~1초는 기다려야 창이 커진게 보입니다.
-        // 첫 페이지(currentPageIndex == 0)일 때만 조금 더 기다려줍니다.
-        if (currentPageIndex == 0)
-        {
-            yield return new WaitForSeconds(0.5f);
-        }
-        else
-        {
-            // 다음 페이지일 때는 연출이 짧으므로(0.4s) 짧게 대기
-            yield return new WaitForSeconds(0.1f);
-        }
+        // [수정] 텍스트 대입 후 TMP 메쉬가 재구성될 때까지 강제로 한 프레임 대기하거나 업데이트 호출
+        contentText.text = text;
+        contentText.ForceMeshUpdate(); // 메쉬 강제 업데이트로 글자 수 오판 방지
 
-        // 타이핑 시작 상태로 변경
+        yield return null; // 확실하게 한 프레임 대기
+
+        int totalVisibleCharacters = text.Length; // 혹은 contentText.textInfo.characterCount;
         currentState = DialogState.TypingSlow;
-        int totalVisibleCharacters = contentText.textInfo.characterCount;
 
-        if (totalVisibleCharacters == 0)
-        {
-            CompleteTypingDisplay();
-            yield break;
-        }
-
-        // 3. 타이핑 루프
         for (int i = 0; i <= totalVisibleCharacters; i++)
         {
+            // 타이핑 도중 상태가 완료로 바뀌면 중단
             if (currentState == DialogState.TypingComplete) break;
 
             float currentSpeed = slowTypingSpeed;
