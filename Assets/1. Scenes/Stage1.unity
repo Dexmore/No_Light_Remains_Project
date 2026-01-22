@@ -417,6 +417,11 @@ MonoBehaviour:
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
     probability: 1
+  - dropItem: {fileID: 4105194811937685722, guid: 9b00a9288af30734386668e5f3faf5a0, type: 3}
+    gold: 0
+    record: {fileID: 0}
+    countRange: {x: 1, y: 1}
+    probability: 1
 --- !u!61 &54083051
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2603,11 +2608,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 61.91
+      value: 130.94
       objectReference: {fileID: 0}
     - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: 24.99
       objectReference: {fileID: 0}
     - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8743,7 +8748,7 @@ Transform:
   m_GameObject: {fileID: 1315039971}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 129.75, y: 25.73, z: 0}
+  m_LocalPosition: {x: 129.19, y: 25.73, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14250,12 +14255,32 @@ PrefabInstance:
     m_TransformParent: {fileID: 1910727759}
     m_Modifications:
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[5].dropItem
+      value: 
+      objectReference: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[6].dropItem
+      value: 
+      objectReference: {fileID: 2473382869896941662, guid: fd6389497d385484ea87d6761a71d05a, type: 3}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[1].probability
-      value: 0.14
+      value: 0.366
+      objectReference: {fileID: 0}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[2].probability
+      value: 0.394
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[4].probability
-      value: 0.24
+      value: 0.365
+      objectReference: {fileID: 0}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[5].probability
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[7].probability

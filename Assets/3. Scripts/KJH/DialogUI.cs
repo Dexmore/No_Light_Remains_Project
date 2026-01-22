@@ -56,7 +56,7 @@ public class DialogUI : MonoBehaviour
                 //대사5 (DarkVanish 튜토리얼)
                 new string[]
                 {
-                    "Halt. TENEBRAE Level is off the charts.\n Status. Limited Vision and Unable to Move Forward.",
+                    "Halt. TENEBRAE Level is off the charts.\nStatus. Limited Vision and Unable to Move Forward.",
                     "Use the Lantern to purify the TENEBRAE.",
                     "Remember. In the midst of darkness, light persists."
                 },
@@ -244,7 +244,7 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
-                    "'랜턴 키를 길게 누르고 있으면' 상호작용 가능합니다."
+                    "[시스템] 랜턴 키를 길게 누르고 있으면 상호작용이 가능합니다."
                 },
                 //대사12 아폴리온 처치
                 new string[]
