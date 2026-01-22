@@ -165,7 +165,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     bool _isInitialized;
     public bool IsSteamInit()
     {
-        return _isInitialized;
+        return SteamAPI.Init();
     }
     public void StopSteam()
     {

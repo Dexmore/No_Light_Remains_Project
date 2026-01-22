@@ -119,7 +119,7 @@ public class LobbyControl : MonoBehaviour
     PopupUI PopupUI;
     void InitSteam()
     {
-        if (!DBManager.I.IsSteam())
+        if (!DBManager.I.IsSteam() || !DBManager.I.IsSteamInit())
         {
             if (!GameManager.I.isShowPop0)
             {

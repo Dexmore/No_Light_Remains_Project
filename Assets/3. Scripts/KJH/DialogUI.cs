@@ -38,16 +38,13 @@ public class DialogUI : MonoBehaviour
                 //대사2 (튜토리얼 씬의 절대 열리지 않는 장식용 문)
                 new string[]
                 {
-                    //Page 1
                     "The door is locked tight.\nI should look elsewhere."
                 },
                 //대사3 (스테이지 1의 테스트 기어발견 & 기어 튜토리얼겸)
                 new string[]
                 {
-                    //1페이지
                     "An old Auxiliary Gear Module... It will help you on your mission",
                     "Finding an active Gear Enhancement Machine allows you to upgrade your gear's capabilities.\nHowever, it is uncertain such machines remain functional in this desolate state",
-                    //2페이지
                     "Gears can be equipped in the Gear tab of your inventory.\nWarning: You cannot exceed the Gear Install Capacity.\n I advise you select wisely."
                 },
                 //대사4 (lightAppear 튜토리얼)
@@ -184,10 +181,8 @@ public class DialogUI : MonoBehaviour
                 //대사3 (스테이지 1의 테스트 기어발견 & & 기어 튜토리얼겸)
                 new string[]
                 {
-                    //1페이지
                     "오래된 보조 장착 기어군요. 장착하면 도움이 될 것 같습니다.",
                     "작동하는 기어 강화 기계를 발견한다는 기어의 성능을 강화할 수 있습니다.\n아직 작동하는게 있을지는 미지수군요.",
-                    //2페이지
                     "인벤토리 내 기어 탭을 통해 장착이 가능합니다.\n기어는 기어 장착 용량을 초과할 수 없습니다. 현명하게 장착해야 합니다."
                 },
                 //대사4 (lightAppear 튜토리얼)
@@ -416,6 +411,7 @@ public class DialogUI : MonoBehaviour
         Open(index);
     }
 
+
     void InputButton(InputAction.CallbackContext callbackContext)
     {
         // 1. performed 상태일 때만 실행 (누르는 순간만 체크)
@@ -424,72 +420,93 @@ public class DialogUI : MonoBehaviour
         // 2. 대화창이 꺼져있거나 인덱스가 비정상일 때 무시
         if (!GameManager.I.isOpenDialog || currentDialogIndex == -1) return;
 
-        // 3. 입력 쿨타임 체크 (Time.realtimeSinceStartup으로 더 정확하게 체크)
+        // 3. 입력 쿨타임 체크 (실제 시간 기준으로 중복 클릭 방지)
         if (Time.realtimeSinceStartup - lastInputTime < inputCooldown) return;
-        lastInputTime = Time.realtimeSinceStartup;
 
+        // 인덱스 범위 초과 방지 가드
         if (currentDialogIndex >= allDialogTexts.Count) return;
         int numPages = allDialogTexts[currentDialogIndex].Length;
 
         switch (currentState)
         {
             case DialogState.TypingSlow:
+                // 타이핑 속도를 빠르게 변경
                 currentState = DialogState.TypingFast;
+                lastInputTime = Time.realtimeSinceStartup; // 입력 시점 기록
                 break;
 
             case DialogState.TypingFast:
+                // 타이핑 연출 생략하고 즉시 전체 출력
                 SkipTyping();
+                lastInputTime = Time.realtimeSinceStartup; // 입력 시점 기록
                 break;
 
             case DialogState.TypingComplete:
+                // 모든 글자가 출력된 상태에서 버튼을 눌렀을 때
                 if (currentPageIndex >= numPages - 1)
                 {
+                    // 마지막 페이지라면 닫기
                     Close();
                 }
                 else
                 {
-                    // [중요] 여기서도 중복 방지를 위해 상태를 즉시 변경
+                    // [수정 핵심] 다음 페이지로 넘어가기 전, 상태를 즉시 '전환 중'으로 변경
+                    // 이렇게 하면 다음 프레임에서 중복 입력이 들어와도 이 switch문에 걸리지 않습니다.
                     currentState = DialogState.ReadyForAdvance;
+
+                    // 쿨타임을 한 번 더 갱신하여 연타 방지
+                    lastInputTime = Time.realtimeSinceStartup;
+
                     AudioManager.I.PlaySFX("UIClick2");
                     NextPage();
                 }
                 break;
 
             case DialogState.ReadyForAdvance:
-                // 이미 페이지 전환 중이므로 아무것도 하지 않음
+                // 페이지 전환 애니메이션 중에는 아무 로직도 타지 않음 (중복 방지)
                 break;
         }
     }
 
     public void NextPage()
     {
-        // [수정] 현재 다이얼로그가 유효한지 가장 먼저 체크
+        // [보안] 현재 다이얼로그가 유효하지 않으면 중단
         if (currentDialogIndex == -1) return;
 
         int numPages = allDialogTexts[currentDialogIndex].Length;
 
-        // [수정] 인덱스 범위를 초과하지 않는지 미리 확인
-        if (currentPageIndex >= numPages - 1)
+        // [중요] 다음 페이지가 있는지 먼저 확인
+        if (currentPageIndex < numPages - 1)
         {
-            Close();
-            return;
+            // 1. 인덱스를 먼저 안전하게 증가
+            currentPageIndex++;
+
+            // 2. 상태를 확실하게 초기화 (InputButton에서도 하지만 이중 잠금)
+            currentState = DialogState.ReadyForAdvance;
+
+            // 3. 증가된 인덱스의 텍스트를 가져와서 타이핑 시작
+            string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
+            StartTyping(nextText);
+
+            // --- UI 연출 부분 ---
+            // 기존 실행 중인 연출이 있다면 중단 (중복 방지)
+            RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
+            canvasObject.transform.GetChild(0).DOKill();
+            rt.DOKill();
+
+            // 약간 작아졌다가 커지는 탄성 효과
+            canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
+            canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
+
+            // 대사창 크기 조절 (높이가 약간 늘어나는 연출)
+            rt.sizeDelta = new Vector2(800, 160);
+            rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad).SetLink(gameObject);
         }
-
-        currentState = DialogState.ReadyForAdvance;
-        currentPageIndex++; // 인덱스 증가
-
-        // [추가] 텍스트 내용을 가져온 후 즉시 StartTyping 호출
-        string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
-        StartTyping(nextText);
-
-        // UI 연출 (기존 유지)
-        RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
-        canvasObject.transform.GetChild(0).DOKill();
-        rt.DOKill();
-        canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
-        canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
-        rt.sizeDelta = new Vector2(800, 160);
-        rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad).SetLink(gameObject);
+        else
+        {
+            // 더 이상 페이지가 없는데 호출되었다면 닫기 처리
+            Close();
+        }
     }
 
     public void Open(int index)
@@ -554,24 +571,40 @@ public class DialogUI : MonoBehaviour
 
     IEnumerator ShowTextCoroutine(string text)
     {
+        // 1. 초기화: 시작하자마자 텍스트를 비우고 상태를 고정
         triangle.gameObject.SetActive(false);
+        currentState = DialogState.ReadyForAdvance; // 애니메이션 도중 입력 방지
 
-        // [중요] 텍스트 대입 전 초기화
-        contentText.text = string.Empty;
-        contentText.maxVisibleCharacters = 0;
-
-        // [수정] 텍스트 대입 후 TMP 메쉬가 재구성될 때까지 강제로 한 프레임 대기하거나 업데이트 호출
         contentText.text = text;
-        contentText.ForceMeshUpdate(); // 메쉬 강제 업데이트로 글자 수 오판 방지
+        contentText.maxVisibleCharacters = 0;
+        contentText.ForceMeshUpdate();
 
-        yield return null; // 확실하게 한 프레임 대기
+        // 2. [핵심] UI 애니메이션 대기
+        // Open 시 SizeDelta 애니메이션이 1.4초이므로, 최소 0.5초~1초는 기다려야 창이 커진게 보입니다.
+        // 첫 페이지(currentPageIndex == 0)일 때만 조금 더 기다려줍니다.
+        if (currentPageIndex == 0)
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+        else
+        {
+            // 다음 페이지일 때는 연출이 짧으므로(0.4s) 짧게 대기
+            yield return new WaitForSeconds(0.1f);
+        }
 
-        int totalVisibleCharacters = text.Length; // 혹은 contentText.textInfo.characterCount;
+        // 타이핑 시작 상태로 변경
         currentState = DialogState.TypingSlow;
+        int totalVisibleCharacters = contentText.textInfo.characterCount;
 
+        if (totalVisibleCharacters == 0)
+        {
+            CompleteTypingDisplay();
+            yield break;
+        }
+
+        // 3. 타이핑 루프
         for (int i = 0; i <= totalVisibleCharacters; i++)
         {
-            // 타이핑 도중 상태가 완료로 바뀌면 중단
             if (currentState == DialogState.TypingComplete) break;
 
             float currentSpeed = slowTypingSpeed;

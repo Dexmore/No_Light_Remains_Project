@@ -97,7 +97,7 @@ public class LoginUI : MonoBehaviour
         while (Time.time - _time < 3f)
         {
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
-            if (DBManager.I.IsSteam())
+            if (DBManager.I.IsSteam() && DBManager.I.IsSteamInit())
             {
                 yield return YieldInstructionCache.WaitForSeconds(0.2f);
                 DBManager.I.LoadSteam();
