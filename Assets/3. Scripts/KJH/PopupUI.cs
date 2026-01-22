@@ -97,10 +97,10 @@ public class PopupUI : MonoBehaviour
             switch (SettingManager.I.setting.locale)
             {
                 case 0:
-                    tMP_Text.text = "Easy";
+                    tMP_Text.text = "Story";
                     break;
                 case 1:
-                    tMP_Text.text = "쉬움";
+                    tMP_Text.text = "스토리";
                     break;
             }
             if (lobbyStoryPanel == null) lobbyStoryPanel = FindAnyObjectByType<LobbyStoryPanel>();
@@ -222,10 +222,10 @@ public class PopupUI : MonoBehaviour
                 switch (SettingManager.I.setting.locale)
                 {
                     case 0:
-                        tMP_Text.text = "Easy";
+                        tMP_Text.text = "Story";
                         break;
                     case 1:
-                        tMP_Text.text = "쉬움";
+                        tMP_Text.text = "스토리";
                         break;
                 }
                 break;
@@ -267,10 +267,10 @@ public class PopupUI : MonoBehaviour
                 switch (SettingManager.I.setting.locale)
                 {
                     case 0:
-                        tMP_Text.text = "Easy";
+                        tMP_Text.text = "Story";
                         break;
                     case 1:
-                        tMP_Text.text = "쉬움";
+                        tMP_Text.text = "스토리";
                         break;
                 }
                 break;

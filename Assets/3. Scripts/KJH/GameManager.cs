@@ -533,8 +533,6 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #region 불러오기 씬 세팅 관련
 
-
-
     public void SetSceneFromDB(bool isLeftDirection = false)
     {
         SetScene(DBManager.I.currData.lastPos, isLeftDirection);
@@ -868,12 +866,6 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     #endregion
 
-
-
-
-
-
-
     void BackToLobbyHandler()
     {
         isLanternOn = false;
@@ -885,13 +877,15 @@ public class GameManager : SingletonBehaviour<GameManager>
         ach_chestCount = 0;
         ach_parryCount = 0;
         ach_NormalLKCount = 0;
+        potionDebt = 0;
     }
 
-    void SceneStartHandler()
+    async void SceneStartHandler()
     {
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();
         if (playerControl)
         {
+            playerControl.fsm.ChangeState(playerControl.stop);
             isOpenPop = false;
             isOpenDialog = false;
             isOpenInventory = false;
@@ -916,6 +910,9 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
         }
         RefreshGears();
+        await Task.Delay(1000);
+        if (playerControl)
+            playerControl.fsm.ChangeState(playerControl.idle);
     }
 
 

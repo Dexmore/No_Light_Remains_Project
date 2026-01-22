@@ -50,7 +50,7 @@ public class PlayerInteraction : MonoBehaviour
     Transform camTR;
     PlayerControl playerControl;
     [ReadOnlyInspector][SerializeField] Interactable target1;
-    [ReadOnlyInspector]public Lanternable target2;
+    [ReadOnlyInspector] public Lanternable target2;
     Vector3 distancePivot;
     PromptControl prompt;
     PlayerLight PlayerLight;
@@ -102,9 +102,10 @@ public class PlayerInteraction : MonoBehaviour
     public bool press2;
     void InputInteract(InputAction.CallbackContext callback)
     {
-        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
+        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
+        if (playerControl.fsm.currentState == playerControl.stop) return;
         if (!press1)
         {
             if (target1 != null)
@@ -190,10 +191,11 @@ public class PlayerInteraction : MonoBehaviour
     }
     void InputLanternInteract(InputAction.CallbackContext callback)
     {
-        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
+        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         if (playerControl.fsm.currentState == playerControl.openInventory) return;
         if (playerControl.fsm.currentState == playerControl.die) return;
         if (playerControl.fsm.currentState != playerControl.idle) return;
+        if (playerControl.fsm.currentState == playerControl.stop) return;
         if (!playerControl.Grounded) return;
         if (target2 == null) return;
         if (!press2)
@@ -497,23 +499,9 @@ public class PlayerInteraction : MonoBehaviour
         {
             int rnd = Random.Range(12, 18);
             await UniTask.DelayFrame(rnd, cancellationToken: token);
-            if (playerControl.fsm.currentState == playerControl.openInventory)
-            {
-                prompt.Close(0);
-                target1 = null;
-                prompt.Close(1);
-                target2?.PromptCancel();
-                ctsLanternAnimationStart?.Cancel();
-                ctsLanternAnimationExit?.Cancel();
-                ctsLanternAnimationExit = new CancellationTokenSource();
-                var ctsLink = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsLanternAnimationExit.Token);
-                LanternAnimationExit(ctsLink.Token).Forget();
-                sfxLanternInteraction?.Despawn();
-                sfxLanternInteraction = null;
-                target2 = null;
-                continue;
-            }
-            if (playerControl.fsm.currentState == playerControl.die)
+            if (playerControl.fsm.currentState == playerControl.openInventory
+            || playerControl.fsm.currentState == playerControl.die
+            || playerControl.fsm.currentState == playerControl.stop)
             {
                 prompt.Close(0);
                 target1 = null;

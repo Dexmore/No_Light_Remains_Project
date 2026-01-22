@@ -136,6 +136,20 @@ public class DialogUI : MonoBehaviour
                     "Regardless, casualties are mounting due to these unknown entities and the Tenebrae itself.",
                     "Outside, the world is swallowed by a thick, dark haze saturated with lethal Tenebrae levels.\nWe have come to call this catastrophe 'The Black Mist.'"
                 },
+                //대사16 Log4
+                new string[]
+                {
+                    "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는 미지의 물질 '테네브레'가 관측되고 있다.",
+                    "처음에는 별거 아니었다. 생성되도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다. 이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
+                    "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
+                    "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
+                },
+                //대사17 상자 튜토리얼
+                new string[]
+                {
+                    "상자 튜토리얼\n상자 튜토리얼\n상자 튜토리얼",
+                    "상자 튜토리얼"
+                },
 
             };
         }
@@ -267,6 +281,12 @@ public class DialogUI : MonoBehaviour
                     "현재 자이온 외각에는 테네브레에 침식된...저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해 인명 피해가 증가하고 있다.",
                     "현재 밖은 높은 테네브레 수치가 관측되는 검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
                 },
+                //대사17 상자 튜토리얼
+                new string[]
+                {
+                    "상자 튜토리얼\n상자 튜토리얼\n상자 튜토리얼",
+                    "상자 튜토리얼"
+                },
             };
         }
     }
@@ -287,7 +307,7 @@ public class DialogUI : MonoBehaviour
 
     // 중복 입력 방지를 위한 쿨타임 변수
     private float lastInputTime = 0f;
-    private const float inputCooldown = 0.2f;
+    private const float inputCooldown = 0.26f;
 
     private enum DialogState
     {
@@ -376,12 +396,15 @@ public class DialogUI : MonoBehaviour
 
     void InputButton(InputAction.CallbackContext callbackContext)
     {
-        // 1. 대화창이 꺼져있거나 인덱스가 비정상일 때 무시
+        // 1. performed 상태일 때만 실행 (누르는 순간만 체크)
+        if (!callbackContext.performed) return;
+
+        // 2. 대화창이 꺼져있거나 인덱스가 비정상일 때 무시
         if (!GameManager.I.isOpenDialog || currentDialogIndex == -1) return;
 
-        // 2. 입력 쿨타임 체크 (희귀한 페이지 중복 방지 핵심)
-        if (Time.time - lastInputTime < inputCooldown) return;
-        lastInputTime = Time.time;
+        // 3. 입력 쿨타임 체크 (Time.realtimeSinceStartup으로 더 정확하게 체크)
+        if (Time.realtimeSinceStartup - lastInputTime < inputCooldown) return;
+        lastInputTime = Time.realtimeSinceStartup;
 
         if (currentDialogIndex >= allDialogTexts.Count) return;
         int numPages = allDialogTexts[currentDialogIndex].Length;
@@ -403,38 +426,48 @@ public class DialogUI : MonoBehaviour
                 }
                 else
                 {
+                    // [중요] 여기서도 중복 방지를 위해 상태를 즉시 변경
+                    currentState = DialogState.ReadyForAdvance;
                     AudioManager.I.PlaySFX("UIClick2");
                     NextPage();
                 }
                 break;
 
             case DialogState.ReadyForAdvance:
-                // 페이지 전환 중이므로 입력 무시
+                // 이미 페이지 전환 중이므로 아무것도 하지 않음
                 break;
         }
     }
 
     public void NextPage()
     {
-        // 상태를 먼저 전환하여 입력 중복 방지
-        currentState = DialogState.ReadyForAdvance;
-        currentPageIndex++;
+        // [수정] 현재 다이얼로그가 유효한지 가장 먼저 체크
+        if (currentDialogIndex == -1) return;
 
-        if (currentPageIndex < allDialogTexts[currentDialogIndex].Length)
+        int numPages = allDialogTexts[currentDialogIndex].Length;
+
+        // [수정] 인덱스 범위를 초과하지 않는지 미리 확인
+        if (currentPageIndex >= numPages - 1)
         {
-            string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
-            StartTyping(nextText);
-
-            // UI 연출
-            RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
-            canvasObject.transform.GetChild(0).DOKill();
-            rt.DOKill();
-
-            canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
-            canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
-            rt.sizeDelta = new Vector2(800, 160);
-            rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad).SetLink(gameObject);
+            Close();
+            return;
         }
+
+        currentState = DialogState.ReadyForAdvance;
+        currentPageIndex++; // 인덱스 증가
+
+        // [추가] 텍스트 내용을 가져온 후 즉시 StartTyping 호출
+        string nextText = allDialogTexts[currentDialogIndex][currentPageIndex];
+        StartTyping(nextText);
+
+        // UI 연출 (기존 유지)
+        RectTransform rt = canvasObject.transform.GetChild(0) as RectTransform;
+        canvasObject.transform.GetChild(0).DOKill();
+        rt.DOKill();
+        canvasObject.transform.GetChild(0).localScale = 0.8f * Vector3.one;
+        canvasObject.transform.GetChild(0).DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetLink(gameObject);
+        rt.sizeDelta = new Vector2(800, 160);
+        rt.DOSizeDelta(new Vector2(800, 200), 0.4f).SetEase(Ease.OutQuad).SetLink(gameObject);
     }
 
     public void Open(int index)
@@ -499,17 +532,23 @@ public class DialogUI : MonoBehaviour
     IEnumerator ShowTextCoroutine(string text)
     {
         triangle.gameObject.SetActive(false);
-        contentText.text = ""; // 이전 텍스트 초기화
+
+        // [중요] 텍스트 대입 전 초기화
+        contentText.text = string.Empty;
         contentText.maxVisibleCharacters = 0;
 
-        // 텍스트가 완전히 셋팅될 시간을 아주 잠깐 부여
-        yield return null;
+        // [수정] 텍스트 대입 후 TMP 메쉬가 재구성될 때까지 강제로 한 프레임 대기하거나 업데이트 호출
         contentText.text = text;
+        contentText.ForceMeshUpdate(); // 메쉬 강제 업데이트로 글자 수 오판 방지
 
+        yield return null; // 확실하게 한 프레임 대기
+
+        int totalVisibleCharacters = text.Length; // 혹은 contentText.textInfo.characterCount;
         currentState = DialogState.TypingSlow;
 
-        for (int i = 0; i < text.Length; i++)
+        for (int i = 0; i <= totalVisibleCharacters; i++)
         {
+            // 타이핑 도중 상태가 완료로 바뀌면 중단
             if (currentState == DialogState.TypingComplete) break;
 
             float currentSpeed = slowTypingSpeed;
@@ -519,9 +558,9 @@ public class DialogUI : MonoBehaviour
                 case DialogState.TypingFast: currentSpeed = fastTypingSpeed; break;
             }
 
-            contentText.maxVisibleCharacters = i + 1;
+            contentText.maxVisibleCharacters = i;
 
-            // 사운드 재생 로직 최적화
+            // 사운드 재생
             if (currentState == DialogState.TypingSlow) AudioManager.I.PlaySFX("Tick1");
             else if (currentState == DialogState.TypingNormal && i % 2 == 0) AudioManager.I.PlaySFX("Tick1");
             else if (currentState == DialogState.TypingFast && i % 4 == 0) AudioManager.I.PlaySFX("Tick1");
