@@ -4,7 +4,6 @@ using UnityEngine;
 public class ChestTutorial : MonoBehaviour
 {
     public ChestInteractable_LSH chest;
-    SFX sfx;
     PlayerControl playerControl;
     UnityEngine.UI.Text keyText;
     void Awake()

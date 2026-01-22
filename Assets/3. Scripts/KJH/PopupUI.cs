@@ -416,12 +416,12 @@ public class PopupUI : MonoBehaviour
     [SerializeField] AudioMixer audioMixer;
     void SetBGMVolume(float value)
     {
-        audioMixer.SetFloat("BGMVolume", Mathf.Log10(value) * 20); // 오디오 믹서 연동 시
+        audioMixer.SetFloat("BGMVolume", Mathf.Log10(Mathf.Max(0.001f, value)) * 20); // 오디오 믹서 연동 시
         SettingManager.I.setting.bgmVolume = value;
     }
     void SetSFXVolume(float value)
     {
-        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20 + 12); // 오디오 믹서 연동 시
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Max(0.001f, value)) * 20 + 12); // 오디오 믹서 연동 시
         SettingManager.I.setting.sfxVolume = value;
 
     }

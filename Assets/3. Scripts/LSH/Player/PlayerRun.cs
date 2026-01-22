@@ -13,6 +13,8 @@ public class PlayerRun : IPlayerState
     bool jumpPressed;
     bool attackPressed;
     bool potionPressed;
+    bool downPressed;
+
     public void Enter()
     {
         if (moveAction == null)
@@ -39,19 +41,25 @@ public class PlayerRun : IPlayerState
         if (moveActionValue.x == 0)
             fsm.ChangeState(ctx.idle);
 
+        if (moveActionValue.y < 0) downPressed = true;
+        else downPressed = false;
+
         jumpPressed = jumpAction.IsPressed();
-        if (jumpPressed && !ctx.Jumped && ctx.Grounded)
+        if (jumpPressed && !ctx.Jumped && ctx.Grounded && !downPressed)
         {
             ctx.Jumped = true;
             fsm.ChangeState(ctx.jump);
         }
+        
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
             fsm.ChangeState(ctx.attack);
 
-        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
+        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.8f)
+        {
             fsm.ChangeState(ctx.fall);
-        
+        }
+
         potionPressed = potionAction.IsPressed();
         if (potionPressed && ctx.Grounded && (ctx.currHealth / ctx.maxHealth) < 1f)
         {
@@ -62,7 +70,7 @@ public class PlayerRun : IPlayerState
                 fsm.ChangeState(ctx.usePotion);
             }
         }
-        
+
     }
     public void UpdatePhysics()
     {
@@ -104,5 +112,5 @@ public class PlayerRun : IPlayerState
             }
     }
     [HideInInspector] public bool isStagger = false;
-    
+
 }

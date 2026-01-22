@@ -19,6 +19,7 @@ public class PlayerIdle : IPlayerState
     private InputAction parryAction;
     bool parryPressed;
     private InputAction escAction;
+    bool downPressed;
     int flagInt = 0;
     public void Enter()
     {
@@ -42,6 +43,7 @@ public class PlayerIdle : IPlayerState
         escAction.canceled += CancelESC;
         isESC = false;
         tween?.Kill();
+        ctx.fallThroughPlatform = false;
     }
     public void Exit()
     {
@@ -57,26 +59,36 @@ public class PlayerIdle : IPlayerState
         if (moveActionValue.x != 0)
             fsm.ChangeState(ctx.run);
 
+        if (moveActionValue.y < 0) downPressed = true;
+        else downPressed = false;
+
         jumpPressed = jumpAction.IsPressed();
         if (jumpPressed && !ctx.Jumped && ctx.Grounded)
         {
-            if (moveActionValue.x == 0 && moveActionValue.y < 0)
+            if (downPressed)
             {
-                ctx.fallThroughPlatform = true;
-                tween = DOVirtual.DelayedCall(0.1f, () => {ctx.fallThroughPlatform = false;}).Play();
-                ctx.rb.AddForce(Vector2.down);
+                if (moveActionValue.x == 0 && !ctx.fallThroughPlatform)
+                {
+                    ctx.fallThroughPlatform = true;
+                    ctx.rb.AddForce(2f * Vector2.down);
+                    fsm.ChangeState(ctx.fall);
+                    tween = DOVirtual.DelayedCall(0.1f, () => {ctx.fallThroughPlatform = false;}).Play().SetLink(ctx.gameObject);
+                }
             }
-            else if(!ctx.fallThroughPlatform)
+            else
             {
-                ctx.Jumped = true;
-                fsm.ChangeState(ctx.jump);
+                if (!ctx.fallThroughPlatform)
+                {
+                    ctx.Jumped = true;
+                    fsm.ChangeState(ctx.jump);
+                }
             }
         }
-        
+
         attackPressed = attackAction.IsPressed();
         if (attackPressed && ctx.Grounded)
         {
-            if(Time.time - ctx.attack.finishTime < 0.22f)
+            if (Time.time - ctx.attack.finishTime < 0.22f)
             {
                 fsm.ChangeState(ctx.attackCombo);
             }
@@ -86,8 +98,10 @@ public class PlayerIdle : IPlayerState
             }
         }
 
-        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.1f)
+        if (!ctx.Grounded && ctx.rb.linearVelocity.y < -0.8f)
+        {
             fsm.ChangeState(ctx.fall);
+        }
 
         potionPressed = potionAction.IsPressed();
         if (potionPressed && ctx.Grounded && (ctx.currHealth / ctx.maxHealth) < 0.93f)

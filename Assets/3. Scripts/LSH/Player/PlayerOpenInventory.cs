@@ -81,7 +81,6 @@ public class PlayerOpenInventory : IPlayerState
             }
 
             DBManager.I.currData.currPotionCount += bonus;
-            ParticleManager.I.PlayText("Max Potion +", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 2f);
         }
         // [케이스 B] 끼고 있다가 해제함: 보너스 회수
         else if (wasEquipped && !isEquippedNow)
@@ -98,10 +97,7 @@ public class PlayerOpenInventory : IPlayerState
             {
                 DBManager.I.currData.currPotionCount -= penalty;
             }
-
-            ParticleManager.I.PlayText("Max Potion -", ctx.transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 2f);
         }
-
         // 2. 수치 갱신
         if (isEquippedNow)
             DBManager.I.currData.maxPotionCount = (level == 1) ? 5 : 4;

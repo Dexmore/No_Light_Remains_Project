@@ -147,8 +147,8 @@ public class DialogUI : MonoBehaviour
                 //대사17 상자 튜토리얼
                 new string[]
                 {
-                    "상자 튜토리얼\n상자 튜토리얼\n상자 튜토리얼",
-                    "상자 튜토리얼"
+                    "Chest Tutorial\nChest Tutorial\nChest Tutorial",
+                    "Chest Tutorial"
                 },
 
             };
@@ -300,6 +300,7 @@ public class DialogUI : MonoBehaviour
     TMP_Text contentText;
     PlayerControl playerControl;
     Image triangle;
+    private Coroutine glitchCoroutine;
 
     private int currentDialogIndex = -1;
     private int currentPageIndex = 0;
@@ -357,12 +358,25 @@ public class DialogUI : MonoBehaviour
 
     IEnumerator SometimesGlitchTextLoop()
     {
+        // 코루틴 시작 시점의 원본 대사를 저장해둡니다.
+        string originalText = contentText.text;
         Transform parent = canvasObject.transform;
+
+        // 첫 글리치 시작 전 대기
         yield return YieldInstructionCache.WaitForSeconds(0.9f);
+
         TMP_Text[] texts1 = parent.GetComponentsInChildren<TMP_Text>();
         Text[] texts2 = parent.GetComponentsInChildren<Text>();
+
         while (true)
         {
+            // [핵심 가드] 만약 페이지가 넘어가서 contentText의 내용이 바뀌었다면 이 루프를 즉시 종료합니다.
+            if (contentText.text != originalText)
+            {
+                glitchCoroutine = null;
+                yield break;
+            }
+
             if (Random.value < 0.3f)
             {
                 int rnd = Random.Range(0, texts1.Length + texts2.Length);
@@ -379,13 +393,21 @@ public class DialogUI : MonoBehaviour
                 {
                     if (rnd < texts1.Length && texts1[rnd] != null && texts1[rnd].gameObject.activeInHierarchy && texts1[rnd].name != "EmptyText")
                     {
+                        // 메인 대사창(contentText)에 글리치를 먹일 때, 원본을 해치지 않도록 주의해야 합니다.
                         GameManager.I.GlitchPartialText(texts1[rnd], 3, 0.16f);
                         if (Random.value < 0.73f) AudioManager.I.PlaySFX("Glitch1");
                     }
                 }
             }
+
             yield return YieldInstructionCache.WaitForSeconds(Random.Range(0.2f, 1.5f));
-            if (!canvasObject.activeInHierarchy) yield break;
+
+            // UI가 꺼졌다면 종료
+            if (!canvasObject.activeInHierarchy)
+            {
+                glitchCoroutine = null;
+                yield break;
+            }
         }
     }
 
@@ -514,6 +536,7 @@ public class DialogUI : MonoBehaviour
     public void Close(bool isSFX = true)
     {
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        if (glitchCoroutine != null) StopCoroutine(glitchCoroutine);
 
         canvasObject.transform.GetChild(0).DOKill();
         canvasObject.transform.GetChild(0).DOScale(0f, 0.15f).SetEase(Ease.InSine).OnComplete(() =>
@@ -582,8 +605,9 @@ public class DialogUI : MonoBehaviour
         triangle.color = new Color(triangle.color.r, triangle.color.g, triangle.color.b, 0.2f);
         tweenTriangle = triangle.DOFade(1f, 0.15f).SetLink(gameObject).SetLoops(-1, LoopType.Yoyo).Play();
 
-        StopCoroutine(nameof(SometimesGlitchTextLoop));
-        StartCoroutine(nameof(SometimesGlitchTextLoop));
+        // [수정] 명확하게 참조를 저장하며 시작
+        if (glitchCoroutine != null) StopCoroutine(glitchCoroutine);
+        glitchCoroutine = StartCoroutine(SometimesGlitchTextLoop());
     }
 
     private void SkipTyping(bool isSFX = true)
@@ -599,6 +623,13 @@ public class DialogUI : MonoBehaviour
 
     private void StartTyping(string text)
     {
+        // [추가] 타이핑 시작 시 기존 글리치 코루틴이 있다면 확실히 정지
+        if (glitchCoroutine != null)
+        {
+            StopCoroutine(glitchCoroutine);
+            glitchCoroutine = null;
+        }
+
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(ShowTextCoroutine(text));
     }

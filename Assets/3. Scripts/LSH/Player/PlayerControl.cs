@@ -283,24 +283,6 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    // void CheckPlatformFallThrough()
-    // {
-    //     bool downPressed = Keyboard.current != null && Keyboard.current.downArrowKey.isPressed;
-    //     bool jumpBoundPressed = false;
-    //     if (jumpAction != null)
-    //     {
-    //         try
-    //         {
-    //             jumpBoundPressed = jumpAction.ReadValue<float>() > 0f;
-    //         }
-    //         catch
-    //         {
-    //             jumpBoundPressed = false;
-    //         }
-    //     }
-    //     fallThroughPlatform = downPressed && jumpBoundPressed;
-    // }
-
     #region Dash
     int leftDashInputCount = 0;
     int rightDashInputCount = 0;
@@ -445,11 +427,16 @@ public class PlayerControl : MonoBehaviour
                 //Debug.Log("회피 성공");
                 return;
             }
-            Vector2 dir = 4.2f * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
-            dir.y = 2f;
-            Vector3 velo = rb.linearVelocity;
-            rb.linearVelocity = 0.4f * velo;
-            rb.AddForce(dir, ForceMode2D.Impulse);
+            if (fsm.currentState != jump 
+            && fsm.currentState != fall
+            && !fallThroughPlatform)
+            {
+                Vector2 dir = 4.2f * (hData.target.position.x - hData.attacker.position.x) * Vector2.right;
+                dir.y = 2f;
+                Vector3 velo = rb.linearVelocity;
+                rb.linearVelocity = 0.4f * velo;
+                rb.AddForce(dir, ForceMode2D.Impulse);
+            }
             currHealth -= (int)hData.damage;
             currHealth = Mathf.Clamp(currHealth, 0f, maxHealth);
             DBManager.I.currData.currHealth = currHealth;
@@ -469,6 +456,9 @@ public class PlayerControl : MonoBehaviour
             }
             GameManager.I.onHitAfter.Invoke(hData);
             return;
+
+
+
         }
         else if (hData.attackType != HitData.AttackType.Chafe)
         {
@@ -718,7 +708,7 @@ public class PlayerControl : MonoBehaviour
         if (_Dead) return;
         if (fsm.currentState == stop) return;
         if (fsm.currentState == openInventory) return;
-        if(GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
+        if (GameManager.I.isOpenDialog || GameManager.I.isOpenPop || GameManager.I.isOpenInventory) return;
         AudioManager.I.PlaySFX("FlashlightClick");
         GameObject light0 = PlayerLight.transform.GetChild(0).gameObject;
         GameObject light1 = PlayerLight.transform.GetChild(1).gameObject;
