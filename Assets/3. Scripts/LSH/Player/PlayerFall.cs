@@ -11,24 +11,28 @@ public class PlayerFall : IPlayerState
     {
         if (moveAction == null)
             moveAction = ctx.inputActionAsset.FindActionMap("Player").FindAction("Move");
-        ctx.animator.Play("Player_Fall");
+
         startTime = Time.time;
-        //;
+        isAnimation = false;
     }
     float startTime;
+    bool isAnimation;
     public void Exit()
     {
-
+        
     }
     public void UpdateState()
     {
         moveActionValue = moveAction.ReadValue<Vector2>();
         moveActionValue.y = 0f;
-        if(Time.time - startTime > 0.1f && ctx.fallThroughPlatform)
+        if (Time.time - startTime > 0.1f && !isAnimation)
         {
-            ctx.fallThroughPlatform = false;
+            ctx.animator.Play("Player_Fall");
+            isAnimation = true;
+            if (ctx.fallThroughPlatform)
+                ctx.fallThroughPlatform = false;
         }
-        if (ctx.Grounded)
+        if (Time.time - startTime > 0.08f && ctx.Grounded)
         {
             if (Mathf.Abs(moveActionValue.x) > 0.01f)
                 fsm.ChangeState(ctx.run);

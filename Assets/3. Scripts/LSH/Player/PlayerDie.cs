@@ -20,7 +20,7 @@ public class PlayerDie : IPlayerState
         GameManager.I.isLanternOn = false;
         DBManager.I.currData.death++;
         DBManager.I.savedData.death++;
-        
+        GameManager.I.ach_chestCount = 0;
     }
     public void Exit()
     {

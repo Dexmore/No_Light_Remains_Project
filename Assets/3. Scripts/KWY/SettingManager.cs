@@ -61,9 +61,9 @@ public class SettingManager : SingletonBehaviour<SettingManager>
         // 2. 오디오 볼륨 적용 (Mixer 파라미터 이름 확인 필요)
         if (audioMixer != null)
         {
-            audioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.masterVolume)) * 20);
-            audioMixer.SetFloat("BGMVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.bgmVolume)) * 20);
-            audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Max(0.0001f, setting.sfxVolume)) * 20 + 12);
+            audioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Max(0.001f, setting.masterVolume)) * 20);
+            audioMixer.SetFloat("BGMVolume", Mathf.Log10(Mathf.Max(0.001f, setting.bgmVolume)) * 20);
+            audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Max(0.001f, setting.sfxVolume)) * 20 + 12);
         }
 
         // 3. 언어 설정 적용 (Localization 패키지 사용 시)

@@ -162,19 +162,19 @@ public class LobbySettingPanel : MonoBehaviour
 
     public void SetMasterVolume(float value)
     {
-        audioMixer.SetFloat("MasterVolume", Mathf.Log10(value) * 20);
+        audioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Max(0.001f, value)) * 20);
         SettingManager.I.setting.masterVolume = value;
     }
 
     public void SetBGMVolume(float value)
     {
-        audioMixer.SetFloat("BGMVolume", Mathf.Log10(value) * 20);
+        audioMixer.SetFloat("BGMVolume", Mathf.Log10(Mathf.Max(0.001f, value)) * 20);
         SettingManager.I.setting.bgmVolume = value;
     }
 
     public void SetSFXVolume(float value)
     {
-        audioMixer.SetFloat("SFXVolume", Mathf.Log10(value) * 20 + 12);
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Max(0.001f, value)) * 20 + 12);
         SettingManager.I.setting.sfxVolume = value;
     }
     public void ClickSound()

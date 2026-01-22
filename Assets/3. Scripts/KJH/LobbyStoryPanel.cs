@@ -256,7 +256,7 @@ public class LobbyStoryPanel : MonoBehaviour
             else
                 thumbnail.sprite = noImage;
         }
-        
+
         wrap.Find("LocationText(1)").GetComponent<TMP_Text>().text = $"{data.sceneName}";
         string diffText = "";
         switch (data.difficulty)
@@ -265,10 +265,10 @@ public class LobbyStoryPanel : MonoBehaviour
                 switch (SettingManager.I.setting.locale)
                 {
                     case 0:
-                        diffText = "Easy";
+                        diffText = "Story";
                         break;
                     case 1:
-                        diffText = "쉬움";
+                        diffText = "스토리";
                         break;
                 }
                 break;
@@ -452,6 +452,29 @@ public class LobbyStoryPanel : MonoBehaviour
     {
         AudioManager.I.PlaySFX("SciFiConfirm");
         PopupUI.ClosePop(4, false);
+#if UNITY_STANDALONE_WIN
+    string fileLocation = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
+#else
+    string fileLocation = Path.Combine(Application.persistentDataPath, "REKINDLE_SaveData");
+#endif
+        int slotNum = (isSteamSlot) ? select : select + 3;
+        string screenshotPath = Path.Combine(fileLocation, $"{slotNum}.png");
+        Debug.Log(screenshotPath);
+        if (File.Exists(screenshotPath))
+        {
+            try
+            {
+                File.Delete(screenshotPath);
+            }
+            catch (System.Exception e)
+            {
+            
+            }
+        }
+        else
+        {
+            
+        }
         if (isSteamSlot)
         {
             SaveData copy = new SaveData();
