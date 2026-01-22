@@ -59,6 +59,10 @@ public class AudioManager : SingletonBehaviour<AudioManager>
 
     void SceneChangeHandler()
     {
+        StartAutoBGM();
+    }
+    public void StartAutoBGM()
+    {
         string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         int find = autoBGM.FindIndex(x => x.scneneName == sceneName);
 
@@ -74,12 +78,12 @@ public class AudioManager : SingletonBehaviour<AudioManager>
 
         // 현재 재생 중인 클립 확인
         bool isAlreadyPlaying = false;
-        if(currentAus)
+        if (currentAus)
         {
             AudioClip currentClip = currentAus.clip;
             isAlreadyPlaying = sceneBGMList.Any(x => x.audioClip == currentClip);
         }
-        
+
         if (isAlreadyPlaying && currentAus.isPlaying)
         {
             // 3. 이미 현재 씬의 음악 중 하나가 재생 중인 경우
@@ -147,6 +151,13 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         nextAus.Play();
         StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
         currentAus = nextAus;
+    }
+    public void StopBGM()
+    {
+        StopCoroutine("PlayBGM_co");
+        ausBGM0.Stop();
+        ausBGM1.Stop();
+        currentAus.Stop();
     }
     public void PlayBGMWithFade(string bgmName, float duration = 1f)
     {

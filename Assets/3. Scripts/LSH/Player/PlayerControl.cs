@@ -427,7 +427,7 @@ public class PlayerControl : MonoBehaviour
                 //Debug.Log("회피 성공");
                 return;
             }
-            if (fsm.currentState != jump 
+            if (fsm.currentState != jump
             && fsm.currentState != fall
             && !fallThroughPlatform)
             {
@@ -885,11 +885,24 @@ public class PlayerControl : MonoBehaviour
 
     private void OnParrySuccess(HitData hData)
     {
+        Vector3 position = hData.hitPoint;
+        position += 0.5f * childTR.right;
+        if (parry.lastSuccesCount % 2 == 1)
+        {
+            position += 0.62f * Vector3.up;
+        }
+        else
+        {
+            position -= 0.61f * Vector3.up;
+            position += 0.12f * childTR.right;
+        }
+        Vector3 rndInCircle = Random.insideUnitSphere;
+        rndInCircle.z = 0;
+        position += 0.35f * rndInCircle;
         if (!string.IsNullOrEmpty(parryParticle))
         {
-            ParticleManager.I.PlayParticle(parryParticle, hData.hitPoint, Quaternion.identity, null);
+            ParticleManager.I.PlayParticle(parryParticle, position, Quaternion.identity, null);
         }
-
         StartOrExtendHitStop(parryHitStopDuration, parryHitStopTimeScale);
     }
 

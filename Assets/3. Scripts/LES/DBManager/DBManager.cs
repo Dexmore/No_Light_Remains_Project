@@ -597,7 +597,7 @@ public class DBManager : SingletonBehaviour<DBManager>
 
             // (선택사항) 저장 기능을 바로 호출하고 싶다면
             // Save(); 
-            SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
+            // SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
             GameManager.I.RefreshGears();
         }
     }
@@ -615,13 +615,19 @@ public class DBManager : SingletonBehaviour<DBManager>
             SteamUserStats.StoreStats();
             //Debug.Log($"Try Achievement {API_Name}");
         }
+
+
+        // 구현된 도전과제 업적
+        // ACH_BOSS_LANTERN_KILL (보스 최초 처치)
+        // ACH_GEAR_COLLECT_ALL (모든 기어 수집)
+
+
+        // 아래는 예시 (미구현)
         // ACH_PARRY_FIRST
         // ACH_CHEST_OPEN_5
         // ACH_GEAR_UPGRADE_FIRST
         // ACH_FLOWER_KILL_20 (MonsterDie)
         // ACH_PARRY_COUNT_50
-        // ACH_BOSS_LANTERN_KILL (MonsterDie)
-        // ACH_GEAR_COLLECT_ALL
         // ACH_BOSS_LANTERN_KILL_2_NORMAL (MonsterDie)
         // ACH_PARRY_COMBO_4
         // ACH_FLOWER_KILL_100 (MonsterDie)
