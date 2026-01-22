@@ -64,7 +64,7 @@ public class PlayerParry : IPlayerState
         sfxWait = null;
     }
     float addTime = 0.4f;
-    int lastSuccesCount;
+    [HideInInspector] public int lastSuccesCount;
     float lastSuccesTime;
     void ParrySuccessHandler(HitData hitData)
     {
@@ -132,15 +132,15 @@ public class PlayerParry : IPlayerState
             }
         }
         GameManager.I.ach_parryCount++;
-        if (GameManager.I.ach_parryCount == 1)
-        {
-            DBManager.I.SteamAchievement("ACH_PARRY_FIRST");
-        }
-        if (GameManager.I.ach_parryCount >= 50)
-        {
-            DBManager.I.SteamAchievement("ACH_PARRY_COUNT_50");
-            GameManager.I.ach_parryCount = 0;
-        }
+        // if (GameManager.I.ach_parryCount == 1)
+        // {
+        //     DBManager.I.SteamAchievement("ACH_PARRY_FIRST");
+        // }
+        // if (GameManager.I.ach_parryCount >= 50)
+        // {
+        //     DBManager.I.SteamAchievement("ACH_PARRY_COUNT_50");
+        //     GameManager.I.ach_parryCount = 0;
+        // }
     }
     bool isSuccess;
     private float adjustedTime1;

@@ -56,11 +56,11 @@ public class ChestInteractable_LSH : Interactable, ISavable
     {
         if (!isReady || isComplete || opened) return;
         OpenChest();
-        GameManager.I.ach_chestCount++;
-        if(GameManager.I.ach_chestCount >= 5)
-        {
-            DBManager.I.SteamAchievement("ACH_CHEST_OPEN_5");
-        }
+        // GameManager.I.ach_chestCount++;
+        // if(GameManager.I.ach_chestCount >= 5)
+        // {
+        //     DBManager.I.SteamAchievement("ACH_CHEST_OPEN_5");
+        // }
     }
     private async void OpenChest()
     {
