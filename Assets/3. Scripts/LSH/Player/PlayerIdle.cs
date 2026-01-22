@@ -61,7 +61,6 @@ public class PlayerIdle : IPlayerState
 
         if (moveActionValue.y < 0) downPressed = true;
         else downPressed = false;
-
         jumpPressed = jumpAction.IsPressed();
         if (jumpPressed && !ctx.Jumped && ctx.Grounded)
         {
@@ -69,9 +68,11 @@ public class PlayerIdle : IPlayerState
             {
                 if (moveActionValue.x == 0 && !ctx.fallThroughPlatform)
                 {
-                    ctx.fallThroughPlatform = true;
+                    //Debug.Log($"Try DownJump........ {moveActionValue.x},{ctx.fallThroughPlatform},{downPressed}");
                     ctx.rb.AddForce(2f * Vector2.down);
                     fsm.ChangeState(ctx.fall);
+                    ctx.fallThroughPlatform = true;
+                    tween?.Kill();
                     tween = DOVirtual.DelayedCall(0.1f, () => {ctx.fallThroughPlatform = false;}).Play().SetLink(ctx.gameObject);
                 }
             }

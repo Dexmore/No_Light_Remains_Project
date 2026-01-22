@@ -165,7 +165,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     bool _isInitialized;
     public bool IsSteamInit()
     {
-        return _isInitialized;
+        return SteamAPI.Init();
     }
     public void StopSteam()
     {
@@ -597,7 +597,7 @@ public class DBManager : SingletonBehaviour<DBManager>
 
             // (선택사항) 저장 기능을 바로 호출하고 싶다면
             // Save(); 
-            SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
+            // SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
             GameManager.I.RefreshGears();
         }
     }
