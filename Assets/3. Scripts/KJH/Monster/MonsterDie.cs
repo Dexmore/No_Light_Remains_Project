@@ -195,6 +195,7 @@ public class MonsterDie : MonsterState
                 break;
 
             case "LanternKeeper":
+            DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_KILL");
                 // if (DBManager.I.currData.difficulty >= 1)
                 //     if (DBManager.I.currData.maxPotionCount == DBManager.I.currData.currPotionCount)
                 //     {
