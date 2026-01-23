@@ -30,7 +30,7 @@ public class LoginUI : MonoBehaviour
     }
     public void RefreshUserInfoInUI()
     {
-        if (!DBManager.I.IsSteamInit())
+        if (!DBManager.I.IsSteamInit() || !DBManager.I.IsSteam())
         {
             userName = "Offline";
             userIcon = offlineIcon;
