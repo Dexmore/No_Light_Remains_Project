@@ -44,13 +44,13 @@ public class PlayerParry : IPlayerState
                 int level = DBManager.I.GetGearLevel("009_ParryGear");
                 if (level == 0)
                 {
-                    adjustedTime1 *= 1.28f;
-                    adjustedTime1 += 0.05f;
+                    adjustedTime1 *= 1.2f;
+                    adjustedTime1 += 0.04f;
                 }
                 else if (level == 1)
                 {
-                    adjustedTime1 *= 1.58f;
-                    adjustedTime1 += 0.09f;
+                    adjustedTime1 *= 1.35f;
+                    adjustedTime1 += 0.08f;
                 }
             }
         }
@@ -82,7 +82,7 @@ public class PlayerParry : IPlayerState
             lastSuccesCount++;
             if (lastSuccesCount == 4)
             {
-                DBManager.I.SteamAchievement("ACH_PARRY_COMBO_4");
+                //DBManager.I.SteamAchievement("ACH_PARRY_COMBO_4");
             }
         }
         else

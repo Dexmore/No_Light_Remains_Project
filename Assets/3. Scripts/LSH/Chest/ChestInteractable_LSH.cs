@@ -12,10 +12,29 @@ public class ChestInteractable_LSH : Interactable, ISavable
     int ISavable.ReplayWaitTimeSecond => replayWaitTimeSecond;
     public void SetCompletedImmediately()
     {
-        isReady = false;
-        isComplete = true;
-        col.enabled = false;
-        animator.Play("Empty");
+        GearData gearData = null;
+        int findIndex = -1;
+        for (int i = 0; i < dropTables.Length; i++)
+        {
+            if (dropTables[i].dropItem.gearData != null)
+            {
+                gearData = dropTables[i].dropItem.gearData;
+                findIndex = i;
+                break;
+            }
+        }
+        bool outValue = false;
+        if (DBManager.I.HasGear(gearData.name, out outValue))
+        {
+            isReady = false;
+            isComplete = true;
+            col.enabled = false;
+            animator.Play("Empty");
+            return;
+        }
+        DropTable[] newDropTables = new DropTable[1];
+        newDropTables[0] = dropTables[findIndex];
+        dropTables = newDropTables;
     }
     #endregion
     public override Type type => Type.DropItem;
@@ -143,7 +162,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
 
             await Task.Delay(10);
         }
-        
+
     }
 
 }
