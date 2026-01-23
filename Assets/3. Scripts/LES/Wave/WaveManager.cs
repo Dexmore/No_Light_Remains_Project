@@ -161,6 +161,7 @@ public class WaveManager : MonoBehaviour
         if (bgmName != "" && bgmName != null)
         {
             AudioManager.I.StopBGM();
+            Debug.Log("a");
         }
         GameObject chest = Instantiate(chestPrefab);
         chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 2.4f * Vector2.up;
