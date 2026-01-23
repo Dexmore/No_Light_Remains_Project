@@ -356,8 +356,18 @@ public class GearPanelController : MonoBehaviour, ITabContent
             }
             else
             {
-                Debug.Log("코스트가 부족하여 장착할 수 없습니다!");
-                if (notificationUI != null) notificationUI.ShowMessage("코스트가 부족합니다.");
+                if (notificationUI != null) 
+                {
+                    if(SettingManager.I.setting.locale == 0)
+                    {
+                        notificationUI.ShowMessage("The cost is insufficient.");
+                    }
+                    else if(SettingManager.I.setting.locale == 1)
+                    {
+                        notificationUI.ShowMessage("코스트가 부족합니다.");
+                    }
+                }
+
                 AudioManager.I?.PlaySFX("AccessDenied");
                 return;
             }
