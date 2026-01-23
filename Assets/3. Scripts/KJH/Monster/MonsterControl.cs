@@ -97,21 +97,6 @@ public class MonsterControl : MonoBehaviour
         GameManager.I.onHit += HitHandler;
         GameManager.I.onParry += ParryHandler;
         Sensor(cts.Token).Forget();
-        InitAfter(cts.Token).Forget();
-    }
-    public string bgmName;
-    async UniTask InitAfter(CancellationToken token)
-    {
-        await UniTask.Delay(1000, cancellationToken: token);
-        if (data.Type == MonsterType.Large || data.Type == MonsterType.Boss)
-        {
-            bossHUD.SetTarget(this);
-            AudioManager.I.PlayBGMWithFade(bgmName);
-            await UniTask.Delay(1000 * 180, cancellationToken: token);
-            AudioManager.I.PlayBGMWithFade(bgmName);
-            await UniTask.Delay(1000 * 180, cancellationToken: token);
-            AudioManager.I.PlayBGMWithFade(bgmName);
-        }
     }
     #region UniTask Setting
     [HideInInspector] public CancellationTokenSource cts;
