@@ -134,6 +134,8 @@ public class PlayerControl : MonoBehaviour
             newData.currPotionCount = 3;
             newData.maxGearCost = 3;
             newData.difficulty = 0;
+            newData.seed = Random.Range(1, 9999);
+            
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
@@ -174,6 +176,7 @@ public class PlayerControl : MonoBehaviour
             light0.SetActive(GameManager.I.isLanternOn);
             light1.SetActive(GameManager.I.isLanternOn);
             light2.SetActive(!GameManager.I.isLanternOn);
+            Random.InitState(DBManager.I.currData.seed);
         }
         inventoryUI = FindAnyObjectByType<Inventory>();
         StartCoroutine(nameof(DecreaseBattery));
