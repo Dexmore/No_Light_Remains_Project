@@ -176,25 +176,6 @@ public class BossHUD : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
         yield return new WaitUntil(() => target == null || !target.gameObject.activeInHierarchy);
         yield return YieldInstructionCache.WaitForSeconds(1.5f);
-        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        int find;
-        find = AudioManager.I.autoBGM.FindIndex(x => x.scneneName == sceneName);
-        if (find == -1)
-        {
-            AudioManager.I.PlayBGMWithFade("", 3f);
-        }
-        else
-        {
-            if (AudioManager.I.autoBGM[find].list == null || AudioManager.I.autoBGM[find].list.Count == 0)
-            {
-                AudioManager.I.PlayBGMWithFade("", 3f);
-            }
-            else
-            {
-                AudioManager.I.PlayBGMWithFade(AudioManager.I.autoBGM[find].list[0].audioClip);
-            }
-
-        }
         canvas.gameObject.SetActive(false);
     }
     Transform openingChildTr;

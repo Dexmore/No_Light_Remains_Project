@@ -161,6 +161,7 @@ public class WaveManager : MonoBehaviour
         if (bgmName != "" && bgmName != null)
         {
             AudioManager.I.StopBGM();
+            Debug.Log("a");
         }
         GameObject chest = Instantiate(chestPrefab);
         chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 2.4f * Vector2.up;
@@ -179,6 +180,10 @@ public class WaveManager : MonoBehaviour
         if (monsterControl)
         {
             if (monsterControl.homeValue >= 0.5f) monsterControl.homeValue = 0.5f * monsterControl.homeValue;
+            if (monsterControl.data.Type != MonsterType.Large && monsterControl.data.Type != MonsterType.Boss)
+            {
+                monsterControl.currHealth = 0.85f * monsterControl.maxHealth;
+            }
         }
         currentActiveMonsters.Add(mon);
     }
@@ -212,6 +217,16 @@ public class WaveManager : MonoBehaviour
         if (bestSpot != null)
         {
             GameObject mon = Instantiate(prefab, bestSpot.position, Quaternion.identity);
+            mon.transform.name = prefab.transform.name;
+            MonsterControl monsterControl = mon.GetComponent<MonsterControl>();
+            if (monsterControl)
+            {
+                if (monsterControl.homeValue >= 0.5f) monsterControl.homeValue = 0.5f * monsterControl.homeValue;
+                if (monsterControl.data.Type != MonsterType.Large && monsterControl.data.Type != MonsterType.Boss)
+                {
+                    monsterControl.currHealth = 0.85f * monsterControl.maxHealth;
+                }
+            }
             currentActiveMonsters.Add(mon);
         }
         else
@@ -221,6 +236,16 @@ public class WaveManager : MonoBehaviour
             if (fallbackSpot != null)
             {
                 GameObject mon = Instantiate(prefab, fallbackSpot.position, Quaternion.identity);
+                mon.transform.name = prefab.transform.name;
+                MonsterControl monsterControl = mon.GetComponent<MonsterControl>();
+                if (monsterControl)
+                {
+                    if (monsterControl.homeValue >= 0.5f) monsterControl.homeValue = 0.5f * monsterControl.homeValue;
+                    if (monsterControl.data.Type != MonsterType.Large && monsterControl.data.Type != MonsterType.Boss)
+                    {
+                        monsterControl.currHealth = 0.85f * monsterControl.maxHealth;
+                    }
+                }
                 currentActiveMonsters.Add(mon);
             }
         }
