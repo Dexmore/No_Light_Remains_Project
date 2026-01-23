@@ -153,6 +153,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
             interactableMap[i] = gridSlots[i].GetComponent<Button>().interactable;
         }
 
+        // 1. 슬롯 간의 이동 연결 (기존 코드 유지)
         for (int i = 0; i < 12; i++)
         {
             Button currentButton = gridSlots[i].GetComponent<Button>();
@@ -174,6 +175,30 @@ public class GearPanelController : MonoBehaviour, ITabContent
             newNav.selectOnRight = FindTarget(i, interactableMap, Vector2.right, true);
 
             currentButton.navigation = newNav;
+        }
+
+        // [핵심 수정] 탭 버튼의 '아래' 방향을 '첫 번째 활성 슬롯'으로 연결
+        if (mainTabButton != null)
+        {
+            Navigation tabNav = mainTabButton.navigation;
+            tabNav.mode = Navigation.Mode.Explicit;
+
+            // interactable이 true인 첫 번째 슬롯을 찾음 (획득한 기어 중 가장 앞 순서)
+            GearSlotUI firstActiveSlot = gridSlots.FirstOrDefault(s => s.GetComponent<Button>().interactable);
+
+            if (firstActiveSlot != null)
+            {
+                // 찾았으면 거기로 연결
+                tabNav.selectOnDown = firstActiveSlot.GetComponent<Button>();
+            }
+            else
+            {
+                // 만약 기어가 하나도 없다면? 그냥 0번으로 연결하거나 null 처리
+                // (기어가 하나도 없으면 내려갈 일도 없으므로 안전함)
+                if(gridSlots.Count > 0) tabNav.selectOnDown = gridSlots[0].GetComponent<Button>();
+            }
+
+            mainTabButton.navigation = tabNav;
         }
     }
 
