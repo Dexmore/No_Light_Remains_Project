@@ -26,7 +26,7 @@ public class UnderInteractObject_LSH : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(0.1f);
         platform.rotationalOffset = 0f;
     }
-    
+
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (playerControl == null) return;
@@ -43,8 +43,11 @@ public class UnderInteractObject_LSH : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         platform.rotationalOffset = 0f;
-        StopCoroutine(nameof(DelayedResetRotationalOffset));
-        StartCoroutine(nameof(DelayedResetRotationalOffset));
+        if (gameObject.activeInHierarchy)
+        {
+            StopCoroutine(nameof(DelayedResetRotationalOffset));
+            StartCoroutine(nameof(DelayedResetRotationalOffset));
+        }
     }
 
 }

@@ -23,8 +23,23 @@ public class ChestInteractable_LSH : Interactable, ISavable
                 break;
             }
         }
-        bool outValue = false;
-        if (DBManager.I.HasGear(gearData.name, out outValue))
+        if (gearData != null)
+        {
+            bool outValue = false;
+            if (DBManager.I.HasGear(gearData.name, out outValue))
+            {
+                isReady = false;
+                isComplete = true;
+                col.enabled = false;
+                animator.Play("Empty");
+                return;
+            }
+            DropTable[] newDropTables = new DropTable[1];
+            newDropTables[0] = dropTables[findIndex];
+            dropTables = newDropTables;
+            col.enabled = true;
+        }
+        else
         {
             isReady = false;
             isComplete = true;
@@ -32,9 +47,6 @@ public class ChestInteractable_LSH : Interactable, ISavable
             animator.Play("Empty");
             return;
         }
-        DropTable[] newDropTables = new DropTable[1];
-        newDropTables[0] = dropTables[findIndex];
-        dropTables = newDropTables;
     }
     #endregion
     public override Type type => Type.DropItem;
