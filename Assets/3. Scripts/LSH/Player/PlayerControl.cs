@@ -889,16 +889,16 @@ public class PlayerControl : MonoBehaviour
         position += 0.5f * childTR.right;
         if (parry.lastSuccesCount % 2 == 1)
         {
-            position += 0.62f * Vector3.up;
+            position += 0.58f * Vector3.up;
         }
         else
         {
-            position -= 0.61f * Vector3.up;
-            position += 0.12f * childTR.right;
+            position -= 0.3f * Vector3.up;
+            position += 0.11f * childTR.right;
         }
         Vector3 rndInCircle = Random.insideUnitSphere;
         rndInCircle.z = 0;
-        position += 0.35f * rndInCircle;
+        position += 0.27f * rndInCircle;
         if (!string.IsNullOrEmpty(parryParticle))
         {
             ParticleManager.I.PlayParticle(parryParticle, position, Quaternion.identity, null);
