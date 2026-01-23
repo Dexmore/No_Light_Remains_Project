@@ -165,16 +165,16 @@ public class DBManager : SingletonBehaviour<DBManager>
     bool _isInitialized;
     public bool IsSteamInit()
     {
-        return SteamAPI.Init();
+        return _isInitialized;
     }
     public void StopSteam()
     {
-        if (IsSteam())
+        if (_isInitialized)
         {
 #if !UNITY_SERVER // 서버 환경이 아닌 경우에만 종료
             SteamAPI.Shutdown();
             _isInitialized = false;
-#endif
+#endif 
         }
     }
     IEnumerator CheckLoop()
@@ -204,7 +204,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
     private void OnApplicationQuit()
     {
-        if (IsSteam())
+        if (IsSteam() || IsSteamInit())
         {
             SteamAPI.Shutdown();
         }
@@ -226,7 +226,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         if (state == UnityEditor.PlayModeStateChange.ExitingPlayMode)
         {
-            if (IsSteam())
+            if (IsSteam() || IsSteamInit())
             {
                 SteamAPI.Shutdown();
             }
