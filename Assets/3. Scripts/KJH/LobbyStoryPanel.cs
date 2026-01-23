@@ -366,6 +366,7 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.maxPotionCount = 3;
         newData.currPotionCount = 3;
         newData.maxGearCost = 3;
+        newData.seed = Random.Range(1, 9999);
 
         System.DateTime now = System.DateTime.Now;
         string datePart = now.ToString("yyyy.MM.dd");
@@ -453,7 +454,7 @@ public class LobbyStoryPanel : MonoBehaviour
         AudioManager.I.PlaySFX("SciFiConfirm");
         PopupUI.ClosePop(4, false);
 #if UNITY_STANDALONE_WIN
-    string fileLocation = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
+        string fileLocation = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "My Games", "REKINDLE");
 #else
     string fileLocation = Path.Combine(Application.persistentDataPath, "REKINDLE_SaveData");
 #endif
@@ -468,12 +469,12 @@ public class LobbyStoryPanel : MonoBehaviour
             }
             catch (System.Exception e)
             {
-            
+
             }
         }
         else
         {
-            
+
         }
         if (isSteamSlot)
         {

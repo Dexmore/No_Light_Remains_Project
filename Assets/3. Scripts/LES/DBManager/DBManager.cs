@@ -715,6 +715,7 @@ public struct CharacterData
     public string sceneName;
     public int death;
     public string lastTime;
+    public int seed;
     public Vector2 lastPos;
     public List<ItemData> itemDatas;
     public List<GearData> gearDatas;

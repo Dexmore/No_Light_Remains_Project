@@ -37,6 +37,7 @@ public class ChestInteractable_LSH : Interactable, ISavable
             DropTable[] newDropTables = new DropTable[1];
             newDropTables[0] = dropTables[findIndex];
             dropTables = newDropTables;
+            col.enabled = true;
         }
         else
         {
