@@ -27,7 +27,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
 
     [Header("알림 UI")]
     [SerializeField] private NotificationUI notificationUI;
-    
+
     public void OnShow()
     {
         RefreshPanel();
@@ -54,25 +54,25 @@ public class LanternPanelController : MonoBehaviour, ITabContent
     private void RefreshPanel()
     {
         List<LanternFunctionData> playerFunctions = new List<LanternFunctionData>();
-        
+
         // 1. DB에서 데이터 가져오기
         for (int i = 0; i < DBManager.I.currData.lanternDatas.Count; i++)
         {
             CharacterData.LanternData cd = DBManager.I.currData.lanternDatas[i];
             int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
             if (find == -1) continue;
-            
+
             LanternFunctionData d = Instantiate(DBManager.I.itemDatabase.allLanterns[find]);
             d.name = DBManager.I.itemDatabase.allLanterns[find].name;
             d.isEquipped = cd.isEquipped;
             d.isNew = cd.isNew;
-            
+
             // [수정 1] 텍스트 로딩 함수 호출 (이게 빠져 있었음!)
-            d.LoadStrings(); 
-            
+            d.LoadStrings();
+
             playerFunctions.Add(d);
         }
-        
+
         // 2. 슬롯에 데이터 채우기
         for (int i = 0; i < functionSlots.Count; i++)
         {
@@ -123,18 +123,30 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         if (equippedIndex != -1)
         {
             string equippedName = dbLanterns[equippedIndex].Name;
-            
+
             // 2. 해당 랜턴의 원본 데이터(.asset)를 가져와서 설정 확인
             LanternFunctionData equippedAsset = DBManager.I.itemDatabase.allLanterns.Find(x => x.name == equippedName);
-            
+
             if (equippedAsset != null && !equippedAsset.isRemovable)
             {
                 // [차단] 해제 불가능한 아이템이 장착되어 있음
                 // 만약 끄려고 하거나(같은 아이템 클릭), 바꾸려고 하면(다른 아이템 클릭) 모두 차단
                 Debug.Log($"[Lantern] '{equippedAsset.name}'은 해제할 수 없는 아이템입니다.");
-                if (notificationUI != null) notificationUI.ShowMessage("기본 장착 아이템은 해제할 수 없습니다.");
+                if (notificationUI != null)
+                {
+                    if (SettingManager.I.setting.locale == 0)
+                    {
+                        notificationUI.ShowMessage("Basic equipped items cannot be unequipped.");
+                    }
+                    else if (SettingManager.I.setting.locale == 1)
+                    {
+                        notificationUI.ShowMessage("기본 장착 아이템은 해제할 수 없습니다.");
+
+                    }
+
+                }
                 AudioManager.I.PlaySFX("AccessDenied");
-                return; 
+                return;
             }
         }
 
@@ -168,7 +180,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             // 원래 켜져있던 걸 눌렀으면 꺼진 상태 유지 (Toggle Off)
             dataToToggle.isEquipped = false;
         }
-        
+
         // 3. UI 시각적 갱신
         // (RefreshPanel을 다시 부르면 비효율적이므로 슬롯들만 업데이트)
         foreach (var slot in functionSlots)
@@ -178,7 +190,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             {
                 // UI용 데이터도 다 꺼버림 (중복 방지 시각화)
                 if (slot.MyData != dataToToggle) slot.MyData.isEquipped = false;
-                
+
                 slot.UpdateEquipVisual();
             }
         }
@@ -204,8 +216,8 @@ public class LanternPanelController : MonoBehaviour, ITabContent
 
         // 2. 원본 에셋 찾기
         int find = DBManager.I.itemDatabase.allLanterns.FindIndex(x => x.name == cd.Name);
-        
-        if(find != -1)
+
+        if (find != -1)
         {
             LanternFunctionData equippedFunction = DBManager.I.itemDatabase.allLanterns[find];
             if (equippedFunctionImage != null)
@@ -216,7 +228,7 @@ public class LanternPanelController : MonoBehaviour, ITabContent
                 // [추가] 색상 적용 로직! ------------------------------------------
                 // 이미지 오브젝트에 붙어있는 PlasmaInteract 스크립트를 가져옵니다.
                 PlasmaInteract plasma = equippedFunctionImage.GetComponent<PlasmaInteract>();
-                
+
                 if (plasma != null)
                 {
                     // 데이터에 설정된 색상을 쉐이더로 쏘세요!
@@ -235,8 +247,8 @@ public class LanternPanelController : MonoBehaviour, ITabContent
         }
     }
 
-        // 3칸 슬롯의 좌/우/위 내비게이션을 설정합니다. (1번 요청)
-        private void SetupNavigation()
+    // 3칸 슬롯의 좌/우/위 내비게이션을 설정합니다. (1번 요청)
+    private void SetupNavigation()
     {
         // 1. 활성화된 슬롯 리스트 생성
         List<Button> interactableSlots = new List<Button>();
