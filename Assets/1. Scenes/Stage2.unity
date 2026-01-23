@@ -1297,6 +1297,80 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2257454156157217839, guid: 66566c0d8d1012644b1937a30abc1d82, type: 3}
   m_PrefabInstance: {fileID: 156847387}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &164159196
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 894854060}
+    m_Modifications:
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 101.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211287665413712354, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: m_Name
+      value: Machine02(1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9089719628281986317, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: dialogIndex
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9089719628281986317, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: recordDatas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9089719628281986317, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+      propertyPath: 'recordDatas.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: eaa55cec40a87c04398f9cccd62ad50c, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+--- !u!4 &164159197 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3921234500616523379, guid: 7fc0fa23f43a2ee49b2f12e582ea174f, type: 3}
+  m_PrefabInstance: {fileID: 164159196}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &169071341
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11215,6 +11289,7 @@ Transform:
   - {fileID: 1270124491}
   - {fileID: 1555560828}
   - {fileID: 121361461}
+  - {fileID: 164159197}
   - {fileID: 447094886}
   - {fileID: 1558532484}
   - {fileID: 2131738431}
@@ -19561,6 +19636,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 894854060}
     m_Modifications:
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[0].gold
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[1].probability
       value: 0.3

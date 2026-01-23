@@ -155,6 +155,13 @@ public class DialogUI : MonoBehaviour
                     "LANTERN SYSTEM OFFLINE\nREBOOTING...25%...50%...84%...100%.",
                     "LANTERN SYSTEM ONLINE.\nThe Light of ASTRUM: Operational status confirmed. Machine ready."
                 },
+                //대사20 로그4
+                new string[]
+                {
+                    "It has been a month since the streets were overtaken by those black...things.\nI'm now almost out for things to eat.",
+                    "I miss a warm stew...mom's were the best.\nShould have asked her for the recipe before I left her place.",
+                    "Mom... I miss you so much.\nPlease, please be alive.\n...Please."
+                }, 
 
             };
         }
@@ -297,7 +304,14 @@ public class DialogUI : MonoBehaviour
                 {
                     "랜턴 시스템 오프라인 확인.\n재부팅 중. 25%...50%...84%...100%.",
                     "랜턴 시스템 온라인.\n아스트룸의 불빛: 가동 상태 정상. 장비 활성화가 가능합니다."
-                },                
+                },
+                //대사20 로그4
+                new string[]
+                {
+                    "도로가 저 검은 무언가들에 점령당하고 1달.\n더 이상 먹을 것도 떨어지고 있다.",
+                    "집밥 먹고 싶다.\n엄마가 만들어준...따뜻한 스튜...\n그때 어떻게 만드는지 여쭤볼걸.",
+                    "엄마...보고 싶어\n제발 살아 있어 줘요..."
+                },                 
             };
         }
     }
