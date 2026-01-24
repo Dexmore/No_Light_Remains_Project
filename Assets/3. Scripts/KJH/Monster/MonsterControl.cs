@@ -69,7 +69,7 @@ public class MonsterControl : MonoBehaviour
                 maxHealth = data.HP * 1.2f;
                 break;
             case 2:
-                adjustedAttack = data.Attack * 1.25f;
+                adjustedAttack = data.Attack * 1.18f;
                 maxHealth = data.HP * 1.5f;
                 break;
         }

@@ -113,7 +113,7 @@ public class LightPillar : MonoBehaviour
         hitPoint = 0.3f * adjustPos + 0.7f * hitPoint;
         hitPoint.y = 0.3f * hitPoint.y + 0.7f * coll.transform.position.y;
 
-        float damage = 10f;
+        float damage = 60f;
         HitData hitData = new HitData
         {
             attackName = "LightPillar",

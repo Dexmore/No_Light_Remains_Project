@@ -73,7 +73,7 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(ExecuteWaves());
         if (bgmName != "" && bgmName != null)
         {
-            AudioManager.I.PlayBGMWithFade(bgmName);
+            AudioManager.I.PlayBGMWithFade(bgmName, loopCount: 3);
         }
     }
     IEnumerator ExecuteWaves()
@@ -160,8 +160,7 @@ public class WaveManager : MonoBehaviour
         doorType1.isComplete = true;
         if (bgmName != "" && bgmName != null)
         {
-            AudioManager.I.StopBGM();
-            Debug.Log("a");
+            AudioManager.I.StopBGM(3.8f);
         }
         GameObject chest = Instantiate(chestPrefab);
         chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 2.4f * Vector2.up;
