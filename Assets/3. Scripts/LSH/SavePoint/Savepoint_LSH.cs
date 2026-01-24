@@ -24,7 +24,7 @@ public class SavePoint_LSH : Interactable
         AudioManager.I.PlaySFX("Save");
         ParticleManager.I.PlayText("Save", transform.position + 1.2f * Vector3.up + 0.8f * dir, ParticleManager.TextType.PlayerNotice);
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
-        DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
+        DBManager.I.currData.cpc = DBManager.I.currData.mpc;
         GameManager.I.potionDebt = 0;
         if(playerControl)
         {
