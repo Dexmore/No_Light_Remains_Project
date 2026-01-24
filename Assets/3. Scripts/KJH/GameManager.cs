@@ -755,7 +755,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                     var monsterPositionData = sceneData.md[findIndex];
                     // 서버 저장데이터상 이 몬스터가 죽어있는걸로 되어있는경우. 
 
-                    if (prevSceneName == nextSceneName)
+                    if (prevSceneName == nextSceneName || prevSceneName == "Lobby")
                     {
                         allMonsters[i].transform.Root().gameObject.SetActive(false);
                         continue;
@@ -817,7 +817,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                             allSavableObjects[i].SetCompletedImmediately();
                         }
 
-                        
+
                     }
                     else
                     {
