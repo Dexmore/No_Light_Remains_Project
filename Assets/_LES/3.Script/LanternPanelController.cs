@@ -131,16 +131,16 @@ public class LanternPanelController : MonoBehaviour, ITabContent
             {
                 // [차단] 해제 불가능한 아이템이 장착되어 있음
                 // 만약 끄려고 하거나(같은 아이템 클릭), 바꾸려고 하면(다른 아이템 클릭) 모두 차단
-                Debug.Log($"[Lantern] '{equippedAsset.name}'은 해제할 수 없는 아이템입니다.");
+                //Debug.Log($"[Lantern] '{equippedAsset.name}'은 해제할 수 없는 아이템입니다.");
                 if (notificationUI != null)
                 {
                     if (SettingManager.I.setting.locale == 0)
                     {
-                        notificationUI.ShowMessage("Basic equipped items cannot be unequipped.");
+                        notificationUI.ShowMessage("You Cannot Unequip The Light of Astrum.");
                     }
                     else if (SettingManager.I.setting.locale == 1)
                     {
-                        notificationUI.ShowMessage("기본 장착 아이템은 해제할 수 없습니다.");
+                        notificationUI.ShowMessage("아스트룸의 불빛은 장착 해체가 불가능합니다.");
 
                     }
 
