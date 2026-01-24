@@ -360,11 +360,11 @@ public class GearPanelController : MonoBehaviour, ITabContent
                 {
                     if(SettingManager.I.setting.locale == 0)
                     {
-                        notificationUI.ShowMessage("The cost is insufficient.");
+                        notificationUI.ShowMessage("Gear Slot Capacity Exceeded.");
                     }
                     else if(SettingManager.I.setting.locale == 1)
                     {
-                        notificationUI.ShowMessage("코스트가 부족합니다.");
+                        notificationUI.ShowMessage("장착 가능 기어 슬롯을 초과했습니다.");
                     }
                 }
 
