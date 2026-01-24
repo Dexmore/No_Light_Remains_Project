@@ -39,10 +39,10 @@ public class MonsterDie : MonsterState
         //         {
         //             if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
         //             {
-        //                 int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
+        //                 int find2 = DBManager.I.currData.sceneDatas[find1].mDatas.FindIndex(x => x.Name == strimedName && x.index == result);
         //                 if (find2 != -1)
         //                 {
-        //                     var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
+        //                     var monsterList = DBManager.I.currData.sceneDatas[find1].mDatas;
         //                     var mData = monsterList[find2];
         //                     System.DateTime now = System.DateTime.Now;
         //                     string datePart = now.ToString("yyyy.MM.dd");

@@ -140,4 +140,5 @@ public class PlayerDeathUI : MonoBehaviour
         transform.DOKill(); 
         if(uiMat != null) DOTween.Kill(uiMat);
     }
+    
 }

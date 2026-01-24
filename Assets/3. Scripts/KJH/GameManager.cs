@@ -114,7 +114,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             await SaveAllMonsterAndObject();
         }
-        else
+        else if (isDie)
         {
             // Debug.Log($"시작 DBManager.I.currData.gold : {DBManager.I.currData.gold} ");
             // Debug.Log($"시작 DBManager.I.currData.gearDatas.Count : {DBManager.I.currData.gearDatas.Count}");
@@ -125,6 +125,15 @@ public class GameManager : SingletonBehaviour<GameManager>
             // savedData의 내용을 문자열로 바꿨다가 다시 currData 객체로 생성 (깊은복사)
             string json = JsonUtility.ToJson(DBManager.I.savedData);
             DBManager.I.currData = JsonUtility.FromJson<CharacterData>(json);
+
+            int findIndex1 = DBManager.I.currData.sceneDatas.FindIndex(x => x.sceneName == prevSceneName);
+            if (findIndex1 != -1)
+            {
+                var sceneData = DBManager.I.currData.sceneDatas[findIndex1];
+                sceneData.mDTime = System.DateTimeOffset.Now.ToUnixTimeSeconds();
+                DBManager.I.currData.sceneDatas[findIndex1] = sceneData;
+            }
+
             // Debug.Log("가장 마지막 savedData를 currData에 덮기 진행.....");
             // Debug.Log($"바뀐 결과 DBManager.I.currData.gold : {DBManager.I.currData.gold} ");
             // Debug.Log($"바뀐 결과 DBManager.I.savedData.gearDatas.Count : {DBManager.I.savedData.gearDatas.Count}");
@@ -602,7 +611,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             sceneData.sceneName = sceneName;
 
             // 몬스터 부분
-            sceneData.monsterPositionDatas = new List<CharacterData.MonsterPositionData>();
+            sceneData.mDatas = new List<CharacterData.MonsterPositionData>();
             for (int i = 0; i < allMonsters.Length; i++)
             {
                 if (!allMonsters[i].transform.name.Contains("(")) continue;
@@ -611,26 +620,21 @@ public class GameManager : SingletonBehaviour<GameManager>
                     CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
                     monsterPositionData.Name = allMonsters[i].transform.name.Split("(")[0];
                     monsterPositionData.index = result;
-                    monsterPositionData.lastHealth = allMonsters[i].currHealth;
-                    monsterPositionData.lastPos = allMonsters[i].transform.position;
                     if (allMonsters[i].gameObject.activeInHierarchy)
                     {
                         continue;
                     }
                     else
                     {
-                        System.DateTime now = System.DateTime.Now;
-                        string datePart = now.ToString("yyyy.MM.dd");
-                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                        monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
+                        sceneData.mDTime = System.DateTimeOffset.Now.ToUnixTimeSeconds();
                     }
-                    sceneData.monsterPositionDatas.Add(monsterPositionData);
+                    sceneData.mDatas.Add(monsterPositionData);
                 }
                 else continue;
             }
 
             // 오브젝트 부분
-            sceneData.objectPositionDatas = new List<CharacterData.ObjectPositionData>();
+            sceneData.oDatas = new List<CharacterData.ObjectPositionData>();
             for (int i = 0; i < allSavableObjects.Length; i++)
             {
                 // 중요 : 완전히 완료되지않은 오브젝트는 상태를 저장하지 않는다. 즉 중간만 진행한 오브젝트는 씬 재입장시 처음부터 다시해야함
@@ -643,16 +647,13 @@ public class GameManager : SingletonBehaviour<GameManager>
                     objectPositionData.index = result;
                     if (allSavableObjects[i].CanReplay)
                     {
-                        System.DateTime now = System.DateTime.Now;
-                        string datePart = now.ToString("yyyy.MM.dd");
-                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                        objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
+                        objectPositionData.canReplay = true;
                     }
                     else
                     {
-                        objectPositionData.lastCompleteTime = "";
+                        objectPositionData.canReplay = false;
                     }
-                    sceneData.objectPositionDatas.Add(objectPositionData);
+                    sceneData.oDatas.Add(objectPositionData);
                 }
                 else continue;
             }
@@ -672,20 +673,15 @@ public class GameManager : SingletonBehaviour<GameManager>
                     CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
                     monsterPositionData.Name = allMonsters[i].transform.name.Split("(")[0];
                     monsterPositionData.index = result;
-                    monsterPositionData.lastHealth = allMonsters[i].currHealth;
-                    monsterPositionData.lastPos = allMonsters[i].transform.position;
-                    System.DateTime now = System.DateTime.Now;
-                    string datePart = now.ToString("yyyy.MM.dd");
-                    int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                    monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
-                    int find2 = sceneData.monsterPositionDatas.FindIndex(x => x.Name == mName && x.index == result);
+                    sceneData.mDTime = System.DateTimeOffset.Now.ToUnixTimeSeconds();
+                    int find2 = sceneData.mDatas.FindIndex(x => x.Name == mName && x.index == result);
                     if (find2 == -1)
                     {
-                        sceneData.monsterPositionDatas.Add(monsterPositionData);
+                        sceneData.mDatas.Add(monsterPositionData);
                     }
                     else
                     {
-                        sceneData.monsterPositionDatas[find2] = monsterPositionData;
+                        sceneData.mDatas[find2] = monsterPositionData;
                     }
                 }
             }
@@ -699,7 +695,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (int.TryParse(allSavableObjects[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
                     string mName = allSavableObjects[i].transform.name.Split("(")[0];
-                    int find2 = sceneData.objectPositionDatas.FindIndex(x => x.Name == mName && x.index == result);
+                    int find2 = sceneData.oDatas.FindIndex(x => x.Name == mName && x.index == result);
                     if (find2 == -1)
                     {
                         CharacterData.ObjectPositionData objectPositionData = new CharacterData.ObjectPositionData();
@@ -707,40 +703,27 @@ public class GameManager : SingletonBehaviour<GameManager>
                         objectPositionData.index = result;
                         if (allSavableObjects[i].CanReplay)
                         {
-                            System.DateTime now = System.DateTime.Now;
-                            string datePart = now.ToString("yyyy.MM.dd");
-                            int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                            objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
+                            objectPositionData.canReplay = true;
                         }
                         else
                         {
-                            objectPositionData.lastCompleteTime = "";
+                            objectPositionData.canReplay = false;
                         }
-                        sceneData.objectPositionDatas.Add(objectPositionData);
+                        sceneData.oDatas.Add(objectPositionData);
                     }
                     else
                     {
-                        CharacterData.ObjectPositionData objectPositionData = sceneData.objectPositionDatas[find2];
+                        CharacterData.ObjectPositionData objectPositionData = sceneData.oDatas[find2];
                         objectPositionData.index = result;
                         if (allSavableObjects[i].CanReplay)
                         {
-                            if (objectPositionData.lastCompleteTime != "")
-                            {
-                                //그대로 유지
-                            }
-                            else
-                            {
-                                System.DateTime now = System.DateTime.Now;
-                                string datePart = now.ToString("yyyy.MM.dd");
-                                int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                                objectPositionData.lastCompleteTime = $"{datePart}-{secondsOfDay}";
-                            }
+                            objectPositionData.canReplay = true;
                         }
                         else
                         {
-                            objectPositionData.lastCompleteTime = "";
+                            objectPositionData.canReplay = false;
                         }
-                        sceneData.objectPositionDatas[find2] = objectPositionData;
+                        sceneData.oDatas[find2] = objectPositionData;
                     }
                 }
                 else continue;
@@ -767,44 +750,36 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (!allMonsters[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allMonsters[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
-                    int findIndex = sceneData.monsterPositionDatas.FindIndex(x => x.Name == allMonsters[i].transform.name.Split("(")[0] && x.index == result);
+                    int findIndex = sceneData.mDatas.FindIndex(x => x.Name == allMonsters[i].transform.name.Split("(")[0] && x.index == result);
                     if (findIndex == -1) continue;
-                    var monsterPositionData = sceneData.monsterPositionDatas[findIndex];
+                    var monsterPositionData = sceneData.mDatas[findIndex];
                     // 서버 저장데이터상 이 몬스터가 죽어있는걸로 되어있는경우. 
 
                     if (prevSceneName == nextSceneName)
                     {
                         allMonsters[i].transform.Root().gameObject.SetActive(false);
-                        // 시간 재갱신
-                        System.DateTime now = System.DateTime.Now;
-                        string datePart = now.ToString("yyyy.MM.dd");
-                        int secondsOfDay = (int)now.TimeOfDay.TotalSeconds;
-                        monsterPositionData.lastDeathTime = $"{datePart}-{secondsOfDay}";
-                        sceneData.monsterPositionDatas[findIndex] = monsterPositionData;
                         continue;
                     }
 
-                    // 자기자신씬 말고 다른씬으로 넘어갈시 시작시 시간조건에 따라 아래처럼 셋팅 (유사 리스폰)
-                    // 스트링 분리 (날짜와 초)
-                    string[] parts = monsterPositionData.lastDeathTime.Split('-');
-                    if (parts.Length == 2)
+                    // 자기 자신씬 말고 다른씬으로 넘어갈시 시작시 시간조건에 따라 아래처럼 셋팅 (유사 리스폰)
+                    if (sceneData.mDTime > 0)
                     {
-                        // 2. 날짜 파싱 및 시간 복구
-                        // ParseExact를 사용하여 "2025.05.30" 형태를 날짜로 바꿉니다.
-                        System.DateTime deathDate = System.DateTime.ParseExact(parts[0], "yyyy.MM.dd", null);
-                        // 날짜에 '하루 중 지난 초'를 더해 정확한 사망 시점을 만듭니다.
-                        System.DateTime deathTime = deathDate.AddSeconds(double.Parse(parts[1]));
-                        // 3. 현재 시간과의 차이 계산 (TimeSpan)
-                        System.TimeSpan timePassed = System.DateTime.Now - deathTime;
-                        int waitMinutes = 5;
-                        if (timePassed.TotalMinutes >= waitMinutes)
+                        System.DateTime deathTime = System.DateTimeOffset.FromUnixTimeSeconds(sceneData.mDTime).DateTime;
+                        System.TimeSpan timePassed = System.DateTime.UtcNow - deathTime;
+                        int waitSecond = 300;
+                        //Debug.Log($"{timePassed.TotalSeconds}초 경과");
+                        if (timePassed.TotalSeconds >= waitSecond)
                         {
-                            // [부활 조건 충족] 
-                            // 아무것도 안 함 = 하이라키에 배치된 프리팹 상태(활성화) 그대로 유지
+                            // 부활 조건 충족
+                            List<CharacterData.MonsterPositionData> newList = new List<CharacterData.MonsterPositionData>(0);
+                            sceneData.mDatas = newList;
+                            sceneData.mDTime = 0;
+                            sceneDatas[find] = sceneData;
+                            break;
                         }
                         else
                         {
-                            // [아직 죽어있어야 함]
+                            // 아직 죽어있음
                             allMonsters[i].transform.Root().gameObject.SetActive(false);
                         }
                     }
@@ -817,46 +792,45 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (!allSavableObjects[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allSavableObjects[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
-                    int findIndex = sceneData.objectPositionDatas.FindIndex(x => x.Name == allSavableObjects[i].transform.name.Split("(")[0] && x.index == result);
+                    int findIndex = sceneData.oDatas.FindIndex(x => x.Name == allSavableObjects[i].transform.name.Split("(")[0] && x.index == result);
                     if (findIndex == -1) continue;
-                    var objectPositionData = sceneData.objectPositionDatas[findIndex];
+                    var objectPositionData = sceneData.oDatas[findIndex];
+
                     // 애초부터 '완전히 완료된 오브젝트'만 DB에 저장하기 때문에.
                     // 죽지않은 몬스터들도 위치와 체력 셋팅을 해줬던과 달리.
                     // 아직 완료하지 않은 오브젝트의 셋팅은 고려할 필요가 없다.
                     if (allSavableObjects[i].CanReplay)
                     {
-                        // 1. 저장된 스트링 분리 (날짜와 초)
-                        string[] parts = objectPositionData.lastCompleteTime.Split('-');
-                        if (parts.Length == 2)
+
+                        // Time 차이 계산
+                        System.DateTime completeTime = System.DateTimeOffset.FromUnixTimeSeconds(sceneData.mDTime).DateTime;
+                        System.TimeSpan timePassed = System.DateTime.UtcNow - completeTime;
+                        int waitSecond = allSavableObjects[i].ReplayWaitTimeSecond;
+                        if (timePassed.TotalSeconds >= waitSecond)
                         {
-                            // 2. 날짜 파싱 및 시간 복구
-                            // ParseExact를 사용하여 "2025.05.30" 형태를 날짜로 바꿉니다.
-                            System.DateTime deathDate = System.DateTime.ParseExact(parts[0], "yyyy.MM.dd", null);
-                            // 날짜에 '하루 중 지난 초'를 더해 정확한 사망 시점을 만듭니다.
-                            System.DateTime deathTime = deathDate.AddSeconds(double.Parse(parts[1]));
-                            // 3. 현재 시간과의 차이 계산 (TimeSpan)
-                            System.TimeSpan timePassed = System.DateTime.Now - deathTime;
-                            int waitSecond = allSavableObjects[i].ReplayWaitTimeSecond;
-                            if (timePassed.TotalSeconds >= waitSecond)
-                            {
-                                // [부활 조건 충족] 
-                                // 아무것도 안 함 = 하이라키에 배치된 프리팹 상태(활성화) 그대로 유지
-                            }
-                            else
-                            {
-                                // [아직 죽어있어야 함]
-                                // 몬스터때의 비활성화와 달리. 아래 메소드가 FX,효과음 작동 연출을 전부 무시한 즉시 완료상태임
-                                allSavableObjects[i].SetCompletedImmediately();
-                            }
+                            // [부활/재작동 조건 충족] 
+                            // 아무것도 안 함 = 하이라키에 배치된 프리팹 상태 그대로 유지
                         }
+                        else
+                        {
+                            // [아직 완료 상태를 유지해야 함]
+                            allSavableObjects[i].SetCompletedImmediately();
+                        }
+
+                        
                     }
                     else
                     {
+                        // 다시 재생 불가능한 오브젝트는 데이터가 존재하기만 하면 즉시 완료 처리
                         allSavableObjects[i].SetCompletedImmediately();
                     }
+
+
                 }
                 else continue;
             }
+
+
         }
     }
 
