@@ -352,7 +352,7 @@ public class DBManager : SingletonBehaviour<DBManager>
 
                     // 3. JSON을 객체로 역직렬화
                     allSaveDatasInSteam = JsonUtility.FromJson<SaveData>(sd);
-                    Debug.Log($"[DBManager] 스팀 로드 및 압축 해제 성공! 원본 크기: {rawData.Length} bytes");
+                    //Debug.Log($"[DBManager] 스팀 로드 및 압축 해제 성공! 원본 크기: {rawData.Length} bytes");
                 }
                 // ---------------------------
             }
