@@ -49183,9 +49183,9 @@ MonoBehaviour:
     countRange: {x: 1, y: 1}
     probability: 1
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 14
+    gold: 9
     record: {fileID: 0}
-    countRange: {x: 2, y: 3}
+    countRange: {x: 3, y: 5}
     probability: 1
 --- !u!61 &1554606263
 BoxCollider2D:
@@ -50198,7 +50198,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1000834453030134629, guid: 001c4e25490ac3f4bb349fab866d193d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 166.46
+      value: 166.208
       objectReference: {fileID: 0}
     - target: {fileID: 1000834453030134629, guid: 001c4e25490ac3f4bb349fab866d193d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -50633,7 +50633,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[0].gold
-      value: 11
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[0].probability
@@ -50715,7 +50715,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[0].gold
-      value: 15
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[8].dropItem
@@ -55713,6 +55713,11 @@ MonoBehaviour:
   canReplay: 0
   replayWaitTimeSecond: 0
   dropTables:
+  - dropItem: {fileID: 0}
+    gold: 6
+    record: {fileID: 0}
+    countRange: {x: 3, y: 5}
+    probability: 1
   - dropItem: {fileID: 5004745406220570011, guid: 34b1495757423a9409fa1e1f321c12e4, type: 3}
     gold: 0
     record: {fileID: 0}
@@ -55757,7 +55762,7 @@ MonoBehaviour:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
     gold: 7
     record: {fileID: 0}
-    countRange: {x: 2, y: 3}
+    countRange: {x: 3, y: 4}
     probability: 1
 --- !u!4 &1898395666986135842
 Transform:
@@ -55907,6 +55912,11 @@ MonoBehaviour:
   canReplay: 0
   replayWaitTimeSecond: 0
   dropTables:
+  - dropItem: {fileID: 0}
+    gold: 7
+    record: {fileID: 0}
+    countRange: {x: 3, y: 4}
+    probability: 1
   - dropItem: {fileID: 4610686049601695910, guid: 4832679443a67ef45a2555ad768822d9, type: 3}
     gold: 0
     record: {fileID: 0}
