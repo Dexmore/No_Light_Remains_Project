@@ -132,7 +132,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         }
 
         // 3. UI 갱신
-        totalCostMeter.SetMaxCost(DBManager.I.currData.maxGearCost);
+        totalCostMeter.SetMaxCost(DBManager.I.currData.mgc);
         totalCostMeter.SetCost(_currentEquippedCost);
 
         SetupIndexBasedNavigation();
@@ -340,7 +340,7 @@ public class GearPanelController : MonoBehaviour, ITabContent
         if (!gear.isEquipped)
         {
             int newCost = _currentEquippedCost + gear.cost;
-            if (newCost <= DBManager.I.currData.maxGearCost)
+            if (newCost <= DBManager.I.currData.mgc)
             {
                 gear.isEquipped = true;
                 _currentEquippedCost = newCost;

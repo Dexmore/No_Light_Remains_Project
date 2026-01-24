@@ -274,12 +274,12 @@ public class BossHUD : MonoBehaviour
     void CheckPhase()
     {
         float ratio = target.currHealth / target.maxHealth;
-        if (ratio <= 0.42f && phaseProgress <= 2)
+        if (ratio <= 0.41f && phaseProgress <= 2)
         {
             phaseProgress = 3;
             Test2();
         }
-        else if (ratio <= 0.72f && phaseProgress <= 1)
+        else if (ratio <= 0.71f && phaseProgress <= 1)
         {
             phaseProgress = 2;
             Test2();

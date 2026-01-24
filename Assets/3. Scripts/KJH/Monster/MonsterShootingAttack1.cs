@@ -172,13 +172,13 @@ public class MonsterShootingAttack1 : MonsterState
             if (isBackBlocked && isFrontClear)
             {
                 repositionDuration = 2.8f;
-                moveSpeedMulti2 = 1.4f;
+                moveSpeedMulti2 = 1.2f;
                 moveDirection = -moveDirection;
                 //Debug.DrawRay(transform.position, 6f * moveDirection, Color.red, 3f);
             }
             if (!isBackBlocked)
             {
-                rb.AddForce(moveDirection * 3.8f, ForceMode2D.Impulse);
+                rb.AddForce(moveDirection * 2.2f, ForceMode2D.Impulse);
             }
             while (Time.time - startTime < repositionDuration)
             {

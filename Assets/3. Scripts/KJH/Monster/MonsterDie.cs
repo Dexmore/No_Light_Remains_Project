@@ -39,10 +39,10 @@ public class MonsterDie : MonsterState
         //         {
         //             if (int.TryParse(transform.name.Split("(")[1].Split(")")[0], out int result))
         //             {
-        //                 int find2 = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas.FindIndex(x => x.Name == strimedName && x.index == result);
+        //                 int find2 = DBManager.I.currData.sceneDatas[find1].md.FindIndex(x => x.Name == strimedName && x.index == result);
         //                 if (find2 != -1)
         //                 {
-        //                     var monsterList = DBManager.I.currData.sceneDatas[find1].monsterPositionDatas;
+        //                     var monsterList = DBManager.I.currData.sceneDatas[find1].md;
         //                     var mData = monsterList[find2];
         //                     System.DateTime now = System.DateTime.Now;
         //                     string datePart = now.ToString("yyyy.MM.dd");
@@ -53,21 +53,21 @@ public class MonsterDie : MonsterState
         //                 }
         //             }
         //         }
-        //         if (DBManager.I.currData.killCounts != null && DBManager.I.currData.killCounts.Count > 0)
+        //         if (DBManager.I.currData.ks != null && DBManager.I.currData.ks.Count > 0)
         //         {
-        //             find1 = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+        //             find1 = DBManager.I.currData.ks.FindIndex(x => x.Name == strimedName);
         //             if (find1 != -1)
         //             {
-        //                 var killCount = DBManager.I.currData.killCounts[find1];
+        //                 var killCount = DBManager.I.currData.ks[find1];
         //                 killCount.count++;
-        //                 DBManager.I.currData.killCounts[find1] = killCount;
+        //                 DBManager.I.currData.ks[find1] = killCount;
         //             }
         //             else
         //             {
         //                 var killCount = new CharacterData.KillCount();
         //                 killCount.Name = strimedName;
         //                 killCount.count = 1;
-        //                 DBManager.I.currData.killCounts.Add(killCount);
+        //                 DBManager.I.currData.ks.Add(killCount);
         //             }
         //         }
         //     }
@@ -83,27 +83,27 @@ public class MonsterDie : MonsterState
         string strimedName = transform.name.Split("(")[0];
 
         int killCount = 0;
-        if (DBManager.I.currData.killCounts == null)
+        if (DBManager.I.currData.ks == null)
         {
-            DBManager.I.currData.killCounts = new System.Collections.Generic.List<CharacterData.KillCount>();
+            DBManager.I.currData.ks = new System.Collections.Generic.List<CharacterData.KillCount>();
             CharacterData.KillCount newData = new CharacterData.KillCount();
             newData.Name = strimedName;
             newData.count = 1;
-            DBManager.I.currData.killCounts.Add(newData);
+            DBManager.I.currData.ks.Add(newData);
         }
         else
         {
-            int find = DBManager.I.currData.killCounts.FindIndex(x => x.Name == strimedName);
+            int find = DBManager.I.currData.ks.FindIndex(x => x.Name == strimedName);
             if (find != -1)
             {
-                killCount = DBManager.I.currData.killCounts[find].count;
+                killCount = DBManager.I.currData.ks[find].count;
             }
             else
             {
                 CharacterData.KillCount newData = new CharacterData.KillCount();
                 newData.Name = strimedName;
                 newData.count = 1;
-                DBManager.I.currData.killCounts.Add(newData);
+                DBManager.I.currData.ks.Add(newData);
             }
         }
 
@@ -197,7 +197,7 @@ public class MonsterDie : MonsterState
             case "LanternKeeper":
             DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_KILL");
                 // if (DBManager.I.currData.difficulty >= 1)
-                //     if (DBManager.I.currData.maxPotionCount == DBManager.I.currData.currPotionCount)
+                //     if (DBManager.I.currData.mpc == DBManager.I.currData.cpc)
                 //     {
                 //         DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_NO_POTION_HARD");
                 //     }

@@ -89,8 +89,8 @@ public class LobbyStoryPanel : MonoBehaviour
         if (DBManager.I.IsSteamInit() && DBManager.I.IsSteam())
         {
             isSteamSlot = true;
-            if (DBManager.I.allSaveDatasInSteam.characterDatas == null
-            || DBManager.I.allSaveDatasInSteam.characterDatas.Count == 0)
+            if (DBManager.I.allSaveDatasInSteam.cds == null
+            || DBManager.I.allSaveDatasInSteam.cds.Count == 0)
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -102,15 +102,15 @@ public class LobbyStoryPanel : MonoBehaviour
             }
             for (int i = 0; i < 3; i++)
             {
-                if (i < DBManager.I.allSaveDatasInSteam.characterDatas.Count
-                && DBManager.I.allSaveDatasInSteam.characterDatas[i].maxHealth > 0)
+                if (i < DBManager.I.allSaveDatasInSteam.cds.Count
+                && DBManager.I.allSaveDatasInSteam.cds[i].maxHealth > 0)
                 {
                     slots[i].Find("Empty").gameObject.SetActive(false);
                     slots[i].Find("Slot").gameObject.SetActive(true);
                     slots[i].Find("Frame").GetComponent<Image>().color = color1;
                     // 텍스트 내용 갱신
                     Transform wrap = slots[i].Find("Slot");
-                    CharacterData data = DBManager.I.allSaveDatasInSteam.characterDatas[i];
+                    CharacterData data = DBManager.I.allSaveDatasInSteam.cds[i];
                     wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Player{i + 1}";
                     wrap.Find("DeathText(1)").GetComponent<TMP_Text>().text = $"{data.death}";
                     wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
@@ -129,8 +129,8 @@ public class LobbyStoryPanel : MonoBehaviour
         else
         {
             isSteamSlot = false;
-            if (DBManager.I.allSaveDatasInLocal.characterDatas == null
-            || DBManager.I.allSaveDatasInLocal.characterDatas.Count == 0)
+            if (DBManager.I.allSaveDatasInLocal.cds == null
+            || DBManager.I.allSaveDatasInLocal.cds.Count == 0)
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -142,15 +142,15 @@ public class LobbyStoryPanel : MonoBehaviour
             }
             for (int i = 0; i < 3; i++)
             {
-                if (i < DBManager.I.allSaveDatasInLocal.characterDatas.Count
-                && DBManager.I.allSaveDatasInLocal.characterDatas[i].maxHealth > 0)
+                if (i < DBManager.I.allSaveDatasInLocal.cds.Count
+                && DBManager.I.allSaveDatasInLocal.cds[i].maxHealth > 0)
                 {
                     slots[i].Find("Empty").gameObject.SetActive(false);
                     slots[i].Find("Slot").gameObject.SetActive(true);
                     slots[i].Find("Frame").GetComponent<Image>().color = color1;
                     // 텍스트 내용 갱신
                     Transform wrap = slots[i].Find("Slot");
-                    CharacterData data = DBManager.I.allSaveDatasInLocal.characterDatas[i];
+                    CharacterData data = DBManager.I.allSaveDatasInLocal.cds[i];
                     wrap.Find("NameText(1)").GetComponent<TMP_Text>().text = $"Offline Player{i + 1}";
                     wrap.Find("DeathText(1)").GetComponent<TMP_Text>().text = $"{data.death}";
                     wrap.Find("GearText(1)").GetComponent<TMP_Text>().text = $"{data.gearDatas.Count}";
@@ -224,9 +224,9 @@ public class LobbyStoryPanel : MonoBehaviour
         Transform wrap = leftMonitor.transform.Find("Wrap");
         CharacterData data;
         if (isSteamSlot)
-            data = DBManager.I.allSaveDatasInSteam.characterDatas[select];
+            data = DBManager.I.allSaveDatasInSteam.cds[select];
         else
-            data = DBManager.I.allSaveDatasInLocal.characterDatas[select];
+            data = DBManager.I.allSaveDatasInLocal.cds[select];
         // 썸네일  
         Image thumbnail = wrap.Find("ThumbnailFrame/Thumbnail").GetComponent<Image>();
         int _slotIndex = (isSteamSlot) ? select : select + 3;
@@ -332,12 +332,12 @@ public class LobbyStoryPanel : MonoBehaviour
         await Task.Delay(200);
         if (isSteamSlot)
         {
-            DBManager.I.currData = DBManager.I.allSaveDatasInSteam.characterDatas[select];
+            DBManager.I.currData = DBManager.I.allSaveDatasInSteam.cds[select];
             DBManager.I.currSlot = select;
         }
         else
         {
-            DBManager.I.currData = DBManager.I.allSaveDatasInLocal.characterDatas[select];
+            DBManager.I.currData = DBManager.I.allSaveDatasInLocal.cds[select];
             DBManager.I.currSlot = select + 3;
         }
         await Task.Delay(200);
@@ -363,9 +363,9 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.maxBattery = 100;
         newData.currHealth = 400;
         newData.currBattery = 100;
-        newData.maxPotionCount = 3;
-        newData.currPotionCount = 3;
-        newData.maxGearCost = 3;
+        newData.mpc = 3;
+        newData.cpc = 3;
+        newData.mgc = 3;
         newData.seed = Random.Range(1, 9999);
 
         System.DateTime now = System.DateTime.Now;
@@ -377,9 +377,9 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.gearDatas = new List<CharacterData.GearData>();
         newData.lanternDatas = new List<CharacterData.LanternData>();
         newData.recordDatas = new List<CharacterData.RecordData>();
-        newData.sceneDatas = new List<CharacterData.SceneData>();
-        newData.progressDatas = new List<CharacterData.ProgressData>();
-        newData.killCounts = new List<CharacterData.KillCount>();
+        newData.sceneDatas = new List<CharacterData.SData>();
+        newData.pds = new List<CharacterData.ProgressData>();
+        newData.ks = new List<CharacterData.KillCount>();
 
         DBManager.I.currData = newData;
         // 신규캐릭터 시작 아이템
@@ -395,12 +395,12 @@ public class LobbyStoryPanel : MonoBehaviour
         {
             DBManager.I.currSlot = select;
 
-            if (DBManager.I.allSaveDatasInSteam.characterDatas == null)
+            if (DBManager.I.allSaveDatasInSteam.cds == null)
             {
-                DBManager.I.allSaveDatasInSteam.characterDatas = new List<CharacterData>();
+                DBManager.I.allSaveDatasInSteam.cds = new List<CharacterData>();
             }
 
-            int addEmptyCount = select - DBManager.I.allSaveDatasInSteam.characterDatas.Count;
+            int addEmptyCount = select - DBManager.I.allSaveDatasInSteam.cds.Count;
             if (addEmptyCount > 0)
             {
                 CharacterData emptyData = new CharacterData();
@@ -410,20 +410,20 @@ public class LobbyStoryPanel : MonoBehaviour
                 emptyData.lanternDatas = new List<CharacterData.LanternData>();
                 emptyData.recordDatas = new List<CharacterData.RecordData>();
                 for (int i = 0; i < addEmptyCount; i++)
-                    DBManager.I.allSaveDatasInSteam.characterDatas.Add(emptyData);
+                    DBManager.I.allSaveDatasInSteam.cds.Add(emptyData);
             }
-            DBManager.I.allSaveDatasInSteam.characterDatas.Add(newData);
+            DBManager.I.allSaveDatasInSteam.cds.Add(newData);
         }
         else
         {
             DBManager.I.currSlot = select + 3;
 
-            if (DBManager.I.allSaveDatasInLocal.characterDatas == null)
+            if (DBManager.I.allSaveDatasInLocal.cds == null)
             {
-                DBManager.I.allSaveDatasInLocal.characterDatas = new List<CharacterData>();
+                DBManager.I.allSaveDatasInLocal.cds = new List<CharacterData>();
             }
 
-            int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.characterDatas.Count;
+            int addEmptyCount = select - DBManager.I.allSaveDatasInLocal.cds.Count;
             if (addEmptyCount > 0)
             {
                 CharacterData emptyData = new CharacterData();
@@ -433,12 +433,12 @@ public class LobbyStoryPanel : MonoBehaviour
                 emptyData.lanternDatas = new List<CharacterData.LanternData>();
                 emptyData.recordDatas = new List<CharacterData.RecordData>();
                 for (int i = 0; i < addEmptyCount; i++)
-                    DBManager.I.allSaveDatasInLocal.characterDatas.Add(emptyData);
+                    DBManager.I.allSaveDatasInLocal.cds.Add(emptyData);
             }
 
 
 
-            DBManager.I.allSaveDatasInLocal.characterDatas.Add(newData);
+            DBManager.I.allSaveDatasInLocal.cds.Add(newData);
         }
         DBManager.I.Save();
         await Task.Delay(200);
@@ -479,22 +479,22 @@ public class LobbyStoryPanel : MonoBehaviour
         if (isSteamSlot)
         {
             SaveData copy = new SaveData();
-            copy.characterDatas = DBManager.I.allSaveDatasInSteam.characterDatas.ToList();
+            copy.cds = DBManager.I.allSaveDatasInSteam.cds.ToList();
             SaveData newSaveData = new SaveData();
-            newSaveData.characterDatas = new List<CharacterData>();
-            for (int i = 0; i < copy.characterDatas.Count; i++)
+            newSaveData.cds = new List<CharacterData>();
+            for (int i = 0; i < copy.cds.Count; i++)
             {
-                newSaveData.characterDatas.Add(copy.characterDatas[i]);
+                newSaveData.cds.Add(copy.cds[i]);
             }
             await Task.Delay(50);
-            newSaveData.characterDatas[select] = new CharacterData();
+            newSaveData.cds[select] = new CharacterData();
             await Task.Delay(50);
             DBManager.I.allSaveDatasInSteam = new SaveData();
-            DBManager.I.allSaveDatasInSteam.characterDatas = newSaveData.characterDatas.ToList();
+            DBManager.I.allSaveDatasInSteam.cds = newSaveData.cds.ToList();
             await Task.Delay(50);
-            for (int i = 0; i < DBManager.I.allSaveDatasInSteam.characterDatas.Count; i++)
+            for (int i = 0; i < DBManager.I.allSaveDatasInSteam.cds.Count; i++)
             {
-                Debug.Log(DBManager.I.allSaveDatasInSteam.characterDatas[i].maxHealth);
+                Debug.Log(DBManager.I.allSaveDatasInSteam.cds[i].maxHealth);
             }
             await Task.Delay(50);
             DBManager.I.SaveSteam();
@@ -502,22 +502,22 @@ public class LobbyStoryPanel : MonoBehaviour
         else
         {
             SaveData copy = new SaveData();
-            copy.characterDatas = DBManager.I.allSaveDatasInLocal.characterDatas.ToList();
+            copy.cds = DBManager.I.allSaveDatasInLocal.cds.ToList();
             SaveData newSaveData = new SaveData();
-            newSaveData.characterDatas = new List<CharacterData>();
-            for (int i = 0; i < copy.characterDatas.Count; i++)
+            newSaveData.cds = new List<CharacterData>();
+            for (int i = 0; i < copy.cds.Count; i++)
             {
-                newSaveData.characterDatas.Add(copy.characterDatas[i]);
+                newSaveData.cds.Add(copy.cds[i]);
             }
             await Task.Delay(50);
-            newSaveData.characterDatas[select] = new CharacterData();
+            newSaveData.cds[select] = new CharacterData();
             await Task.Delay(50);
             DBManager.I.allSaveDatasInLocal = new SaveData();
-            DBManager.I.allSaveDatasInLocal.characterDatas = newSaveData.characterDatas.ToList();
+            DBManager.I.allSaveDatasInLocal.cds = newSaveData.cds.ToList();
             await Task.Delay(50);
-            for (int i = 0; i < DBManager.I.allSaveDatasInLocal.characterDatas.Count; i++)
+            for (int i = 0; i < DBManager.I.allSaveDatasInLocal.cds.Count; i++)
             {
-                Debug.Log(DBManager.I.allSaveDatasInLocal.characterDatas[i].maxHealth);
+                Debug.Log(DBManager.I.allSaveDatasInLocal.cds[i].maxHealth);
             }
             await Task.Delay(50);
             DBManager.I.SaveLocal();

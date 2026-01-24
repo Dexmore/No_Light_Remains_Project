@@ -23,7 +23,7 @@ public class PlayerUsePotion : IPlayerState
     public void Enter()
     {
 
-        if (DBManager.I.currData.currPotionCount <= 0)
+        if (DBManager.I.currData.cpc <= 0)
         {
             emptyTime = Time.time;
             AudioManager.I.PlaySFX("Fail1");
@@ -130,7 +130,7 @@ public class PlayerUsePotion : IPlayerState
             if (!sfxFlag2)
             {
                 sfxFlag2 = true;
-                DBManager.I.currData.currPotionCount--;
+                DBManager.I.currData.cpc--;
                 sfx = AudioManager.I.PlaySFX("Drink");
                 if (_mainCamera == null) _mainCamera = Camera.main;
                 upa = ParticleManager.I.PlayUIParticle("UIAttPotion",
