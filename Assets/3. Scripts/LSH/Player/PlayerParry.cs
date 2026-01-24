@@ -100,7 +100,7 @@ public class PlayerParry : IPlayerState
             if (outValue)
             {
                 Transform target = hitData.attacker;
-                float monsterDamage = hitData.damage;
+                float monsterDamage = Mathf.Abs(hitData.damage - 40f);
                 // 기본 데미지 20f
                 // 반사데미지 0.1f * damage
 
@@ -108,11 +108,11 @@ public class PlayerParry : IPlayerState
                 float gearDamage = 0;
                 if(level == 0)
                 {
-                    gearDamage = 10f + 0.1f * monsterDamage;
+                    gearDamage = 10f + 0.05f * monsterDamage;
                 }
                 else if(level == 1)
                 {
-                    gearDamage = 15f + 0.12f * monsterDamage;
+                    gearDamage = 15f + 0.066f * monsterDamage;
                 }
                 Vector2 hitPoint = 0.25f * hitData.hitPoint + 0.75f * (target.transform.position + 1.3f * Vector3.up);
                 GameManager.I.onHit.Invoke

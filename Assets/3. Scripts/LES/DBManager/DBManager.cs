@@ -688,43 +688,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         transform.GetChild(0).gameObject.SetActive(false);
     }
-
-
-
-
-
-
-#if UNITY_EDITOR
-    [Space(60)]
-    [Header("-----아이템 습득 테스트용-----")]
-    public int testGold;
-    public InventoryItem[] testItemDatas;
-    public GearData[] testGearDatas;
-    public LanternFunctionData[] testLanternDatas;
-    public RecordData[] testRecordDatas;
-
-    [Button("아이템 습득 테스트")]
-    public void TestAddItem()
-    {
-        currData.gold += testGold;
-        for (int i = 0; i < testItemDatas.Length; i++)
-        {
-            AddItem(testItemDatas[i].data.name, testItemDatas[i].quantity);
-        }
-        for (int i = 0; i < testGearDatas.Length; i++)
-        {
-            AddGear(testGearDatas[i].name);
-        }
-        for (int i = 0; i < testLanternDatas.Length; i++)
-        {
-            AddLantern(testLanternDatas[i].name);
-        }
-        for (int i = 0; i < testRecordDatas.Length; i++)
-        {
-            AddRecord(testRecordDatas[i].name);
-        }
-    }
-
+    
     public void CleanSteamCloudExceptMine()
     {
         if (!IsSteam() || !IsSteamInit())
@@ -770,6 +734,43 @@ public class DBManager : SingletonBehaviour<DBManager>
             Debug.Log($"[DBManager] 클라우드 정리 완료! 삭제된 파일 수: {deleteCount}");
         }
     }
+
+
+
+
+
+#if UNITY_EDITOR
+    [Space(60)]
+    [Header("-----아이템 습득 테스트용-----")]
+    public int testGold;
+    public InventoryItem[] testItemDatas;
+    public GearData[] testGearDatas;
+    public LanternFunctionData[] testLanternDatas;
+    public RecordData[] testRecordDatas;
+
+    [Button("아이템 습득 테스트")]
+    public void TestAddItem()
+    {
+        currData.gold += testGold;
+        for (int i = 0; i < testItemDatas.Length; i++)
+        {
+            AddItem(testItemDatas[i].data.name, testItemDatas[i].quantity);
+        }
+        for (int i = 0; i < testGearDatas.Length; i++)
+        {
+            AddGear(testGearDatas[i].name);
+        }
+        for (int i = 0; i < testLanternDatas.Length; i++)
+        {
+            AddLantern(testLanternDatas[i].name);
+        }
+        for (int i = 0; i < testRecordDatas.Length; i++)
+        {
+            AddRecord(testRecordDatas[i].name);
+        }
+    }
+
+
 
 #endif
     private float RoundToOneDecimal(float value)
