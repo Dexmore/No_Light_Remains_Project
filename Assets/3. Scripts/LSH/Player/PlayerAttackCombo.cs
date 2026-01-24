@@ -158,7 +158,7 @@ public class PlayerAttackCombo : IPlayerState
                     }
                     else if (level == 1 && ctx.currHealth / ctx.maxHealth <= 0.3f)
                     {
-                        gearMultiplier = 1.35f;
+                        gearMultiplier = 1.4f;
                     }
                 }
             }
@@ -177,9 +177,9 @@ public class PlayerAttackCombo : IPlayerState
                 else if (level == 1)
                 {
                     if (GameManager.I.isLanternOn)
-                        gearMultiplier *= 1.25f;
+                        gearMultiplier *= 1.3f;
                     else
-                        gearMultiplier *= 1.06f;
+                        gearMultiplier *= 1.04f;
                 }
             }
 

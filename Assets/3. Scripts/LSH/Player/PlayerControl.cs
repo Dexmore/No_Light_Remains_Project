@@ -825,7 +825,7 @@ public class PlayerControl : MonoBehaviour
                         }
                         else if (level == 1)
                         {
-                            gearMultiplier = 1.2f;
+                            gearMultiplier = 1.3f;
                         }
                     }
                     currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval * tempFloat2 * malfunctionFactor;
