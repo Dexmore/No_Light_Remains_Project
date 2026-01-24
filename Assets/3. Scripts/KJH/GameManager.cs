@@ -130,7 +130,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             if (findIndex1 != -1)
             {
                 var sceneData = DBManager.I.currData.sceneDatas[findIndex1];
-                sceneData.mDTime = System.DateTimeOffset.Now.ToUnixTimeSeconds();
+                sceneData.t = System.DateTimeOffset.Now.ToUnixTimeSeconds();
                 DBManager.I.currData.sceneDatas[findIndex1] = sceneData;
             }
 
@@ -602,22 +602,22 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (!sceneName.Contains("Stage")) return;
         MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Include, sortMode: FindObjectsSortMode.InstanceID);
         ISavable[] allSavableObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID).OfType<ISavable>().ToArray();
-        List<CharacterData.SceneData> sceneDatas = DBManager.I.currData.sceneDatas;
+        List<CharacterData.SData> sceneDatas = DBManager.I.currData.sceneDatas;
         int find = sceneDatas.FindIndex(x => x.sceneName == sceneName);
-        CharacterData.SceneData sceneData;
+        CharacterData.SData sceneData;
         if (find == -1)
         {
-            sceneData = new CharacterData.SceneData();
+            sceneData = new CharacterData.SData();
             sceneData.sceneName = sceneName;
 
             // 몬스터 부분
-            sceneData.mDatas = new List<CharacterData.MonsterPositionData>();
+            sceneData.md = new List<CharacterData.MData>();
             for (int i = 0; i < allMonsters.Length; i++)
             {
                 if (!allMonsters[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allMonsters[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
-                    CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
+                    CharacterData.MData monsterPositionData = new CharacterData.MData();
                     monsterPositionData.Name = allMonsters[i].transform.name.Split("(")[0];
                     monsterPositionData.index = result;
                     if (allMonsters[i].gameObject.activeInHierarchy)
@@ -626,15 +626,15 @@ public class GameManager : SingletonBehaviour<GameManager>
                     }
                     else
                     {
-                        sceneData.mDTime = System.DateTimeOffset.Now.ToUnixTimeSeconds();
+                        sceneData.t = System.DateTimeOffset.Now.ToUnixTimeSeconds();
                     }
-                    sceneData.mDatas.Add(monsterPositionData);
+                    sceneData.md.Add(monsterPositionData);
                 }
                 else continue;
             }
 
             // 오브젝트 부분
-            sceneData.oDatas = new List<CharacterData.ObjectPositionData>();
+            sceneData.od = new List<CharacterData.OData>();
             for (int i = 0; i < allSavableObjects.Length; i++)
             {
                 // 중요 : 완전히 완료되지않은 오브젝트는 상태를 저장하지 않는다. 즉 중간만 진행한 오브젝트는 씬 재입장시 처음부터 다시해야함
@@ -642,18 +642,18 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (!allSavableObjects[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allSavableObjects[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
-                    CharacterData.ObjectPositionData objectPositionData = new CharacterData.ObjectPositionData();
+                    CharacterData.OData objectPositionData = new CharacterData.OData();
                     objectPositionData.Name = allSavableObjects[i].transform.name.Split("(")[0];
                     objectPositionData.index = result;
                     if (allSavableObjects[i].CanReplay)
                     {
-                        objectPositionData.canReplay = true;
+                        objectPositionData.cr = true;
                     }
                     else
                     {
-                        objectPositionData.canReplay = false;
+                        objectPositionData.cr = false;
                     }
-                    sceneData.oDatas.Add(objectPositionData);
+                    sceneData.od.Add(objectPositionData);
                 }
                 else continue;
             }
@@ -670,18 +670,18 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (int.TryParse(allMonsters[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
                     string mName = allMonsters[i].transform.name.Split("(")[0];
-                    CharacterData.MonsterPositionData monsterPositionData = new CharacterData.MonsterPositionData();
+                    CharacterData.MData monsterPositionData = new CharacterData.MData();
                     monsterPositionData.Name = allMonsters[i].transform.name.Split("(")[0];
                     monsterPositionData.index = result;
-                    sceneData.mDTime = System.DateTimeOffset.Now.ToUnixTimeSeconds();
-                    int find2 = sceneData.mDatas.FindIndex(x => x.Name == mName && x.index == result);
+                    sceneData.t = System.DateTimeOffset.Now.ToUnixTimeSeconds();
+                    int find2 = sceneData.md.FindIndex(x => x.Name == mName && x.index == result);
                     if (find2 == -1)
                     {
-                        sceneData.mDatas.Add(monsterPositionData);
+                        sceneData.md.Add(monsterPositionData);
                     }
                     else
                     {
-                        sceneData.mDatas[find2] = monsterPositionData;
+                        sceneData.md[find2] = monsterPositionData;
                     }
                 }
             }
@@ -695,35 +695,35 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (int.TryParse(allSavableObjects[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
                     string mName = allSavableObjects[i].transform.name.Split("(")[0];
-                    int find2 = sceneData.oDatas.FindIndex(x => x.Name == mName && x.index == result);
+                    int find2 = sceneData.od.FindIndex(x => x.Name == mName && x.index == result);
                     if (find2 == -1)
                     {
-                        CharacterData.ObjectPositionData objectPositionData = new CharacterData.ObjectPositionData();
+                        CharacterData.OData objectPositionData = new CharacterData.OData();
                         objectPositionData.Name = allSavableObjects[i].transform.name.Split("(")[0];
                         objectPositionData.index = result;
                         if (allSavableObjects[i].CanReplay)
                         {
-                            objectPositionData.canReplay = true;
+                            objectPositionData.cr = true;
                         }
                         else
                         {
-                            objectPositionData.canReplay = false;
+                            objectPositionData.cr = false;
                         }
-                        sceneData.oDatas.Add(objectPositionData);
+                        sceneData.od.Add(objectPositionData);
                     }
                     else
                     {
-                        CharacterData.ObjectPositionData objectPositionData = sceneData.oDatas[find2];
+                        CharacterData.OData objectPositionData = sceneData.od[find2];
                         objectPositionData.index = result;
                         if (allSavableObjects[i].CanReplay)
                         {
-                            objectPositionData.canReplay = true;
+                            objectPositionData.cr = true;
                         }
                         else
                         {
-                            objectPositionData.canReplay = false;
+                            objectPositionData.cr = false;
                         }
-                        sceneData.oDatas[find2] = objectPositionData;
+                        sceneData.od[find2] = objectPositionData;
                     }
                 }
                 else continue;
@@ -737,9 +737,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         string sceneName = SceneManager.GetActiveScene().name;
         MonsterControl[] allMonsters = FindObjectsByType<MonsterControl>(FindObjectsInactive.Include, sortMode: FindObjectsSortMode.InstanceID);
         ISavable[] allSavableObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID).OfType<ISavable>().ToArray();
-        List<CharacterData.SceneData> sceneDatas = DBManager.I.currData.sceneDatas;
+        List<CharacterData.SData> sceneDatas = DBManager.I.currData.sceneDatas;
         int find = sceneDatas.FindIndex(x => x.sceneName == sceneName);
-        CharacterData.SceneData sceneData;
+        CharacterData.SData sceneData;
         if (find != -1)
         {
             sceneData = sceneDatas[find];
@@ -750,9 +750,9 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (!allMonsters[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allMonsters[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
-                    int findIndex = sceneData.mDatas.FindIndex(x => x.Name == allMonsters[i].transform.name.Split("(")[0] && x.index == result);
+                    int findIndex = sceneData.md.FindIndex(x => x.Name == allMonsters[i].transform.name.Split("(")[0] && x.index == result);
                     if (findIndex == -1) continue;
-                    var monsterPositionData = sceneData.mDatas[findIndex];
+                    var monsterPositionData = sceneData.md[findIndex];
                     // 서버 저장데이터상 이 몬스터가 죽어있는걸로 되어있는경우. 
 
                     if (prevSceneName == nextSceneName)
@@ -762,18 +762,18 @@ public class GameManager : SingletonBehaviour<GameManager>
                     }
 
                     // 자기 자신씬 말고 다른씬으로 넘어갈시 시작시 시간조건에 따라 아래처럼 셋팅 (유사 리스폰)
-                    if (sceneData.mDTime > 0)
+                    if (sceneData.t > 0)
                     {
-                        System.DateTime deathTime = System.DateTimeOffset.FromUnixTimeSeconds(sceneData.mDTime).DateTime;
+                        System.DateTime deathTime = System.DateTimeOffset.FromUnixTimeSeconds(sceneData.t).DateTime;
                         System.TimeSpan timePassed = System.DateTime.UtcNow - deathTime;
                         int waitSecond = 300;
                         //Debug.Log($"{timePassed.TotalSeconds}초 경과");
                         if (timePassed.TotalSeconds >= waitSecond)
                         {
                             // 부활 조건 충족
-                            List<CharacterData.MonsterPositionData> newList = new List<CharacterData.MonsterPositionData>(0);
-                            sceneData.mDatas = newList;
-                            sceneData.mDTime = 0;
+                            List<CharacterData.MData> newList = new List<CharacterData.MData>(0);
+                            sceneData.md = newList;
+                            sceneData.t = 0;
                             sceneDatas[find] = sceneData;
                             break;
                         }
@@ -792,9 +792,9 @@ public class GameManager : SingletonBehaviour<GameManager>
                 if (!allSavableObjects[i].transform.name.Contains("(")) continue;
                 if (int.TryParse(allSavableObjects[i].transform.name.Split("(")[1].Split(")")[0], out int result))
                 {
-                    int findIndex = sceneData.oDatas.FindIndex(x => x.Name == allSavableObjects[i].transform.name.Split("(")[0] && x.index == result);
+                    int findIndex = sceneData.od.FindIndex(x => x.Name == allSavableObjects[i].transform.name.Split("(")[0] && x.index == result);
                     if (findIndex == -1) continue;
-                    var objectPositionData = sceneData.oDatas[findIndex];
+                    var objectPositionData = sceneData.od[findIndex];
 
                     // 애초부터 '완전히 완료된 오브젝트'만 DB에 저장하기 때문에.
                     // 죽지않은 몬스터들도 위치와 체력 셋팅을 해줬던과 달리.
@@ -803,7 +803,7 @@ public class GameManager : SingletonBehaviour<GameManager>
                     {
 
                         // Time 차이 계산
-                        System.DateTime completeTime = System.DateTimeOffset.FromUnixTimeSeconds(sceneData.mDTime).DateTime;
+                        System.DateTime completeTime = System.DateTimeOffset.FromUnixTimeSeconds(sceneData.t).DateTime;
                         System.TimeSpan timePassed = System.DateTime.UtcNow - completeTime;
                         int waitSecond = allSavableObjects[i].ReplayWaitTimeSecond;
                         if (timePassed.TotalSeconds >= waitSecond)
@@ -905,7 +905,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
         bool isEquippedNow = DBManager.I.HasGear("008_ExpansionGear", out bool outValue) && outValue;
 
-        int currentMax = DBManager.I.currData.maxPotionCount;
+        int currentMax = DBManager.I.currData.mpc;
         int targetMax = 3;
         if (isEquippedNow) targetMax = (DBManager.I.GetGearLevel("008_ExpansionGear") == 1) ? 5 : 4;
 
@@ -920,24 +920,24 @@ public class GameManager : SingletonBehaviour<GameManager>
                 diff -= clear;
                 GameManager.I.potionDebt -= clear;
             }
-            DBManager.I.currData.currPotionCount += diff;
+            DBManager.I.currData.cpc += diff;
         }
         else if (currentMax > targetMax) // 해제 상황
         {
             int penalty = currentMax - targetMax;
-            if (DBManager.I.currData.currPotionCount < penalty)
+            if (DBManager.I.currData.cpc < penalty)
             {
-                GameManager.I.potionDebt += (penalty - DBManager.I.currData.currPotionCount);
-                DBManager.I.currData.currPotionCount = 0;
+                GameManager.I.potionDebt += (penalty - DBManager.I.currData.cpc);
+                DBManager.I.currData.cpc = 0;
             }
             else
             {
-                DBManager.I.currData.currPotionCount -= penalty;
+                DBManager.I.currData.cpc -= penalty;
             }
         }
 
-        DBManager.I.currData.maxPotionCount = targetMax;
-        DBManager.I.currData.currPotionCount = Mathf.Clamp(DBManager.I.currData.currPotionCount, 0, DBManager.I.currData.maxPotionCount);
+        DBManager.I.currData.mpc = targetMax;
+        DBManager.I.currData.cpc = Mathf.Clamp(DBManager.I.currData.cpc, 0, DBManager.I.currData.mpc);
 
         hUDBinder?.Refresh(1f);
         GameManager.I.isSuperNovaGearEquip = DBManager.I.HasGear("006_SuperNovaGear", out bool sn) && sn;

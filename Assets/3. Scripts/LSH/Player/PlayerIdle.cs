@@ -107,8 +107,8 @@ public class PlayerIdle : IPlayerState
         potionPressed = potionAction.IsPressed();
         if (potionPressed && ctx.Grounded && (ctx.currHealth / ctx.maxHealth) < 0.93f)
         {
-            if (DBManager.I.currData.currPotionCount > 0
-            || (DBManager.I.currData.currPotionCount <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
+            if (DBManager.I.currData.cpc > 0
+            || (DBManager.I.currData.cpc <= 0 && Time.time - ctx.usePotion.emptyTime > 0.2f))
             {
                 ctx.usePotion.prevState = ctx.idle;
                 fsm.ChangeState(ctx.usePotion);

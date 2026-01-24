@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using UnityEngine;
 using Steamworks;
@@ -73,15 +74,15 @@ public class DBManager : SingletonBehaviour<DBManager>
             if (sData.sceneName == sceneName) continue;
 
             // 몬스터 리스폰 시간 체크 및 데이터 비우기
-            if (sData.mDatas != null && sData.mDatas.Count > 0)
+            if (sData.md != null && sData.md.Count > 0)
             {
-                System.DateTime deathTime = System.DateTimeOffset.FromUnixTimeSeconds(sData.mDTime).DateTime;
+                System.DateTime deathTime = System.DateTimeOffset.FromUnixTimeSeconds(sData.t).DateTime;
                 System.TimeSpan timePassed = System.DateTime.UtcNow - deathTime;
 
                 if (timePassed.TotalSeconds >= 300) // 5분
                 {
-                    sData.mDatas = new List<CharacterData.MonsterPositionData>(0);
-                    sData.mDTime = 0;
+                    sData.md = new List<CharacterData.MData>(0);
+                    sData.t = 0;
                 }
             }
 
@@ -89,8 +90,8 @@ public class DBManager : SingletonBehaviour<DBManager>
             dataToSave.sceneDatas[i] = sData;
 
             // 아무 기록도 남지 않은 씬 데이터는 리스트에서 완전 삭제
-            if ((sData.oDatas == null || sData.oDatas.Count == 0) &&
-                (sData.mDatas == null || sData.mDatas.Count == 0))
+            if ((sData.od == null || sData.od.Count == 0) &&
+                (sData.md == null || sData.md.Count == 0))
             {
                 dataToSave.sceneDatas.RemoveAt(i);
             }
@@ -103,24 +104,24 @@ public class DBManager : SingletonBehaviour<DBManager>
 
         if (currSlot >= 0 && currSlot <= 2)
         {
-            if (allSaveDatasInSteam.characterDatas == null)
+            if (allSaveDatasInSteam.cds == null)
             {
-                allSaveDatasInSteam.characterDatas = new List<CharacterData>();
+                allSaveDatasInSteam.cds = new List<CharacterData>();
             }
-            if (allSaveDatasInSteam.characterDatas.Count <= currSlot)
+            if (allSaveDatasInSteam.cds.Count <= currSlot)
 
             {
-                allSaveDatasInSteam.characterDatas.Add(savedData);
+                allSaveDatasInSteam.cds.Add(savedData);
             }
             else
             {
-                allSaveDatasInSteam.characterDatas[currSlot] = savedData;
+                allSaveDatasInSteam.cds[currSlot] = savedData;
             }
             SaveSteam();
         }
         else if (currSlot >= 3 && currSlot <= 5)
         {
-            allSaveDatasInLocal.characterDatas[currSlot - 3] = savedData;
+            allSaveDatasInLocal.cds[currSlot - 3] = savedData;
             SaveLocal();
         }
         else return;
@@ -157,6 +158,12 @@ public class DBManager : SingletonBehaviour<DBManager>
                 yield return YieldInstructionCache.WaitForSeconds(0.2f);
                 StopCoroutine(nameof(CheckLoop));
                 StartCoroutine(nameof(CheckLoop));
+
+                yield return YieldInstructionCache.WaitForSeconds(1.5f);
+                yield return new WaitUntil(() => IsSteam() && IsSteamInit());
+                yield return null;
+                CleanSteamCloudExceptMine();
+
                 yield break;
             }
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
@@ -166,12 +173,7 @@ public class DBManager : SingletonBehaviour<DBManager>
         LoadLocal();
         if (itemDatabase != null) itemDatabase.RefreshAllData();
 
-        yield return YieldInstructionCache.WaitForSeconds(0.5f);
 
-        if (IsSteam() && IsSteamInit())
-        {
-            CleanSteamCloudExceptMine();
-        }
     }
     public void StartSteam()
     {
@@ -264,16 +266,40 @@ public class DBManager : SingletonBehaviour<DBManager>
             Debug.LogWarning("[DBManager] 스팀이 실행 중이 아니거나 초기화에 실패하여 저장할 수 없습니다.");
             return;
         }
-        while (allSaveDatasInSteam.characterDatas.Count > 3)
-            allSaveDatasInSteam.characterDatas.RemoveAt(allSaveDatasInSteam.characterDatas.Count - 1);
+        while (allSaveDatasInSteam.cds.Count > 3)
+            allSaveDatasInSteam.cds.RemoveAt(allSaveDatasInSteam.cds.Count - 1);
         try
         {
-            string sd = JsonUtility.ToJson(allSaveDatasInSteam, true);
+            string sd = JsonUtility.ToJson(allSaveDatasInSteam, false);
             // JSON 문자열을 UTF-8 바이트 배열로 변환
             byte[] data = Encoding.UTF8.GetBytes(sd);
 
+
+
+            // --- GZip 압축 시작 ---
+            byte[] rawData = Encoding.UTF8.GetBytes(sd);
+            byte[] compressedData;
+            using (MemoryStream output = new MemoryStream())
+            {
+                using (GZipStream gzip = new GZipStream(output, CompressionMode.Compress))
+                {
+                    gzip.Write(rawData, 0, rawData.Length);
+                }
+                compressedData = output.ToArray();
+            }
+            // -----------------------
+
+            //-----------
+            // 1. 기존 파일을 지워서 클라우드 점유율을 즉시 낮춤 (중요)
+            if (SteamRemoteStorage.FileExists(steamSaveFileName))
+            {
+                SteamRemoteStorage.FileDelete(steamSaveFileName);
+            }
+            //-----------
+
+
             // SteamRemoteStorage.FileWrite를 사용해 클라우드에 파일 쓰기
-            if (SteamRemoteStorage.FileWrite(steamSaveFileName, data, data.Length))
+            if (SteamRemoteStorage.FileWrite(steamSaveFileName, compressedData, compressedData.Length))
             {
                 Debug.Log($"[DBManager] 스팀 클라우드 저장 성공: {steamSaveFileName}");
             }
@@ -295,28 +321,40 @@ public class DBManager : SingletonBehaviour<DBManager>
             Debug.LogWarning("[DBManager] 스팀이 실행 중이 아니거나 초기화에 실패하여 불러올 수 없습니다.");
             return;
         }
+
         // 1. 스팀 클라우드에 파일이 존재하는지 확인
         if (!SteamRemoteStorage.FileExists(steamSaveFileName))
         {
             Debug.LogWarning($"[DBManager] 스팀 클라우드에 로드할 파일 없음: {steamSaveFileName}");
-            // 파일이 없으면 로컬 로드를 시도하거나 새 데이터를 생성할 수 있습니다.
-            // 여기서는 일단 로드를 중단합니다.
             return;
         }
+
         try
         {
-            // 2. 파일 크기를 가져와서 바이트 배열 할당
+            // 2. 파일 크기 가져오기 및 압축된 데이터 읽기
             int fileSize = SteamRemoteStorage.GetFileSize(steamSaveFileName);
-            byte[] data = new byte[fileSize];
-            // 3. 파일 읽기
-            int bytesRead = SteamRemoteStorage.FileRead(steamSaveFileName, data, data.Length);
+            byte[] compressedData = new byte[fileSize];
+            int bytesRead = SteamRemoteStorage.FileRead(steamSaveFileName, compressedData, fileSize);
+
             if (bytesRead > 0)
             {
-                // 4. 바이트 배열을 UTF-8 문자열로 변환
-                string sd = Encoding.UTF8.GetString(data);
-                // 5. JSON을 객체로 역직렬화
-                allSaveDatasInSteam = JsonUtility.FromJson<SaveData>(sd);
-                //Debug.Log($"[DBManager] 스팀 클라우드 불러오기 성공: {steamSaveFileName}");
+                // --- GZip 압축 해제 시작 ---
+                using (MemoryStream input = new MemoryStream(compressedData))
+                using (GZipStream gzip = new GZipStream(input, CompressionMode.Decompress))
+                using (MemoryStream output = new MemoryStream())
+                {
+                    // 압축된 데이터를 풀어서 output 스트림에 복사
+                    gzip.CopyTo(output);
+
+                    // 해제된 바이트 배열을 UTF-8 문자열(JSON)로 변환
+                    byte[] rawData = output.ToArray();
+                    string sd = Encoding.UTF8.GetString(rawData);
+
+                    // 3. JSON을 객체로 역직렬화
+                    allSaveDatasInSteam = JsonUtility.FromJson<SaveData>(sd);
+                    Debug.Log($"[DBManager] 스팀 로드 및 압축 해제 성공! 원본 크기: {rawData.Length} bytes");
+                }
+                // ---------------------------
             }
             else
             {
@@ -325,11 +363,12 @@ public class DBManager : SingletonBehaviour<DBManager>
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[DBManager] 스팀 불러오기 중 예외 발생 (파일 손상 가능성): {e.Message}");
-            allSaveDatasInSteam = new SaveData(); // 문제 발생 시 새 데이터로 초기화
-            allSaveDatasInSteam.characterDatas = new List<CharacterData>();
+            Debug.LogError($"[DBManager] 스팀 불러오기 중 예외 발생 (데이터 형식이 다르거나 손상됨): {e.Message}");
+            // 데이터 구조가 깨졌거나, 압축 안 된 옛날 파일일 경우 새 데이터로 초기화
+            allSaveDatasInSteam = new SaveData { cds = new List<CharacterData>() };
         }
     }
+
     string key = "fjlskj@!321dfjkog#$";
     // XOR 암호화
     private byte[] EncryptDecryptXOR(byte[] dataBytes, string key)
@@ -347,12 +386,12 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
     public void SaveLocal()
     {
-        while (allSaveDatasInLocal.characterDatas.Count > 3)
-            allSaveDatasInLocal.characterDatas.RemoveAt(allSaveDatasInLocal.characterDatas.Count - 1);
+        while (allSaveDatasInLocal.cds.Count > 3)
+            allSaveDatasInLocal.cds.RemoveAt(allSaveDatasInLocal.cds.Count - 1);
         try
         {
             // 1. saveData를 JSON 문자열로 변환 (true: 가독성 좋게 포맷팅)
-            string sd = JsonUtility.ToJson(allSaveDatasInLocal, true);
+            string sd = JsonUtility.ToJson(allSaveDatasInLocal, false);
 
             // 암호화
             byte[] dataBytes = System.Text.Encoding.UTF8.GetBytes(sd);
@@ -541,44 +580,44 @@ public class DBManager : SingletonBehaviour<DBManager>
     }
     public void SetProgress(string Name, int progress)
     {
-        int find = currData.progressDatas.FindIndex(x => x.Name == Name);
+        int find = currData.pds.FindIndex(x => x.Name == Name);
         if (find == -1)
         {
             CharacterData.ProgressData progressData = new CharacterData.ProgressData();
             progressData.Name = Name;
             progressData.progress = progress;
-            currData.progressDatas.Add(progressData);
+            currData.pds.Add(progressData);
         }
         else
         {
-            var temp = currData.progressDatas[find];
+            var temp = currData.pds[find];
             temp.progress = progress;
-            currData.progressDatas[find] = temp;
+            currData.pds[find] = temp;
         }
     }
     public int GetProgress(string Name)
     {
-        int find = currData.progressDatas.FindIndex(x => x.Name == Name);
+        int find = currData.pds.FindIndex(x => x.Name == Name);
         if (find == -1)
         {
             return -1;
         }
         else
         {
-            return currData.progressDatas[find].progress;
+            return currData.pds[find].progress;
         }
     }
 
     public int GetKillcount(string Name)
     {
-        int find = currData.killCounts.FindIndex(x => x.Name == Name);
+        int find = currData.ks.FindIndex(x => x.Name == Name);
         if (find == -1)
         {
             return -1;
         }
         else
         {
-            return currData.killCounts[find].count;
+            return currData.ks[find].count;
         }
     }
 
@@ -688,76 +727,48 @@ public class DBManager : SingletonBehaviour<DBManager>
 
     public void CleanSteamCloudExceptMine()
     {
-        if (!IsSteamInit())
+        if (!IsSteam() || !IsSteamInit())
         {
-            Debug.LogError("[DBManager] 스팀이 초기화되지 않아 클라우드를 비울 수 없습니다.");
+            Debug.LogError("Steam이 초기화되지 않았습니다.");
             return;
         }
 
-        // 1. 스팀 클라우드에 저장된 총 파일 개수를 가져옵니다.
+        // 1. [중요] 내가 사용하는 '진짜' 파일 이름들만 여기에 등록하세요.
+        // 여기에 없는 이름은 클라우드에서 발견되는 즉시 삭제됩니다.
+        HashSet<string> myValidFiles = new HashSet<string>
+        {
+            "SaveData",        // 현재 사용 중인 파일명
+            //"SettingData"      // 만약 설정 파일도 클라우드에 올린다면 추가
+        };
+        // 2. 클라우드에 있는 전체 파일 개수 확인
         int fileCount = SteamRemoteStorage.GetFileCount();
-        int deleteCount = 0;
-
+        if (fileCount <= 0)
+        {
+            Debug.Log("Cloud Is Clean");
+            return;
+        }
         Debug.Log($"[DBManager] 클라우드 정리 시작... 총 파일 수: {fileCount}");
-
-        // 2. 뒤에서부터 순회하며 삭제 (리스트 수정 시 안전함)
+        int deleteCount = 0;
+        // 3. 리스트를 뒤에서부터 순회하며 삭제 (인덱스 꼬임 방지)
         for (int i = fileCount - 1; i >= 0; i--)
         {
             int fileSize;
             string fileName = SteamRemoteStorage.GetFileNameAndSize(i, out fileSize);
-
-            // 3. 내 파일명이 포함되지 않은 것만 삭제
-            // "REKINDLE" 이라는 키워드가 없는 모든 파일을 지웁니다.
-            if (!fileName.Contains("REKINDLE"))
+            // 4. 내가 허용한 이름 리스트에 없다면? 찌꺼기이므로 삭제!
+            if (!myValidFiles.Contains(fileName))
             {
                 bool success = SteamRemoteStorage.FileDelete(fileName);
                 if (success)
                 {
-                    Debug.Log($"[DBManager] 삭제 성공: {fileName} ({fileSize} bytes)");
                     deleteCount++;
+                    Debug.Log($"[DBManager] 찌꺼기 삭제 성공: {fileName} ({fileSize} bytes)");
                 }
             }
         }
-
-        Debug.Log($"[DBManager] 클라우드 정리 완료! 삭제된 파일 수: {deleteCount}");
-
-        // 4. 정리 후 용량 다시 확인
-        SteamRemoteStorage.GetQuota(out ulong total, out ulong available);
-        Debug.Log($"[DBManager] 현재 사용 가능한 용량: {available} / {total} bytes");
-    }
-
-    [Button("내 계정의 모든 세이브 삭제 (주의)")]
-    public void DeleteAllSaveData()
-    {
-        CleanSteamCloudExceptMine();
-        allSaveDatasInLocal = new SaveData();
-        allSaveDatasInLocal.characterDatas = new List<CharacterData>();
-        allSaveDatasInSteam = new SaveData();
-        allSaveDatasInSteam.characterDatas = new List<CharacterData>();
-        SaveSteam();
-        SaveLocal();
-    }
-
-    [Button("!! FORCE DELETE ALL CLOUD FILES !!")]
-    public void ForceDeleteAllCloudFiles()
-    {
-        if (!IsSteamInit()) return;
-
-        int fileCount = SteamRemoteStorage.GetFileCount();
-        Debug.Log($"[DBManager] 강제 전체 삭제 시작... 대상 파일 수: {fileCount}");
-
-        for (int i = fileCount - 1; i >= 0; i--)
+        if (deleteCount > 0)
         {
-            int fileSize;
-            string fileName = SteamRemoteStorage.GetFileNameAndSize(i, out fileSize);
-
-            // 조건을 따지지 않고 무조건 삭제 시도
-            bool success = SteamRemoteStorage.FileDelete(fileName);
-            Debug.Log($"[DBManager] 삭제 시도: {fileName} -> 결과: {success}");
+            Debug.Log($"[DBManager] 클라우드 정리 완료! 삭제된 파일 수: {deleteCount}");
         }
-
-        // 삭제 후 서버와 동기화 명령 (매우 중요)
-        // 이 기능을 호출해야 서버에서도 즉시 삭제를 반영할 준비를 합니다.
     }
 
 #endif
@@ -765,11 +776,40 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         return Mathf.Round(value * 100f) * 0.01f;
     }
+
+    [Button("모든 저장 파일 삭제")]
+    public void DangerouslyClearAllCloudFiles()
+    {
+        if (!IsSteam() || !IsSteamInit())
+        {
+            Debug.LogError("Steam이 초기화되지 않았습니다.");
+            return;
+        }
+
+        // 1. 클라우드에 있는 파일 개수 파악
+        int fileCount = SteamRemoteStorage.GetFileCount();
+        Debug.Log($"<color=red>총 {fileCount}개의 파일을 발견했습니다.</color>");
+
+        // 2. 모든 파일을 순회하며 삭제
+        for (int i = 0; i < fileCount; i++)
+        {
+            int fileSize;
+            string fileName = SteamRemoteStorage.GetFileNameAndSize(i, out fileSize);
+
+            bool deleted = SteamRemoteStorage.FileDelete(fileName);
+            Debug.Log($"파일 삭제: {fileName} ({fileSize} bytes) -> 결과: {deleted}");
+        }
+
+        // 3. 결과 확인
+        SteamRemoteStorage.GetQuota(out ulong total, out ulong available);
+        Debug.Log($"<color=green>초기화 완료! 남은 용량: {available} / {total}</color>");
+    }
+
 }
 [System.Serializable]
 public struct SaveData
 {
-    public List<CharacterData> characterDatas;
+    public List<CharacterData> cds;
 }
 [System.Serializable]
 public struct CharacterData
@@ -779,9 +819,9 @@ public struct CharacterData
     public float currHealth;
     public float currBattery;
     public int gold;
-    public int maxGearCost;
-    public int maxPotionCount;
-    public int currPotionCount;
+    public int mgc;
+    public int mpc;
+    public int cpc;
     public int difficulty;
     public string sceneName;
     public int death;
@@ -792,9 +832,9 @@ public struct CharacterData
     public List<GearData> gearDatas;
     public List<LanternData> lanternDatas;
     public List<RecordData> recordDatas;
-    public List<SceneData> sceneDatas;
-    public List<ProgressData> progressDatas;
-    public List<KillCount> killCounts;
+    public List<SData> sceneDatas;
+    public List<ProgressData> pds;
+    public List<KillCount> ks;
     [System.Serializable]
     public struct ItemData
     {
@@ -825,25 +865,25 @@ public struct CharacterData
     }
 
     [System.Serializable]
-    public struct SceneData
+    public struct SData
     {
         public string sceneName;
-        public List<MonsterPositionData> mDatas;
-        public List<ObjectPositionData> oDatas;
-        public long mDTime;
+        public List<MData> md;
+        public List<OData> od;
+        public long t;
     }
     [System.Serializable]
-    public struct MonsterPositionData
+    public struct MData
     {
         public string Name;
         public int index; // 이름이 동일한 몬스터일시 구분 번호
     }
     [System.Serializable]
-    public struct ObjectPositionData
+    public struct OData
     {
         public string Name;
         public int index; // 이름이 동일한 오브젝트일시 구분 번호
-        public bool canReplay;
+        public bool cr;
     }
     [System.Serializable]
     public struct ProgressData
@@ -851,7 +891,6 @@ public struct CharacterData
         public string Name;
         public int progress;
         public bool isComplete;
-        public int reSecond;
     }
     public struct KillCount
     {

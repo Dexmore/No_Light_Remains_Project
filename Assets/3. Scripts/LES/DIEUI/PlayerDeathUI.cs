@@ -119,7 +119,7 @@ public class PlayerDeathUI : MonoBehaviour
         if (DBManager.I != null)
         {
             DBManager.I.currData.currHealth = DBManager.I.currData.maxHealth;
-            DBManager.I.currData.currPotionCount = DBManager.I.currData.maxPotionCount;
+            DBManager.I.currData.cpc = DBManager.I.currData.mpc;
             DBManager.I.currData.currBattery = DBManager.I.currData.maxBattery;
         }
 
