@@ -22,10 +22,9 @@ public class DialogUI : MonoBehaviour
                 {
                     "[SEQUENCE BOOTING INITIATED]\nCORE TEMPERATURE STABLEIZING...COMPLETE.\nNEURAL RESPONSE CORE CONNECTION...COMPLETE",
                     "COMBAT MODULE PARTIALLY DAMAGED.\nINITIATE REPAIR PROCESS.\nMUSCULOSKELETAL ASSISTANT FRAME...FULLY FUNCTIONAL",
-                    "HIGH EXTERNAL CONTAMINATION LEVEL DECTECTED...\n'TENEBRAE' LEVEL: Critical",
                     "ALL SYSTEMS ONLINE. STATUS: READY TO GO.\nOperation REKINDLE: COMMENCING.",
                     "Greeting, P-07., This is L.U.M.O.S, your Assistant AI.\nSurface conditions are currently at a breaking point due to the 'Black Mist' incident.",
-                    "Your mission is to cleanse the TENEBRAE erosion and retrieve the ASTRA Cell from Sector 13",
+                    "Your mission is to cleanse the TENEBRAE erosion and retrieve the ASTRA Cell from Sector 13.",
                     "Good luck, P-07."
                 },
                 //대사1 (튜토리얼 씬 중앙의 컴퓨터 대사)
@@ -38,7 +37,8 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     //Page 1
-                    "Detecting a broken door.\nThere seems to be no way to open it.\nI advise you move on."
+                    "Detecting a broken door.\n......",
+                    "There seems to be no way to open it.\nI advise you move on."
                 },
                 //대사3 (스테이지 1의 테스트 기어발견 & 기어 튜토리얼겸)
                 new string[]
@@ -128,16 +128,17 @@ public class DialogUI : MonoBehaviour
                 {
                     "Monstrare Research Log #107",
                     "We have a problem. A massive one.\nA mysterious substance known as 'Tenebrae' has been detected\nA substance toxic and corrupting organic life, causing severe genetic mutations.",
-                    "In the beginning, it seemed insignificant\nIt would vanish almost as soon as it appeared.",
-                    "But as the concentration levels rose, so did the danger.\nIt started on the outskirts of Zion; the Outer Rim.",
-                    "But now, traces are being detected even in the heart of the city.",
+                    "In the beginning, the corruption rate was low, and away from the city center",
+                    "Now? Traces are being detected even in the heart of the city.",
+                    "Death...is just outside the doorstep."
                 },
                 //대사16 Log4
                 new string[]
                 {
                     "The outskirts are now crawling with those... things\nCan we even call them living beings anymore?",
                     "Regardless, casualties are mounting due to these unknown entities and the Tenebrae itself.",
-                    "Outside, the world is swallowed by a thick, dark haze saturated with lethal Tenebrae levels.\nWe have come to call this catastrophe 'The Black Mist.'"
+                    "Outside, the world is swallowed by a thick, dark haze saturated with lethal Tenebrae levels.\nWe have come to call this catastrophe 'The Black Mist.'",
+                    "If Hell is real...is this what it would look like?"
                 },
                 //대사17 상자 튜토리얼
                 new string[]
@@ -189,14 +190,15 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     //Page 1
-                    "망가진 문이군요.\n열 방법은 없어 보입니다.\n이동하시는 걸 추천합니다.",
+                    "망가진 문이군요.\n......",
+                    "열 방법은 없어 보입니다.\n이동하시는 걸 추천합니다.",
                 },
                 //대사3 (스테이지 1의 테스트 기어발견 & & 기어 튜토리얼겸)
                 new string[]
                 {
                     //1페이지
                     "오래된 보조 장착 기어군요. 장착하면 도움이 될 것 같습니다.",
-                    "작동하는 기어 강화 기계를 발견한다는 기어의\n성능을 강화할 수 있습니다.\n아직 작동하는게 있을지는 미지수군요.",
+                    "작동하는 기어 강화 기계를 발견한다는 기어의 성능을 강화할 수\n있습니다.\n아직 작동하는게 있을지는 미지수군요.",
                     //2페이지
                     "인벤토리 내 기어 탭을 통해 장착이 가능합니다.\n기어는 기어 장착 용량을 초과할 수 없습니다.\n현명하게 장착해야 합니다."
                 },
@@ -250,7 +252,7 @@ public class DialogUI : MonoBehaviour
                 //대사11 랜턴 충전 라이트
                 new string[]
                 {
-                    "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 \n있을 것으로 보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
+                    "미약하지만 루멘의 흔적이 느껴지는군요\n활성화시킨다면 소량이지만 랜턴을 충전시킬 수 있을 것으로\n보입니다.\n랜턴 게이지가 매우 부족할 때 유용하겠군요.",
                     "[시스템] 랜턴 키를 길게 누르고 있으면 상호작용이 가능합니다."
                 },
                 //대사12 아폴리온 처치
@@ -280,14 +282,15 @@ public class DialogUI : MonoBehaviour
                 {
                     "몬스트라레 연구 일지 #107",
                     "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는\n미지의 물질 '테네브레'가 관측되고 있다.",
-                    "처음에는 별거 아니었다. 생성돼도 금방 사라졌으니까.\n문제는 수치가 높아질수록 문제였다. 처음은 자이온 외각이었다.\n이제는 자이온 중심부에서도 소량이지만 관측되고 있다.",
+                    "처음은 침식 수치도 낮았고 도시 외각에서만 관측되었다.\n지금은...도시 중심부에서도 관측될 정도로 매우 심각하다.",
                     "죽음이...눈앞까지 다가오고 있다."
                 },
                 //대사16 Log4
                 new string[]
                 {
                     "현재 자이온 외각에는 테네브레에 침식된...\n저것들을 생명체라고 불러도 되는 걸까?\n어쨌든 미지의 존재들과 테네브레 자체로 인해\n인명 피해가 증가하고 있다.",
-                    "현재 밖은 높은 테네브레 수치가 관측되는\n검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다."
+                    "현재 밖은 높은 테네브레 수치가 관측되는\n검정색 안개로 가득하다.\n우리는 이 사태를 '검은 안개'라고 부르고 있다.",
+                    "지옥이 실제로 있다면...이런 모습일까?"
                 },
                 //대사17 상자 튜토리얼
                 new string[]
