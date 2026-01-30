@@ -179,28 +179,10 @@ public class MonsterDie : MonsterState
         }
 
         string strimedName1 = transform.name.Split("(")[0];
-        //Debug.Log(strimedName1);
         switch (strimedName1)
         {
-            case "ContaminatedFlower":
-                // int tempCount = DBManager.I.GetKillcount(strimedName1);
-                // if (tempCount >= 20)
-                // {
-                //     DBManager.I.SteamAchievement("ACH_FLOWER_KILL_20");
-                // }
-                // if (tempCount >= 100)
-                // {
-                //     DBManager.I.SteamAchievement("ACH_FLOWER_KILL_100");
-                // }
-                break;
-
             case "LanternKeeper":
-            DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_KILL");
-                // if (DBManager.I.currData.difficulty >= 1)
-                //     if (DBManager.I.currData.mpc == DBManager.I.currData.cpc)
-                //     {
-                //         DBManager.I.SteamAchievement("ACH_BOSS_LANTERN_NO_POTION_HARD");
-                //     }
+                DBManager.I.SteamAchievement("ACH_FIRST_BOSS_CLEAR");
                 break;
         }
 

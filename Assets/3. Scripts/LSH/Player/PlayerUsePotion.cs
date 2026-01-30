@@ -123,6 +123,7 @@ public class PlayerUsePotion : IPlayerState
         {
             aniFlag1 = true;
             ctx.animator.Play("Player_UsePotion");
+            DBManager.I.ach11count++;
         }
         if (_elapsedTime > duration * 0.3f)
         {

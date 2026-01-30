@@ -75,7 +75,9 @@ public class WaveManager : MonoBehaviour
         {
             AudioManager.I.PlayBGMWithFade(bgmName, loopCount: 3);
         }
+        prevAch11count = DBManager.I.ach11count;
     }
+    int prevAch11count;
     IEnumerator ExecuteWaves()
     {
         foreach (var wave in waves)
@@ -165,6 +167,21 @@ public class WaveManager : MonoBehaviour
         GameObject chest = Instantiate(chestPrefab);
         chest.transform.position = 0.5f * (_startPosition + (Vector2)doorType2.transform.position) + 2.4f * Vector2.up;
         chest.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if(sceneName == "Stage4")
+        {
+            DBManager.I.SteamAchievement("ACH_MAIN_WAVE_CLEAR");
+        }
+        if(sceneName == "Stage5")
+        {
+            if(prevAch11count == DBManager.I.ach11count)
+            {
+                DBManager.I.SteamAchievement("ACH_NOPOTION_BOSS_CLEAR");
+            }
+        }
+
+
 
     }
 

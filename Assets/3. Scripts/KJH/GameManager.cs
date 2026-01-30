@@ -68,10 +68,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [HideInInspector] public bool isSceneWaiting;
     [HideInInspector] public bool isShowPop0;
     [HideInInspector] public bool isSuperNovaGearEquip;
-    [HideInInspector] public int ach_chestCount;
-    [HideInInspector] public int ach_parryCount;
-    [HideInInspector] public int ach_NormalLKCount;
     [HideInInspector] public int potionDebt = 0;
+    
 
 
     // 게임의 중요 이벤트들
@@ -137,13 +135,12 @@ public class GameManager : SingletonBehaviour<GameManager>
             // Debug.Log("가장 마지막 savedData를 currData에 덮기 진행.....");
             // Debug.Log($"바뀐 결과 DBManager.I.currData.gold : {DBManager.I.currData.gold} ");
             // Debug.Log($"바뀐 결과 DBManager.I.savedData.gearDatas.Count : {DBManager.I.savedData.gearDatas.Count}");
-
-
         }
         if (name == "Lobby")
         {
             onBackToLobby.Invoke();
         }
+
         await Task.Delay(500);
         AsyncOperation ao = SceneManager.LoadSceneAsync(name);
         onSceneChangeBefore.Invoke();
@@ -834,12 +831,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
 
-
-
-
-
     #endregion
-
     void BackToLobbyHandler()
     {
         isLanternOn = false;
@@ -848,12 +840,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         isOpenInventory = false;
         isShowPop0 = false;
         isSuperNovaGearEquip = false;
-        ach_chestCount = 0;
-        ach_parryCount = 0;
-        ach_NormalLKCount = 0;
-        potionDebt = 0;
     }
-
     async void SceneStartHandler()
     {
         PlayerControl playerControl = FindAnyObjectByType<PlayerControl>();

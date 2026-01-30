@@ -70,13 +70,54 @@ public class DialogueAndScenePortal : Interactable
 
     private void SaveBeforeLoading()
     {
+
+        // 현재 난이도(difficulty)를 비트 위치로 사용하여 해당 비트를 1로 켭니다.
+        // 1 << 0 = 1 (001)
+        // 1 << 1 = 2 (010)
+        // 1 << 2 = 4 (100)
+
+        if (DBManager.I.IsSteam() && DBManager.I.IsSteamInit())
+        {
+            DBManager.I.allSaveDatasInLocal.ach10bitMask = DBManager.I.allSaveDatasInSteam.ach10bitMask;
+            DBManager.I.allSaveDatasInLocal.ach10bitMask |= (1 << DBManager.I.currData.difficulty);
+            if (DBManager.I.allSaveDatasInLocal.ach10bitMask == 7) // 111(2) = 7
+            {
+                DBManager.I.SteamAchievement("ACH_ALL_CLEAR");
+                DBManager.I.allSaveDatasInSteam.ach10bitMask = 7;
+            }
+        }
+        
+        System.DateTime deathTime = System.DateTimeOffset.FromUnixTimeSeconds(DBManager.I.currData.ach15time).DateTime;
+        System.TimeSpan timePassed = System.DateTime.UtcNow - deathTime;
+        if (timePassed.TotalSeconds <= 3600)
+        {
+            switch (DBManager.I.currData.difficulty)
+            {
+                case 0:
+                    DBManager.I.SteamAchievement("ACH_ONEHOUR_STORY");
+                    break;
+                case 1:
+                    DBManager.I.SteamAchievement("ACH_ONEHOUR_NORMAL");
+                    break;
+                case 2:
+                    DBManager.I.SteamAchievement("ACH_ONEHOUR_HARD");
+                    break;
+            }
+        }
+        if (DBManager.I.currData.ach14count == 4)
+        {
+            DBManager.I.SteamAchievement("ACH_ALL_MONSTERKILL");
+        }
+
         // 현재 및 저장 데이터 갱신
         DBManager.I.currData.sceneName = "Stage5"; // 필요 시 변수화 가능
         DBManager.I.savedData.sceneName = "Stage5";
-        
         DBManager.I.currData.lastPos = lastPos;
         DBManager.I.savedData.lastPos = lastPos;
-        
         DBManager.I.Save();
+
+
+
+
     }
 }

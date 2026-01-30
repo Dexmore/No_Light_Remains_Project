@@ -135,7 +135,7 @@ public class PlayerControl : MonoBehaviour
             newData.mgc = 3;
             newData.difficulty = 0;
             newData.seed = Random.Range(1, 9999);
-            
+
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
@@ -143,6 +143,12 @@ public class PlayerControl : MonoBehaviour
             newData.sceneDatas = new List<CharacterData.SData>();
             newData.pds = new List<CharacterData.ProgressData>();
             newData.ks = new List<CharacterData.KillCount>();
+
+            //newData.ach10bitMask = 0;
+            newData.ach12count = 0;
+            newData.ach13count = 0;
+            newData.ach14count = 0;
+            newData.ach15time = System.DateTimeOffset.Now.ToUnixTimeSeconds();
 
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
