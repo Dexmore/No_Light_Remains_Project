@@ -381,6 +381,12 @@ public class LobbyStoryPanel : MonoBehaviour
         newData.pds = new List<CharacterData.ProgressData>();
         newData.ks = new List<CharacterData.KillCount>();
 
+        //newData.ach10bitMask = 0;
+        newData.ach12count = 0;
+        newData.ach13count = 0;
+        newData.ach14count = 0;
+        newData.ach15time = System.DateTimeOffset.Now.ToUnixTimeSeconds();
+
         DBManager.I.currData = newData;
         // 신규캐릭터 시작 아이템
         DBManager.I.AddLantern("BasicLantern");
@@ -478,9 +484,15 @@ public class LobbyStoryPanel : MonoBehaviour
         }
         if (isSteamSlot)
         {
+            int prevAch10bitMask = 0;
+            if (DBManager.I.allSaveDatasInSteam.cds != null && DBManager.I.allSaveDatasInSteam.cds.Count > 0)
+            {
+                prevAch10bitMask = DBManager.I.allSaveDatasInSteam.ach10bitMask;
+            }
             SaveData copy = new SaveData();
             copy.cds = DBManager.I.allSaveDatasInSteam.cds.ToList();
             SaveData newSaveData = new SaveData();
+            newSaveData.ach10bitMask = prevAch10bitMask;
             newSaveData.cds = new List<CharacterData>();
             for (int i = 0; i < copy.cds.Count; i++)
             {
@@ -491,6 +503,7 @@ public class LobbyStoryPanel : MonoBehaviour
             await Task.Delay(50);
             DBManager.I.allSaveDatasInSteam = new SaveData();
             DBManager.I.allSaveDatasInSteam.cds = newSaveData.cds.ToList();
+            DBManager.I.allSaveDatasInSteam.ach10bitMask = prevAch10bitMask;
             await Task.Delay(50);
             for (int i = 0; i < DBManager.I.allSaveDatasInSteam.cds.Count; i++)
             {

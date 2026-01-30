@@ -240,12 +240,14 @@ public class DBManager : SingletonBehaviour<DBManager>
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.playModeStateChanged += EditorPlayChanged;
 #endif
+        GameManager.I.onSceneChangeBefore += SceneChangeBeforeHandler;
     }
     void OnDisable()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.playModeStateChanged -= EditorPlayChanged;
 #endif 
+        GameManager.I.onSceneChangeBefore -= SceneChangeBeforeHandler;
     }
 #if UNITY_EDITOR
     private void EditorPlayChanged(UnityEditor.PlayModeStateChange state)
@@ -640,17 +642,31 @@ public class DBManager : SingletonBehaviour<DBManager>
             CharacterData.GearData data = currData.gearDatas[index];
             data.level = 1; // 1회 제한이므로 1로 설정 (또는 data.level++)
             currData.gearDatas[index] = data;
-
-            // (선택사항) 저장 기능을 바로 호출하고 싶다면
-            // Save(); 
-            // SteamAchievement("ACH_GEAR_UPGRADE_FIRST");
             GameManager.I.RefreshGears();
+        }
+        int count1 = itemDatabase.allGears.Count;
+        int count2 = currData.gearDatas.Count;
+        if (count1 == count2)
+        {
+            bool isAll = true;
+            for (int i = 0; i < currData.gearDatas.Count; i++)
+            {
+                if (currData.gearDatas[i].level == 0)
+                    isAll = false;
+                break;
+            }
+            if (isAll)
+            {
+                SteamAchievement("ACH_ALL_UPGRADE");
+            }
         }
     }
 
+    public int ach11count;
 
     public void SteamAchievement(string API_Name)
     {
+        //Debug.Log($"Try Achievement {API_Name}");
         if (!IsSteam()) return;
         if (!SteamAPI.Init()) return;
 
@@ -659,26 +675,55 @@ public class DBManager : SingletonBehaviour<DBManager>
         {
             SteamUserStats.SetAchievement(API_Name);
             SteamUserStats.StoreStats();
-            //Debug.Log($"Try Achievement {API_Name}");
         }
+        // 구현된 스팀 도전과제
+        // 1. 게임 시작 시 미션 수락 --> ACH_MISSION_START
+        // 2. 첫 기어 획득 --> ACH_FIRST_GEAR_GET
+        // 3. 메인 웨이브 클리어  --> ACH_MAIN_WAVE_CLEAR
+        // 4. 보스 첫 클리어.  --> ACH_FIRST_BOSS_CLEAR
+        // 5. 모든 기어 획득 --> ACH_ALL_GEAR
+        // 6. 모든 기록물 획득 --> ACH_ALL_RECORD
+        // 7. 모든 기어 강화완료 --> ACH_ALL_UPGRADE
+        // 8. 모든 난이도 클리어 --> ACH_ALL_CLEAR (완료)
+        // 9. 포션을 먹지않고 보스 클리어 --> ACH_NOPOTION_BOSS_CLEAR
+        // 10. 스토리 난이도 1시간 이내 클리어 --> ACH_ONEHOUR_STORY (완료)
+        // 11. 보통 난이도 1시간 이내 클리어 --> ACH_ONEHOUR_NORMAL (완료)
+        // 12. 어려움 난이도 1시간 이내 클리어 --> ACH_ONEHOUR_HARD
+        // 13. 루멘테크 가동횟수 20회 이상 --> ACH_LUMENTECH
+        // 14. 패링 100회 이상 성공 --> ACH_PARRYCOUNT
+        // 15. 모든 몬스터 처치 --> ACH_ALL_MONSTERKILL
 
 
-        // 구현된 도전과제 업적
-        // ACH_BOSS_LANTERN_KILL (보스 최초 처치)
-        // ACH_GEAR_COLLECT_ALL (모든 기어 수집)
 
-
-        // 아래는 예시 (미구현)
-        // ACH_PARRY_FIRST
-        // ACH_CHEST_OPEN_5
-        // ACH_GEAR_UPGRADE_FIRST
-        // ACH_FLOWER_KILL_20 (MonsterDie)
-        // ACH_PARRY_COUNT_50
-        // ACH_BOSS_LANTERN_KILL_2_NORMAL (MonsterDie)
-        // ACH_PARRY_COMBO_4
-        // ACH_FLOWER_KILL_100 (MonsterDie)
-        // ACH_BOSS_LANTERN_NO_POTION_HARD (MonsterDie)
     }
+    void SceneChangeBeforeHandler()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        MonsterControl[] monsterControls = FindObjectsByType<MonsterControl>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        if (monsterControls.Length == 0)
+        {
+            switch (sceneName)
+            {
+                case "Stage0":
+                    if (currData.ach14count == 0)
+                        currData.ach14count = 1;
+                    break;
+                case "Stage1":
+                    if (currData.ach14count == 1)
+                        currData.ach14count = 2;
+                    break;
+                case "Stage2":
+                    if (currData.ach14count == 2)
+                        currData.ach14count = 3;
+                    break;
+                case "Stage3":
+                    if (currData.ach14count == 3)
+                        currData.ach14count = 4;
+                    break;
+            }
+        }
+    }
+
 
     public void OpenLoginUI()
     {
@@ -688,7 +733,7 @@ public class DBManager : SingletonBehaviour<DBManager>
     {
         transform.GetChild(0).gameObject.SetActive(false);
     }
-    
+
     public void CleanSteamCloudExceptMine()
     {
         if (!IsSteam() || !IsSteamInit())
@@ -811,6 +856,7 @@ public class DBManager : SingletonBehaviour<DBManager>
 public struct SaveData
 {
     public List<CharacterData> cds;
+    public int ach10bitMask;
 }
 [System.Serializable]
 public struct CharacterData
@@ -836,6 +882,12 @@ public struct CharacterData
     public List<SData> sceneDatas;
     public List<ProgressData> pds;
     public List<KillCount> ks;
+    //
+    public int ach12count;
+    public int ach13count;
+    public int ach14count;
+    public long ach15time;
+
     [System.Serializable]
     public struct ItemData
     {

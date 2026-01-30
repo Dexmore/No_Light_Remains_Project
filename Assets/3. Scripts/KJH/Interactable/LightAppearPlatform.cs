@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 public class LightAppearPlatform : Lanternable, ISavable
 {
     #region Lanternable Complement
-    public override bool isReady {get; set;}
+    public override bool isReady { get; set; }
     public override bool isAuto => false;
     public override ParticleSystem particle => ps;
     public override SpriteRenderer lightPoint => lp;
@@ -49,6 +49,12 @@ public class LightAppearPlatform : Lanternable, ISavable
     }
     public override void Run()
     {
+        if (!isReady) return;
+        DBManager.I.currData.ach12count++;
+        if (DBManager.I.currData.ach12count >= 20)
+        {
+            DBManager.I.SteamAchievement("ACH_LUMENTECH");
+        }
         isReady = false;
         isComplete = true;
         Step2();
@@ -84,7 +90,7 @@ public class LightAppearPlatform : Lanternable, ISavable
     // ------------
     // PlayerInteraction.cs에서 실행) 단. 메소드는 여기에서 제공
     // 5. 상호작용오브젝트(Lanternable) 에서 LightPoint를 서서히 켜주면서
-    
+
     Light2D childLight;
     Tween tweenChildLight;
     Light2D light2;
