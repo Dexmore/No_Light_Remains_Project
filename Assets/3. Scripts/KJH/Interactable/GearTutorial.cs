@@ -20,6 +20,7 @@ public class GearTutorial : MonoBehaviour
     {
         playerControl.fsm.ChangeState(playerControl.stop);
         playerControl.stop.duration = 5f;
+        DBManager.I.SteamAchievement("ACH_FIRST_GEAR_GET");
         await Task.Delay(600);
         playerControl.fsm.ChangeState(playerControl.idle);
     }

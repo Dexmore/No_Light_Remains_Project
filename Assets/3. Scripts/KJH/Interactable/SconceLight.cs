@@ -58,6 +58,12 @@ public class SconceLight : Lanternable, ISavable
     }
     public override async void Run()
     {
+        if (!isReady) return;
+        DBManager.I.currData.ach12count++;
+        if (DBManager.I.currData.ach12count >= 20)
+        {
+            DBManager.I.SteamAchievement("ACH_LUMENTECH");
+        }
         AudioManager.I.PlaySFX("UIClick2");
         SetCompletedImmediately();
         await Task.Delay(200);

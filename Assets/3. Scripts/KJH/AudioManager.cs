@@ -105,45 +105,30 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     }
 
     // --- 재생 및 정지 핵심 로직 ---
-
-    public void StopBGM()
+    public void StopBGM(float duration = 0f) // int에서 float로 변경하여 정밀도 향상
     {
-        // 모든 관련 코루틴 이름 기반으로 완전 정지
+        // 기존 자동재생 및 페이드 코루틴 중단
         StopCoroutine(nameof(Co_AutoBGMNextTrack));
         StopCoroutine(nameof(PlayBGM_co));
-        StopCoroutine(nameof(Co_FadeOut));
-        StopAllCoroutines();
 
-        if (ausBGM0 != null) { ausBGM0.Stop(); ausBGM0.clip = null; }
-        if (ausBGM1 != null) { ausBGM1.Stop(); ausBGM1.clip = null; }
-
-        isChangingTrack = false;
-        lastPlayedClip = null;
+        if (duration > 0)
+        {
+            // 페이드 아웃 코루틴 실행
+            FadeOutBGM(duration);
+        }
+        else
+        {
+            // 즉시 정지
+            StopCoroutine(nameof(Co_FadeOut));
+            if (ausBGM0 != null) { ausBGM0.Stop(); ausBGM0.clip = null; }
+            if (ausBGM1 != null) { ausBGM1.Stop(); ausBGM1.clip = null; }
+            isChangingTrack = false;
+            lastPlayedClip = null;
+        }
     }
-
-    public void PlayBGMWithFade(AudioClip clip, float duration = 1f)
+    public void PlayBGMWithFade(string bgmName, float duration = 1f, int loopCount = 1)
     {
-        if (clip == null) return;
-
-        // 페이드 코루틴 중복 방지
-        StopCoroutine(nameof(PlayBGM_co));
-
-        AudioSource nextAus = (currentAus == ausBGM0) ? ausBGM1 : ausBGM0;
-        nextAus.clip = clip;
-        nextAus.volume = 0f;
-        nextAus.Play();
-
-        // 매개변수가 여러 개인 경우 관리를 위해 기존처럼 호출하되, 
-        // PlayBGM_co 내부에서 관리하거나 아래와 같이 실행
-        StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
-        currentAus = nextAus;
-    }
-    public void PlayBGMWithFade(string bgmName, float duration = 1f)
-    {
-        // 1. 중복 실행 방지
-        StopCoroutine(nameof(PlayBGM_co));
-
-        // 2. 리스트에서 이름으로 클립 찾기
+        // 리스트에서 이름으로 클립 찾기
         int find = bgmList.FindIndex(x => x != null && x.name == bgmName);
 
         if (find == -1)
@@ -152,8 +137,64 @@ public class AudioManager : SingletonBehaviour<AudioManager>
             return;
         }
 
-        // 3. 찾은 클립으로 실제 재생 함수 호출
-        PlayBGMWithFade(bgmList[find], duration);
+        // 찾은 클립과 함께 loopCount를 넘겨서 실제 재생 함수 호출
+        PlayBGMWithFade(bgmList[find], duration, loopCount);
+    }
+
+    // 2. 실제 재생 및 루프 처리를 담당하는 함수
+    public void PlayBGMWithFade(AudioClip clip, float duration = 1f, int loopCount = 1)
+    {
+        if (clip == null) return;
+
+        // 진행 중인 모든 BGM 관련 코루틴 중지
+        StopCoroutine(nameof(PlayBGM_co));
+        StopCoroutine(nameof(Co_AutoBGMNextTrack));
+        StopCoroutine(nameof(Co_BGMWithLoopCount));
+
+        AudioSource nextAus = (currentAus == ausBGM0) ? ausBGM1 : ausBGM0;
+        nextAus.clip = clip;
+        nextAus.volume = 0f;
+
+        // 루프 설정: loopCount가 1보다 크면 우선 루프를 켭니다.
+        // (끝나는 시점은 Co_BGMWithLoopCount에서 제어)
+        nextAus.loop = (loopCount > 1);
+        nextAus.Play();
+
+        StartCoroutine(PlayBGM_co(currentAus, nextAus, duration));
+        currentAus = nextAus;
+
+        // n번 재생 후 AutoBGM으로 복귀시키는 코루틴 실행
+        StartCoroutine(Co_BGMWithLoopCount(clip, loopCount));
+    }
+
+    // 3. 루프 횟수 감시 및 AutoBGM 복귀 코루틴
+    IEnumerator Co_BGMWithLoopCount(AudioClip clip, int loopCount)
+    {
+        int currentLoop = 0;
+
+        while (currentLoop < loopCount)
+        {
+            // 곡이 거의 끝날 때까지 대기 (끝나기 0.1초 전)
+            yield return new WaitUntil(() => currentAus.clip == clip && currentAus.time >= clip.length - 0.1f);
+
+            currentLoop++;
+
+            // 마지막 루프 차례라면 루프 속성을 끄고 대기
+            if (currentLoop >= loopCount)
+            {
+                currentAus.loop = false;
+                // 완전히 끝날 때까지 대기
+                yield return new WaitUntil(() => !currentAus.isPlaying);
+                break;
+            }
+
+            // 다음 루프를 위해 잠깐 대기 (곡이 자연스럽게 다시 시작되도록)
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // 모든 루프 완료 후 해당 씬의 기본 BGM(AutoBGM)으로 복귀
+        Debug.Log($"[{clip.name}] {loopCount}회 재생 완료. 자동 BGM 모드로 복귀합니다.");
+        StartAutoBGM();
     }
 
     public void FadeOutBGM(float duration)

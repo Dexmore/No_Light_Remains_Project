@@ -80,16 +80,19 @@ public class PlayerParry : IPlayerState
                 ctx.animator.Play("Player_Parry");
             }
             lastSuccesCount++;
-            if (lastSuccesCount == 4)
-            {
-                //DBManager.I.SteamAchievement("ACH_PARRY_COMBO_4");
-            }
         }
         else
         {
             lastSuccesCount = 0;
             ctx.animator.Play("Player_Parry");
         }
+
+        DBManager.I.currData.ach13count++;
+        if(DBManager.I.currData.ach13count >= 100)
+        {
+            DBManager.I.SteamAchievement("ACH_PARRYCOUNT");
+        }
+
         sfxWait?.Despawn();
         sfxWait = null;
         lastSuccesTime = Time.time;
@@ -100,7 +103,7 @@ public class PlayerParry : IPlayerState
             if (outValue)
             {
                 Transform target = hitData.attacker;
-                float monsterDamage = hitData.damage;
+                float monsterDamage = Mathf.Abs(hitData.damage - 25f);
                 // 기본 데미지 20f
                 // 반사데미지 0.1f * damage
 
@@ -108,11 +111,11 @@ public class PlayerParry : IPlayerState
                 float gearDamage = 0;
                 if(level == 0)
                 {
-                    gearDamage = 10f + 0.1f * monsterDamage;
+                    gearDamage = 10f + 0.06f * monsterDamage;
                 }
                 else if(level == 1)
                 {
-                    gearDamage = 15f + 0.12f * monsterDamage;
+                    gearDamage = 15f + 0.072f * monsterDamage;
                 }
                 Vector2 hitPoint = 0.25f * hitData.hitPoint + 0.75f * (target.transform.position + 1.3f * Vector3.up);
                 GameManager.I.onHit.Invoke
@@ -131,16 +134,6 @@ public class PlayerParry : IPlayerState
                 );
             }
         }
-        GameManager.I.ach_parryCount++;
-        // if (GameManager.I.ach_parryCount == 1)
-        // {
-        //     DBManager.I.SteamAchievement("ACH_PARRY_FIRST");
-        // }
-        // if (GameManager.I.ach_parryCount >= 50)
-        // {
-        //     DBManager.I.SteamAchievement("ACH_PARRY_COUNT_50");
-        //     GameManager.I.ach_parryCount = 0;
-        // }
     }
     bool isSuccess;
     private float adjustedTime1;

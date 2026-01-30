@@ -15,7 +15,13 @@ public class PlayerStop : IPlayerState
         int count2 = DBManager.I.currData.gearDatas.Count;
         if(count1 == count2)
         {
-            DBManager.I.SteamAchievement("ACH_GEAR_COLLECT_ALL");
+            DBManager.I.SteamAchievement("ACH_GEAR_ALL");
+        }
+        count1 = DBManager.I.itemDatabase.allRecords.Count;
+        count2 = DBManager.I.currData.recordDatas.Count;
+        if(count1 == count2)
+        {
+            DBManager.I.SteamAchievement("ACH_ALL_RECORD");
         }
     }
     public void Exit()

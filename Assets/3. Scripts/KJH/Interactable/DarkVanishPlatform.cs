@@ -54,6 +54,12 @@ public class DarkVanishPlatform : Lanternable, ISavable
     }
     public override void Run()
     {
+        if (!isReady) return;
+        DBManager.I.currData.ach12count++;
+        if (DBManager.I.currData.ach12count >= 20)
+        {
+            DBManager.I.SteamAchievement("ACH_LUMENTECH");
+        }
         _isReady = false;
         isComplete = true;
         AudioManager.I.PlaySFX("UIClick2");

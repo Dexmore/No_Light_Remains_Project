@@ -7,11 +7,11 @@ public class GearSlotUp : DropItem
         base.OnEnable();
         if (targetCount > 0)
         {
-            if (DBManager.I.currData.maxGearCost != targetCount - 1) gameObject.SetActive(false);
+            if (DBManager.I.currData.mgc != targetCount - 1) gameObject.SetActive(false);
         }
         else
         {
-            if (DBManager.I.currData.maxGearCost == 6) gameObject.SetActive(false);
+            if (DBManager.I.currData.mgc == 6) gameObject.SetActive(false);
         }
     }
     public override void Run()
@@ -20,13 +20,13 @@ public class GearSlotUp : DropItem
         AudioManager.I.PlaySFX("Up8Bit");
         if (targetCount > 0)
         {
-            DBManager.I.currData.maxGearCost = targetCount;
+            DBManager.I.currData.mgc = targetCount;
         }
         else
         {
-            int count = DBManager.I.currData.maxGearCost;
+            int count = DBManager.I.currData.mgc;
             count = Mathf.Clamp(count + 1, 3, 6);
-            DBManager.I.currData.maxGearCost = count;
+            DBManager.I.currData.mgc = count;
         }
         ParticleManager.I.PlayText("Gear Slot Up!", transform.position + 1.2f * Vector3.up, ParticleManager.TextType.PlayerNotice, 2.3f);
     }

@@ -80,32 +80,32 @@ public class PlayerOpenInventory : IPlayerState
                 GameManager.I.potionDebt -= debtClear;
             }
 
-            DBManager.I.currData.currPotionCount += bonus;
+            DBManager.I.currData.cpc += bonus;
         }
         // [케이스 B] 끼고 있다가 해제함: 보너스 회수
         else if (wasEquipped && !isEquippedNow)
         {
-            int penalty = (DBManager.I.currData.maxPotionCount == 5) ? 2 : 1;
+            int penalty = (DBManager.I.currData.mpc == 5) ? 2 : 1;
 
             // 현재 포션이 부족해서 다 못 뺏는다면, 그만큼 부채로 남김
-            if (DBManager.I.currData.currPotionCount < penalty)
+            if (DBManager.I.currData.cpc < penalty)
             {
-                GameManager.I.potionDebt += (penalty - DBManager.I.currData.currPotionCount);
-                DBManager.I.currData.currPotionCount = 0;
+                GameManager.I.potionDebt += (penalty - DBManager.I.currData.cpc);
+                DBManager.I.currData.cpc = 0;
             }
             else
             {
-                DBManager.I.currData.currPotionCount -= penalty;
+                DBManager.I.currData.cpc -= penalty;
             }
         }
         // 2. 수치 갱신
         if (isEquippedNow)
-            DBManager.I.currData.maxPotionCount = (level == 1) ? 5 : 4;
+            DBManager.I.currData.mpc = (level == 1) ? 5 : 4;
         else
-            DBManager.I.currData.maxPotionCount = 3;
+            DBManager.I.currData.mpc = 3;
 
         // 최종 한도 보정
-        DBManager.I.currData.currPotionCount = Mathf.Clamp(DBManager.I.currData.currPotionCount, 0, DBManager.I.currData.maxPotionCount);
+        DBManager.I.currData.cpc = Mathf.Clamp(DBManager.I.currData.cpc, 0, DBManager.I.currData.mpc);
 
         hUDBinder?.Refresh(1f);
 

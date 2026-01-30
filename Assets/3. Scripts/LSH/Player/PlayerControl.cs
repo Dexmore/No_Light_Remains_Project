@@ -130,19 +130,25 @@ public class PlayerControl : MonoBehaviour
             newData.maxBattery = maxBattery;
             newData.currHealth = currHealth;
             newData.currBattery = currBattery;
-            newData.maxPotionCount = 3;
-            newData.currPotionCount = 3;
-            newData.maxGearCost = 3;
+            newData.mpc = 3;
+            newData.cpc = 3;
+            newData.mgc = 3;
             newData.difficulty = 0;
             newData.seed = Random.Range(1, 9999);
-            
+
             newData.itemDatas = new List<CharacterData.ItemData>();
             newData.gearDatas = new List<CharacterData.GearData>();
             newData.lanternDatas = new List<CharacterData.LanternData>();
             newData.recordDatas = new List<CharacterData.RecordData>();
-            newData.sceneDatas = new List<CharacterData.SceneData>();
-            newData.progressDatas = new List<CharacterData.ProgressData>();
-            newData.killCounts = new List<CharacterData.KillCount>();
+            newData.sceneDatas = new List<CharacterData.SData>();
+            newData.pds = new List<CharacterData.ProgressData>();
+            newData.ks = new List<CharacterData.KillCount>();
+
+            //newData.ach10bitMask = 0;
+            newData.ach12count = 0;
+            newData.ach13count = 0;
+            newData.ach14count = 0;
+            newData.ach15time = System.DateTimeOffset.Now.ToUnixTimeSeconds();
 
             newData.sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             newData.lastPos = transform.position;
@@ -825,7 +831,7 @@ public class PlayerControl : MonoBehaviour
                         }
                         else if (level == 1)
                         {
-                            gearMultiplier = 1.2f;
+                            gearMultiplier = 1.3f;
                         }
                     }
                     currBattery += lanternDecreaseTick * diffMultiplier * gearMultiplier * isOpenUI * interval * tempFloat2 * malfunctionFactor;

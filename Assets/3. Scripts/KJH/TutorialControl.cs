@@ -40,6 +40,7 @@ public class TutorialControl : MonoBehaviour
                 DBManager.I.AddRecord("Data_01Mission");
                 HUDBinder hUDBinder = FindAnyObjectByType<HUDBinder>();
                 hUDBinder.PlayNoticeText(3);
+                DBManager.I.SteamAchievement("ACH_MISSION_START");
             }
             else
             {

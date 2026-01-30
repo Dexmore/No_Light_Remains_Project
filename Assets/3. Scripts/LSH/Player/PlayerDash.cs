@@ -6,7 +6,7 @@ public class PlayerDash : IPlayerState
     private readonly PlayerStateMachine fsm;
     public PlayerDash(PlayerControl ctx, PlayerStateMachine fsm) { this.ctx = ctx; this.fsm = fsm; }
     private const float duration = 0.5f;   // 총 길이
-    private const float avoidTime = 0.17f;   // 무적 시간
+    private const float avoidTime = 0.185f;   // 무적 시간
     private const float dashForce = 18f;   // 대시 세기
     private float _elapsedTime;
     public bool isLeft;
@@ -23,7 +23,7 @@ public class PlayerDash : IPlayerState
                 adjustedAvoidTime = avoidTime * 0.97f + 0.05f;
                 break;
             case 2:
-                adjustedAvoidTime = avoidTime * 0.85f;
+                adjustedAvoidTime = avoidTime * 0.88f;
                 break;
         }
 
