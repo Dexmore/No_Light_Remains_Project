@@ -171,7 +171,16 @@ public class DialogUI : MonoBehaviour
                     "When I look up, all I see is this darkness thick and suffocating like tar.\nMaybe...maybe a blue sky never even existed in the first place.",
                     "Ha... haha...I’m just...tired.\nMaybe...\nIf I close my eyes...",
                     "Will I be able to see it again?\nThat clear...blue...sky."
-                }, 
+                },
+                //대사22 로그6
+                new string[]
+                {
+                    "CLASSIFIED LOG: Byproducts of Project LUMEN",
+                    "We were blinded.\nBlinded by the pursuit of harnessing LUMEN.",
+                    "We have forgoten the simplest truth...\nWhere there be light, there is also darkness.",
+                    "As we pushed the LUMEN output to the limit, the byproduct wasn't just energy. It wa",
+                    "[SYSTEM] Recording terminated due to power failure."
+                },  
             };
         }
         // 한국어
@@ -330,7 +339,14 @@ public class DialogUI : MonoBehaviour
                     "세상이 검은 안개로 뒤덮인지...얼마나 지났지?\n이제는 예전의 푸른 하늘이 떠오르지도 않는다.",
                     "고개를 들어 보면 저 위에는 찐득한 검은 타르 같은 어둠뿐이다.\n애초에 푸른 하늘 같은 건 존재하지 않았던 거 아닐까?",
                     "하...하하.\n...이제는 너무 피곤해.\n눈을 감으면...\n그때 그 푸른 하늘을...다시 볼 수 있을까."
-                }, 
+                },
+                //대사22 로그6
+                new string[]
+                {
+                    "기밀 로그: 루멘 프로젝트의 부산물",
+                    "우리는 빛만 만든 게 아니었다.\n빛이 있으면...그림자도 있다는 사실을 망각해버렸다.\n루멘의 출력을 높일수록 그 반동으로 것은, 에너지 뿐만이 아니",
+                    "[시스템] 전력 오류로 기록 재생이 강제 종료됩니다."
+                },  
             };
         }
     }
