@@ -148,7 +148,8 @@ public class DialogUI : MonoBehaviour
                 //대사18 적 처음 감지
                 new string[]
                 {
-                    "Beings corrupted by TENEBRAE...\nThe surface is currently saturated with these hostile lifeforms."
+                    "Beings corrupted by TENEBRAE...\nThe surface is currently saturated with these hostile lifeforms.",
+                    "They become weaker in the presence of processed LUMEN.\nActivating the Light of ASTRUM will come in handy in battle."
                 },
                 //대사19 랜턴 활성화
                 new string[]
@@ -162,8 +163,15 @@ public class DialogUI : MonoBehaviour
                     "It has been a month since the streets were overtaken by those black...things.\nI'm now almost out for things to eat.",
                     "I miss a warm stew...mom's were the best.\nShould have asked her for the recipe before I left her place.",
                     "Mom... I miss you so much.\nPlease, please be alive.\n...Please."
+                },
+                //대사21 로그5
+                new string[]
+                {
+                    "How long has it been... since the world was buried in this black mist?\nI can't even remember what the blue sky used to look like anymore.",
+                    "When I look up, all I see is this darkness thick and suffocating like tar.\nMaybe...maybe a blue sky never even existed in the first place.",
+                    "Ha... haha...I’m just...tired.\nMaybe...\nIf I close my eyes...",
+                    "Will I be able to see it again?\nThat clear...blue...sky."
                 }, 
-
             };
         }
         // 한국어
@@ -300,7 +308,8 @@ public class DialogUI : MonoBehaviour
                 //대사18 적 처음 감지
                 new string[]
                 {
-                    "테네브레에 침식된 존재입니다.\n지상은 현재 이러한 존재들로 가득합니다."
+                    "테네브레에 침식된 존재입니다.\n지상은 현재 이러한 존재들로 가득합니다.",
+                    "가공된 루멘으로 약화시킬 수 있습니다.\n전투 시 아스트룸의 빛을 활성화하시면 더욱 수월한 전투가 가능합니다."
                 },
                 //대사19 랜턴 활성화
                 new string[]
@@ -312,9 +321,16 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "도로가 저 검은 무언가들에 점령당하고 1달.\n더 이상 먹을 것도 떨어지고 있다.",
-                    "집밥 먹고 싶다.\n엄마가 만들어준...따뜻한 스튜...\n그때 어떻게 만드는지 여쭤볼걸.",
+                    "아, 집밥 먹고 싶다.\n엄마가 만들어준...따뜻한 스튜...\n그때 어떻게 만드는지 여쭤볼걸.",
                     "엄마...보고 싶어\n제발 살아 있어 줘요..."
-                },                 
+                },
+                //대사21 로그5
+                new string[]
+                {
+                    "세상이 검은 안개로 뒤덮인지...얼마나 지났지?\n이제는 예전의 푸른 하늘이 떠오르지도 않는다.",
+                    "고개를 들어 보면 저 위에는 찐득한 검은 타르 같은 어둠뿐이다.\n애초에 푸른 하늘 같은 건 존재하지 않았던 거 아닐까?",
+                    "하...하하.\n...이제는 너무 피곤해.\n눈을 감으면...\n그때 그 푸른 하늘을...다시 볼 수 있을까."
+                }, 
             };
         }
     }

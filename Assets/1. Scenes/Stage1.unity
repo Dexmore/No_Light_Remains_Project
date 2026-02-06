@@ -413,7 +413,7 @@ MonoBehaviour:
   replayWaitTimeSecond: 0
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 7
+    gold: 60
     record: {fileID: 0}
     countRange: {x: 2, y: 3}
     probability: 1
@@ -14264,6 +14264,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[0].gold
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[5].dropItem
       value: 
       objectReference: {fileID: 6239390625324507657, guid: aafb860a4d10f744c834a77adac94e23, type: 3}
@@ -14297,7 +14301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[0].countRange.y
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3655978220690790638, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: m_Name
@@ -20159,7 +20163,7 @@ Transform:
   m_GameObject: {fileID: 2986242682421012808}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 83, y: -20.3, z: 0}
+  m_LocalPosition: {x: 83, y: -17.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20805,7 +20809,7 @@ MonoBehaviour:
   target: {fileID: 1831251960}
   smoothTime: 0.3
   xBound: {x: 1, y: 216}
-  yBound: {x: -2.4, y: 31}
+  yBound: {x: -3.9, y: 31}
   offset: {x: 0, y: 3.8, z: -10}
 --- !u!61 &4470904514673169348
 BoxCollider2D:
@@ -21164,7 +21168,7 @@ MonoBehaviour:
     countRange: {x: 1, y: 1}
     probability: 1
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 6
+    gold: 65
     record: {fileID: 0}
     countRange: {x: 2, y: 3}
     probability: 1

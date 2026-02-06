@@ -20338,6 +20338,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1910727759}
     m_Modifications:
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
+      propertyPath: dropTables.Array.data[0].gold
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[1].probability
       value: 0.14
       objectReference: {fileID: 0}
@@ -20351,7 +20355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[0].countRange.x
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2332946335329316979, guid: 7941574dca95d6842a57d1e9cabb39f1, type: 3}
       propertyPath: dropTables.Array.data[0].countRange.y
@@ -22747,7 +22751,7 @@ MonoBehaviour:
   replayWaitTimeSecond: 0
   dropTables:
   - dropItem: {fileID: 7828238462720039517, guid: 9ea162d0f1c8fa34e9236a4c9893f336, type: 3}
-    gold: 13
+    gold: 50
     record: {fileID: 0}
     countRange: {x: 1, y: 1}
     probability: 1
