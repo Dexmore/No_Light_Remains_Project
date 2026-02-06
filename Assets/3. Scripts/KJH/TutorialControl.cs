@@ -140,7 +140,7 @@ public class TutorialControl : MonoBehaviour
                         condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.53f, 0.58f, collider, isPlayerReady);
                         break;
                     case MonsterControl.State.ShortAttack:
-                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.46f, 0.50f, collider, isPlayerReady);
+                        condition = IsInParryWindow(animator, slicer.state.ToString(), nt, 0.48f, 0.52f, collider, isPlayerReady);
                         break;
                     default:
                         condition = false;
