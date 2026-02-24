@@ -27,14 +27,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1789616900489158227}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7613064012983676917}
   m_Father: {fileID: 3107915724003839399}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!212 &2942348037651665212
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 2806074514289853808, guid: 0b73eab6a9ea27e4aae4a1aabbe92423, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -379,7 +379,7 @@ MonoBehaviour:
   currHealth: 400
   maxBattery: 100
   currBattery: 100
-  moveSpeed: 7.1
+  moveSpeed: 6.2
   airMoveMultiplier: 0.6
   jumpForce: 21.73
   inputActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
@@ -585,7 +585,7 @@ MonoBehaviour:
   startPosition: {x: 0, y: 0}
   lanternDecreaseTick: -3.8
   lanternParryAmount: 20
-  lanternAttackAmount: 1.2
+  lanternAttackAmount: 1.8
 --- !u!114 &3935313567020253974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,9 +655,105 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.b
+      value: 0.57254905
+      objectReference: {fileID: 0}
+    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.g
+      value: 0.57254905
+      objectReference: {fileID: 0}
+    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.r
+      value: 0.5764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Intensity
+      value: 7.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_FalloffIntensity
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2301287901006462737, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_PointLightOuterRadius
+      value: 5.23
+      objectReference: {fileID: 0}
     - target: {fileID: 5128489353773589176, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
       propertyPath: m_Name
       value: PlayerLight
+      objectReference: {fileID: 0}
+    - target: {fileID: 5800975667235395013, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: radius
+      value: 3.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 5800975667235395013, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: polyCount
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.r
+      value: 0.6039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Intensity
+      value: 2.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_FalloffIntensity
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_PointLightInnerRadius
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622067490115467781, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_PointLightOuterRadius
+      value: 2.79
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Color.a
+      value: 0.8666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_Intensity
+      value: 3.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_FalloffIntensity
+      value: 0.302
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_ShapeLightFalloffSize
+      value: 6.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Center.x
+      value: 1.17205
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Center.y
+      value: 2.9319003
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Extent.x
+      value: 13.62495
+      objectReference: {fileID: 0}
+    - target: {fileID: 6976119259024382351, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalBounds.m_Extent.y
+      value: 10.3395
+      objectReference: {fileID: 0}
+    - target: {fileID: 8234658770846072412, guid: 76e0bae8a4c7efd4abb992b6069bb9c3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

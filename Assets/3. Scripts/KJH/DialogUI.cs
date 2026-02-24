@@ -84,8 +84,8 @@ public class DialogUI : MonoBehaviour
                 //대사9 Log3(Stage3)
                 new string[]
                 {
-                    "Monstrare Research Log #03",
-                    "Energy readings from Monstrare are off the charts.\nWe may be looking at the ultimate energy substitute.",
+                    "MONSTRARE Research Log #03",
+                    "Energy readings from MONSTRARE are off the charts.\nWe may be looking at the ultimate energy substitute.",
                     "If SOLARIS Company is able to monopolize this…\nIt would allow the company to grow on an unprecedented scale."
                 },
                 //대사10 세이브포인트
@@ -118,15 +118,15 @@ public class DialogUI : MonoBehaviour
                 {
                     "Welcome P-07, to the Deep Research Facility in Zion.\nThis unit serves as a stasis chamber for the last shard of the MONSTRARE.",
                     "To counter the Tenebrae outbreak after the 'Black Mist' Incident, Operation REKINDLE was launched",
-                    "Awaiting Astra Cell integration...\n......",
+                    "Awaiting Astra Cell integration...\n......\n......",
                     "Integration verified.\n[Analyzing...] Core Restoration 27%...45%\n[Scanning...] TENEBRAE contamination in Zion, 78%...58%",
                     "TENEBRAE corruption has been decelerated. MONSTRARE core is stable.",
-                    "Operation REKINDLE: Phase 1 marked as Success.\nYour contribution has been invaluable."
+                    "Operation REKINDLE: marked as Success.\nYour contribution has been invaluable."
                 },
                 //대사15 Log4(Stage1)
                 new string[]
                 {
-                    "Monstrare Research Log #107",
+                    "MONSTRARE Research Log #107",
                     "We have a problem. A massive one.\nA mysterious substance known as 'Tenebrae' has been detected\nA substance toxic and corrupting organic life, causing severe genetic mutations.",
                     "In the beginning, the corruption rate was low, and away from the city center",
                     "Now? Traces are being detected even in the heart of the city.",
@@ -215,7 +215,7 @@ public class DialogUI : MonoBehaviour
                 {
                     //1페이지
                     "오래된 보조 장착 기어군요. 장착하면 도움이 될 것 같습니다.",
-                    "작동하는 기어 강화 기계를 발견한다는 기어의 성능을 강화할 수\n있습니다.\n아직 작동하는게 있을지는 미지수군요.",
+                    "작동하는 기어 강화 기계를 발견한다는 기어의 성능을 강화할 수\n있습니다.\n아직 작동하는게 있을지는 미지수입니다만...",
                     //2페이지
                     "인벤토리 내 기어 탭을 통해 장착이 가능합니다.\n기어는 기어 장착 용량을 초과할 수 없습니다.\n현명하게 장착해야 합니다."
                 },
@@ -223,20 +223,20 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "'비프로스트' 감지. 루멘에 반응하도록 설계된 장치입니다.\n루멘에 반응하니 랜턴을 활용해 가동하면 될겁니다",
-                    "비프로스트를 활용해 막힌 길도 이동할 수 있겠군요."
+                    "비프로스트를 활용해 막힌 길도 이동할 수 있습니다."
                 },
                 //대사5 (DarkVanish 튜토리얼)
                 new string[]
                 {
-                    "정지. 테네브레 수치가 매우 높습니다.\n시야도 제한되고, 앞으로 이동할 수 없군요",
+                    "정지. 테네브레 수치가 매우 높습니다.\n시야도 제한되고, 앞으로 이동할 수 없습니다",
                     "랜턴을 활용해 테네브레를 정화하세요.",
                     "명심하세요. 아무리 깊은 어둠 속에서도, 빛은 사라지지 않습니다."
                 },
                 //대사6 기어 강화 튜토리얼
                 new string[]
                 {
-                    "작동 가능 기계가 감지됩니다. 확인 요망합니다.\n기어 강화 기계군요.\n상태를 보아하니 아직도 작동하는 것이 있다니 놀랍습니다",
-                    "재료들만 있다면 기어를 강화할 수 있겠군요.\n임무 수행에 큰 도움이 될 것으로 예상됩니다."
+                    "작동 가능 기계가 감지됩니다. 확인 요망합니다.\n기어 강화 기계입니다.\n상태를 보아하니 아직도 작동하는 것이 있다니 놀랍습니다",
+                    "재료들만 있다면 기어를 강화할 수 있겠습니다.\n임무 수행에 큰 도움이 될 것으로 예상됩니다."
                 },
                 //대사7 Log1
                 new string[]
@@ -288,17 +288,17 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "자이온의 심층 연구실에 환영합니다.\n당신 앞에 있는 기계는 남아있는 몬스트라레를 보존시키는 장치입니다.",
-                    "'검은 안개' 사태 이후 자이온의 테네브레 침식 저지 및 몬스트라레 복구를 위해 오퍼레이션 REKINDLE이 기획되고 1차 작전 실행이 성공적으로 완료되었습니다.",
+                    "'검은 안개' 사태 이후 자이온의 테네브레 침식 저지 및 몬스트라레 복구를 위해 오퍼레이션 REKINDLE이 기획되었습니다.",
                     "아스트라 셀을 기계에 장착해주시길 바랍니다.\n......\n......",
                     "아스트라 셀 장착 확인.\n몬스트라레 코어 복구율 27%...45%.\n자이온 내 테네브레 수치 78%...58%",
                     "자이온 내 테네브레 침식 지연 및 몬스트라레 일부 복구 성공.",
-                    "제 1차 오퍼레이션 REKINDLE, 성공적으로 완료되었습니다.\n노고에 감사합니다."
+                    "오퍼레이션 REKINDLE, 성공적으로 완료되었습니다.\n노고에 감사합니다."
                 },
                 //대사15 Log4
                 new string[]
                 {
                     "몬스트라레 연구 일지 #107",
-                    "문제가 발생했다. 그것도 대형 문제가.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는\n미지의 물질 '테네브레'가 관측되고 있다.",
+                    "문제가 발생했다.\n유기체에게 해롭고 침식해 유전적 돌연변이를 발생시키는\n미지의 물질 '테네브레'가 관측되고 있다.",
                     "처음은 침식 수치도 낮았고 도시 외각에서만 관측되었다.\n지금은...도시 중심부에서도 관측될 정도로 매우 심각하다.",
                     "죽음이...눈앞까지 다가오고 있다."
                 },
@@ -344,7 +344,7 @@ public class DialogUI : MonoBehaviour
                 new string[]
                 {
                     "기밀 로그: 루멘 프로젝트의 부산물",
-                    "우리는 빛만 만든 게 아니었다.\n빛이 있으면...그림자도 있다는 사실을 망각해버렸다.\n루멘의 출력을 높일수록 그 반동으로 것은, 에너지 뿐만이 아니",
+                    "우리는 빛만 만든 게 아니었다.\n빛이 있으면...그림자도 있다는 사실을 망각해버렸다.\n루멘의 출력을 높일수록 그 반동으로 것은, 에너지뿐만이 아니",
                     "[시스템] 전력 오류로 기록 재생이 강제 종료됩니다."
                 },  
             };
