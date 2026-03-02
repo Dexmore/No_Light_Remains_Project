@@ -343,6 +343,9 @@ public class LobbyStoryPanel : MonoBehaviour
         await Task.Delay(200);
         GameManager.I.SetSceneFromDB();
         GameManager.I.LoadSceneAsync(DBManager.I.currData.sceneName, true);
+        await Task.Delay(1500);
+        DBManager.I.Save();
+        Debug.Log("a");
     }
     [ReadOnlyInspector] public int diff;
     public async void StartNewGameButton()
